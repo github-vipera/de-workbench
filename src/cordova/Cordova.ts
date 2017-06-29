@@ -187,9 +187,13 @@ export class Cordova {
     return executor.removePlatforms(platformList, projectRoot);
   }
 
+  /**
+   * Runs build command fot the given Cordova project
+   */
   buildProject(projectRoot: string, platform:string, options:any): Promise<any> {
-    // TODO!!
-    return null;
+    Logger.getInstance().debug("buildProject: ", projectRoot)
+    let executor = new CordovaExecutor(null);
+    return executor.runBuild(projectRoot, platform, options);
   }
 
   cleanProject(projectRoot: string, platform:string, options:any): Promise<any> {

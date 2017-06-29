@@ -200,8 +200,53 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
-  getInstalledPlatforms(rootProjectPath:string):any{
+  public getInstalledPlatforms(rootProjectPath:string):any{
     return new CordovaUtils().getInstalledPlatforms(rootProjectPath);
   }
+
+  public runBuild(path:string,platform:string,cliOptions:any){
+    Logger.getInstance().info("Executing build for ",platform,cliOptions);
+    this.applyGlobalCliOptions(cliOptions);
+    var cmd="cordova"
+    var args = ["build",platform];
+    _.forEach(cliOptions.flags,(single) => {
+      args[args.length] = single;
+    });
+    var options=this.getCmdOptions(path);
+    cmd = this.prepareCommand(cmd);
+    this.spawnRef = spawn(cmd, args, options);
+    return new Promise((resolve,reject) => {
+      this.spawnRef.stdout.on('data', (data) => {
+          Logger.getInstance().debug(`[Build  ${platform}]: ${data}`)
+          console.log(`[Build  ${platform}]: ${data}`);
+      });
+
+      this.spawnRef.stderr.on('data', (data) => {
+          Logger.getInstance().error("[scriptTools] " + data.toString())
+          console.error(`[Build  ${platform}]: ${data}`);
+      });
+
+      this.spawnRef.on('close', (code) => {
+          console.log(`[Build  ${platform}] child process exited with code ${code}`);
+          Logger.getInstance().info(`[Build  ${platform}] child process exited with code ${code}`)
+          this.spawnRef = undefined;
+          if(code === 0){
+            resolve("Build done Done");
+          }else{
+            reject("Build Fail");
+          }
+      });
+    });
+  }
+
+  private applyGlobalCliOptions(cliOptions){
+    if(cliOptions.envVars){
+      _.forEach(cliOptions.envVars,(single) => {
+        Logger.getInstance().debug("Set Env variable:",single);
+        process.env[single.name] = single.value;
+      });
+    }
+  }
+
 
 }
