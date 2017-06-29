@@ -1,0 +1,137 @@
+/*!
+ * XAtom Debug
+ * Copyright(c) 2017 Williams Medina <williams.medinaa@gmail.com>
+ * MIT Licensed
+ */
+
+@import "variables";
+
+// Icons
+.dewb-icon {
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: top center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: top center;
+  &.dewb-icon-logo {
+    background-image: url('atom://de-workbench/icons/VA_white.png');
+    // animation: spinning 3s infinite;
+  }
+  &.dewb-icon-run {
+    -webkit-mask-image: url('atom://de-workbench/icons/run.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-stop {
+    -webkit-mask-image: url('atom://de-workbench/icons/stop.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-pause {
+    -webkit-mask-image: url('atom://de-workbench/icons/pause.svg');
+    background-color: @text-color-error;
+  }
+  &.dewb-icon-resume {
+    -webkit-mask-image: url('atom://de-workbench/icons/resume.svg');
+    background-color: @background-color-info;
+  }
+  &.dewb-icon-step-over {
+    -webkit-mask-image: url('atom://de-workbench/icons/step-over.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-step-into {
+    -webkit-mask-image: url('atom://de-workbench/icons/step-into.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-step-out {
+    -webkit-mask-image: url('atom://de-workbench/icons/step-out.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-arrow-right-solid {
+    -webkit-mask-image: url('atom://de-workbench/icons/arrow-right-solid.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-arrow-right {
+    -webkit-mask-image: url('atom://de-workbench/icons/arrow-right.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-arrow-down {
+    -webkit-mask-image: url('atom://de-workbench/icons/arrow-down.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-break {
+    -webkit-mask-image: url('atom://de-workbench/icons/break.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-atom {
+    -webkit-mask-image: url('atom://de-workbench/icons/atom.svg');
+    background-color: @text-color;
+  }
+  &.dewb-icon-status-success {
+    -webkit-mask-image: url('atom://de-workbench/icons/status-success.svg');
+    background-color: @background-color-success;
+  }
+  &.dewb-icon-status-warning {
+    -webkit-mask-image: url('atom://de-workbench/icons/status-warning.svg');
+    background-color: @background-color-warning;
+  }
+  &.dewb-icon-status-error {
+    -webkit-mask-image: url('atom://de-workbench/icons/status-error.svg');
+    background-color: @background-color-error;
+  }
+  &.dewb-icon-add {
+    -webkit-mask-image: url('atom://de-workbench/icons/add.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-refresh {
+    -webkit-mask-image: url('atom://de-workbench/icons/refresh.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-check {
+    -webkit-mask-image: url('atom://de-workbench/icons/check.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-remove {
+    -webkit-mask-image: url('atom://de-workbench/icons/remove.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-panel-right {
+    -webkit-mask-image: url('atom://de-workbench/icons/panel-right.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-panel-bottom {
+    -webkit-mask-image: url('atom://de-workbench/icons/panel-bottom.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.active {
+    background-color: hsl(hue(@syntax-background-color), 100%, 60%)!important;
+  }
+  &.dewb-icon-newproj {
+    -webkit-mask-image: url('atom://de-workbench/icons/add-new-document.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-build {
+    -webkit-mask-image: url('atom://de-workbench/icons/handyman-tools.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-box {
+    -webkit-mask-image: url('atom://de-workbench/icons/box.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-export {
+    -webkit-mask-image: url('atom://de-workbench/icons/export.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-up-arrow {
+    -webkit-mask-image: url('atom://de-workbench/icons/up-arrow.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-sort {
+    -webkit-mask-image: url('atom://de-workbench/icons/sort.svg');
+    background-color: darken(@text-color, 5%);
+  }
+}

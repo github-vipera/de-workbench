@@ -1,0 +1,19 @@
+{
+  "menu": [{
+    "label": "Packages",
+    "submenu": [{
+      "label": "DE Workbench",
+      "submenu": [{
+        "label": "View",
+        "submenu": [{
+          "label": "Toggle Toolbar",
+          "command": "dewb-menu-view-:toolbar-toggle"
+        },{
+          "label": "Project Inspector",
+          "command": "dewb-menu-view-:prjinspector-toggle"
+          }]
+      }]
+    }]
+  }]
+
+}

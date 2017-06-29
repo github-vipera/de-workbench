@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>Slice</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="step-over" transform="translate(3.000000, 1.000000)" fill-rule="nonzero" fill="#000000">
+            <g id="Slice">
+                <g id="Page-1">
+                    <circle id="Oval" cx="9" cy="18" r="4"></circle>
+                    <path d="M12.0880611,1.06991284 C12.7711635,2.71526073 13.4378005,5.10200724 13.4378005,8.15093277 C13.4378005,12.522031 11.4444322,14.6418026 10.2449067,15.5216847 C9.28102827,15.1738089 8.11465237,14.9702963 6.85805261,14.9702963 C5.92385956,14.9702963 5.0395321,15.0827751 4.25120165,15.2834291 C5.88225297,14.1560136 8.49711087,11.782294 8.49711087,8.15093277 C8.49711087,5.87273379 8.06630197,4.33183843 7.57664747,3.31623674 L4.88024224,4.65883137 L6.59651706,-3.24910255 L14.7274504,-0.24429238 L12.0880611,1.06991284 Z" id="Combined-Shape" transform="translate(9.489326, 6.136291) scale(-1, 1) rotate(-90.000000) translate(-9.489326, -6.136291) "></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

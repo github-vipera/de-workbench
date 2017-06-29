@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>Slice</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="step-into" transform="translate(6.000000, 1.000000)" fill-rule="nonzero" fill="#000000">
+            <g id="Page-1">
+                <circle id="Oval" cx="6" cy="18" r="4"></circle>
+                <path d="M9,5.9999992 L9,11.535128 C8.1174799,11.2661744 7.0928614,11.1122428 6,11.1122428 C4.9071386,11.1122428 3.8825201,11.2661744 3,11.535128 L3,5.9999992 L0,5.9999992 L6,-8e-07 L12,5.9999992 L9,5.9999992 Z" id="Combined-Shape" transform="translate(6.000000, 5.767564) scale(-1, 1) rotate(-180.000000) translate(-6.000000, -5.767564) "></path>
+            </g>
+        </g>
+    </g>
+</svg>
