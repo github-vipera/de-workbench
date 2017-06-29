@@ -6,15 +6,15 @@
  * MIT Licensed
  */
 
- import { ToolbarView } from './toolbar/ToolbarView'
- import { NewProjectView } from './views/NewProjectView'
+ import { ToolbarView } from '../toolbar/ToolbarView'
+ import { NewProjectView } from '../views/NewProjectView'
  import { EventEmitter }  from 'events';
  const { CompositeDisposable } = require('atom');
- import { ProjectInspectorView } from './views/ProjectInspectorView'
- import { DebugAreaView }from './views/DebugAreaView'
- import { CordovaUtils } from './cordova/CordovaUtils'
- import { ProjectManager } from './DEWorkbench/ProjectManager'
- import { Logger } from './logger/Logger'
+ import { ProjectInspectorView } from '../views/ProjectInspectorView'
+ import { DebugAreaView }from '../views/DebugAreaView'
+ import { CordovaUtils } from '../cordova/CordovaUtils'
+ import { ProjectManager } from '../DEWorkbench/ProjectManager'
+ import { Logger } from '../logger/Logger'
 
  import {
    createText,
@@ -25,7 +25,7 @@
    createIcon,
    createIconFromPath,
    attachEventFromObject
- } from './element/index';
+ } from '../element/index';
 
  export interface WorkbenchOptions {
    didToggleToolbar?: Function,

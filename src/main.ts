@@ -8,7 +8,7 @@
 
 const { CompositeDisposable } = require('atom')
 
-import { DEWorkbench } from './DEWorkbench'
+import { DEWorkbench } from './DEWorkbench/DEWorkbench'
 
 export default {
 
