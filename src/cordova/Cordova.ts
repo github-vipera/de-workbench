@@ -199,7 +199,7 @@ export class Cordova {
   /**
    * Clean the given Cordova project
    */
-  cleanProject(projectRoot: string, platform:string, options:any): Promise<any> {
+  cleanProject(projectRoot: string, platform:string): Promise<any> {
     Logger.getInstance().debug("cleanProject: ", projectRoot)
     let executor = new CordovaExecutor(null);
     return executor.runClean(projectRoot, platform);
@@ -208,21 +208,22 @@ export class Cordova {
   /**
    * Prepare the given Cordova project
    */
-  prepareProject(projectRoot: string, platform:string, options:any): Promise<any> {
+  prepareProject(projectRoot: string, platform:string): Promise<any> {
     Logger.getInstance().debug("prepareProject: ", projectRoot)
     let executor = new CordovaExecutor(null);
     return executor.runPrepare(projectRoot, platform);
   }
 
-  prepareProjectWithBrowserPatch(projectRoot: string, platform:string, options:any): Promise<any> {
+  prepareProjectWithBrowserPatch(projectRoot: string): Promise<any> {
     Logger.getInstance().debug("prepareProject: ", projectRoot)
     let executor = new CordovaExecutor(null);
-    return executor.runPrepareWithBrowserPatch(projectRoot, platform);
+    return executor.runPrepareWithBrowserPatch(projectRoot);
   }
 
-  runProject(projectRoot: string, platform:string, options:any): Promise<any> {
-    // TODO!!
-    return null;
+  runProject(projectRoot:string,platform:string,target:string,options:any): Promise<any> {
+    Logger.getInstance().debug("runProject: ", projectRoot)
+    let executor = new CordovaExecutor(null);
+    return executor.runProject(projectRoot, platform, target, options);
   }
 
 }

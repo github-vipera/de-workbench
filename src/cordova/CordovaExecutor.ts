@@ -16,6 +16,8 @@ import { CommandExecutor } from '../utils/CommandExecutor';
 import { Logger } from '../logger/Logger'
 import { CordovaUtils } from './CordovaUtils'
 
+const DEVICE_AUTO_DEF ="[AUTO]"
+
 export class CordovaExecutor extends CommandExecutor {
 
   constructor(projectRoot: string) {
@@ -316,7 +318,6 @@ export class CordovaExecutor extends CommandExecutor {
     fse.copySync(__dirname + "/injectedfiles/socket.io.js",projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
   }
 
-
   private applyGlobalCliOptions(cliOptions){
     if(cliOptions.envVars){
       _.forEach(cliOptions.envVars,(single) => {
@@ -332,6 +333,48 @@ export class CordovaExecutor extends CommandExecutor {
       cmd += " " + platform;
     }
     return cmd;
+  }
+
+  runProject(projectRoot:string,platform:string,target:string,cliOptions:any){
+    Logger.getInstance().info("Running project for ", projectRoot, platform,target);
+    console.log("Execute run with spawn for " + platform,"and cliOptions",cliOptions);
+    this.applyGlobalCliOptions(cliOptions);
+    var cmd="cordova"
+    var args = ["run",platform];
+    if(target && target !== DEVICE_AUTO_DEF ){
+      args[2] = "--target=" + target;
+    }
+    _.forEach(cliOptions.flags,(single) => {
+      args[args.length] = single;
+    });
+    var options={
+        cwd: projectRoot,
+        detached:false
+    };
+    cmd = this.prepareCommand(cmd);
+    this.spawnRef = spawn(cmd, args, options);
+    return new Promise((resolve,reject) => {
+      this.spawnRef.stdout.on('data', (data) => {
+          Logger.getInstance().debug(`[Run  ${platform}]: ${data}`)
+          console.log(`[Run  ${platform}]: ${data}`);
+      });
+
+      this.spawnRef.stderr.on('data', (data) => {
+          Logger.getInstance().error("[Run] " + data.toString())
+          console.error(`[Run  ${platform}]: ${data}`);
+      });
+
+      this.spawnRef.on('close', (code) => {
+          console.log(`[Run  ${platform}] child process exited with code ${code}`);
+          Logger.getInstance().info(`[Run  ${platform}] child process exited with code ${code}`)
+          this.spawnRef = undefined;
+          if(code === 0){
+            resolve("Run done Done");
+          }else{
+            reject("Run Fail");
+          }
+      });
+    });
   }
 
 }
