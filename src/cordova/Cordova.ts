@@ -196,14 +196,28 @@ export class Cordova {
     return executor.runBuild(projectRoot, platform, options);
   }
 
+  /**
+   * Clean the given Cordova project
+   */
   cleanProject(projectRoot: string, platform:string, options:any): Promise<any> {
-    // TODO!!
-    return null;
+    Logger.getInstance().debug("cleanProject: ", projectRoot)
+    let executor = new CordovaExecutor(null);
+    return executor.runClean(projectRoot, platform);
   }
 
+  /**
+   * Prepare the given Cordova project
+   */
   prepareProject(projectRoot: string, platform:string, options:any): Promise<any> {
-    // TODO!!
-    return null;
+    Logger.getInstance().debug("prepareProject: ", projectRoot)
+    let executor = new CordovaExecutor(null);
+    return executor.runPrepare(projectRoot, platform);
+  }
+
+  prepareProjectWithBrowserPatch(projectRoot: string, platform:string, options:any): Promise<any> {
+    Logger.getInstance().debug("prepareProject: ", projectRoot)
+    let executor = new CordovaExecutor(null);
+    return executor.runPrepareWithBrowserPatch(projectRoot, platform);
   }
 
   runProject(projectRoot: string, platform:string, options:any): Promise<any> {

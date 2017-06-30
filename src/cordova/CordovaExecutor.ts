@@ -11,14 +11,15 @@ const spawn = require('child_process').spawn;
 const kill = require('tree-kill');
 const fse = require('fs-extra');
 const _ = require("lodash");
+const path = require("path");
 import { CommandExecutor } from '../utils/CommandExecutor';
 import { Logger } from '../logger/Logger'
 import { CordovaUtils } from './CordovaUtils'
 
 export class CordovaExecutor extends CommandExecutor {
 
-  constructor(path: string) {
-    super(path);
+  constructor(projectRoot: string) {
+    super(projectRoot);
   }
 
   /**
@@ -136,11 +137,11 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
-  public execNpmInstall(path:string){
-    Logger.getInstance().info("execNpmInstall for: ", path)
+  public execNpmInstall(projectRoot:string){
+    Logger.getInstance().info("execNpmInstall for: ", projectRoot)
     var cmd="npm"
     var args = ["install"];
-    var options=this.getCmdOptions(path);
+    var options=this.getCmdOptions(projectRoot);
     cmd = this.prepareCommand(cmd);
     this.spawnRef = spawn(cmd, args, options);
     return new Promise((resolve,reject) => {
@@ -166,14 +167,14 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
-  public removePlatforms(platformList,path:string){
+  public removePlatforms(platformList,projectRoot:string){
     _.forEach(platformList,(item,index)=>{
       platformList[index]=item.name;
     })
     console.log("Executing remove-platform for ",platformList);
     var cmd="cordova"
     var args = ["platform","remove","--save"].concat(platformList);
-    var options=this.getCmdOptions(path);
+    var options=this.getCmdOptions(projectRoot);
     cmd = this.prepareCommand(cmd);
     this.spawnRef = spawn(cmd, args, options);
     return new Promise((resolve,reject) => {
@@ -204,15 +205,15 @@ export class CordovaExecutor extends CommandExecutor {
     return new CordovaUtils().getInstalledPlatforms(rootProjectPath);
   }
 
-  public runBuild(path:string,platform:string,cliOptions:any){
-    Logger.getInstance().info("Executing build for ",platform,cliOptions);
+  public runBuild(projectRoot:string,platform:string,cliOptions:any){
+    Logger.getInstance().info("Executing build for ",projectRoot, platform,cliOptions);
     this.applyGlobalCliOptions(cliOptions);
     var cmd="cordova"
     var args = ["build",platform];
     _.forEach(cliOptions.flags,(single) => {
       args[args.length] = single;
     });
-    var options=this.getCmdOptions(path);
+    var options=this.getCmdOptions(projectRoot);
     cmd = this.prepareCommand(cmd);
     this.spawnRef = spawn(cmd, args, options);
     return new Promise((resolve,reject) => {
@@ -239,6 +240,83 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
+  public runClean(projectRoot:string, platform:string){
+    Logger.getInstance().info("Executing clean for ", projectRoot, platform);
+    var cmd="cordova"
+    var args = ["clean"];
+    if(platform){
+      args[1]=platform;
+    }else{
+      platform="all";
+    }
+    var options={
+        cwd: projectRoot,
+        detached:false
+    };
+    cmd = this.prepareCommand(cmd);
+    this.spawnRef = spawn(cmd, args, options);
+    return new Promise((resolve,reject) => {
+      this.spawnRef.stdout.on('data', (data) => {
+          Logger.getInstance().debug(`[Clean  ${platform}]: ${data}`)
+          console.log(`[Clean  ${platform}]: ${data}`);
+      });
+
+      this.spawnRef.stderr.on('data', (data) => {
+          Logger.getInstance().error("[Clean] " + data.toString())
+          console.error(`[Clean  ${platform}]: ${data}`);
+      });
+
+      this.spawnRef.on('close', (code) => {
+          console.log(`[Clean  ${platform}] child process exited with code ${code}`);
+          Logger.getInstance().info(`[Clean  ${platform}] child process exited with code ${code}`)
+          this.spawnRef = undefined;
+          if(code === 0){
+            resolve("Clean Done");
+          }else{
+            reject("Clean Fail");
+          }
+      });
+    });
+  }
+
+  public runPrepare(projectRoot:string, platform:string){
+    Logger.getInstance().error("Executing prepare for ", projectRoot, platform);
+    return new Promise((resolve,reject) => {
+      var cmd = this.createPrepare(platform);
+      var options=this.getCmdOptions(projectRoot);
+      exec(cmd,options,(error, stdout, stderr) => {
+        if(error){
+          console.error(error.toString());
+          Logger.getInstance().error("Prepare error: ", error);
+          reject(error);
+          return;
+        }
+        Logger.getInstance().info("Prepare done for ",projectRoot,platform);
+        console.log("exec prepare done");
+        resolve();
+      });
+    });
+  }
+
+  public runPrepareWithBrowserPatch(projectRoot:string){
+    return new Promise((resolve,reject) => {
+      this.runPrepare(projectRoot,"browser").then(() => {
+        this.patchExtraBrowserFile(projectRoot);
+        resolve();
+      },(err) => {
+        reject(err);
+      });
+    });
+  }
+
+  private patchExtraBrowserFile(projectRoot:string){
+    fse.emptyDirSync(path.join(projectRoot,"/platforms/browser/www/__dedebugger"));
+    fse.emptyDirSync(path.join(projectRoot,"/platforms/browser/www/socket.io"));
+    fse.copySync(__dirname + "/injectedfiles/DEDebuggerClient.js",projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
+    fse.copySync(__dirname + "/injectedfiles/socket.io.js",projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
+  }
+
+
   private applyGlobalCliOptions(cliOptions){
     if(cliOptions.envVars){
       _.forEach(cliOptions.envVars,(single) => {
@@ -248,5 +326,12 @@ export class CordovaExecutor extends CommandExecutor {
     }
   }
 
+  private createPrepare(platform:string):string{
+    let cmd="cordova prepare"
+    if(platform){
+      cmd += " " + platform;
+    }
+    return cmd;
+  }
 
 }
