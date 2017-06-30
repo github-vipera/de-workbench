@@ -44,12 +44,11 @@ export class ProjectInspectorView {
 
     // Create the UI
     this.element = document.createElement('de-workbench-project-inspector') //'de-workbench-projinspector-view'
-    /**
-    let title =  createElement('scheme-label', {
-        elements: [createText('Project Inspector Ahahah')]
-    })
-    insertElement(this.element, title)
-    **/
+
+    let projectInfoElement = this.createProjectInfoElement()
+    insertElement(this.element, projectInfoElement)
+
+
     let el = createElement('de-workbench-group', {
         elements: [
           createElement('de-workbench-group-header', {
@@ -109,5 +108,19 @@ export class ProjectInspectorView {
     }
   }
 
+  createProjectInfoElement():HTMLElement{
+    let infoElement =  createElement('div', {
+        elements: [createText('Project Inspector Ahahah')],
+        className:"de-workbench-project-info-container"
+    })
+
+    return infoElement;
+  }
+
+  /**
+  let title =  createElement('h2', {
+      elements: [createText('Project Inspector Ahahah')]
+  })
+  **/
 
 }
