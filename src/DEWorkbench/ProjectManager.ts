@@ -20,8 +20,16 @@ export class ProjectManager {
       // create Cordova utilities
       this.cordova = new Cordova();
 
+      // By default use the first project root
+      this.currentProjectPath = this.getFirstAvailableProjectRootFolder();
+      if (this.currentProjectPath){
+        this.fireProjectChanged(this.currentProjectPath);
+      }
+
       // Listen for ATOM projects
       atom.workspace["onDidChangeActiveTextEditor"](() => this.fireEditorChanged());
+      atom.workspace["onDidOpen"](() => this.fireEditorChanged());
+      atom.project["onDidChangePaths"](() => this.firePathChanges());
       this.events = new EventEmitter();
     }
 
@@ -32,7 +40,29 @@ export class ProjectManager {
         return ProjectManager.instance;
     }
 
-    private fireEditorChanged(){
+    private firePathChanges(){
+      console.log("PathChanges");
+      let ok = this.fireEditorChanged();
+      if (!ok){
+          this.currentProjectPath = this.getFirstAvailableProjectRootFolder();
+          if (this.currentProjectPath){
+            this.fireProjectChanged(this.currentProjectPath);
+          }
+      }
+    }
+
+    getFirstAvailableProjectRootFolder(){
+      let currentPaths = atom.project["getPaths"]();
+      if (currentPaths && currentPaths.length>0){
+        return atom.project["getPaths"]()[0];
+      }
+      return undefined;
+    }
+
+    /**
+     * Return true if an editore opened and selected is available
+     */
+    private fireEditorChanged():boolean{
       var editor = atom.workspace.getActiveTextEditor()
       if (editor){
         var yourPath = editor["getPath"]()
@@ -48,7 +78,9 @@ export class ProjectManager {
             break;
           }
         }
+        return true;
       }
+      return false;
     }
 
     private fireProjectChanged(projectPath:String) {

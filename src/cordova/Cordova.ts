@@ -48,6 +48,26 @@ export class Cordova {
     this.cordovaPluginScanner = new CordovaPluginScanner();
   }
 
+  isCordovaProject(projectRoot:string):Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      resolve(this.isCordovaProjectSync(projectRoot));
+    });
+  }
+
+  isCordovaProjectSync(projectRoot:string):boolean {
+    try {
+      let ret = this.getInstalledPlatformsSync(projectRoot);
+      if (ret && ret.length>0){
+        return true;
+      } else {
+        return false;
+      }
+    } catch (ex){
+      return false;
+    }
+  }
+
+
   /**
    * Returns a list of installed platforms for a Cordova Project
    */

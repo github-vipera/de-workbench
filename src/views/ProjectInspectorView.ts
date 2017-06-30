@@ -43,19 +43,19 @@ export class ProjectInspectorView {
     this.cordova = new Cordova();
 
     // Create the UI
-    this.element = document.createElement('xatom-debug-area') //'de-workbench-projinspector-view'
+    this.element = document.createElement('de-workbench-project-inspector') //'de-workbench-projinspector-view'
     /**
     let title =  createElement('scheme-label', {
         elements: [createText('Project Inspector Ahahah')]
     })
     insertElement(this.element, title)
     **/
-    let el = createElement('xatom-debug-group', {
+    let el = createElement('de-workbench-group', {
         elements: [
-          createElement('xatom-debug-group-header', {
+          createElement('de-workbench-group-header', {
             elements: [createText('Installed Platforms')]
           }),
-          createElement('xatom-debug-group-header', {
+          createElement('de-workbench-group-header', {
             elements: [createText('Installed Plugins')]
           })
         ]
