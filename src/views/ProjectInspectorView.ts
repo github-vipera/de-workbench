@@ -23,6 +23,7 @@ import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../cordova/Cordova'
 import { ProjectTypePanel } from '../ui-components/ProjectTypePanel'
+import { UIListView } from '../ui-components/UIListView'
 
 export class ProjectInspectorView {
 
