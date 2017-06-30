@@ -22,6 +22,7 @@ import { EventEmitter }  from 'events'
 import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../cordova/Cordova'
+import { ProjectTypePanel } from '../ui-components/ProjectTypePanel'
 
 export class ProjectInspectorView {
 
@@ -34,6 +35,8 @@ export class ProjectInspectorView {
   private cordova: Cordova;
 
   private installedPlatormsElement: HTMLElement;
+  private projectIcon: HTMLElement;
+  private projectTypePanel: ProjectTypePanel;
 
   constructor () {
     this.atomWorkspace = atom.workspace;
@@ -42,12 +45,20 @@ export class ProjectInspectorView {
     // create Cordova utilities and tools
     this.cordova = new Cordova();
 
+    this.initUI();
+
+    this.projectTypePanel.setProjectType('');
+
+    // Listen events
+    ProjectManager.getInstance().didProjectChanged((projectPath)=>this.onProjectChanged(projectPath));
+  }
+
+  initUI() {
     // Create the UI
     this.element = document.createElement('de-workbench-project-inspector') //'de-workbench-projinspector-view'
 
-    let projectInfoElement = this.createProjectInfoElement()
-    insertElement(this.element, projectInfoElement)
-
+    this.projectTypePanel = new ProjectTypePanel();
+    insertElement(this.element, this.projectTypePanel.element())
 
     let el = createElement('de-workbench-group', {
         elements: [
@@ -60,9 +71,6 @@ export class ProjectInspectorView {
         ]
     });
     insertElement(this.element, el)
-
-    // Listen events
-    ProjectManager.getInstance().didProjectChanged((projectPath)=>this.onProjectChanged(projectPath));
   }
 
   open () {
@@ -92,13 +100,26 @@ export class ProjectInspectorView {
   }
 
   onProjectChanged(projectPath:string){
-    this.cordova.getInstalledPlatforms(projectPath).then((platforms)=>{
-      this.displayInstalledPlatforms(platforms);
-    });
+    if (this.cordova.isCordovaProject(projectPath)){
 
-    this.cordova.getInstalledPlugins(projectPath).then( (plugins:Array<CordovaPlugin>) => {
-        //console.log("Plugins installed: ", plugins);
-    })
+      this.projectTypePanel.setProjectType('cordova');
+
+      this.cordova.getInstalledPlatforms(projectPath).then((platforms)=>{
+        this.displayInstalledPlatforms(platforms);
+      });
+
+      this.cordova.getInstalledPlugins(projectPath).then( (plugins:Array<CordovaPlugin>) => {
+          //console.log("Plugins installed: ", plugins);
+      });
+
+      this.cordova.getProjectInfo(projectPath).then((pluginInfo:any)=>{
+        this.projectTypePanel.setProjectInfo(pluginInfo);
+      });
+
+    } else {
+      this.projectTypePanel.setProjectType('');
+    }
+
   }
 
   displayInstalledPlatforms(platforms:Array<CordovaPlatform>){
@@ -109,18 +130,16 @@ export class ProjectInspectorView {
   }
 
   createProjectInfoElement():HTMLElement{
+    this.projectIcon = createIcon('apache-cordova-big');
     let infoElement =  createElement('div', {
-        elements: [createText('Project Inspector Ahahah')],
+        elements: [
+                    this.projectIcon,
+                    createText('Cordova Project')
+                   ],
         className:"de-workbench-project-info-container"
     })
-
+    this.projectIcon.className = '';
     return infoElement;
   }
-
-  /**
-  let title =  createElement('h2', {
-      elements: [createText('Project Inspector Ahahah')]
-  })
-  **/
 
 }

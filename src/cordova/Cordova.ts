@@ -246,4 +246,21 @@ export class Cordova {
     return executor.runProject(projectRoot, platform, target, options);
   }
 
+  getProjectInfoSync(projectRoot:string):any {
+    let jsonPath = path.join(projectRoot, "package.json");
+    return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+  }
+
+  getProjectInfo(projectRoot:string):Promise<any> {
+    return new Promise((resolve, reject) => {
+      let jsonPath = path.join(projectRoot, "package.json");
+      var obj;
+      fs.readFile(jsonPath, 'utf8', function (err, data) {
+        if (err) throw err;
+        obj = JSON.parse(data);
+        resolve(obj);
+      });
+    })
+  }
+
 }
