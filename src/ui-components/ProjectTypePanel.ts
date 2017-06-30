@@ -25,6 +25,7 @@ export class ProjectTypePanel {
   private iconProjectType: HTMLElement;
   private txtProjectType: Text;
   private txtProjectName: Text;
+  private txtProjectVersion: Text;
 
   constructor(){
     this.buildUI();
@@ -34,11 +35,20 @@ export class ProjectTypePanel {
     this.iconProjectType = createIcon('apache-cordova-big');
     this.txtProjectType = createText('Cordova Project');
     this.txtProjectName = createText('--');
+    this.txtProjectVersion = createText('--');
+
+    let propertyListElement = createElement('ul',{
+        elements: [
+            createElement('li',{ elements: [ this.txtProjectName ]}),
+            createElement('li',{ elements: [ this.txtProjectVersion ]})
+        ]
+    });
+
     this.mainElement =  createElement('div', {
         elements: [
                     this.iconProjectType,
                     this.txtProjectType,
-                    this.txtProjectName
+                    propertyListElement
                    ],
         className:"de-workbench-project-info-container"
     })
@@ -55,7 +65,10 @@ export class ProjectTypePanel {
   }
 
   public setProjectInfo(projectInfo:any){
-      this.txtProjectName.textContent = projectInfo.name;
+    if (projectInfo){
+      this.txtProjectName.textContent = "Name: " + projectInfo.name;
+      this.txtProjectVersion.textContent = "Version: " + projectInfo.version;
+    }
   }
 
   public element(){
