@@ -58,7 +58,7 @@ class InstalledPlatformsModel implements UIListViewModel {
     return "" + col;
   }
   getClassName():string {
-    return null;
+    return 'installed-platforms-list';
   }
 }
 
@@ -110,13 +110,10 @@ export class ProjectInspectorView {
         elements: [
           createElement('de-workbench-group-header', {
             elements: [
-              createText('Installed Platforms'),
-              this.installedPlatformsLV.element()
+              createText('Installed Platforms')
             ]
           }),
-          createElement('de-workbench-group-header', {
-            elements: [createText('Installed Plugins')]
-          })
+          this.installedPlatformsLV.element()
         ]
     });
     insertElement(this.element, el)
