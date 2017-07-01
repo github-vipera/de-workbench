@@ -22,8 +22,45 @@ import { EventEmitter }  from 'events'
 import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../cordova/Cordova'
+import { UIListView, UIListViewModel } from '../ui-components/UIListView'
 import { ProjectTypePanel } from '../ui-components/ProjectTypePanel'
-import { UIListView } from '../ui-components/UIListView'
+
+class InstalledPlatformsModel implements UIListViewModel {
+
+  constructor(){
+
+  }
+
+  hasHeader():boolean {
+    return false;
+  }
+  getRowCount():number {
+    return 3;
+  }
+  getColCount():number {
+    return 1;
+  }
+  getValueAt(row:number, col:number){
+    if (row==0){
+      return "Browser";
+    }
+    else if (row==1){
+      return "iOS";
+    }
+    else if (row==2){
+      return "Android";
+    }
+  }
+  getClassNameAt(row:number, col:number){
+    return null;
+  }
+  getColumnName(col:number):string {
+    return "" + col;
+  }
+  getClassName():string {
+    return null;
+  }
+}
 
 export class ProjectInspectorView {
 
@@ -38,6 +75,8 @@ export class ProjectInspectorView {
   private installedPlatormsElement: HTMLElement;
   private projectIcon: HTMLElement;
   private projectTypePanel: ProjectTypePanel;
+  private installedPlatformsLV: UIListView;
+  private installedPlatformsModel: InstalledPlatformsModel;
 
   constructor () {
     this.atomWorkspace = atom.workspace;
@@ -55,7 +94,13 @@ export class ProjectInspectorView {
   }
 
   initUI() {
-    // Create the UI
+    // Create the models
+    this.installedPlatformsModel = new InstalledPlatformsModel();
+
+    // create components
+    this.installedPlatformsLV = new UIListView(this.installedPlatformsModel);
+
+    // Create the main UI
     this.element = document.createElement('de-workbench-project-inspector') //'de-workbench-projinspector-view'
 
     this.projectTypePanel = new ProjectTypePanel();
@@ -64,7 +109,10 @@ export class ProjectInspectorView {
     let el = createElement('de-workbench-group', {
         elements: [
           createElement('de-workbench-group-header', {
-            elements: [createText('Installed Platforms')]
+            elements: [
+              createText('Installed Platforms'),
+              this.installedPlatformsLV.element()
+            ]
           }),
           createElement('de-workbench-group-header', {
             elements: [createText('Installed Plugins')]
