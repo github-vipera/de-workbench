@@ -27,15 +27,24 @@ import { ProjectTypePanel } from '../ui-components/ProjectTypePanel'
 
 class InstalledPlatformsModel implements UIListViewModel {
 
-  constructor(){
+  data: Array<CordovaPlatform>;
 
+  constructor(){
+  }
+
+  setData(data:Array<CordovaPlatform>){
+    this.data = data;
   }
 
   hasHeader():boolean {
     return false;
   }
   getRowCount():number {
-    return 3;
+    if (this.data){
+      return this.data.length;
+    } else {
+      return 0;
+    }
   }
   getColCount():number {
     return 1;
@@ -93,6 +102,9 @@ export class ProjectInspectorView {
     ProjectManager.getInstance().didProjectChanged((projectPath)=>this.onProjectChanged(projectPath));
   }
 
+  /**
+   * Initialize the UI
+   */
   initUI() {
     // Create the models
     this.installedPlatformsModel = new InstalledPlatformsModel();
@@ -119,6 +131,9 @@ export class ProjectInspectorView {
     insertElement(this.element, el)
   }
 
+  /**
+   * Open this view
+   */
   open () {
 
     if (this.item){
@@ -141,10 +156,16 @@ export class ProjectInspectorView {
     }
   }
 
+  /**
+   * close this view
+   */
   close () {
     this.panel.hide()
   }
 
+  /**
+   * Called when the current project changes
+   */
   onProjectChanged(projectPath:string){
     if (this.cordova.isCordovaProject(projectPath)){
 
@@ -168,13 +189,23 @@ export class ProjectInspectorView {
 
   }
 
+  /**
+   * Display current installed platform
+   */
   displayInstalledPlatforms(platforms:Array<CordovaPlatform>){
     console.log("Installed platforms:", platforms);
     for (let platform of platforms) {
       console.log(platform.name);
     }
+    // update the model
+    this.installedPlatformsModel.setData(platforms);
+    // notify the component
+    this.installedPlatformsLV.modelChanged();
   }
 
+  /**
+   * Create the Project Info panel
+   */
   createProjectInfoElement():HTMLElement{
     this.projectIcon = createIcon('apache-cordova-big');
     let infoElement =  createElement('div', {

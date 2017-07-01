@@ -56,6 +56,7 @@ export class UIListView {
         className:listViewClass
     })
     this.mainElement.id = this.viewElementId;
+
   }
 
   protected createTableElement():HTMLElement {
@@ -96,6 +97,12 @@ export class UIListView {
 
   public element(){
     return this.mainElement;
+  }
+
+  public modelChanged(){
+    let oldTable = this.tableElement;
+    this.tableElement = this.createTableElement();
+    this.mainElement.replaceChild(this.tableElement, oldTable);
   }
 
 
