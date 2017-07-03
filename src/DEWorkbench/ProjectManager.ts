@@ -17,6 +17,8 @@ export class ProjectManager {
     public cordova: Cordova;
 
     private constructor() {
+      this.events = new EventEmitter();
+      
       // create Cordova utilities
       this.cordova = new Cordova();
 
@@ -30,7 +32,6 @@ export class ProjectManager {
       atom.workspace["onDidChangeActiveTextEditor"](() => this.fireEditorChanged());
       atom.workspace["onDidOpen"](() => this.fireEditorChanged());
       atom.project["onDidChangePaths"](() => this.firePathChanges());
-      this.events = new EventEmitter();
     }
 
     static getInstance() {
@@ -67,6 +68,9 @@ export class ProjectManager {
       if (editor){
         var yourPath = editor["getPath"]()
         let projects = atom.project['getPaths']()
+        if (projects==undefined || projects.length==0){
+          return false;
+        }
         let i = 0;
         let currentProjectPath:string;
         for (i=0;i<projects.length;i++){
