@@ -23,6 +23,8 @@ import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
 import { Logger } from '../../logger/Logger'
+import { UITabbedView } from '../../ui-components/UITabbedView'
+
 const crypto = require('crypto');
 
 export class ProjectSettingsView {
@@ -31,6 +33,7 @@ export class ProjectSettingsView {
   private item: any;
   private projectRoot: string;
   private projectId: string;
+  private tabbedView: UITabbedView;
 
   constructor(projectRoot:string){
     this.projectRoot = projectRoot;
@@ -57,9 +60,11 @@ export class ProjectSettingsView {
     // Create the main UI
     this.element = document.createElement('de-workbench-project-settings')
 
+    this.tabbedView = new UITabbedView();
+
     let el = createElement('div', {
         elements: [
-              createText('Project Settings Here')
+          this.tabbedView.element()
         ]
     });
     insertElement(this.element, el)

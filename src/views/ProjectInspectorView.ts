@@ -73,7 +73,6 @@ export class ProjectInspectorView {
   private item: any;
   private atomWorkspace:any;
   private currentProjectPath: String;
-  private cordova: Cordova;
 
   private installedPlatormsElement: HTMLElement;
   private projectIcon: HTMLElement;
@@ -86,9 +85,6 @@ export class ProjectInspectorView {
 
     this.atomWorkspace = atom.workspace;
     this.events = new EventEmitter()
-
-    // create Cordova utilities and tools
-    this.cordova = new Cordova();
 
     this.initUI();
 
@@ -168,15 +164,16 @@ export class ProjectInspectorView {
    */
   onProjectChanged(projectPath:string){
 
-    if (this.cordova.isCordovaProject(projectPath)){
+    let cordova:Cordova = ProjectManager.getInstance().cordova;
+    if (cordova.isCordovaProject(projectPath)){
 
       this.projectTypePanel.setProjectType('cordova');
 
-      this.cordova.getInstalledPlatforms(projectPath).then((platforms)=>{
+      cordova.getInstalledPlatforms(projectPath).then((platforms)=>{
         this.displayInstalledPlatforms(platforms);
       });
 
-      this.cordova.getProjectInfo(projectPath).then((pluginInfo:any)=>{
+      cordova.getProjectInfo(projectPath).then((pluginInfo:any)=>{
         this.projectTypePanel.setProjectInfo(pluginInfo);
       });
 

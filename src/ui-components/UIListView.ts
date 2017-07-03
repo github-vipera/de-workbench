@@ -40,7 +40,7 @@ export class UIListView extends UIBaseComponent implements UIComponent  {
     this.buildUI();
   }
 
-  private buildUI(){
+  protected buildUI(){
     let listViewClass = "de-workbench-listview";
     let customClass = this.model.getClassName();
     if (customClass){
