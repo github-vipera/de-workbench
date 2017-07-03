@@ -19,51 +19,33 @@ import {
 } from '../element/index';
 import { UIComponent, UIBaseComponent } from './UIComponent'
 const crypto = require('crypto');
+import { EventEmitter }  from 'events'
 
-export class UITabbedViewElementInfo {
+export class UITabbedViewItem {
   public title:string;
   public titleClassName:string = '';
   public view:HTMLElement;
+  public readonly elementId:string;
   constructor(title:string,view:HTMLElement){
     this.title = title;
     this.view = view;
+    this.elementId = crypto.createHash('md5').update(title).digest("hex");
   }
-  setTitleClass(className:string):UITabbedViewElementInfo{
+  setTitleClass(className:string):UITabbedViewItem{
     this.titleClassName = className;
     return this;
   }
 }
 
-class UITabbedViewElement {
 
-  public tabbedElement: UITabbedViewElementInfo;
-  public elementId: string;
-
-  constructor(tabbedElement:UITabbedViewElementInfo){
-    this.tabbedElement = tabbedElement;
-    this.elementId = crypto.createHash('md5').update(tabbedElement.title).digest("hex");
-  }
-
-  public tabElement():HTMLElement {
-    return null;
-  }
-
-  public viewElement():HTMLElement {
-    return this.tabbedElement.view;
-  }
-
-  public getElementId():string {
-    return this.elementId;
-  }
-
-}
-
-
+/**
+ * Tabbed View main component
+ */
 export class UITabbedView extends UIBaseComponent implements UIComponent {
 
   private tabList:UITabbedViewTabListComponent;
   protected stackContainer:HTMLElement;
-  private views:Array<UITabbedViewElement>;
+  private views:Array<UITabbedViewItem>;
 
   constructor(){
     super()
@@ -111,25 +93,27 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
     return stackViewContEl;
   }
 
-  public addView(tabbedView:UITabbedViewElementInfo){
-    let tabInfo = new UITabbedViewElement(tabbedView);
-    this.views.push(tabInfo);
-    this.tabList.addTab(tabInfo); //tabInfo.tabbedElement.title, tabinfo.tabbedElement.titleClassName, tabInfo.elementId);
+  public addView(tabItem:UITabbedViewItem){
+    this.views.push(tabItem);
+    this.tabList.addTab(tabItem); //tabInfo.tabbedElement.title, tabinfo.tabbedElement.titleClassName, tabInfo.elementId);
   }
 
-  public removeView(tabbedView:UITabbedViewElementInfo){
+  public removeView(tabItem:UITabbedViewItem){
     //TODO!!
   }
 
 }
 
+
 /**
- * List component
+ * List inner component
  */
 class UITabbedViewTabListComponent {
 
   private mainElement: HTMLElement;
   private olElement: HTMLElement;
+  private selectedElement: HTMLElement;
+  private itemsMap:any = {};
 
   constructor(){
     this.buildUI();
@@ -151,25 +135,53 @@ class UITabbedViewTabListComponent {
     return this.mainElement;
   }
 
-  public addTab(tabElement:UITabbedViewElement){
+  public addTab(tabItem:UITabbedViewItem){
+    let elementId = "tabitem_" + tabItem.elementId;
     let aElement:HTMLElement = createElement('a',{
       elements: [
-        createText(tabElement.tabbedElement.title)
+        createText(tabItem.title)
       ],
-      className: tabElement.tabbedElement.titleClassName
+      className: tabItem.titleClassName
     });
+    aElement.id = elementId;
+
     let liElement:HTMLElement = createElement('li',{
       elements : [
         aElement
       ],
       className: "de-workbench-tabbedview-tab-item"
     });
-    liElement.id = "tabel_" + tabElement.elementId;
+    liElement.id = elementId;
+
+    liElement.addEventListener('click', (evt)=>{
+      evt.preventDefault();
+      let selectedID = evt.srcElement.id.substring("tabitem_".length);
+
+      if (this.selectedElement && (this.selectedElement.id==evt.srcElement.id)){
+        //already selected
+        return;
+      } else if (this.selectedElement && (this.selectedElement.id!=evt.srcElement.id)){
+        //remove selection
+        this.selectedElement.classList.toggle('selected');
+      }
+      this.selectedElement = this.itemsMap[evt.srcElement.id];
+      this.selectedElement.classList.toggle('selected');
+
+      // TODO!! generate event
+      console.log("Clicked element li:",this.selectedElement);
+    });
+
+    this.itemsMap[elementId] = liElement;
+
     insertElement(this.olElement, liElement);
   }
 
-  public removeTal(id:string){
+  public removeTab(id:string){
     // TODO!!
+  }
+
+  public addEventListener(listener){
+
   }
 
 }
