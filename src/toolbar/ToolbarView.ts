@@ -27,6 +27,7 @@ export interface ToolbarOptions {
   didRun?: Function,
   didStop?: Function,
   didBuild?: Function,
+  didProjectSettings?: Function,
   didToggleToolbar?: Function,
   didTogglePrjInspector?: Function,
   didToggleDebugArea?: Function
@@ -91,9 +92,9 @@ export class ToolbarView {
 
 
     this.buildButton = createButton({
-      disabled: true,
+      disabled: false,
       click: () => {
-        this.events.emit('didBuild');
+        this.events.emit('didProjectSettings');
       }
     },[
       createIcon('build')
@@ -143,7 +144,8 @@ export class ToolbarView {
       'didBuild',
       'didToggleToolbar',
       'didTogglePrjInspector',
-      'didToggleDebugArea'
+      'didToggleDebugArea',
+      'didProjectSettings'
     ], options);
 
   }

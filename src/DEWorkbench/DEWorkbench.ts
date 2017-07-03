@@ -6,15 +6,16 @@
  * MIT Licensed
  */
 
- import { ToolbarView } from '../toolbar/ToolbarView'
- import { NewProjectView } from '../views/NewProjectView'
- import { EventEmitter }  from 'events';
- const { CompositeDisposable } = require('atom');
- import { ProjectInspectorView } from '../views/ProjectInspectorView'
- import { DebugAreaView }from '../views/DebugAreaView'
- import { CordovaUtils } from '../cordova/CordovaUtils'
- import { ProjectManager } from '../DEWorkbench/ProjectManager'
- import { Logger } from '../logger/Logger'
+import { ToolbarView } from '../toolbar/ToolbarView'
+import { NewProjectView } from '../views/NewProjectView'
+import { EventEmitter }  from 'events';
+const { CompositeDisposable } = require('atom');
+import { ProjectInspectorView } from '../views/ProjectInspectorView'
+import { DebugAreaView }from '../views/DebugAreaView'
+import { CordovaUtils } from '../cordova/CordovaUtils'
+import { ProjectManager } from '../DEWorkbench/ProjectManager'
+import { Logger } from '../logger/Logger'
+import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsView'
 
  import {
    createText,
@@ -30,7 +31,8 @@
  export interface WorkbenchOptions {
    didToggleToolbar?: Function,
    didTogglePrjInspector?: Function,
-   didToggleDebugArea?:Function
+   didToggleDebugArea?:Function,
+   didProjectSettings?:Function
 }
 
 
@@ -65,11 +67,17 @@
       },
       didToggleDebugArea: () => {
         this.toggleDebugArea();
+      },
+      didProjectSettings: () => {
+          this.showProjectSettings();
       }
      });
 
      // Create the New Project modal window
      this.newProjectView = new NewProjectView();
+
+     // Create the project Settings View
+     this.projectSettingsView = new ProjectSettingsView();
 
      // Create a prject inspector dock window
      this.projectInspectorView = new ProjectInspectorView();
@@ -96,6 +104,12 @@
 
    openDebugArea(){
      this.debugAreaView.open();
+   }
+
+   showProjectSettings() {
+     Logger.getInstance().debug("DEWorkbench showProjectSettings called");
+     let projectSettingsView = new ProjectSettingsView();
+     projectSettingsView.open();
    }
 
    toggleToolbar() {
