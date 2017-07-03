@@ -22,16 +22,36 @@ import { EventEmitter }  from 'events'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
+import { Logger } from '../../logger/Logger'
+
+const crypto = require('crypto');
 
 export class ProjectSettingsView {
 
   private element: HTMLElement
   private item: any;
-  private projectRoot:string;
+  private projectRoot: string;
+  private projectId: string;
+  public cordova: Cordova;
 
   constructor(projectRoot:string){
     this.projectRoot = projectRoot;
+    this.projectId = crypto.createHash('md5').update(projectRoot).digest("hex");
+
+    Logger.getInstance().debug("ProjectSettingsView creating for ",this.projectRoot, this.projectId);
+
+    // create Cordova utilities and tools
+    this.cordova = new Cordova();
+
     this.initUI();
+
+    this.reloadProjectSettings();
+  }
+
+  private reloadProjectSettings(){
+    this.cordova.getInstalledPlugins(this.projectRoot).then( (plugins:Array<CordovaPlugin>) => {
+        //console.log("Plugins installed: ", plugins);
+    });
   }
 
   private initUI(){
@@ -54,7 +74,7 @@ export class ProjectSettingsView {
       atom.workspace["toggle"](this.item);
     } else {
       const  prefix = "dewb";
-      const uri = prefix + '//' + '_prjsettings';
+      const uri = prefix + '//' + '_prjsettings_' + this.projectId;
       this.item = {
         activatePane: true,
         searchAllPanes: true,

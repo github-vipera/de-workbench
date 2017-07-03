@@ -76,9 +76,6 @@ import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsVie
      // Create the New Project modal window
      this.newProjectView = new NewProjectView();
 
-     // Create the project Settings View
-     this.projectSettingsView = new ProjectSettingsView();
-
      // Create a prject inspector dock window
      this.projectInspectorView = new ProjectInspectorView();
 
@@ -95,7 +92,6 @@ import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsVie
 
    onProjectChanged(projectPath:String){
      Logger.getInstance().debug("DEWorkbench onProjectChanged: ", projectPath);
-     //console.log("DEWorkbench onProjectChanged: " , projectPath)
    }
 
    openProjectInspector(){
@@ -108,8 +104,11 @@ import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsVie
 
    showProjectSettings() {
      Logger.getInstance().debug("DEWorkbench showProjectSettings called");
-     let projectSettingsView = new ProjectSettingsView();
-     projectSettingsView.open();
+     let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
+     if (currentprojectPath){
+       let projectSettingsView = new ProjectSettingsView(currentprojectPath);
+       projectSettingsView.open();
+     }
    }
 
    toggleToolbar() {

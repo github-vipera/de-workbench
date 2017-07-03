@@ -167,11 +167,7 @@ export class ProjectInspectorView {
       this.cordova.getInstalledPlatforms(projectPath).then((platforms)=>{
         this.displayInstalledPlatforms(platforms);
       });
-
-      this.cordova.getInstalledPlugins(projectPath).then( (plugins:Array<CordovaPlugin>) => {
-          //console.log("Plugins installed: ", plugins);
-      });
-
+      
       this.cordova.getProjectInfo(projectPath).then((pluginInfo:any)=>{
         this.projectTypePanel.setProjectInfo(pluginInfo);
       });

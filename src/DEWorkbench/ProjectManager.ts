@@ -12,13 +12,13 @@ import { Cordova } from '../cordova/Cordova'
 export class ProjectManager {
 
     private static instance: ProjectManager;
-    private currentProjectPath: String;
+    private currentProjectPath: string;
     private events: EventEmitter;
     public cordova: Cordova;
 
     private constructor() {
       this.events = new EventEmitter();
-      
+
       // create Cordova utilities
       this.cordova = new Cordova();
 
@@ -87,7 +87,7 @@ export class ProjectManager {
       return false;
     }
 
-    private fireProjectChanged(projectPath:String) {
+    private fireProjectChanged(projectPath:string) {
       this.currentProjectPath = projectPath;
       //console.log("Project changed: ", projectPath);
       this.events.emit('didProjectChanged', projectPath);
@@ -97,7 +97,7 @@ export class ProjectManager {
       this.events.on('didProjectChanged', callback);
     }
 
-    getCurrentProjectPath(): String {
+    getCurrentProjectPath(): string {
       return this.currentProjectPath;
     }
 
