@@ -174,7 +174,13 @@ class UITabbedViewTabListComponent {
     this.itemsMap[elementId] = liElement;
 
     insertElement(this.olElement, liElement);
+
+    if (this.selectedElement==undefined){
+      this.selectedElement = liElement;
+      this.selectedElement.classList.toggle('selected');
+    }
   }
+
 
   public removeTab(id:string){
     // TODO!!
