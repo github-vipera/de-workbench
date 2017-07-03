@@ -17,6 +17,8 @@
    createTextEditor
  } from '../element/index';
 
+import { UIComponent, UIBaseComponent } from './UIComponent'
+
 export interface UIListViewModel {
     hasHeader():boolean;
     getRowCount():number;
@@ -27,16 +29,14 @@ export interface UIListViewModel {
     getClassName():string;
 }
 
-export class UIListView {
+export class UIListView extends UIBaseComponent implements UIComponent  {
 
-  private mainElement: HTMLElement;
   private model: UIListViewModel;
   private tableElement: HTMLElement;
-  private viewElementId: string;
 
   constructor(model:UIListViewModel){
+    super();
     this.model = model;
-    this.viewElementId = "12345";
     this.buildUI();
   }
 
@@ -55,7 +55,7 @@ export class UIListView {
               ],
         className:listViewClass
     })
-    this.mainElement.id = this.viewElementId;
+    this.mainElement.id = this.uiComponentId;
 
   }
 
@@ -93,10 +93,6 @@ export class UIListView {
     }
 
     return table;
-  }
-
-  public element(){
-    return this.mainElement;
   }
 
   public modelChanged(){
