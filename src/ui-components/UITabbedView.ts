@@ -22,10 +22,15 @@ const crypto = require('crypto');
 
 export class UITabbedViewElementInfo {
   public title:string;
+  public titleClassName:string = '';
   public view:HTMLElement;
   constructor(title:string,view:HTMLElement){
     this.title = title;
     this.view = view;
+  }
+  setTitleClass(className:string):UITabbedViewElementInfo{
+    this.titleClassName = className;
+    return this;
   }
 }
 
@@ -109,7 +114,7 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
   public addView(tabbedView:UITabbedViewElementInfo){
     let tabInfo = new UITabbedViewElement(tabbedView);
     this.views.push(tabInfo);
-    this.tabList.addTab(tabInfo.tabbedElement.title, tabInfo.elementId);
+    this.tabList.addTab(tabInfo); //tabInfo.tabbedElement.title, tabinfo.tabbedElement.titleClassName, tabInfo.elementId);
   }
 
   public removeView(tabbedView:UITabbedViewElementInfo){
@@ -146,12 +151,12 @@ class UITabbedViewTabListComponent {
     return this.mainElement;
   }
 
-  public addTab(title:string,id:string){
+  public addTab(tabElement:UITabbedViewElement){
     let aElement:HTMLElement = createElement('a',{
       elements: [
-        createText(title)
-      ]
-      className: "icon icon-settings"
+        createText(tabElement.tabbedElement.title)
+      ],
+      className: tabElement.tabbedElement.titleClassName
     });
     let liElement:HTMLElement = createElement('li',{
       elements : [
@@ -159,7 +164,7 @@ class UITabbedViewTabListComponent {
       ],
       className: "de-workbench-tabbedview-tab-item"
     });
-    liElement.id = "tabel_" + id;
+    liElement.id = "tabel_" + tabElement.elementId;
     insertElement(this.olElement, liElement);
   }
 
