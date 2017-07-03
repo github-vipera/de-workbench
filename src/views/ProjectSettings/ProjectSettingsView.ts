@@ -23,7 +23,7 @@ import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
 import { Logger } from '../../logger/Logger'
-import { UITabbedView } from '../../ui-components/UITabbedView'
+import { UITabbedView, UITabbedViewElementInfo } from '../../ui-components/UITabbedView'
 
 const crypto = require('crypto');
 
@@ -61,11 +61,17 @@ export class ProjectSettingsView {
     this.element = document.createElement('de-workbench-project-settings')
 
     this.tabbedView = new UITabbedView();
+    this.tabbedView.addView(new UITabbedViewElementInfo('Platforms', null));
+    this.tabbedView.addView(new UITabbedViewElementInfo('Installed Plugins', null));
+    this.tabbedView.addView(new UITabbedViewElementInfo('Install New Plugins', null));
+    this.tabbedView.addView(new UITabbedViewElementInfo('Variants', null));
+    this.tabbedView.addView(new UITabbedViewElementInfo('App Signature', null));
 
     let el = createElement('div', {
         elements: [
           this.tabbedView.element()
-        ]
+        ],
+        className: 'de-workbench-project-settings-view'
     });
     insertElement(this.element, el)
   }
