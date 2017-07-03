@@ -23,7 +23,6 @@ import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
 import { Logger } from '../../logger/Logger'
-
 const crypto = require('crypto');
 
 export class ProjectSettingsView {
@@ -32,7 +31,6 @@ export class ProjectSettingsView {
   private item: any;
   private projectRoot: string;
   private projectId: string;
-  public cordova: Cordova;
 
   constructor(projectRoot:string){
     this.projectRoot = projectRoot;
@@ -40,21 +38,22 @@ export class ProjectSettingsView {
 
     Logger.getInstance().debug("ProjectSettingsView creating for ",this.projectRoot, this.projectId);
 
-    // create Cordova utilities and tools
-    this.cordova = new Cordova();
-
+    // Isnitialize the UI
     this.initUI();
 
     this.reloadProjectSettings();
   }
 
   private reloadProjectSettings(){
-    this.cordova.getInstalledPlugins(this.projectRoot).then( (plugins:Array<CordovaPlugin>) => {
+    ProjectManager.getInstance().cordova.getInstalledPlugins(this.projectRoot).then( (plugins:Array<CordovaPlugin>) => {
+      Logger.getInstance().debug("ProjectSettingsView installed plugins ",this.projectRoot, plugins);
         //console.log("Plugins installed: ", plugins);
     });
   }
 
   private initUI(){
+    Logger.getInstance().debug("ProjectSettingsView initUI called.");
+
     // Create the main UI
     this.element = document.createElement('de-workbench-project-settings')
 
@@ -70,6 +69,7 @@ export class ProjectSettingsView {
    * Open this view
    */
   open () {
+    Logger.getInstance().debug("ProjectSettingsView open called for ",this.projectRoot, this.projectId);
     if (this.item){
       atom.workspace["toggle"](this.item);
     } else {

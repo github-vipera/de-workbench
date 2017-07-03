@@ -8,6 +8,8 @@
 
 import { EventEmitter }  from 'events'
 import { Cordova } from '../cordova/Cordova'
+import { Logger } from '../logger/Logger'
+
 
 export class ProjectManager {
 
@@ -17,6 +19,7 @@ export class ProjectManager {
     public cordova: Cordova;
 
     private constructor() {
+      Logger.getInstance().debug("ProjectManager initializing...");
       this.events = new EventEmitter();
 
       // create Cordova utilities

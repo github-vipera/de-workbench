@@ -24,6 +24,7 @@ import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../ui-components/UIListView'
 import { ProjectTypePanel } from '../ui-components/ProjectTypePanel'
+import { Logger } from '../logger/Logger'
 
 class InstalledPlatformsModel implements UIListViewModel {
 
@@ -81,6 +82,8 @@ export class ProjectInspectorView {
   private installedPlatformsModel: InstalledPlatformsModel;
 
   constructor () {
+    Logger.getInstance().debug("ProjectInspectorView initializing...");
+
     this.atomWorkspace = atom.workspace;
     this.events = new EventEmitter()
 
@@ -99,6 +102,8 @@ export class ProjectInspectorView {
    * Initialize the UI
    */
   initUI() {
+    Logger.getInstance().debug("ProjectInspectorView initUI called...");
+
     // Create the models
     this.installedPlatformsModel = new InstalledPlatformsModel();
 
@@ -122,13 +127,15 @@ export class ProjectInspectorView {
         ]
     });
     insertElement(this.element, el)
+
+    Logger.getInstance().debug("ProjectInspectorView initUI done.");
   }
 
   /**
    * Open this view
    */
   open () {
-
+    Logger.getInstance().debug("ProjectInspectorView open called...");
     if (this.item){
       this.atomWorkspace.toggle(this.item);
     } else {
@@ -160,6 +167,7 @@ export class ProjectInspectorView {
    * Called when the current project changes
    */
   onProjectChanged(projectPath:string){
+
     if (this.cordova.isCordovaProject(projectPath)){
 
       this.projectTypePanel.setProjectType('cordova');
@@ -167,7 +175,7 @@ export class ProjectInspectorView {
       this.cordova.getInstalledPlatforms(projectPath).then((platforms)=>{
         this.displayInstalledPlatforms(platforms);
       });
-      
+
       this.cordova.getProjectInfo(projectPath).then((pluginInfo:any)=>{
         this.projectTypePanel.setProjectInfo(pluginInfo);
       });
@@ -182,7 +190,7 @@ export class ProjectInspectorView {
    * Display current installed platform
    */
   displayInstalledPlatforms(platforms:Array<CordovaPlatform>){
-    console.log("Installed platforms:", platforms);
+    Logger.getInstance().debug("displayInstalledPlatforms called for ", platforms);
     for (let platform of platforms) {
       console.log(platform.name);
     }
