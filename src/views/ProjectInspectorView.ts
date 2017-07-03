@@ -50,15 +50,8 @@ class InstalledPlatformsModel implements UIListViewModel {
     return 1;
   }
   getValueAt(row:number, col:number){
-    if (row==0){
-      return "Browser";
-    }
-    else if (row==1){
-      return "iOS";
-    }
-    else if (row==2){
-      return "Android";
-    }
+    let platformInfo = this.data[row];
+    return platformInfo.name;
   }
   getClassNameAt(row:number, col:number){
     return null;
