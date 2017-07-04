@@ -33,6 +33,14 @@ export class InstalledPluginsView {
 
   constructor(){
     this.buildUI();
+
+    let currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
+    let cordova:Cordova = ProjectManager.getInstance().cordova;
+
+    cordova.getInstalledPlugins(currentProjectRoot).then((installedPlugins:Array<CordovaPlugin>)=>{
+      this.pluginList.addPlugins(installedPlugins);
+    });
+
   }
 
   private buildUI(){

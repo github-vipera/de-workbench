@@ -93,7 +93,7 @@ export class Cordova {
     Logger.getInstance().debug("getInstalledPlugins called...");
     return new Promise((resolve, reject) => {
       let that = this;
-      this.cordovaPluginScanner.scan(projectRoot, function(results) {
+      this.cordovaPluginScanner.scan(projectRoot, (results)=> {
         let pluginsRaw = that.cordovaPluginScanner.getInstalledPlugin();
         let plugins = new Array();
         Object.keys(results.plugins).forEach((key) => {

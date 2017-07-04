@@ -50,10 +50,6 @@ export class ProjectSettingsView {
   }
 
   private reloadProjectSettings(){
-    ProjectManager.getInstance().cordova.getInstalledPlugins(this.projectRoot).then( (plugins:Array<CordovaPlugin>) => {
-      Logger.getInstance().debug("ProjectSettingsView installed plugins ",this.projectRoot, plugins);
-        //console.log("Plugins installed: ", plugins);
-    });
   }
 
   private initUI(){

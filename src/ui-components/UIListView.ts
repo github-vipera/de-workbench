@@ -97,7 +97,7 @@ export class UIListView extends UIBaseComponent implements UIComponent  {
         }
         let tbCol = createElement('td', {
           elements: [
-            createText(this.model.getValueAt(r,c))
+            innerElement
           ]
         });
         insertElement(tbRow, tbCol);

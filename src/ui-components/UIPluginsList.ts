@@ -32,23 +32,52 @@ export class UIPluginsList extends UIListView {
     }
 
     public addPlugin(pluginInfo:CordovaPlugin){
-      //TODO!!
+      this.pluginListModel.addPlugin(pluginInfo);
+      this.modelChanged();
+    }
+
+    public addPlugins(plugins:Array<CordovaPlugin>){
+      this.pluginListModel.addPlugins(plugins);
+      this.modelChanged();
     }
 
 }
 
 
 class PluginsListModel implements UIListViewModel {
+
+  private pluginList:Array<UIPluginItem>;
+
+  constructor(){
+      this.pluginList = new Array<UIPluginItem>();
+  }
+
+  public addPlugins(plugins:Array<CordovaPlugin>){
+    let i = 0;
+    for (i=0;i<plugins.length;i++){
+      this.addPlugin(plugins[i]);
+    }
+  }
+
+  public addPlugin(pluginInfo:CordovaPlugin){
+    let pluginItem = new UIPluginItem(pluginInfo);
+    this.pluginList.push(pluginItem)
+  }
+
   hasHeader():boolean {
     return false;
   }
   getRowCount():number {
-    return 10; //TODO!!
+    return this.pluginList.length;
   }
   getColCount():number {
     return 1;
   }
-  getElementAt?(row:number, col:number):HTMLElement;
+
+  getElementAt(row:number, col:number):HTMLElement {
+    return this.pluginList[row].element();
+  }
+
   getValueAt(row:number, col:number):any {
     return row + "_" + col;
   }
@@ -59,6 +88,29 @@ class PluginsListModel implements UIListViewModel {
     return '';
   }
   getClassName():string {
-    return '';
+    return 'de-workbench-plugins-list';
   }
+}
+
+
+class UIPluginItem extends UIBaseComponent {
+
+    public readonly pluginInfo:CordovaPlugin;
+
+    constructor(pluginInfo:CordovaPlugin){
+      super();
+      this.pluginInfo = pluginInfo;
+      this.buildUI();
+    }
+
+    private buildUI(){
+      this.mainElement = createElement('div',{
+        elements : [
+            createText(this.pluginInfo.name)
+        ],
+        className: 'de-workbench-plugins-list-item'
+      });
+
+    }
+
 }
