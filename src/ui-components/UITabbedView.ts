@@ -19,17 +19,19 @@ import {
 } from '../element/index';
 import { UIComponent, UIBaseComponent } from './UIComponent'
 const crypto = require('crypto');
-import { EventEmitter }  from 'events'
+const events = require('events');
 
 export class UITabbedViewItem {
+  public id:string;
   public title:string;
   public titleClassName:string = '';
   public view:HTMLElement;
-  public readonly elementId:string;
-  constructor(title:string,view:HTMLElement){
+  public readonly elementUID:string;
+  constructor(id:string,title:string,view:HTMLElement){
+    this.id = id;
     this.title = title;
     this.view = view;
-    this.elementId = crypto.createHash('md5').update(title).digest("hex");
+    this.elementUID = crypto.createHash('md5').update(title).digest("hex");
   }
   setTitleClass(className:string):UITabbedViewItem{
     this.titleClassName = className;
@@ -68,6 +70,9 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
     })
     this.mainElement.id = this.uiComponentId;
 
+    this.tabList.addEventListener(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, function(tabItem:UITabbedViewItem, htmlElement:HTMLElement){
+      console.log("Cliccato!!! ", tabItem, htmlElement);
+    });
   }
 
   protected createTabList():HTMLElement {
@@ -110,10 +115,14 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
  */
 class UITabbedViewTabListComponent {
 
+  public static readonly EVT_TABITEM_SELECTED:string = "UITabbedViewTabListComponent.tabItemSelected";
+
   private mainElement: HTMLElement;
   private olElement: HTMLElement;
   private selectedElement: HTMLElement;
-  private itemsMap:any = {};
+  private itemsElementsMap:any = {};
+  private tabItemsMap:any = {};
+  private eventEmitter = new events.EventEmitter();
 
   constructor(){
     this.buildUI();
@@ -136,7 +145,7 @@ class UITabbedViewTabListComponent {
   }
 
   public addTab(tabItem:UITabbedViewItem){
-    let elementId = "tabitem_" + tabItem.elementId;
+    let elementId = "tabitem_" + tabItem.elementUID;
     let aElement:HTMLElement = createElement('a',{
       elements: [
         createText(tabItem.title)
@@ -153,25 +162,14 @@ class UITabbedViewTabListComponent {
     });
     liElement.id = elementId;
 
+
     liElement.addEventListener('click', (evt)=>{
       evt.preventDefault();
-      let selectedID = evt.srcElement.id.substring("tabitem_".length);
-
-      if (this.selectedElement && (this.selectedElement.id==evt.srcElement.id)){
-        //already selected
-        return;
-      } else if (this.selectedElement && (this.selectedElement.id!=evt.srcElement.id)){
-        //remove selection
-        this.selectedElement.classList.toggle('selected');
-      }
-      this.selectedElement = this.itemsMap[evt.srcElement.id];
-      this.selectedElement.classList.toggle('selected');
-
-      // TODO!! generate event
-      console.log("Clicked element li:",this.selectedElement);
+      this.onTabItemSelected(evt.srcElement);
     });
 
-    this.itemsMap[elementId] = liElement;
+    this.itemsElementsMap[elementId] = liElement;
+    this.tabItemsMap[elementId] = tabItem;
 
     insertElement(this.olElement, liElement);
 
@@ -181,13 +179,31 @@ class UITabbedViewTabListComponent {
     }
   }
 
+  private onTabItemSelected(item:Element){
+    let selectedID = item.id.substring("tabitem_".length);
+
+    if (this.selectedElement && (this.selectedElement.id==item.id)){
+      //already selected
+      return;
+    } else if (this.selectedElement && (this.selectedElement.id!=item.id)){
+      //remove selection
+      this.selectedElement.classList.toggle('selected');
+    }
+    this.selectedElement = this.itemsElementsMap[item.id];
+    this.selectedElement.classList.toggle('selected');
+
+    // generate event
+    //console.log("Clicked element li:",this.selectedElement);
+    this.eventEmitter.emit(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, this.tabItemsMap[item.id], this.itemsElementsMap[item.id]);
+  }
+
+  public addEventListener(event:string, listener:Function){
+    this.eventEmitter.on(event, listener);
+  }
 
   public removeTab(id:string){
     // TODO!!
   }
 
-  public addEventListener(listener){
-
-  }
 
 }

@@ -61,11 +61,11 @@ export class ProjectSettingsView {
     this.element = document.createElement('de-workbench-project-settings')
 
     this.tabbedView = new UITabbedView();
-    this.tabbedView.addView(new UITabbedViewItem('Platforms', null).setTitleClass('icon icon-settings'));
-    this.tabbedView.addView(new UITabbedViewItem('Installed Plugins', null).setTitleClass('icon icon-beaker'));
-    this.tabbedView.addView(new UITabbedViewItem('Install New Plugins', null).setTitleClass('icon icon-broadcast'));
-    this.tabbedView.addView(new UITabbedViewItem('Variants', null).setTitleClass('icon icon-code'));
-    this.tabbedView.addView(new UITabbedViewItem('App Signature', null).setTitleClass('icon icon-circuit-board'));
+    this.tabbedView.addView(new UITabbedViewItem('platforms',         'Platforms',            null).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('installed_plugins', 'Installed Plugins',    null).setTitleClass('icon icon-beaker'));
+    this.tabbedView.addView(new UITabbedViewItem('install_plugins',   'Install New Plugins',  null).setTitleClass('icon icon-broadcast'));
+    this.tabbedView.addView(new UITabbedViewItem('variants',          'Variants',             null).setTitleClass('icon icon-code'));
+    this.tabbedView.addView(new UITabbedViewItem('app_signature',     'App Signature',        null).setTitleClass('icon icon-circuit-board'));
 
     let el = createElement('div', {
         elements: [
