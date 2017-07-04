@@ -97,6 +97,8 @@ export class UIPluginItem extends UIBaseComponent {
 
     public readonly pluginInfo:CordovaPlugin;
 
+    private statsEl: HTMLElement;
+
     constructor(pluginInfo:CordovaPlugin){
       super();
       this.pluginInfo = pluginInfo;
@@ -106,58 +108,121 @@ export class UIPluginItem extends UIBaseComponent {
     private buildUI(){
 
       // BODY PART ========================================================================
-      let nameEl = createElement('h4', {
-        elements: [
-          createElement('a', {
-            elements : [
-              createText(this.pluginInfo.name)
-            ]
-          }),
-          createElement('span', {
-            elements : [
-              createText("1.2.3")
-            ]
-          })
-        ]
-      })
-
-      let descEl = createElement('span', {
-        elements: [
-          createText(this.pluginInfo.description)
-        ]
-      })
-
-      let bodyEl = createElement('div',{
-        elements : [
-            nameEl, descEl
-        ]
-      });
-      // END BODY PART =====================================================================
-
-
-      // STATS PART ========================================================================
-      let stats = createElement('div', {
-        elements: [
-          createElement('span',{
-            elements: [
-              createText('pippo')
-            ]
-          })
-        ],
-        className : 'stats pull-right'
-      })
-      // END STATS PART =====================================================================
-
-
-
+      let body = new UIPluginBodySection(this.pluginInfo);
 
 
       // META PART ========================================================================
+      let meta = new UIPluginMetaSection(this.pluginInfo);
+
+
+      // STATS PART ========================================================================
+      let stats = new UIPluginStatsSection(this.pluginInfo);
+
+
+      this.mainElement = createElement('div',{
+        elements : [
+            stats.element(), body.element(), meta.element()
+        ],
+        className: 'de-workbench-plugins-list-item'
+      });
+    }
+
+}
+
+class UIPluginStatsSection extends UIBaseComponent {
+
+  public pluginInfo:CordovaPlugin;
+
+  constructor(pluginInfo:CordovaPlugin){
+    super();
+    this.pluginInfo = pluginInfo;
+    this.buildUI();
+  }
+
+  private buildUI(){
+    this.mainElement = createElement('div', {
+      elements: [
+        createElement('span',{
+          elements: [
+            createText('TODO!!')
+          ]
+        })
+      ],
+      className : 'stats pull-right'
+    })
+    this.mainElement.style.display = 'none'
+  }
+
+}
+
+class UIPluginBodySection extends UIBaseComponent {
+
+  public pluginInfo:CordovaPlugin;
+
+  constructor(pluginInfo:CordovaPlugin){
+    super();
+    this.pluginInfo = pluginInfo;
+    this.buildUI();
+  }
+
+  private buildUI(){
+    let nameEl = createElement('h4', {
+      elements: [
+        createElement('a', {
+          elements : [
+            createText(this.pluginInfo.name)
+          ]
+        }),
+        createElement('span', {
+          elements : [
+            createText('  ')
+          ],
+          style:'width:10px'
+        }),
+        createElement('span', {
+          elements : [
+            createText(this.pluginInfo.version)
+          ]
+        })
+      ]
+    })
+
+    let descEl = createElement('span', {
+      elements: [
+        createText(this.pluginInfo.description)
+      ]
+    })
+
+    this.mainElement = createElement('div',{
+      elements : [
+          nameEl, descEl
+      ]
+    });
+  }
+
+}
+
+class UIPluginMetaSection extends UIBaseComponent {
+
+    public pluginInfo:CordovaPlugin;
+    private callbackFunc:Function;
+
+    constructor(pluginInfo:CordovaPlugin){
+        super();
+        this.pluginInfo = pluginInfo;
+        this.buildUI();
+    }
+
+    private buildUI(){
+      let userOwner = '';
+      if (this.pluginInfo['userOwner']){
+        userOwner  = this.pluginInfo['userOwner']
+      }
       let metaUser = createElement('div',{
         elements : [
           createElement('a',{
             elements : [
-              createText("John Smith")
+              createText(userOwner)
             ]
           })
         ],
@@ -169,7 +234,7 @@ export class UIPluginItem extends UIBaseComponent {
                 .setButtonEnabled(UIPluginMetaButtons.BTN_TYPE_UNINSTALL, true);
       metaButtons.setEventListener((buttonClicked)=>{
         alert("Clicked " + buttonClicked + " for " + this.pluginInfo.id);
-        // TODO!!
+        // TODO!! notify listeners
       });
 
       let metaControls = createElement('div',{
@@ -183,28 +248,20 @@ export class UIPluginItem extends UIBaseComponent {
         ]
       });
 
-      let metaEl = createElement('div',{
+      this.mainElement = createElement('div',{
         elements : [
           metaUser, metaControls
         ],
         className: 'de-workbench-plugins-list-meta-cont'
       });
-      // END META PART =====================================================================
-
-
-
-
-
-      this.mainElement = createElement('div',{
-        elements : [
-            stats, bodyEl, metaEl
-        ],
-        className: 'de-workbench-plugins-list-item'
-      });
     }
 
-}
+    public setEventListener(callbackFunc:Function){
+      this.callbackFunc = callbackFunc;
+    }
 
+
+}
 
 class UIPluginMetaButtons extends UIBaseComponent {
 
@@ -234,7 +291,9 @@ class UIPluginMetaButtons extends UIBaseComponent {
     this.btnUninstall = this.buildButton('Uninstall');
     this.btnUninstall.className = this.btnUninstall.className + " icon icon-trashcan uninstall-button";
     this.btnUninstall.addEventListener('click', (evt)=>{
-      this.callbackFunc(UIPluginMetaButtons.BTN_TYPE_UNINSTALL);
+      if (this.callbackFunc){
+        this.callbackFunc(UIPluginMetaButtons.BTN_TYPE_UNINSTALL);
+      }
     });
 
     this.mainElement = createElement('div',{
