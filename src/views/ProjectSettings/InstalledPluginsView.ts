@@ -23,11 +23,13 @@ import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { Logger } from '../../logger/Logger'
 import { UIPluginsList } from '../../ui-components/UIPluginsList'
+import { UIStackedView } from '../../ui-components/UIStackedView'
 
 export class InstalledPluginsView {
 
   private mainElement: HTMLElement;
   private pluginList: UIPluginsList;
+  private stackedPage: UIStackedView;
 
   constructor(){
     this.buildUI();
@@ -35,19 +37,18 @@ export class InstalledPluginsView {
 
   private buildUI(){
     this.pluginList = new UIPluginsList();
-
     let listContainer = createElement('div',{
         elements : [
           this.pluginList.element()
         ]
     })
 
-    this.mainElement = createElement('div',{
-      elements : [
-        listContainer
-      ]
-    });
-    
+    this.stackedPage = new UIStackedView()
+                        .setTitle('Installed Plugins')
+                        .setInnerView(listContainer);
+
+    this.mainElement = this.stackedPage.element();
+
   }
 
   public element():HTMLElement {
