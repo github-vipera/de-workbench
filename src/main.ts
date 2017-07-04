@@ -20,7 +20,6 @@ export default {
       console.log("DEWB activated.");
       require('atom-package-deps').install('atomify', true).then(function(res){
         console.log("Dep packages installed.");
-        //alert("Installed! " + res);
       })
       this.deWorkbench = new DEWorkbench({
         didToggleToolbar: () => {

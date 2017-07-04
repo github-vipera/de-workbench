@@ -46,7 +46,7 @@ export class UITabbedViewItem {
 export class UITabbedView extends UIBaseComponent implements UIComponent {
 
   private tabList:UITabbedViewTabListComponent;
-  protected stackContainer:HTMLElement;
+  private stacked:UITabbedViewStackedComponent;
   private views:Array<UITabbedViewItem>;
 
   constructor(){
@@ -57,22 +57,29 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
   protected buildUI(){
     let tabbedViewClass = "de-workbench-tabbedview";
 
+    // create the tab view items list
     this.views = new Array();
+
+    // the component that manages the tab list
     this.tabList = new UITabbedViewTabListComponent();
-    this.stackContainer = this.createStackContainer();
+
+    // the component that manages the stacked views
+    this.stacked = new UITabbedViewStackedComponent();
 
     this.mainElement =  createElement('div', {
         elements: [
           this.tabList.element(),
-          this.stackContainer
+          this.stacked.element()
               ],
         className:tabbedViewClass
     })
     this.mainElement.id = this.uiComponentId;
 
-    this.tabList.addEventListener(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, function(tabItem:UITabbedViewItem, htmlElement:HTMLElement){
-      console.log("Cliccato!!! ", tabItem, htmlElement);
+    // listen fo events
+    this.tabList.addEventListener(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, (tabItem:UITabbedViewItem, htmlElement:HTMLElement)=>{
+      this.stacked.selectView(tabItem);
     });
+
   }
 
   protected createTabList():HTMLElement {
@@ -100,7 +107,8 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
 
   public addView(tabItem:UITabbedViewItem){
     this.views.push(tabItem);
-    this.tabList.addTab(tabItem); //tabInfo.tabbedElement.title, tabinfo.tabbedElement.titleClassName, tabInfo.elementId);
+    this.tabList.addTab(tabItem);
+    this.stacked.addView(tabItem);
   }
 
   public removeView(tabItem:UITabbedViewItem){
@@ -113,7 +121,7 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
 /**
  * List inner component
  */
-class UITabbedViewTabListComponent {
+class UITabbedViewTabListComponent implements UIComponent {
 
   public static readonly EVT_TABITEM_SELECTED:string = "UITabbedViewTabListComponent.tabItemSelected";
 
@@ -144,6 +152,9 @@ class UITabbedViewTabListComponent {
     return this.mainElement;
   }
 
+  /**
+   * Add a new tab item
+   **/
   public addTab(tabItem:UITabbedViewItem){
     let elementId = "tabitem_" + tabItem.elementUID;
     let aElement:HTMLElement = createElement('a',{
@@ -179,6 +190,23 @@ class UITabbedViewTabListComponent {
     }
   }
 
+  /**
+   * Remmove a tab
+   */
+  public removeTab(tabItem:UITabbedViewItem){
+    // TODO!!
+  }
+
+  /**
+   * Select the given tab
+   */
+  public selectTab(tabItem:UITabbedViewItem){
+    // TODO!!
+  }
+
+  /**
+   * Change selected item and generate the event for listeners
+   */
   private onTabItemSelected(item:Element){
     let selectedID = item.id.substring("tabitem_".length);
 
@@ -201,9 +229,54 @@ class UITabbedViewTabListComponent {
     this.eventEmitter.on(event, listener);
   }
 
-  public removeTab(id:string){
-    // TODO!!
+}
+
+
+/**
+ * Stacked views inner component
+ */
+class UITabbedViewStackedComponent implements UIComponent {
+
+  private mainElement: HTMLElement;
+  private selectedView: HTMLElement;
+
+  constructor(){
+    this.buildUI();
   }
 
+  private buildUI(){
+    this.mainElement =  createElement('div', {
+        className:'de-workbench-tabbedview-stacked-container'
+    })
+    this.mainElement.style["display"] = "flex";
+  }
+
+  public element(): HTMLElement {
+    return this.mainElement;
+  }
+
+  public addView(tabItem:UITabbedViewItem){
+    if (!tabItem.view){
+      return;
+    }
+    insertElement(this.mainElement, tabItem.view);
+    if (this.selectedView==undefined){
+      this.selectedView = tabItem.view;
+      this.selectedView.style.display = "initial";
+    } else {
+        tabItem.view.style.display = "none";
+    }
+  }
+
+  public selectView(tabItem:UITabbedViewItem){
+    if (!tabItem.view){
+      return;
+    }
+    if (this.selectedView!=undefined){
+      this.selectedView.style.display = "none";
+    }
+    this.selectedView = tabItem.view;
+    this.selectedView.style.display = "initial";
+  }
 
 }

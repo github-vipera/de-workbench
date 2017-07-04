@@ -61,11 +61,11 @@ export class ProjectSettingsView {
     this.element = document.createElement('de-workbench-project-settings')
 
     this.tabbedView = new UITabbedView();
-    this.tabbedView.addView(new UITabbedViewItem('platforms',         'Platforms',            null).setTitleClass('icon icon-settings'));
-    this.tabbedView.addView(new UITabbedViewItem('installed_plugins', 'Installed Plugins',    null).setTitleClass('icon icon-beaker'));
-    this.tabbedView.addView(new UITabbedViewItem('install_plugins',   'Install New Plugins',  null).setTitleClass('icon icon-broadcast'));
-    this.tabbedView.addView(new UITabbedViewItem('variants',          'Variants',             null).setTitleClass('icon icon-code'));
-    this.tabbedView.addView(new UITabbedViewItem('app_signature',     'App Signature',        null).setTitleClass('icon icon-circuit-board'));
+    this.tabbedView.addView(new UITabbedViewItem('platforms',         'Platforms',            this.createSimpleEmptyView('blue')).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('installed_plugins', 'Installed Plugins',    this.createSimpleEmptyView('red')).setTitleClass('icon icon-beaker'));
+    this.tabbedView.addView(new UITabbedViewItem('install_plugins',   'Install New Plugins',  this.createSimpleEmptyView('green')).setTitleClass('icon icon-broadcast'));
+    this.tabbedView.addView(new UITabbedViewItem('variants',          'Variants',             this.createSimpleEmptyView('yellow')).setTitleClass('icon icon-code'));
+    this.tabbedView.addView(new UITabbedViewItem('app_signature',     'App Signature',        this.createSimpleEmptyView('brown')).setTitleClass('icon icon-circuit-board'));
 
     let el = createElement('div', {
         elements: [
@@ -74,6 +74,18 @@ export class ProjectSettingsView {
         className: 'de-workbench-project-settings-view'
     });
     insertElement(this.element, el)
+  }
+
+  createSimpleEmptyView(color:string):HTMLElement {
+      let el = createElement('div',{
+        elements : [
+          createText(color)
+        ]
+      });
+      el.style["background-color"] = color;
+      el.style["width"] = "100%";
+      el.style["height"] = "100%";
+      return el;
   }
 
   /**
