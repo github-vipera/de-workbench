@@ -23,8 +23,9 @@ export interface UIListViewModel {
     hasHeader():boolean;
     getRowCount():number;
     getColCount():number;
-    getValueAt(row:number, col:number);
-    getClassNameAt(row:number, col:number);
+    getElementAt?(row:number, col:number):HTMLElement;
+    getValueAt(row:number, col:number):any;
+    getClassNameAt(row:number, col:number):string;
     getColumnName(col:number):string;
     getClassName():string;
 }
@@ -36,6 +37,12 @@ export class UIListView extends UIBaseComponent implements UIComponent  {
 
   constructor(model:UIListViewModel){
     super();
+    if (model){
+      this.setModel(model);
+    }
+  }
+
+  public setModel(model:UIListViewModel){
     this.model = model;
     this.buildUI();
   }
@@ -82,6 +89,12 @@ export class UIListView extends UIBaseComponent implements UIComponent  {
     for (var r=0;r<this.model.getRowCount();r++){
       let tbRow = createElement('tr');
       for (var c=0;c<this.model.getColCount();c++){
+        let innerElement = undefined;
+        if (typeof this.model.getElementAt == "function"){
+          innerElement = this.model.getElementAt(r,c);
+        } else {
+          innerElement = createText(this.model.getValueAt(r,c))
+        }
         let tbCol = createElement('td', {
           elements: [
             createText(this.model.getValueAt(r,c))
