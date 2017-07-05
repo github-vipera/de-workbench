@@ -213,18 +213,16 @@ class UIPluginMetaSection extends UIBaseComponent {
     }
 
     private buildUI(){
-      let userOwner = '';
-      if (this.pluginInfo['userOwner']){
-        userOwner  = this.pluginInfo['userOwner']
-      }
+      let userOwner  = this.pluginInfo.author
+      let userOwnerEl:HTMLElement = createElement('a',{
+        elements: [
+          createText(userOwner)
+        ]
+      });
+      userOwnerEl.setAttribute("href", this.pluginInfo.homepage);
+
       let metaUser = createElement('div',{
-        elements : [
-          createElement('a',{
-            elements : [
-              createText(userOwner)
-            ]
-          })
-        ],
+        elements : [ userOwnerEl ],
         className : 'de-workbench-plugins-list-meta-user'
       });
 

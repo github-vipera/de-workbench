@@ -116,7 +116,13 @@ export class Cordova {
           // gets extra info if availables
           if (pluginRaw["packageJson"]){
             if (pluginRaw["packageJson"]["author"]){
-              plugin.author = pluginRaw["packageJson"]["author"];
+              if (pluginRaw["packageJson"]["author"] instanceof Object){
+                if (pluginRaw["packageJson"]["author"]){
+                  plugin.author = pluginRaw["packageJson"]["author"]["name"];
+                }
+              } else {
+                plugin.author = pluginRaw["packageJson"]["author"];
+              }
             }
             if (pluginRaw["packageJson"]["license"]){
               plugin.license = pluginRaw["packageJson"]["license"];
@@ -126,6 +132,9 @@ export class Cordova {
             }
             if (pluginRaw["packageJson"]["repository"] && pluginRaw["packageJson"]["repository"]["type"]){
               plugin.repositoryType = pluginRaw["packageJson"]["type"];
+            }
+            if (pluginRaw["packageJson"]["homepage"]){
+              plugin.homepage = pluginRaw["packageJson"]["homepage"];
             }
         }
           if (pluginRaw["source"] && pluginRaw["source"]["type"]){
