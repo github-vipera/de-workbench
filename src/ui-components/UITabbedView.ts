@@ -39,6 +39,10 @@ export class UITabbedViewItem {
   }
 }
 
+export enum UITabbedViewTabType {
+  Vertical,
+  Horizontal
+}
 
 /**
  * Tabbed View main component
@@ -48,6 +52,7 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
   private tabList:UITabbedViewTabListComponent;
   private stacked:UITabbedViewStackedComponent;
   private views:Array<UITabbedViewItem>;
+  private tabType:UITabbedViewTabType;
 
   constructor(){
     super()
@@ -75,11 +80,35 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
     })
     this.mainElement.id = this.uiComponentId;
 
+    //by default
+    this.setTabType(UITabbedViewTabType.Vertical);
+
     // listen fo events
     this.tabList.addEventListener(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, (tabItem:UITabbedViewItem, htmlElement:HTMLElement)=>{
       this.stacked.selectView(tabItem);
     });
 
+  }
+
+  public setTabType(tabType:UITabbedViewTabType):UITabbedView{
+    let needRedraw = (this.tabType!=tabType);
+    if (!needRedraw){
+      return this;
+    }
+    this.tabType = tabType;
+
+    let tabTypeClassToRemove = '';
+    let tabTypeClassName = '';
+    if (tabType===UITabbedViewTabType.Horizontal){
+      tabTypeClassName = "tab-type-horizontal";
+      tabTypeClassToRemove = "tab-type-vertical";
+    } else {
+      tabTypeClassName = "tab-type-vertical";
+      tabTypeClassToRemove = "tab-type-horizontal";
+    }
+    this.mainElement.classList.remove(tabTypeClassToRemove);
+    this.mainElement.classList.add(tabTypeClassName);
+    return this;
   }
 
   protected createTabList():HTMLElement {

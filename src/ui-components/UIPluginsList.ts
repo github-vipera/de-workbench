@@ -165,24 +165,24 @@ class UIPluginBodySection extends UIBaseComponent {
   }
 
   private buildUI(){
+    let pluginNameEl = createElement('a', {
+      elements: [
+        createText(this.pluginInfo.name)
+      ]
+    })
+    pluginNameEl.className = "de-workbench-plugins-list-item-plugname";
+
+    let pluginVersionEl = createElement('span', {
+      elements: [
+        createText(this.pluginInfo.version)
+      ]
+    })
+    pluginVersionEl.className = "de-workbench-plugins-list-item-plugversion";
+
     let nameEl = createElement('h4', {
       elements: [
-        createElement('a', {
-          elements : [
-            createText(this.pluginInfo.name)
-          ]
-        }),
-        createElement('span', {
-          elements : [
-            createText('  ')
-          ],
-          style:'width:10px'
-        }),
-        createElement('span', {
-          elements : [
-            createText(this.pluginInfo.version)
-          ]
-        })
+        pluginNameEl,
+        pluginVersionEl
       ]
     })
 
@@ -191,6 +191,7 @@ class UIPluginBodySection extends UIBaseComponent {
         createText(this.pluginInfo.description)
       ]
     })
+    descEl.className = "de-workbench-plugins-list-item-plugdesc";
 
     this.mainElement = createElement('div',{
       elements : [
@@ -220,6 +221,7 @@ class UIPluginMetaSection extends UIBaseComponent {
         ]
       });
       userOwnerEl.setAttribute("href", this.pluginInfo.homepage);
+      userOwnerEl.className = "de-workbench-plugins-list-item-owner";
 
       let metaUser = createElement('div',{
         elements : [ userOwnerEl ],
