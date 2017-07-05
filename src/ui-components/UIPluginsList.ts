@@ -92,7 +92,6 @@ class PluginsListModel implements UIListViewModel {
   }
 }
 
-
 export class UIPluginItem extends UIBaseComponent {
 
     public readonly pluginInfo:CordovaPlugin;

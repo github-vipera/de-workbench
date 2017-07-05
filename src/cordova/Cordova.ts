@@ -35,17 +35,23 @@ export class CordovaPlugin {
   public description: string;
   public isTopLevel: boolean;
   public info: any;
+  public installed: boolean = false;
+  public author:string = '';
+  public homepage:string = '';
+  public license:string = '';
+  public repository:string = '';
+  public repositoryType:string = '';
+  public sourceType:string = '';
 }
 
 export class Cordova {
 
   private cordovaUtils: CordovaUtils;
-  private cordovaPluginScanner: CordovaPluginScanner;
+  //private cordovaPluginScanner: CordovaPluginScanner;
 
   constructor() {
     Logger.getInstance().debug("Creating Cordova...");
     this.cordovaUtils = new CordovaUtils();
-    this.cordovaPluginScanner = new CordovaPluginScanner();
   }
 
   isCordovaProject(projectRoot:string):Promise<boolean> {
@@ -93,8 +99,9 @@ export class Cordova {
     Logger.getInstance().debug("getInstalledPlugins called...");
     return new Promise((resolve, reject) => {
       let that = this;
-      this.cordovaPluginScanner.scan(projectRoot, (results)=> {
-        let pluginsRaw = that.cordovaPluginScanner.getInstalledPlugin();
+      let cordovaPluginScanner = new CordovaPluginScanner();
+      cordovaPluginScanner.scan(projectRoot, (results)=> {
+        let pluginsRaw = cordovaPluginScanner.getInstalledPlugin();
         let plugins = new Array();
         Object.keys(results.plugins).forEach((key) => {
           let pluginRaw = pluginsRaw.plugins[key];
@@ -104,11 +111,29 @@ export class Cordova {
           plugin.version = pluginRaw["plugin"]["$"]["version"];
           plugin.description = pluginRaw["plugin"]["description"][0];
           plugin.isTopLevel = pluginRaw["is_top_level"];
+          plugin.installed = true;
           plugin.info = pluginRaw;
+          // gets extra info if availables
+          if (pluginRaw["packageJson"]){
+            if (pluginRaw["packageJson"]["author"]){
+              plugin.author = pluginRaw["packageJson"]["author"];
+            }
+            if (pluginRaw["packageJson"]["license"]){
+              plugin.license = pluginRaw["packageJson"]["license"];
+            }
+            if (pluginRaw["packageJson"]["repository"] && pluginRaw["packageJson"]["repository"]["url"]){
+              plugin.repository = pluginRaw["packageJson"]["repository"]["url"];
+            }
+            if (pluginRaw["packageJson"]["repository"] && pluginRaw["packageJson"]["repository"]["type"]){
+              plugin.repositoryType = pluginRaw["packageJson"]["type"];
+            }
+        }
+          if (pluginRaw["source"] && pluginRaw["source"]["type"]){
+            plugin.sourceType = pluginRaw["source"]["type"];
+          }
           plugins.push(plugin);
         });
         resolve(plugins);
-        //Logger.getInstance().debug("getInstalledPlugins done: ", plugins);
       });
     });
   }

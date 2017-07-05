@@ -81,8 +81,18 @@ export class CordovaPluginScanner {
         parser.parseString(data, function(err, result) {
           var pluginId = result.plugin.$.id;
           that.fetchJson[pluginId].plugin = result.plugin;
-          //console.dir(result);
         });
+
+        let packageJsonJsonPath = path + "/package.json";
+        if (fs.existsSync(packageJsonJsonPath)){
+          try {
+            let packageJson = JSON.parse(fs.readFileSync(path + "/package.json", 'utf8'));
+            that.fetchJson[pluginId].packageJson = packageJson;
+          } catch (ex){
+              console.log("Error reading package.json: ", ex);
+          }
+        }
+
       }
       that.scanningPlugins--;
       if (that.scanningPlugins == 0) {
