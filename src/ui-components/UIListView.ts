@@ -30,7 +30,7 @@ export interface UIListViewModel {
     getClassName():string;
 }
 
-export class UIListView extends UIBaseComponent implements UIComponent  {
+export class UIListView extends UIBaseComponent {
 
   private model: UIListViewModel;
   private tableElement: HTMLElement;

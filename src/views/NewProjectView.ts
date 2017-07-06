@@ -18,8 +18,8 @@
    createTextEditor
  } from '../element/index';
 
- import { EventEmitter }  from 'events'
-
+import { EventEmitter }  from 'events'
+import { UIToggleButtons, UIToggleButtonsMode } from '../ui-components/UIToggleButtons'
 
 export class NewProjectView {
 
@@ -30,6 +30,8 @@ export class NewProjectView {
   private txtPackageID:HTMLElement;
   private txtDestinationPath:HTMLElement;
   private editorElement: HTMLElement;
+
+  private projectTypeButtons:UIToggleButtons;
 
   constructor () {
     this.events = new EventEmitter()
@@ -82,7 +84,17 @@ export class NewProjectView {
     insertElement(this.editorElement, configElement)
     insertElement(this.editorElement, configElement2)
     insertElement(this.editorElement, configElement3)
-    insertElement(this.element, [ this.editorElement,
+
+    this.projectTypeButtons = new UIToggleButtons(UIToggleButtonsMode.Radio);
+    this.projectTypeButtons.addButton('a','Standard Apache Cordova', false, null)
+                           .addButton('b', 'Ionic Framework', false, null)
+                           .addButton('c', 'Ionic 3 Framework', false, null);
+    insertElement(this.editorElement, this.projectTypeButtons.element());
+    this.projectTypeButtons.toggleButton('b');
+
+
+    insertElement(this.element, [
+      this.editorElement,
       createElement('xatom-debug-scheme-buttons', {
         elements: [
           createButton({
