@@ -15,7 +15,8 @@
    createIcon,
    createIconFromPath,
    attachEventFromObject,
-   createTextEditor
+   createTextEditor,
+   createButtonSpacer
  } from '../../element/index';
 
 const _ = require("lodash");
@@ -84,11 +85,12 @@ export class CommunityPluginsView extends UIBaseComponent {
       elements: [
         createText("Install manually...")
       ],
-      className: 'btn pull-right'
+      className: 'btn'
     })
     let blockPlatformChooser = createElement('div',{
       elements: [
         groupsPlatformChooser,
+        createButtonSpacer(),
         btnManualInstall
       ],
       className : 'block'
