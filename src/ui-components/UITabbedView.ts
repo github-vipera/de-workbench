@@ -54,6 +54,10 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
   private views:Array<UITabbedViewItem>;
   private tabType:UITabbedViewTabType;
 
+  public static readonly CLSNAME_TAB_TYPE_VERTICAL:string = "tab-type-vertical";
+  public static readonly CLSNAME_TAB_TYPE_HORIZONTAL:string = "tab-type-horizontal";
+  public static readonly CLSNAME_TAB_TYPE_DEFAULT:string = UITabbedView.CLSNAME_TAB_TYPE_VERTICAL;
+
   constructor(){
     super()
     this.buildUI();
@@ -100,14 +104,19 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
     let tabTypeClassToRemove = '';
     let tabTypeClassName = '';
     if (tabType===UITabbedViewTabType.Horizontal){
-      tabTypeClassName = "tab-type-horizontal";
-      tabTypeClassToRemove = "tab-type-vertical";
+      tabTypeClassName = UITabbedView.CLSNAME_TAB_TYPE_HORIZONTAL;
+      tabTypeClassToRemove = UITabbedView.CLSNAME_TAB_TYPE_VERTICAL;
     } else {
-      tabTypeClassName = "tab-type-vertical";
-      tabTypeClassToRemove = "tab-type-horizontal";
+      tabTypeClassName = UITabbedView.CLSNAME_TAB_TYPE_VERTICAL;
+      tabTypeClassToRemove = UITabbedView.CLSNAME_TAB_TYPE_HORIZONTAL;
     }
     this.mainElement.classList.remove(tabTypeClassToRemove);
     this.mainElement.classList.add(tabTypeClassName);
+
+    this.tabList.toggleTabTypeClass(tabTypeClassToRemove, tabTypeClassName);
+    this.stacked.toggleTabTypeClass(tabTypeClassToRemove, tabTypeClassName);
+
+
     return this;
   }
 
@@ -160,6 +169,7 @@ class UITabbedViewTabListComponent implements UIComponent {
   private itemsElementsMap:any = {};
   private tabItemsMap:any = {};
   private eventEmitter = new events.EventEmitter();
+  private currentTabTypeClassName: string = UITabbedView.CLSNAME_TAB_TYPE_DEFAULT;
 
   constructor(){
     this.buildUI();
@@ -198,7 +208,7 @@ class UITabbedViewTabListComponent implements UIComponent {
       elements : [
         aElement
       ],
-      className: "de-workbench-tabbedview-tab-item"
+      className: "de-workbench-tabbedview-tab-item " + this.currentTabTypeClassName
     });
     liElement.id = elementId;
 
@@ -258,6 +268,20 @@ class UITabbedViewTabListComponent implements UIComponent {
     this.eventEmitter.on(event, listener);
   }
 
+  public toggleTabTypeClass(classToRemove:string,classToAdd:string){
+    this.currentTabTypeClassName = classToAdd;
+    this.olElement.classList.remove(classToRemove);
+    this.olElement.classList.add(classToAdd);
+    this.mainElement.classList.remove(classToRemove);
+    this.mainElement.classList.add(classToAdd);
+
+    //    this.itemsElementsMap[elementId] = liElement;
+    for (var key in this.itemsElementsMap) {
+        this.itemsElementsMap[key].classList.remove(classToRemove);
+        this.itemsElementsMap[key].classList.add(classToAdd);
+    }
+  }
+
 }
 
 
@@ -307,5 +331,11 @@ class UITabbedViewStackedComponent implements UIComponent {
     this.selectedView = tabItem.view;
     this.selectedView.style.display = "initial";
   }
+
+  public toggleTabTypeClass(classToRemove:string,classToAdd:string){
+    this.mainElement.classList.remove(classToRemove);
+    this.mainElement.classList.add(classToAdd);
+  }
+
 
 }
