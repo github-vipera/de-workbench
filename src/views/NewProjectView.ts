@@ -19,7 +19,7 @@
  } from '../element/index';
 
 import { EventEmitter }  from 'events'
-import { UIToggleButtons, UIToggleButtonsMode } from '../ui-components/UIToggleButtons'
+import { UIButtonGroup, UIButtonGroupMode } from '../ui-components/UIButtonGroup'
 
 export class NewProjectView {
 
@@ -31,7 +31,8 @@ export class NewProjectView {
   private txtDestinationPath:HTMLElement;
   private editorElement: HTMLElement;
 
-  private projectTypeButtons:UIToggleButtons;
+  private projectTypeButtons:UIButtonGroup;
+  private actionButtons:UIButtonGroup;
 
   constructor () {
     this.events = new EventEmitter()
@@ -85,24 +86,26 @@ export class NewProjectView {
     insertElement(this.editorElement, configElement2)
     insertElement(this.editorElement, configElement3)
 
-    this.projectTypeButtons = new UIToggleButtons(UIToggleButtonsMode.Radio);
-    this.projectTypeButtons.addButton('a','Standard Apache Cordova', false, null)
+    // Project Type Radio
+    this.projectTypeButtons = new UIButtonGroup(UIButtonGroupMode.Radio)
+                           .addButton('a','Standard Apache Cordova', false, null)
                            .addButton('b', 'Ionic Framework', false, null)
                            .addButton('c', 'Ionic 3 Framework', false, null);
     insertElement(this.editorElement, this.projectTypeButtons.element());
-    this.projectTypeButtons.toggleButton('b');
 
+    this.actionButtons = new UIButtonGroup(UIButtonGroupMode.Standard)
+      .addButton('cancel','Cancel', false, ()=>{
+        this.close()
+      })
+      .addButton('create','Create', false, ()=>{
+        this.close()
+      });
 
     insertElement(this.element, [
       this.editorElement,
       createElement('xatom-debug-scheme-buttons', {
         elements: [
-          createButton({
-            click: () => this.close()
-          }, [createText('Create')]),
-          createButton({
-            click: () => this.close()
-          }, [createText('Cancel')])
+          this.actionButtons.element()
         ]
       })]
     )
