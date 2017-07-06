@@ -27,8 +27,17 @@ export class UIPluginsList extends UIListView {
 
     constructor(){
         super(null);
-        this.pluginListModel =  new PluginsListModel();
-        this.setModel(this.pluginListModel);
+        this.initModel();
+    }
+
+    private initModel(){
+      this.pluginListModel =  new PluginsListModel();
+      this.setModel(this.pluginListModel);
+    }
+
+    public clearList(){
+      this.pluginListModel.clear();
+      this.modelChanged();
     }
 
     public addPlugin(pluginInfo:CordovaPlugin){
@@ -37,6 +46,12 @@ export class UIPluginsList extends UIListView {
     }
 
     public addPlugins(plugins:Array<CordovaPlugin>){
+      this.pluginListModel.addPlugins(plugins);
+      this.modelChanged();
+    }
+
+    public setPlugins(plugins:Array<CordovaPlugin>){
+      this.clearList();
       this.pluginListModel.addPlugins(plugins);
       this.modelChanged();
     }
@@ -89,6 +104,10 @@ class PluginsListModel implements UIListViewModel {
   }
   getClassName():string {
     return 'de-workbench-plugins-list';
+  }
+
+  public clear(){
+    this.pluginList = new Array<UIPluginItem>();
   }
 }
 

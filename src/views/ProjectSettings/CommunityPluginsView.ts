@@ -18,6 +18,8 @@
    createTextEditor
  } from '../../element/index';
 
+ const _ = require("lodash");
+
 import { EventEmitter }  from 'events'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
@@ -33,6 +35,7 @@ export class CommunityPluginsView extends UIBaseComponent {
   private pluginList: UIPluginsList;
   private searchForm:HTMLElement;
   private searchTextEditor:HTMLElement;
+  private progress:HTMLElement;
 
   constructor(){
     super();
@@ -59,8 +62,7 @@ export class CommunityPluginsView extends UIBaseComponent {
     })
 
 
-
-    // Platform Chooser Block
+    // Platform Chooser Block / Install manually
     let btnChooseIOS:HTMLElement = createElement('button',{
       elements: [
         createText("iOS")
@@ -90,14 +92,12 @@ export class CommunityPluginsView extends UIBaseComponent {
       ],
       className : 'btn-group'
     })
-
     let btnManualInstall:HTMLElement = createElement('button',{
       elements: [
         createText("Install manually...")
       ],
       className: 'btn pull-right'
     })
-
     let blockPlatformChooser = createElement('div',{
       elements: [
         groupsPlatformChooser,
@@ -107,15 +107,18 @@ export class CommunityPluginsView extends UIBaseComponent {
     })
 
 
-
-
+    this.progress = createElement('progress',{
+    });
+    this.progress.style.width = "100%";
 
     // Search Form
-    this.searchForm= createElement('div',{
+    this.searchForm = createElement('div',{
         elements : [
           blockEditor,
-          blockPlatformChooser
-        ]
+          blockPlatformChooser,
+          this.progress
+        ],
+        className: 'de-workbench-community-plugins-search-form'
     });
 
     // Plugins list
@@ -130,7 +133,44 @@ export class CommunityPluginsView extends UIBaseComponent {
         className: 'de-workbench-community-plugins-list'
     })
 
+    this.showProgress(false);
 
+    //Add event listeners
+    this.searchTextEditor.addEventListener('keypress',(evt)=>{
+      if (evt.which == 13){
+        this.submitSearch();
+      }
+    });
+
+  }
+
+  private submitSearch(){
+    this.showProgress(true);
+    let cpf = new CordovaPluginsFinder();
+    let names = '';
+    let platforms = '';
+
+    let search = this.searchTextEditor["value"];
+    let keywords = _.split(search, ' ');
+
+    cpf.search(keywords,keywords,null).then((results:Array<CordovaPlugin>)=>{
+      //alert(results);
+      console.log("Plugins finder results: ", results);
+      this.pluginList.setPlugins(results);
+      this.showProgress(false);
+    }, (err)=>{
+      alert("Error: " + err);
+      this.showProgress(false);
+    });
+
+  }
+
+  private showProgress(show:boolean){
+    if (show){
+      this.progress.style.display = "inherit";
+    } else {
+      this.progress.style.display = "none";
+    }
   }
 
 

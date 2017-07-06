@@ -7,11 +7,13 @@
  */
 
 import { Logger } from '../logger/Logger'
+import { CordovaPlugin } from './Cordova'
 
 const _ = require("lodash");
 const $ = require("jquery");
 const http = require("http");
-const httpReq = require("httpReq");
+const httpReq = require ("request");
+
 
 /**
  * This class allows to search plugins from the community repository
@@ -73,9 +75,9 @@ export class CordovaPluginsFinder {
     /**
      * Search plugins from community
      */
-    public search(names,keywords,platforms):Promise<any>{
+    public search(names,keywords,platforms):Promise<Array<CordovaPlugin>>{
       return new Promise((resolve, reject) => {
-        var baseQueryUrl = 'http://npmsearch.com/query?fields=name,keywords,license,description,author,modified,homepage,version,rating&sort=rating:desc&size=500&start=0';
+        var baseQueryUrl = 'http://npmsearch.com/query?fields=name,keywords,license,description,author,modified,homepage,version,rating&ecosystem:cordova&sort=rating:desc&size=500&start=0';
         var queryParams = this.buildQueryParamsString(names, keywords, platforms);
         Logger.getInstance().debug("Query:" + queryParams);
         var queryUrl = baseQueryUrl + queryParams; //'q=keywords:camera+AND+author:neuber';
@@ -86,7 +88,20 @@ export class CordovaPluginsFinder {
               reject(error);
             } else {
               Logger.getInstance().error("Query OK");
-              resolve(JSON.parse(body));
+              let pluginsArray = new Array();
+              let rawJsonArr:any = JSON.parse(body).results;
+              for (var i=0;i<rawJsonArr.length;i++){
+                let rawJson = rawJsonArr[i];
+                let cordovaPlugin = new CordovaPlugin();
+                cordovaPlugin.author = rawJson.author[0];
+                cordovaPlugin.description = rawJson.description[0];
+                cordovaPlugin.version = rawJson.version[0];
+                cordovaPlugin.id = rawJson.name[0];
+                cordovaPlugin.name = rawJson.name[0];
+                cordovaPlugin.installed = false;
+                pluginsArray.push(cordovaPlugin);
+              }
+              resolve(pluginsArray);
             }
         });
       });
