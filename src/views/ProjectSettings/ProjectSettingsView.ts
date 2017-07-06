@@ -28,6 +28,7 @@ import { InstalledPluginsView } from './InstalledPluginsView'
 import { InstallNewPluginsView } from './InstallNewPluginsView'
 import { VariantsView } from './VariantsView'
 import { AppSignatureView } from './AppSignatureView'
+import { GeneralSettingsView } from './GeneralSettingsView'
 
 const crypto = require('crypto');
 
@@ -39,10 +40,12 @@ export class ProjectSettingsView {
   private projectId: string;
   private tabbedView: UITabbedView;
 
+  // Sub views
   private installedPluginsView: InstalledPluginsView;
   private installNewPluginsView: InstallNewPluginsView;
   private variantsView: VariantsView;
   private appSignatureView: AppSignatureView;
+  private generalSettingsView: GeneralSettingsView;
 
   constructor(projectRoot:string){
     this.projectRoot = projectRoot;
@@ -67,12 +70,13 @@ export class ProjectSettingsView {
     this.installNewPluginsView = new InstallNewPluginsView();
     this.variantsView = new VariantsView();
     this.appSignatureView = new AppSignatureView();
+    this.generalSettingsView = new GeneralSettingsView();
 
     // Create the main UI
     this.element = document.createElement('de-workbench-project-settings')
 
     this.tabbedView = new UITabbedView();//.setTabType(UITabbedViewTabType.Horizontal);
-    this.tabbedView.addView(new UITabbedViewItem('general',           'General',            this.createSimpleEmptyView('blue')).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('general',           'General',              this.generalSettingsView.element()).setTitleClass('icon icon-settings'));
     this.tabbedView.addView(new UITabbedViewItem('installed_plugins', 'Installed Plugins',    this.installedPluginsView.element()).setTitleClass('icon icon-beaker'));
     this.tabbedView.addView(new UITabbedViewItem('install_plugins',   'Install New Plugins',  this.installNewPluginsView.element()).setTitleClass('icon icon-broadcast'));
     this.tabbedView.addView(new UITabbedViewItem('variants',          'Build Variants',       this.variantsView.element()).setTitleClass('icon icon-code'));

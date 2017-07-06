@@ -59,7 +59,7 @@ export class UIStackedView extends UIBaseComponent {
         elements : [
           this.headerElement
         ],
-        className : "de-workbench-stacked-view section"
+        className : "de-workbench-stacked-view"
       });
 
     }
