@@ -25,15 +25,17 @@ import { Logger } from '../../logger/Logger'
 import { UIPluginsList } from '../../ui-components/UIPluginsList'
 import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
+import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
+import { CommunityPluginsView } from './CommunityPluginsView'
+export class InstallNewPluginsView extends UIBaseComponent {
 
-export class InstallNewPluginsView {
-
-  private mainElement: HTMLElement;
   private pluginList: UIPluginsList;
   private stackedPage: UIStackedView;
   private tabbedView: UITabbedView;
+  private communityPluginsView: CommunityPluginsView;
 
   constructor(){
+    super();
     this.buildUI();
 
     let currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
@@ -46,20 +48,13 @@ export class InstallNewPluginsView {
   }
 
   private buildUI(){
+    this.communityPluginsView = new CommunityPluginsView();
+
     this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
 
-    this.tabbedView.addView(new UITabbedViewItem('de_plugins',          'Dynamic Engine Plugins',  this.createSimpleEmptyView('sasso')).setTitleClass('icon icon-settings'));
-    this.tabbedView.addView(new UITabbedViewItem('community_plugins',   'Community Plugins',  this.createSimpleEmptyView('supero')).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('de_plugins',          'Dynamic Engine Plugins',  this.createSimpleEmptyView('Dynamic Engine Plugins List here')).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('community_plugins',   'Community Plugins',  this.communityPluginsView .element()).setTitleClass('icon icon-settings'));
 
-    /**
-    this.pluginList = new UIPluginsList();
-    let listContainer = createElement('div',{
-        elements : [
-          this.pluginList.element()
-        ]
-    })
-
-                        **/
     this.stackedPage = new UIStackedView()
                         .setTitle('Install New Plugins')
                         .setInnerView(this.tabbedView.element());
@@ -80,7 +75,4 @@ export class InstallNewPluginsView {
       return el;
   }
 
-  public element():HTMLElement {
-    return this.mainElement;
-  }
 }
