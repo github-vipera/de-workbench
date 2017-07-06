@@ -54,13 +54,13 @@ export class Cordova {
     this.cordovaUtils = new CordovaUtils();
   }
 
-  isCordovaProject(projectRoot:string):Promise<boolean> {
+  public isCordovaProject(projectRoot:string):Promise<boolean> {
     return new Promise((resolve, reject) => {
       resolve(this.isCordovaProjectSync(projectRoot));
     });
   }
 
-  isCordovaProjectSync(projectRoot:string):boolean {
+  public isCordovaProjectSync(projectRoot:string):boolean {
     try {
       let ret = this.getInstalledPlatformsSync(projectRoot);
       if (ret && ret.length>0){
@@ -77,7 +77,7 @@ export class Cordova {
   /**
    * Returns a list of installed platforms for a Cordova Project
    */
-  getInstalledPlatforms(projectRoot: string): Promise<Array<CordovaPlatform>> {
+  public getInstalledPlatforms(projectRoot: string): Promise<Array<CordovaPlatform>> {
     return new Promise((resolve, reject) => {
       let ret = this.getInstalledPlatformsSync(projectRoot);
       resolve(ret);
@@ -87,7 +87,7 @@ export class Cordova {
   /**
    * Returns a list of installed platforms for a Cordova Project in a sync way
    */
-  getInstalledPlatformsSync(projectRoot: string): Array<CordovaPlatform> {
+  public getInstalledPlatformsSync(projectRoot: string): Array<CordovaPlatform> {
     let ret: any = this.cordovaUtils.getInstalledPlatforms(projectRoot);
     return ret.installed;
   }
@@ -95,7 +95,7 @@ export class Cordova {
   /**
    * Returns a list of installed plugins for a Cordova Project
    */
-  getInstalledPlugins(projectRoot: string): Promise<Array<CordovaPlugin>> {
+  public getInstalledPlugins(projectRoot: string): Promise<Array<CordovaPlugin>> {
     Logger.getInstance().debug("getInstalledPlugins called...");
     return new Promise((resolve, reject) => {
       let that = this;
@@ -150,7 +150,7 @@ export class Cordova {
   /**
    * Add a new plugin to a Cordova project
    **/
-  addPlugin(projectRoot: string, pluginSpec: string, installOpt: any): Promise<string> {
+  public addPlugin(projectRoot: string, pluginSpec: string, installOpt: any): Promise<string> {
     Logger.getInstance().info("addPlugin ", projectRoot, pluginSpec, installOpt)
     let executor = new CordovaExecutor(projectRoot);
     var args = ["plugin", "add", pluginSpec];
@@ -174,7 +174,7 @@ export class Cordova {
   /**
    * Remove a plugin from a Cordova project
    **/
-  removePlugin(projectRoot: string, pluginSpec: string): Promise<string> {
+  public removePlugin(projectRoot: string, pluginSpec: string): Promise<string> {
     Logger.getInstance().info("removePlugin ", projectRoot, pluginSpec)
     let executor = new CordovaExecutor(projectRoot);
     var args = ["plugin", "remove", "--save", pluginSpec];
@@ -192,7 +192,7 @@ export class Cordova {
   /**
    * Returns the assets path for the given platform
    */
-  getPlatformPath(projectRoot: string, platform: string): string {
+  public getPlatformPath(projectRoot: string, platform: string): string {
     Logger.getInstance().debug("getPlatformPath ", projectRoot, platform)
     var result = projectRoot;// != undefined ? projectRoot : atom.project["getPaths"]()[0];
     if (platform === "android") {
@@ -208,7 +208,7 @@ export class Cordova {
   /**
    * Creates a new Cordova project with the given parameters
    */
-  createNewProject(projectInfo: any): Promise<any> {
+  public createNewProject(projectInfo: any): Promise<any> {
     Logger.getInstance().debug("createNewProject: ", projectInfo)
     let executor = new CordovaExecutor(null);
     return executor.createNewProject(projectInfo);
@@ -217,7 +217,7 @@ export class Cordova {
   /**
    * Creates a new Cordova project with the given parameters
    */
-  removeAllPlatforms(projectInfo: any): Promise<any> {
+  public removeAllPlatforms(projectInfo: any): Promise<any> {
     Logger.getInstance().debug("removeAllPlatforms: ", projectInfo)
     let executor = new CordovaExecutor(null);
     return executor.removeAllPlatforms(projectInfo);
@@ -226,7 +226,7 @@ export class Cordova {
   /**
    * Adds platforms to a project
    */
-  addPlatforms(projectInfo): Promise<any>{
+  public addPlatforms(projectInfo): Promise<any>{
     Logger.getInstance().debug("removeAllPlatforms: ", projectInfo)
     let executor = new CordovaExecutor(null);
     return executor.addPlatforms(projectInfo);
@@ -235,7 +235,7 @@ export class Cordova {
   /**
    * Removes platforms from project
    **/
-  removePlatforms(projectRoot: string,platformList:Array<String>): Promise<any>{
+  public removePlatforms(projectRoot: string,platformList:Array<String>): Promise<any>{
     Logger.getInstance().debug("removePlatforms: ", projectRoot)
     let executor = new CordovaExecutor(null);
     return executor.removePlatforms(platformList, projectRoot);
@@ -244,7 +244,7 @@ export class Cordova {
   /**
    * Runs build command fot the given Cordova project
    */
-  buildProject(projectRoot: string, platform:string, options:any): Promise<any> {
+  public buildProject(projectRoot: string, platform:string, options:any): Promise<any> {
     Logger.getInstance().debug("buildProject: ", projectRoot)
     let executor = new CordovaExecutor(null);
     return executor.runBuild(projectRoot, platform, options);
@@ -253,7 +253,7 @@ export class Cordova {
   /**
    * Clean the given Cordova project
    */
-  cleanProject(projectRoot: string, platform:string): Promise<any> {
+  public cleanProject(projectRoot: string, platform:string): Promise<any> {
     Logger.getInstance().debug("cleanProject: ", projectRoot)
     let executor = new CordovaExecutor(null);
     return executor.runClean(projectRoot, platform);
@@ -262,30 +262,30 @@ export class Cordova {
   /**
    * Prepare the given Cordova project
    */
-  prepareProject(projectRoot: string, platform:string): Promise<any> {
+  public prepareProject(projectRoot: string, platform:string): Promise<any> {
     Logger.getInstance().debug("prepareProject: ", projectRoot)
     let executor = new CordovaExecutor(null);
     return executor.runPrepare(projectRoot, platform);
   }
 
-  prepareProjectWithBrowserPatch(projectRoot: string): Promise<any> {
+  public prepareProjectWithBrowserPatch(projectRoot: string): Promise<any> {
     Logger.getInstance().debug("prepareProject: ", projectRoot)
     let executor = new CordovaExecutor(null);
     return executor.runPrepareWithBrowserPatch(projectRoot);
   }
 
-  runProject(projectRoot:string,platform:string,target:string,options:any): Promise<any> {
+  public runProject(projectRoot:string,platform:string,target:string,options:any): Promise<any> {
     Logger.getInstance().debug("runProject: ", projectRoot)
     let executor = new CordovaExecutor(null);
     return executor.runProject(projectRoot, platform, target, options);
   }
 
-  getProjectInfoSync(projectRoot:string):any {
+  public getProjectInfoSync(projectRoot:string):any {
     let jsonPath = path.join(projectRoot, "package.json");
     return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
   }
 
-  getProjectInfo(projectRoot:string):Promise<any> {
+  public getProjectInfo(projectRoot:string):Promise<any> {
     return new Promise((resolve, reject) => {
       let jsonPath = path.join(projectRoot, "package.json");
       var obj;
@@ -296,5 +296,8 @@ export class Cordova {
       });
     })
   }
+
+
+
 
 }
