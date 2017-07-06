@@ -100,13 +100,21 @@ export class UIButtonGroup extends UIBaseComponent {
   /**
    * Only for UIButtonGroupMode.Toggle and UIButtonGroupMode.Radio
    */
-  public selectButton(id:string){
+  public selectButton(id:string, select:boolean){
     if (this.toggleMode==UIButtonGroupMode.Standard){
       //nop
     } else if (this.toggleMode==UIButtonGroupMode.Toggle){
-      this.buttons[id].element.classList.toggle('selected');
+      if (select){
+        this.buttons[id].element.classList.add('selected');
+      } else {
+        this.buttons[id].element.classList.remove('selected');
+      }
     } else if (this.toggleMode==UIButtonGroupMode.Radio){
-      //TODO!!
+      let currentSelection:Array<string> = this.getSelectedButtons();
+      for (var i=0;i<currentSelection.length;i++){
+        this.buttons[currentSelection[i]].element.classList.remove('selected');
+      }
+      this.buttons[id].element.classList.add('selected');
     }
   }
 
@@ -128,7 +136,7 @@ export class UIButtonGroup extends UIBaseComponent {
       className: className
     })
 
-    btn.setAttribute('toggle-id',buttonConfig.id)
+    btn.setAttribute('btngroup-id',buttonConfig.id)
 
     if (buttonConfig.selected){
       btn.classList.add('selected');
@@ -142,7 +150,9 @@ export class UIButtonGroup extends UIBaseComponent {
         let el:any = evt.currentTarget;
         el.classList.toggle('selected');
       } else if (this.toggleMode==UIButtonGroupMode.Radio) {
-
+        let buttonEl:any = evt.currentTarget;
+        let buttonId = buttonEl.attributes['btngroup-id'].value;
+        this.selectButton(buttonId, true);
       }
 
       if (buttonConfig.clickListener){
@@ -154,7 +164,7 @@ export class UIButtonGroup extends UIBaseComponent {
     return btn;
   }
 
-  public getSelectedButtons():Array<String>{
+  public getSelectedButtons():Array<string>{
     let ret = new Array();
     for (var key in this.buttons) {
       if (this.buttons.hasOwnProperty(key)) {
