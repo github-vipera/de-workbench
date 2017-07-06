@@ -18,7 +18,8 @@
    createTextEditor
  } from '../../element/index';
 
- const _ = require("lodash");
+const _ = require("lodash");
+const $ = require ('JQuery');
 
 import { EventEmitter }  from 'events'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
@@ -36,6 +37,11 @@ export class CommunityPluginsView extends UIBaseComponent {
   private searchForm:HTMLElement;
   private searchTextEditor:HTMLElement;
   private progress:HTMLElement;
+
+  private btnChooseIOS:HTMLElement;
+  private btnChooseAndroid:HTMLElement;
+  private btnChooseBrowser:HTMLElement;
+
 
   constructor(){
     super();
@@ -63,32 +69,14 @@ export class CommunityPluginsView extends UIBaseComponent {
 
 
     // Platform Chooser Block / Install manually
-    let btnChooseIOS:HTMLElement = createElement('button',{
-      elements: [
-        createText("iOS")
-      ],
-      className: 'btn platform-select'
-    })
-    btnChooseIOS.setAttribute('platform' , 'ios');
-    let btnChooseAndroid:HTMLElement = createElement('button',{
-      elements: [
-        createText("Android")
-      ],
-      className: 'btn platform-select'
-    })
-    btnChooseAndroid.setAttribute('platform' , 'android');
-    let btnChooseBrowser:HTMLElement = createElement('button',{
-      elements: [
-        createText("Browser")
-      ],
-      className: 'btn platform-select'
-    })
-    btnChooseBrowser.setAttribute('platform' , 'browser');
+    this.btnChooseIOS = this.createPlatformSelectButton("iOS");
+    this.btnChooseAndroid = this.createPlatformSelectButton("Android");
+    this.btnChooseBrowser = this.createPlatformSelectButton("Browser");
     let groupsPlatformChooser = createElement('div',{
       elements: [
-        btnChooseAndroid,
-        btnChooseIOS,
-        btnChooseBrowser
+        this.btnChooseAndroid,
+        this.btnChooseIOS,
+        this.btnChooseBrowser
       ],
       className : 'btn-group'
     })
@@ -142,8 +130,35 @@ export class CommunityPluginsView extends UIBaseComponent {
       }
     });
 
+    $('[platform-select]').click(function(evt){
+      $(evt.currentTaget).toggleClass("selected");
+      alert("toggle");
+    });
   }
 
+  /**
+   * Create a button for platform selection
+   */
+  private createPlatformSelectButton(platform:string):HTMLElement {
+    let btn:HTMLElement = createElement('button',{
+      elements: [
+        createText(platform)
+      ],
+      className: 'btn platform-select selected'
+    })
+    btn.setAttribute('platform-select','')
+    btn.setAttribute('platform' , platform);
+    btn.addEventListener('click',(evt)=>{
+      let el:any = evt.currentTarget;
+      el.classList.toggle('selected');
+      //alert(evt.currentTarget);
+    });
+    return btn;
+  }
+
+  /**
+   * Submit the search to the npm registry
+   */
   private submitSearch(){
     this.showProgress(true);
     let cpf = new CordovaPluginsFinder();
@@ -165,6 +180,9 @@ export class CommunityPluginsView extends UIBaseComponent {
 
   }
 
+  /*
+   * Show/Hide progress bar
+   */
   private showProgress(show:boolean){
     if (show){
       this.progress.style.display = "inherit";
@@ -173,5 +191,18 @@ export class CommunityPluginsView extends UIBaseComponent {
     }
   }
 
+  private getSelectedPlatforms():Array<string>{
+    let ret:Array<string> = new Array();
+    if (this.btnChooseIOS.classList.contains('selected')){
+      ret.push("iOS");
+    }
+    if (this.btnChooseAndroid.classList.contains('selected')){
+      ret.push("Android");
+    }
+    if (this.btnChooseBrowser.classList.contains('selected')){
+      ret.push("Browser");
+    }
+    return ret;
+  }
 
 }
