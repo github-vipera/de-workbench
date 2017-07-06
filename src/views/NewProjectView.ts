@@ -19,7 +19,7 @@
  } from '../element/index';
 
 import { EventEmitter }  from 'events'
-import { UIButtonGroup, UIButtonGroupMode } from '../ui-components/UIButtonGroup'
+import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../ui-components/UIButtonGroup'
 
 export class NewProjectView {
 
@@ -88,18 +88,25 @@ export class NewProjectView {
 
     // Project Type Radio
     this.projectTypeButtons = new UIButtonGroup(UIButtonGroupMode.Radio)
-                           .addButton('a','Standard Apache Cordova', false, null)
-                           .addButton('b', 'Ionic Framework', false, null)
-                           .addButton('c', 'Ionic 3 Framework', false, null);
+                            .addButton(new UIButtonConfig().setId('a').setCaption('Standard Apache Cordova'))
+                            .addButton(new UIButtonConfig().setId('b').setCaption('Ionic Framework'))
+                            .addButton(new UIButtonConfig().setId('c').setCaption('Ionic Framework 3'));
     insertElement(this.editorElement, this.projectTypeButtons.element());
 
     this.actionButtons = new UIButtonGroup(UIButtonGroupMode.Standard)
-      .addButton('cancel','Cancel', false, ()=>{
-        this.close()
-      })
-      .addButton('create','Create', false, ()=>{
-        this.close()
-      });
+      .addButton(new UIButtonConfig()
+            .setId('cancel')
+            .setCaption('Cancel')
+            .setClickListener(()=>{
+                this.close()
+            }))
+      .addButton(new UIButtonConfig()
+            .setId('create')
+            .setButtonType('primary')
+            .setCaption('Create')
+            .setClickListener(()=>{
+                this.close()
+            }))
 
     insertElement(this.element, [
       this.editorElement,

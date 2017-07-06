@@ -25,6 +25,39 @@ export enum UIButtonGroupMode {
     Radio
 }
 
+export class UIButtonConfig {
+  public id: string;
+  public caption: string;
+  public selected: boolean = false;
+  public buttonType: string = '';
+  public clickListener: Function;
+  public className: string = '';
+  public setId(id:string):UIButtonConfig{
+    this.id = id;
+    return this;
+  }
+  public setCaption(caption:string):UIButtonConfig{
+    this.caption = caption;
+    return this;
+  }
+  public setSelected(selected:boolean):UIButtonConfig{
+    this.selected = selected;
+    return this;
+  }
+  public setButtonType(buttonType:string):UIButtonConfig{
+    this.buttonType = buttonType;
+    return this;
+  }
+  public setClassName(className:string):UIButtonConfig{
+    this.className = className;
+    return this;
+  }
+  public setClickListener(clickListener:Function):UIButtonConfig{
+    this.clickListener = clickListener;
+    return this;
+  }
+}
+
 export class UIButtonGroup extends UIBaseComponent {
 
   private buttonGroup:HTMLElement;
@@ -48,13 +81,12 @@ export class UIButtonGroup extends UIBaseComponent {
     this.mainElement = this.buttonGroup;
   }
 
-  public addButton(id:string, caption:string, selected:boolean, clickListener?:Function):UIButtonGroup {
-    let button = this.createButton(id, caption,selected, clickListener);
+  public addButton(buttonConfig:UIButtonConfig):UIButtonGroup {
+    let button = this.createButton(buttonConfig);
     insertElement(this.buttonGroup, button);
-    this.buttons[id] = { element: button, id: id, caption: caption };
+    this.buttons[buttonConfig.id] = { element: button, id: buttonConfig.id, caption: buttonConfig.caption };
     return this;
   }
-
 
   /**
    * Only for UIButtonGroupMode.Toggle
@@ -79,21 +111,27 @@ export class UIButtonGroup extends UIBaseComponent {
   }
 
   /**
-   * Create a button for platform selection
+   * Create a button component
    */
-  private createButton(id:string, caption:string, selected:boolean, clickListener?:Function):HTMLElement {
+  private createButton(buttonConfig:UIButtonConfig):HTMLElement {
     let className = "btn platform-select";
+    if (buttonConfig.buttonType){
+      className += " btn-" + buttonConfig.buttonType;
+    }
+    if (buttonConfig.className){
+      className += " " + buttonConfig.className;
+    }
     let btn:HTMLElement = createElement('button',{
       elements: [
-        createText(caption)
+        createText(buttonConfig.caption)
       ],
       className: className
     })
 
-    btn.setAttribute('toggle-id',id)
+    btn.setAttribute('toggle-id',buttonConfig.id)
 
-    if (selected){
-      this.selectButton(id);
+    if (buttonConfig.selected){
+      btn.classList.add('selected');
     }
 
     btn.addEventListener('click',(evt)=>{
@@ -107,8 +145,8 @@ export class UIButtonGroup extends UIBaseComponent {
 
       }
 
-      if (clickListener){
-        clickListener(id);
+      if (buttonConfig.clickListener){
+        buttonConfig.clickListener(buttonConfig.id);
       }
 
     });
@@ -116,7 +154,18 @@ export class UIButtonGroup extends UIBaseComponent {
     return btn;
   }
 
-
+  public getSelectedButtons():Array<String>{
+    let ret = new Array();
+    for (var key in this.buttons) {
+      if (this.buttons.hasOwnProperty(key)) {
+        let button = this.buttons[key];
+        if (button.element.classList.contains("selected")){
+          ret.push(button.id);
+        }
+      }
+    }
+    return ret;
+  }
 
 
 }

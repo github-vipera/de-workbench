@@ -31,6 +31,7 @@ import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { CordovaPluginsFinder } from '../../cordova/CordovaPluginsFinder'
+import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 
 export class CommunityPluginsView extends UIBaseComponent {
 
@@ -39,6 +40,7 @@ export class CommunityPluginsView extends UIBaseComponent {
   private searchTextEditor:HTMLElement;
   private progress:HTMLElement;
 
+  private btnGroupPlatformChooser: UIButtonGroup;
   private btnChooseIOS:HTMLElement;
   private btnChooseAndroid:HTMLElement;
   private btnChooseBrowser:HTMLElement;
@@ -68,7 +70,7 @@ export class CommunityPluginsView extends UIBaseComponent {
       className : 'block'
     })
 
-
+    /**
     // Platform Chooser Block / Install manually
     this.btnChooseIOS = this.createPlatformSelectButton("iOS");
     this.btnChooseAndroid = this.createPlatformSelectButton("Android");
@@ -81,15 +83,26 @@ export class CommunityPluginsView extends UIBaseComponent {
       ],
       className : 'btn-group'
     })
+    **/
+
+    this.btnGroupPlatformChooser = new UIButtonGroup(UIButtonGroupMode.Toggle)
+        .addButton(new UIButtonConfig().setId('ios').setCaption('iOS').setSelected(true))
+        .addButton(new UIButtonConfig().setId('android').setCaption('Android').setSelected(true))
+        .addButton(new UIButtonConfig().setId('browser').setCaption('Browser').setSelected(true));
+
     let btnManualInstall:HTMLElement = createElement('button',{
-      elements: [
-        createText("Install manually...")
-      ],
-      className: 'btn'
-    })
+          elements: [
+            createText("Install manually...")
+          ],
+          className: 'btn'
+        })
+      btnManualInstall.addEventListener('click',(evt)=>{
+        console.log('Platforms selected: ', this.btnGroupPlatformChooser.getSelectedButtons());
+      });
+
     let blockPlatformChooser = createElement('div',{
       elements: [
-        groupsPlatformChooser,
+        this.btnGroupPlatformChooser.element(),
         createButtonSpacer(),
         btnManualInstall
       ],
@@ -138,9 +151,11 @@ export class CommunityPluginsView extends UIBaseComponent {
     });
   }
 
+
   /**
    * Create a button for platform selection
    */
+   /**
   private createPlatformSelectButton(platform:string):HTMLElement {
     let btn:HTMLElement = createElement('button',{
       elements: [
@@ -157,6 +172,7 @@ export class CommunityPluginsView extends UIBaseComponent {
     });
     return btn;
   }
+  **/
 
   /**
    * Submit the search to the npm registry
@@ -193,6 +209,7 @@ export class CommunityPluginsView extends UIBaseComponent {
     }
   }
 
+  /**
   private getSelectedPlatforms():Array<string>{
     let ret:Array<string> = new Array();
     if (this.btnChooseIOS.classList.contains('selected')){
@@ -206,5 +223,6 @@ export class CommunityPluginsView extends UIBaseComponent {
     }
     return ret;
   }
+  **/
 
 }
