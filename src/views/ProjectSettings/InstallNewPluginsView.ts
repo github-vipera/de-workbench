@@ -57,7 +57,8 @@ export class InstallNewPluginsView extends UIBaseComponent {
 
     this.stackedPage = new UIStackedView()
                         .setTitle('Install New Plugins')
-                        .setInnerView(this.tabbedView.element());
+                        .setInnerView(this.tabbedView.element())
+                        .addHeaderClassName('de-workbench-stacked-view-header-section-thin');
 
     this.mainElement = this.stackedPage.element();
 

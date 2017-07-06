@@ -29,6 +29,7 @@ export class UIStackedView extends UIBaseComponent {
 
     protected titleElement: Text;
     protected titleIcon: HTMLElement;
+    protected headerElement: HTMLElement;
 
     constructor(){
       super();
@@ -43,7 +44,7 @@ export class UIStackedView extends UIBaseComponent {
         className : 'icon icon-plus'
       })
 
-      let headerElement = createElement('div',{
+      this.headerElement = createElement('div',{
         elements : [
           this.titleIcon,
           this.titleElement
@@ -56,11 +57,16 @@ export class UIStackedView extends UIBaseComponent {
       // the main element
       this.mainElement = createElement('div',{
         elements : [
-          headerElement
+          this.headerElement
         ],
         className : "de-workbench-stacked-view section"
       });
 
+    }
+
+    public addHeaderClassName(className:string):UIStackedView {
+      this.headerElement.classList.add(className);
+      return this;
     }
 
     public setIconClassName(className:string):UIStackedView{
