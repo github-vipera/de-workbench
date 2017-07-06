@@ -49,6 +49,7 @@ export class InstallNewPluginsView extends UIBaseComponent {
     this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
 
     this.tabbedView.addView(new UITabbedViewItem('de_plugins',          'Dynamic Engine Plugins',  this.createSimpleEmptyView('Dynamic Engine Plugins List here')).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('featured_plugins',    'Featured Plugins',  this.createSimpleEmptyView('Third Part Featured Plugins List here')).setTitleClass('icon icon-settings'));
     this.tabbedView.addView(new UITabbedViewItem('community_plugins',   'Community Plugins',  this.communityPluginsView .element()).setTitleClass('icon icon-settings'));
 
     this.stackedPage = new UIStackedView()
