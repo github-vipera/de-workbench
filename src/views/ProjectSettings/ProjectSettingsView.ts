@@ -26,7 +26,8 @@ import { Logger } from '../../logger/Logger'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { InstalledPluginsView } from './InstalledPluginsView'
 import { InstallNewPluginsView } from './InstallNewPluginsView'
-
+import { VariantsView } from './VariantsView'
+import { AppSignatureView } from './AppSignatureView'
 
 const crypto = require('crypto');
 
@@ -37,8 +38,11 @@ export class ProjectSettingsView {
   private projectRoot: string;
   private projectId: string;
   private tabbedView: UITabbedView;
+
   private installedPluginsView: InstalledPluginsView;
   private installNewPluginsView: InstallNewPluginsView;
+  private variantsView: VariantsView;
+  private appSignatureView: AppSignatureView;
 
   constructor(projectRoot:string){
     this.projectRoot = projectRoot;
@@ -61,16 +65,18 @@ export class ProjectSettingsView {
     // create the single views
     this.installedPluginsView = new InstalledPluginsView();
     this.installNewPluginsView = new InstallNewPluginsView();
+    this.variantsView = new VariantsView();
+    this.appSignatureView = new AppSignatureView();
 
     // Create the main UI
     this.element = document.createElement('de-workbench-project-settings')
 
     this.tabbedView = new UITabbedView();//.setTabType(UITabbedViewTabType.Horizontal);
-    this.tabbedView.addView(new UITabbedViewItem('platforms',         'Platforms',            this.createSimpleEmptyView('blue')).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('general',           'General',            this.createSimpleEmptyView('blue')).setTitleClass('icon icon-settings'));
     this.tabbedView.addView(new UITabbedViewItem('installed_plugins', 'Installed Plugins',    this.installedPluginsView.element()).setTitleClass('icon icon-beaker'));
     this.tabbedView.addView(new UITabbedViewItem('install_plugins',   'Install New Plugins',  this.installNewPluginsView.element()).setTitleClass('icon icon-broadcast'));
-    this.tabbedView.addView(new UITabbedViewItem('variants',          'Variants',             this.createSimpleEmptyView('yellow')).setTitleClass('icon icon-code'));
-    this.tabbedView.addView(new UITabbedViewItem('app_signature',     'App Signature',        this.createSimpleEmptyView('brown')).setTitleClass('icon icon-circuit-board'));
+    this.tabbedView.addView(new UITabbedViewItem('variants',          'Build Variants',       this.variantsView.element()).setTitleClass('icon icon-code'));
+    this.tabbedView.addView(new UITabbedViewItem('app_signature',     'App Signature',        this.appSignatureView.element()).setTitleClass('icon icon-circuit-board'));
 
     let el = createElement('div', {
         elements: [
