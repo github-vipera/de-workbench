@@ -78,7 +78,7 @@ export class ProjectManager {
         let i = 0;
         let currentProjectPath:string;
         for (i=0;i<projects.length;i++){
-          if (yourPath.indexOf(projects[i])==0){
+          if (yourPath && yourPath.indexOf(projects[i])==0){
             currentProjectPath = projects[i];
             if (!this.currentProjectPath || currentProjectPath!=this.currentProjectPath){
               this.fireProjectChanged(currentProjectPath);
