@@ -32,7 +32,8 @@ export class ProjectManager {
       }
 
       // Listen for ATOM projects
-      atom.workspace["onDidChangeActiveTextEditor"](() => this.fireEditorChanged());
+      //atom.workspace["onDidChangeActiveTextEditor"](() => this.fireEditorChanged());
+      atom.workspace["onDidChangeActivePaneItem"](() => this.fireEditorChanged());
       atom.workspace["onDidOpen"](() => this.fireEditorChanged());
       atom.project["onDidChangePaths"](() => this.firePathChanges());
     }
