@@ -34,14 +34,23 @@ export class UIToolbarButton {
 
 export class UIToolbar extends UIBaseComponent {
 
+  private floatRightButtons:HTMLElement;
+
   constructor(){
     super();
     this.initUI();
   }
 
   private initUI(){
+    this.floatRightButtons = createElement('div',{
+      elements : [
+      ],
+      className : 'de-workbench-uitoolbar-container-floatright'
+    });
+
       this.mainElement = createElement('div',{
         elements : [
+          this.floatRightButtons
         ],
         className : 'de-workbench-uitoolbar-container'
       });
@@ -49,6 +58,11 @@ export class UIToolbar extends UIBaseComponent {
 
   public addElement(element:HTMLElement):UIToolbar {
     insertElement(this.mainElement, element);
+    return this;
+  }
+
+  public addRightElement(element:HTMLElement):UIToolbar {
+    insertElement(this.floatRightButtons, element);
     return this;
   }
 
@@ -60,8 +74,7 @@ export class UIToolbar extends UIBaseComponent {
 
   public addRightButton(button:UIToolbarButton):UIToolbar {
     let btn = this.createButton(button);
-    // TODO!!
-    //(this.mainElement, btn);
+    this.addRightElement(btn);
     return this;
   }
 

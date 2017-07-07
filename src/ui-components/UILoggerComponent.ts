@@ -103,6 +103,12 @@ class UILoggerToolbarComponent extends UIToolbar {
                         .setCaption('Test Button')
                         .setTitle('Test Button');
       this.addButton(testButton);
+
+      let testButton2 = new UIToolbarButton()
+                        .setId('test2')
+                        .setCaption('Test Button2')
+                        .setTitle('Test Button2');
+      this.addRightButton(testButton2);
     }
 
 }
