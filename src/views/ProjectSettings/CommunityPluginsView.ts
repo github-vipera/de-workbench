@@ -70,21 +70,8 @@ export class CommunityPluginsView extends UIBaseComponent {
       className : 'block'
     })
 
-    /**
-    // Platform Chooser Block / Install manually
-    this.btnChooseIOS = this.createPlatformSelectButton("iOS");
-    this.btnChooseAndroid = this.createPlatformSelectButton("Android");
-    this.btnChooseBrowser = this.createPlatformSelectButton("Browser");
-    let groupsPlatformChooser = createElement('div',{
-      elements: [
-        this.btnChooseAndroid,
-        this.btnChooseIOS,
-        this.btnChooseBrowser
-      ],
-      className : 'btn-group'
-    })
-    **/
 
+    // Platform Chooser Block / Install manually
     this.btnGroupPlatformChooser = new UIButtonGroup(UIButtonGroupMode.Toggle)
         .addButton(new UIButtonConfig().setId('ios').setCaption('iOS').setSelected(true))
         .addButton(new UIButtonConfig().setId('android').setCaption('Android').setSelected(true))
@@ -99,6 +86,8 @@ export class CommunityPluginsView extends UIBaseComponent {
       btnManualInstall.addEventListener('click',(evt)=>{
         console.log('Platforms selected: ', this.btnGroupPlatformChooser.getSelectedButtons());
       });
+    // End Platform Chooser Block / Install manually
+
 
     let blockPlatformChooser = createElement('div',{
       elements: [
@@ -151,28 +140,6 @@ export class CommunityPluginsView extends UIBaseComponent {
     });
   }
 
-
-  /**
-   * Create a button for platform selection
-   */
-   /**
-  private createPlatformSelectButton(platform:string):HTMLElement {
-    let btn:HTMLElement = createElement('button',{
-      elements: [
-        createText(platform)
-      ],
-      className: 'btn platform-select selected'
-    })
-    btn.setAttribute('platform-select','')
-    btn.setAttribute('platform' , platform);
-    btn.addEventListener('click',(evt)=>{
-      let el:any = evt.currentTarget;
-      el.classList.toggle('selected');
-      //alert(evt.currentTarget);
-    });
-    return btn;
-  }
-  **/
 
   /**
    * Submit the search to the npm registry

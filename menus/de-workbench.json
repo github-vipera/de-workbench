@@ -11,7 +11,11 @@
         },{
           "label": "Project Inspector",
           "command": "dewb-menu-view-:prjinspector-toggle"
-          }]
+        },{
+          "label": "Log Inspector",
+          "command": "dewb-menu-view-:loggerview-toggle"
+          }
+        ]
       }]
     }]
   }]

@@ -16,6 +16,7 @@ import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Logger } from '../logger/Logger'
 import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsView'
+import { LoggerView } from '../views/LoggerView'
 
  import {
    createText,
@@ -42,6 +43,7 @@ import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsVie
    public newProjectView: NewProjectView
    public projectInspectorView: ProjectInspectorView
    public debugAreaView: DebugAreaView
+   public loggerView: LoggerView
    private events: EventEmitter;
    public projectManager: ProjectManager;
 
@@ -79,6 +81,9 @@ import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsVie
      // Create a prject inspector dock window
      this.projectInspectorView = new ProjectInspectorView();
 
+     // Create the Logger inspector
+     this.loggerView = new LoggerView();
+     
      this.debugAreaView = new DebugAreaView();
 
      attachEventFromObject(this.events, [
@@ -100,6 +105,10 @@ import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsVie
 
    openDebugArea(){
      this.debugAreaView.open();
+   }
+
+   openLogger(){
+     this.loggerView.open();
    }
 
    showProjectSettings() {
@@ -125,6 +134,12 @@ import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsVie
      Logger.getInstance().debug("DEWorkbench toggleDebugArea called");
      this.events.emit('didToggleDebugArea');
      this.openDebugArea();
+   }
+
+   toggleLogger(){
+     Logger.getInstance().debug("DEWorkbench toggleLogger called");
+     this.events.emit('didToggleLogger');
+     this.openLogger();
    }
 
    getToolbarElement() {

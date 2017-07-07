@@ -15,6 +15,7 @@ export default {
   deWorkbench: null,
   toolbarPanel: null,
   subscriptions: null,
+  loggerView: null,
 
   activate (state: any) {
       console.log("DEWB activated.");
@@ -36,7 +37,8 @@ export default {
       // add commands
       let commands = atom.commands.add('atom-workspace', {
           'dewb-menu-view-:toolbar-toggle': () => this.toggleToolbar(),
-          'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector()
+          'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector(),
+          'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger()
         });
       this.subscriptions = new CompositeDisposable();
       // add commands subs
@@ -63,6 +65,11 @@ export default {
     } else {
       this.toolbarPanel.show()
     }
+  },
+
+  toggleLogger(){
+    console.log("Toggle Logger");
+    this.deWorkbench.toggleLogger();
   }
 
 }
