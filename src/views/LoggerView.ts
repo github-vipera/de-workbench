@@ -69,10 +69,12 @@ export class LoggerView {
       this.loggerComponent.addLog("This is the line " + i)
     }
 
+    /**
     setInterval(()=>{
       this.loggerComponent.addLog("This is the line " + new Date() )
     }, 3000);
-
+    **/
+    
     Logger.getInstance().debug("LoggerView initUI done.");
   }
 

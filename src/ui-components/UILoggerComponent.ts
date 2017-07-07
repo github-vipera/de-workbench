@@ -21,6 +21,9 @@ import { UIComponent, UIBaseComponent } from './UIComponent'
 
 export class UILoggerComponent extends UIBaseComponent {
 
+  public readonly autoscroll:boolean = true;
+  private toolbar:UILoggerToolbarComponent;
+  private loglines:HTMLElement;
 
   constructor(){
       super();
@@ -28,9 +31,16 @@ export class UILoggerComponent extends UIBaseComponent {
   }
 
   private buildUI(){
+    this.toolbar = new UILoggerToolbarComponent();
+
+    this.loglines = createElement('div',{
+      className: "de-workbench-uilogger-loglines"
+    })
+
     this.mainElement = createElement('div',{
       elements: [
-        createText("Here the log")
+        this.toolbar.element(),
+        this.loglines
       ],
       className: "de-workbench-uilogger-container"
     })
@@ -39,7 +49,7 @@ export class UILoggerComponent extends UIBaseComponent {
 
   public addLog(message:string, className?:string):UILoggerComponent{
     let el = this.createLogLineElement(message, className);
-    this.mainElement.appendChild(el);
+    this.loglines.appendChild(el);
     this.updateScroll();
     return this;
   }
@@ -58,8 +68,40 @@ export class UILoggerComponent extends UIBaseComponent {
     })
   }
 
-  public updateScroll(){
-    this.mainElement.scrollTop = this.mainElement.scrollHeight;
+  public updateScroll():UILoggerComponent{
+    if (this.autoscroll){
+      this.mainElement.scrollTop = this.mainElement.scrollHeight;
+    }
+    return this;
   }
+
+  public setAutoscroll(autoscroll:boolean):UILoggerComponent{
+    return this;
+  }
+
+  public applyFilter(filter:string){
+    //TODO!!
+  }
+
+  public search(search:string){
+    //TODO!!
+  }
+
+}
+
+class UILoggerToolbarComponent extends UIBaseComponent {
+
+    constructor(){
+      super();
+      this.initUI();
+    }
+
+    private initUI(){
+      this.mainElement = createElement('div',{
+          elements : [
+            createText("Here the log inspector toolbar")
+          ]
+      });
+    }
 
 }
