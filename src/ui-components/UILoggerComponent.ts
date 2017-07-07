@@ -18,6 +18,7 @@
  } from '../element/index';
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
+import { UIToolbar, UIToolbarButton } from './UIToolbar'
 
 export class UILoggerComponent extends UIBaseComponent {
 
@@ -89,19 +90,19 @@ export class UILoggerComponent extends UIBaseComponent {
 
 }
 
-class UILoggerToolbarComponent extends UIBaseComponent {
+class UILoggerToolbarComponent extends UIToolbar {
 
     constructor(){
       super();
-      this.initUI();
+      this.setupToolbar();
     }
 
-    private initUI(){
-      this.mainElement = createElement('div',{
-          elements : [
-            createText("Here the log inspector toolbar")
-          ]
-      });
+    private setupToolbar(){
+      let testButton = new UIToolbarButton()
+                        .setId('test')
+                        .setCaption('Test Button')
+                        .setTitle('Test Button');
+      this.addButton(testButton);
     }
 
 }
