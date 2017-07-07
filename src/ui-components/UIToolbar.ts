@@ -14,10 +14,12 @@
    createIcon,
    createIconFromPath,
    attachEventFromObject,
-   createTextEditor
+   createTextEditor,
+   createButtonSpacer
  } from '../element/index';
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
+const { CompositeDisposable } = require('atom');
 
 export class UIToolbarButton {
   public id: string;
@@ -25,16 +27,19 @@ export class UIToolbarButton {
   public title: string;
   public handler: Function;
   public className: string = '';
+  public icon:string;
   public setId(id:string):UIToolbarButton { this.id = id; return this; }
   public setCaption(caption:string):UIToolbarButton { this.caption = caption; return this; }
   public setTitle(title:string):UIToolbarButton { this.title = title; return this; }
   public setClassName(className:string):UIToolbarButton { this.className = className; return this; }
   public setHandler(handler:Function):UIToolbarButton { this.handler = handler; return this; }
+  public setIcon(icon:string):UIToolbarButton { this.icon = icon; return this; }
 }
 
 export class UIToolbar extends UIBaseComponent {
 
   private floatRightButtons:HTMLElement;
+  private subscriptions:any = new CompositeDisposable();
 
   constructor(){
     super();
@@ -57,11 +62,15 @@ export class UIToolbar extends UIBaseComponent {
   }
 
   public addElement(element:HTMLElement):UIToolbar {
+    let spacer = createButtonSpacer();
+    insertElement(this.mainElement, spacer);
     insertElement(this.mainElement, element);
     return this;
   }
 
   public addRightElement(element:HTMLElement):UIToolbar {
+    let spacer = createButtonSpacer();
+    insertElement(this.mainElement, spacer);
     insertElement(this.floatRightButtons, element);
     return this;
   }
@@ -79,17 +88,30 @@ export class UIToolbar extends UIBaseComponent {
   }
 
   protected createButton(button:UIToolbarButton):HTMLElement{
-    let className = "btn";
-    if (button.className){
-      className += " " + button.className;
+    let elements = new Array();
+
+    if (button.icon){
+      elements.push(createIcon(button.icon));
     }
-    let newButton = createElement('button',{
-      elements : [
-        createText(button.caption)
-      ],
-      className : className
-    });
-    return newButton;
+    if (button.caption){
+      elements.push(createText(button.caption));
+    }
+
+    let options = {}
+
+    if (button.title){
+      options["tooltip"] = {
+        subscriptions: this.subscriptions,
+        title: button.title
+      }
+    }
+
+    if (button.handler){
+        options["click"] = button.handler
+    }
+
+    return createButton(options, [elements]);
+
   }
 
 

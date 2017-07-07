@@ -98,16 +98,22 @@ class UILoggerToolbarComponent extends UIToolbar {
     }
 
     private setupToolbar(){
+
+      let logoElement = createIcon('logo')
+      this.addElement(logoElement)
+
       let testButton = new UIToolbarButton()
                         .setId('test')
                         .setCaption('Test Button')
-                        .setTitle('Test Button');
+                        .setTitle('Test Button')
+                        .setHandler(()=>{alert('button1')})
       this.addButton(testButton);
 
       let testButton2 = new UIToolbarButton()
                         .setId('test2')
-                        .setCaption('Test Button2')
-                        .setTitle('Test Button2');
+                        .setTitle('Auto scroll')
+                        .setIcon('sort')
+                        .setHandler(()=>{alert('button2')})
       this.addRightButton(testButton2);
     }
 

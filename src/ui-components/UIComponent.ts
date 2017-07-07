@@ -29,4 +29,9 @@ export class UIBaseComponent implements UIComponent {
     return this.uiComponentId;
   }
 
+  public destroy () {
+    this.mainElement.remove();
+  }
+
+
 }
