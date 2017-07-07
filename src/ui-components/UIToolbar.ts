@@ -28,12 +28,16 @@ export class UIToolbarButton {
   public handler: Function;
   public className: string = '';
   public icon:string;
+  public isToggle:boolean = false;
+  public checked:boolean = false;
   public setId(id:string):UIToolbarButton { this.id = id; return this; }
   public setCaption(caption:string):UIToolbarButton { this.caption = caption; return this; }
   public setTitle(title:string):UIToolbarButton { this.title = title; return this; }
   public setClassName(className:string):UIToolbarButton { this.className = className; return this; }
   public setHandler(handler:Function):UIToolbarButton { this.handler = handler; return this; }
   public setIcon(icon:string):UIToolbarButton { this.icon = icon; return this; }
+  public setToggle(toggle:boolean):UIToolbarButton { this.isToggle = toggle; return this; }
+  public setChecked(checked:boolean):UIToolbarButton { this.checked = checked; return this; }
 }
 
 export class UIToolbar extends UIBaseComponent {
@@ -88,6 +92,10 @@ export class UIToolbar extends UIBaseComponent {
   }
 
   protected createButton(button:UIToolbarButton):HTMLElement{
+    if (button.isToggle){
+      return this.createToggleButton(button);
+    }
+
     let elements = new Array();
 
     if (button.icon){
@@ -111,6 +119,52 @@ export class UIToolbar extends UIBaseComponent {
     }
 
     return createButton(options, [elements]);
+
+  }
+
+  //<label class='input-label'>   <input class='input-toggle' type='checkbox' checked> Toggle</label>
+  protected createToggleButton(button:UIToolbarButton):HTMLElement{
+    let innerElements = new Array();
+
+    let options = {}
+
+    if (button.title){
+      options["tooltip"] = {
+        subscriptions: this.subscriptions,
+        title: button.title
+      }
+    }
+    if (button.handler){
+        options["click"] = button.handler
+    }
+
+    let inputToggleEl = createElement('input',{
+      className : 'input-toggle',
+      tooltip: {
+        subscriptions: this.subscriptions,
+        title: button.title
+      }
+    })
+    inputToggleEl.type = 'checkbox'
+    if (button.checked){
+      inputToggleEl.setAttribute('checked','')
+    }
+    innerElements.push(inputToggleEl)
+
+    if (button.caption){
+      innerElements.push(createText(button.caption));
+    }
+
+    let className = 'input-label';
+    if (button.className){
+      className += ' ' + button.className;
+    }
+
+    return createElement('label', {
+      className: className,
+      elements: innerElements || options,
+      options
+    });
 
   }
 

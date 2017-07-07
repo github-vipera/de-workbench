@@ -111,8 +111,9 @@ class UILoggerToolbarComponent extends UIToolbar {
 
       let testButton2 = new UIToolbarButton()
                         .setId('test2')
+                        .setToggle(true)
                         .setTitle('Auto scroll')
-                        .setIcon('sort')
+                        .setChecked(true)
                         .setHandler(()=>{alert('button2')})
       this.addRightButton(testButton2);
     }
