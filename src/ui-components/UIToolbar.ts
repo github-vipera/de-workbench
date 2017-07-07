@@ -30,6 +30,7 @@ export class UIToolbarButton {
   public icon:string;
   public isToggle:boolean = false;
   public checked:boolean = false;
+  public withSpace:boolean = true;
   public setId(id:string):UIToolbarButton { this.id = id; return this; }
   public setCaption(caption:string):UIToolbarButton { this.caption = caption; return this; }
   public setTitle(title:string):UIToolbarButton { this.title = title; return this; }
@@ -38,6 +39,7 @@ export class UIToolbarButton {
   public setIcon(icon:string):UIToolbarButton { this.icon = icon; return this; }
   public setToggle(toggle:boolean):UIToolbarButton { this.isToggle = toggle; return this; }
   public setChecked(checked:boolean):UIToolbarButton { this.checked = checked; return this; }
+  public setWithSpace(withSpace:boolean):UIToolbarButton { this.withSpace = withSpace; return this; }
 }
 
 export class UIToolbar extends UIBaseComponent {
@@ -65,10 +67,15 @@ export class UIToolbar extends UIBaseComponent {
       });
   }
 
+  public addElementNoSpace(element:HTMLElement):UIToolbar {
+    insertElement(this.mainElement, element);
+    return this;
+  }
+
   public addElement(element:HTMLElement):UIToolbar {
     let spacer = createButtonSpacer();
     insertElement(this.mainElement, spacer);
-    insertElement(this.mainElement, element);
+    this.addElementNoSpace(element);
     return this;
   }
 
@@ -81,7 +88,11 @@ export class UIToolbar extends UIBaseComponent {
 
   public addButton(button:UIToolbarButton):UIToolbar {
     let btn = this.createButton(button);
-    this.addElement(btn);
+    if (button.withSpace){
+      this.addElement(btn);
+    } else {
+      this.addElementNoSpace(btn);
+    }
     return this;
   }
 
@@ -106,6 +117,10 @@ export class UIToolbar extends UIBaseComponent {
     }
 
     let options = {}
+
+    if (button.className){
+      options["className"] = button.className;
+    }
 
     if (button.title){
       options["tooltip"] = {

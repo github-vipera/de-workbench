@@ -90,6 +90,8 @@ export class UILoggerComponent extends UIBaseComponent {
 
 }
 
+//<input class='input-search' type='search' placeholder='Search'>
+
 class UILoggerToolbarComponent extends UIToolbar {
 
     constructor(){
@@ -99,23 +101,45 @@ class UILoggerToolbarComponent extends UIToolbar {
 
     private setupToolbar(){
 
-      let logoElement = createIcon('logo')
-      this.addElement(logoElement)
+      // Search field
+      let searchTextField = createTextEditor({
+        type:'search',
+        placeholder: 'Filter log',
+        change: (value) => {
+          console.log("Value changed: ", value)
+        }
+      })
+      searchTextField.classList.add("de-workbench-uilogger-search-field")
+      searchTextField.classList.add("inline-block")
+      /**
+      let searchTextField = createElement('input',{
+        className: 'input-search inline-block de-workbench-uilogger-search-field'
+      })
+      searchTextField.placeholder = 'Search into the log';
+      searchTextField.type = 'Search into the log';
+      **/
+      this.addElement(searchTextField);
 
       let testButton = new UIToolbarButton()
-                        .setId('test')
-                        .setCaption('Test Button')
-                        .setTitle('Test Button')
+                        .setId('find')
+                        .setCaption('Find')
+                        .setTitle('Search into log')
+                        .setWithSpace(false)
+                        .setClassName('de-workbench-uilogger-search-button')
                         .setHandler(()=>{alert('button1')})
       this.addButton(testButton);
 
-      let testButton2 = new UIToolbarButton()
+      // Autoscroll toggle option
+      let autoscrollToggle = new UIToolbarButton()
                         .setId('test2')
                         .setToggle(true)
                         .setTitle('Auto scroll')
                         .setChecked(true)
                         .setHandler(()=>{alert('button2')})
-      this.addRightButton(testButton2);
+      this.addRightButton(autoscrollToggle);
+
+
+
     }
 
 }
