@@ -30,7 +30,11 @@ export class UIBaseComponent implements UIComponent {
   }
 
   public destroy () {
+    while (this.mainElement.hasChildNodes()) {
+      this.mainElement.removeChild(this.mainElement.lastChild);
+    }
     this.mainElement.remove();
+    this.mainElement = undefined;
   }
 
 

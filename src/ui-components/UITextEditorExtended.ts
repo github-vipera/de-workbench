@@ -100,14 +100,13 @@ export class UITextEditorExtended extends UIBaseComponent {
   }
 
   public destroy(){
-    super.destroy();
     if (this.buttonHandler){
-      this.buttonElement.removeEventListener(this.buttonHandler);
+      this.buttonElement.removeEventListener('click', this.buttonHandler);
     }
     if (this.editorHandler){
-      this.inputEl.removeEventListener(this.editorHandler);
+      this.inputEl.removeEventListener('keyup', this.editorHandler);
     }
-
+    super.destroy();
   }
 
 

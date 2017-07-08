@@ -149,8 +149,14 @@ export class NewProjectView {
 
   close () {
     this.panel.hide()
+    this.element = undefined;
+    this.panel = undefined;
+    this.destroy()
   }
 
+  protected destroy(){
+    this.extTextField.destroy();
+  }
 
   createControlText (pluginName: string, key: string, config: any) {
     let value = ''

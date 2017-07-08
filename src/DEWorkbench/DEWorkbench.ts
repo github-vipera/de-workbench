@@ -40,7 +40,7 @@ import { LoggerView } from '../views/LoggerView'
  export class DEWorkbench {
 
    public toolbarView: ToolbarView
-   public newProjectView: NewProjectView
+   //public newProjectView: NewProjectView
    public projectInspectorView: ProjectInspectorView
    public debugAreaView: DebugAreaView
    public loggerView: LoggerView
@@ -59,7 +59,7 @@ import { LoggerView } from '../views/LoggerView'
      // Create the main toolbar
      this.toolbarView = new ToolbarView({
        didNewProject: () => {
-         this.newProjectView.open();
+         this.showNewProjectModal();
       },
       didToggleToolbar: () => {
           this.toggleToolbar();
@@ -75,15 +75,12 @@ import { LoggerView } from '../views/LoggerView'
       }
      });
 
-     // Create the New Project modal window
-     this.newProjectView = new NewProjectView();
-
      // Create a prject inspector dock window
      this.projectInspectorView = new ProjectInspectorView();
 
      // Create the Logger inspector
      this.loggerView = new LoggerView();
-     
+
      this.debugAreaView = new DebugAreaView();
 
      attachEventFromObject(this.events, [
@@ -93,6 +90,12 @@ import { LoggerView } from '../views/LoggerView'
      ProjectManager.getInstance().didProjectChanged((projectPath)=>this.onProjectChanged(projectPath));
 
      Logger.getInstance().info("DEWorkbench initialized successfully.");
+   }
+
+   public showNewProjectModal(){
+     // Create the New Project modal window
+     let newProjectView = new NewProjectView();
+     newProjectView.open();
    }
 
    onProjectChanged(projectPath:String){
