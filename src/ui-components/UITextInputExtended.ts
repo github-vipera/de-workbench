@@ -22,6 +22,12 @@ import { UIComponent, UIBaseComponent } from './UIComponent'
 export class UITextInputExtended extends UIBaseComponent {
 
   private buttonCaption:string;
+  private buttonText:Text;
+  private buttonElement:HTMLElement;
+  private inputEl:HTMLElement;
+  private editor;
+  private buttonHandler;
+  private editorHandler;
 
   constructor(){
     super();
@@ -34,30 +40,69 @@ export class UITextInputExtended extends UIBaseComponent {
       className : 'de-workbench-textinput-extended'
     })
 
-    let inputEl = createElement('atom-text-editor',{
+    this.inputEl = createElement('atom-text-editor',{
     })
-    inputEl.classList.add("editor");
-    inputEl.classList.add("mini");
-    inputEl.classList.add("de-workbench-textinput-extended-editor")
-    inputEl.classList.add('btn-group-xs');
-    inputEl.setAttribute('data-grammar','text plain null-grammar')
-    inputEl.setAttribute('mini','')
+    this.inputEl.classList.add("editor");
+    this.inputEl.classList.add("mini");
+    this.inputEl.classList.add("de-workbench-textinput-extended-editor")
+    this.inputEl.classList.add('btn-group-xs');
+    this.inputEl.setAttribute('data-grammar','text plain null-grammar')
+    this.inputEl.setAttribute('mini','')
+    this.editor = this.inputEl['getModel']()
 
-    let buttonEl = createElement('button',{
+    this.buttonText = createText('');
+    this.buttonElement = createElement('button',{
       elements: [
-        createText('Browse...')
+        this.buttonText
       ],
       className : 'btn'
     })
-    buttonEl.classList.add('de-workbench-textinput-extended-btn')
-    insertElement(inputEl, buttonEl);
+    this.buttonElement.classList.add('de-workbench-textinput-extended-btn')
+    insertElement(this.inputEl, this.buttonElement);
 
-    insertElement(this.mainElement, inputEl);
+    insertElement(this.mainElement, this.inputEl);
   }
 
-  public setButtonCaption(caption:string){
+  public setTextPlaceholder(placeholder:string):UITextInputExtended {
+    this.editor.setPlaceholderText(placeholder);
+    return this;
+  }
+
+  public setButtonClassName(className:string):UITextInputExtended {
+    this.buttonElement.classList.add(className)
+    return this;
+  }
+
+  public setButtonCaption(caption:string):UITextInputExtended {
     this.buttonCaption = caption;
+    this.buttonText.textContent = caption;
+    return this;
   }
+
+  public addButtonHandler(handler):UITextInputExtended {
+    this.buttonHandler = handler;
+    this.buttonElement.addEventListener('click',handler);
+    return this;
+  }
+
+  public addEditorHandler(handler):UITextInputExtended {
+    this.editorHandler = handler;
+    this.inputEl.addEventListener('keyup', handler);
+    return this;
+  }
+
+  public destroy(){
+    super.destroy();
+    if (this.buttonHandler){
+      this.buttonElement.removeEventListener(this.buttonHandler);
+    }
+    if (this.editorHandler){
+      this.inputEl.removeEventListener(this.editorHandler);
+    }
+    
+  }
+
+
 
 
 }
