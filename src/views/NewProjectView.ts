@@ -20,6 +20,7 @@
 
 import { EventEmitter }  from 'events'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../ui-components/UIButtonGroup'
+import { UITextEditorExtended } from '../ui-components/UITextEditorExtended'
 
 export class NewProjectView {
 
@@ -34,11 +35,15 @@ export class NewProjectView {
   private projectTypeButtons:UIButtonGroup;
   private actionButtons:UIButtonGroup;
 
+  private extTextField:UITextEditorExtended;
+
   constructor () {
     this.events = new EventEmitter()
-    this.element = document.createElement('xatom-debug-scheme') //de-workbench-newproject-view
+
+    /**
+    this.element = document.createElement('de-workbench-scheme') //de-workbench-newproject-view
+
     this.editorElement = createElement('xatom-debug-scheme-editor', {
-      /*className: 'native-key-bindings'*/
     })
 
     let title =  createElement('scheme-label', {
@@ -116,13 +121,25 @@ export class NewProjectView {
         ]
       })]
     )
+    **/
+
+    this.extTextField = new UITextEditorExtended()
+                    .setButtonCaption('Browse')
+                    .setTextPlaceholder('Here the path')
+                    .addButtonHandler((evt)=>{
+                      alert(this.extTextField.getValue())
+                      this.close();
+                    });
+
+    this.element = this.extTextField.element();
 
     let modalConfig = {
       item: this.element,
       visible: false
     }
-    modalConfig['className'] = 'xatom-debug-modal'
+    modalConfig['className'] = 'de-workbench-modal'
     this.panel = atom.workspace.addModalPanel(modalConfig)
+
 
   }
 

@@ -19,7 +19,7 @@
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
 
-export class UITextInputExtended extends UIBaseComponent {
+export class UITextEditorExtended extends UIBaseComponent {
 
   private buttonCaption:string;
   private buttonText:Text;
@@ -63,32 +63,40 @@ export class UITextInputExtended extends UIBaseComponent {
     insertElement(this.mainElement, this.inputEl);
   }
 
-  public setTextPlaceholder(placeholder:string):UITextInputExtended {
+  public setTextPlaceholder(placeholder:string):UITextEditorExtended {
     this.editor.setPlaceholderText(placeholder);
     return this;
   }
 
-  public setButtonClassName(className:string):UITextInputExtended {
+  public setButtonClassName(className:string):UITextEditorExtended {
     this.buttonElement.classList.add(className)
     return this;
   }
 
-  public setButtonCaption(caption:string):UITextInputExtended {
+  public setButtonCaption(caption:string):UITextEditorExtended {
     this.buttonCaption = caption;
     this.buttonText.textContent = caption;
     return this;
   }
 
-  public addButtonHandler(handler):UITextInputExtended {
+  public addButtonHandler(handler):UITextEditorExtended {
     this.buttonHandler = handler;
     this.buttonElement.addEventListener('click',handler);
     return this;
   }
 
-  public addEditorHandler(handler):UITextInputExtended {
+  public addEditorHandler(handler):UITextEditorExtended {
     this.editorHandler = handler;
     this.inputEl.addEventListener('keyup', handler);
     return this;
+  }
+
+  public getValue():string{
+    return this.editor.getText();
+  }
+
+  public getEditor(){
+    return this.editor;
   }
 
   public destroy(){
@@ -99,7 +107,7 @@ export class UITextInputExtended extends UIBaseComponent {
     if (this.editorHandler){
       this.inputEl.removeEventListener(this.editorHandler);
     }
-    
+
   }
 
 
