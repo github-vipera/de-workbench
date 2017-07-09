@@ -21,7 +21,7 @@
     "android"
   ],
   "license": "MIT",
-  "repository": "https://github.com/willyelm/xatom-debug",
+  "repository": "https://github.com/github-vipera/de-workbench",
   "main": "./lib/main",
   "showWelcome": true,
   "scripts": {

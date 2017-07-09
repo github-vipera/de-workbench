@@ -47,7 +47,7 @@ export enum UITabbedViewTabType {
 /**
  * Tabbed View main component
  */
-export class UITabbedView extends UIBaseComponent implements UIComponent {
+export class UITabbedView extends UIBaseComponent {
 
   private tabList:UITabbedViewTabListComponent;
   private stacked:UITabbedViewStackedComponent;
@@ -153,17 +153,22 @@ export class UITabbedView extends UIBaseComponent implements UIComponent {
     //TODO!!
   }
 
+  public destroy(){
+      this.tabList.destroy()
+      this.stacked.destroy();
+      super.destroy();
+  }
+
 }
 
 
 /**
  * List inner component
  */
-class UITabbedViewTabListComponent implements UIComponent {
+class UITabbedViewTabListComponent extends UIBaseComponent {
 
   public static readonly EVT_TABITEM_SELECTED:string = "UITabbedViewTabListComponent.tabItemSelected";
 
-  private mainElement: HTMLElement;
   private olElement: HTMLElement;
   private selectedElement: HTMLElement;
   private itemsElementsMap:any = {};
@@ -172,6 +177,7 @@ class UITabbedViewTabListComponent implements UIComponent {
   private currentTabTypeClassName: string = UITabbedView.CLSNAME_TAB_TYPE_DEFAULT;
 
   constructor(){
+    super();
     this.buildUI();
   }
 
@@ -282,18 +288,22 @@ class UITabbedViewTabListComponent implements UIComponent {
     }
   }
 
+  public destroy(){
+      super.destroy();
+  }
+
 }
 
 
 /**
  * Stacked views inner component
  */
-class UITabbedViewStackedComponent implements UIComponent {
+class UITabbedViewStackedComponent extends UIBaseComponent {
 
-  private mainElement: HTMLElement;
   private selectedView: HTMLElement;
 
   constructor(){
+    super();
     this.buildUI();
   }
 
@@ -337,5 +347,9 @@ class UITabbedViewStackedComponent implements UIComponent {
     this.mainElement.classList.add(classToAdd);
   }
 
+
+  public destroy(){
+    super.destroy()
+  }
 
 }

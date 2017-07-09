@@ -93,6 +93,9 @@ export class UIStackedView extends UIBaseComponent {
       return this;
     }
 
+    public destroy(){
+      super.destroy();
+    }
 
 
 }

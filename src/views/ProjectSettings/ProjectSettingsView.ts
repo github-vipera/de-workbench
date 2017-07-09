@@ -39,6 +39,7 @@ export class ProjectSettingsView {
   private projectRoot: string;
   private projectId: string;
   private tabbedView: UITabbedView;
+  private atomTextEditor: any;
 
   // Sub views
   private installedPluginsView: InstalledPluginsView;
@@ -119,12 +120,21 @@ export class ProjectSettingsView {
         location: 'center',
         element: this.element,
         getTitle: () => 'DE Project Settings',
-        getURI: () => uri
+        getURI: () => uri,
+        destroy: ()=>{
+          this.destroy()
+        }
       };
       let atomWorkspace:any = atom.workspace;
       atomWorkspace["open"](this.item).then((view)=>{
+          this.atomTextEditor = view;
       });
     }
+  }
+
+  public destroy(){
+    this.tabbedView.destroy();
+    this.element.remove();
   }
 
 }
