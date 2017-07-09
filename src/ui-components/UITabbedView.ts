@@ -154,9 +154,9 @@ export class UITabbedView extends UIBaseComponent {
   }
 
   public destroy(){
-      this.tabList.destroy()
-      this.stacked.destroy();
-      super.destroy();
+    this.tabList.destroy()
+    this.stacked.destroy();
+    super.destroy();
   }
 
 }

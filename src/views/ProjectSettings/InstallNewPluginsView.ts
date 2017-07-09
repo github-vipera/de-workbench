@@ -30,7 +30,6 @@ import { CommunityPluginsView } from './CommunityPluginsView'
 
 export class InstallNewPluginsView extends UIBaseComponent {
 
-  private pluginList: UIPluginsList;
   private stackedPage: UIStackedView;
   private tabbedView: UITabbedView;
   private communityPluginsView: CommunityPluginsView;
@@ -72,6 +71,13 @@ export class InstallNewPluginsView extends UIBaseComponent {
       el.style["width"] = "100%";
       el.style["heightz"] = "100%";
       return el;
+  }
+
+  public destroy(){
+    this.communityPluginsView.destroy()
+    this.stackedPage.destroy()
+    this.tabbedView.destroy()
+    super.destroy();
   }
 
 }

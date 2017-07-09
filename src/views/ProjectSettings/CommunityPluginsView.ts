@@ -192,4 +192,9 @@ export class CommunityPluginsView extends UIBaseComponent {
   }
   **/
 
+  public destroy(){
+    this.pluginList.destroy()
+    this.btnGroupPlatformChooser.destroy()
+    super.destroy()
+  }
 }

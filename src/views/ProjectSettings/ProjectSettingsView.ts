@@ -133,6 +133,11 @@ export class ProjectSettingsView {
   }
 
   public destroy(){
+    this.generalSettingsView.destroy();
+    this.installedPluginsView.destroy();
+    this.installNewPluginsView.destroy();
+    this.variantsView.destroy();
+    this.appSignatureView.destroy();
     this.tabbedView.destroy();
     this.element.remove();
   }

@@ -63,6 +63,7 @@ export class UIButtonGroup extends UIBaseComponent {
   private buttonGroup:HTMLElement;
   private toggleMode:UIButtonGroupMode;
   private buttons:any;
+  private listeners:any;
 
   constructor(toggleMode:UIButtonGroupMode){
     super();
@@ -72,6 +73,7 @@ export class UIButtonGroup extends UIBaseComponent {
 
   private buildUI(){
     this.buttons = {};
+    this.listeners = {};
 
     this.buttonGroup = createElement('div',{
       elements: [
@@ -142,8 +144,7 @@ export class UIButtonGroup extends UIBaseComponent {
       btn.classList.add('selected');
     }
 
-    btn.addEventListener('click',(evt)=>{
-
+    let buttonClickListener = (evt)=>{
       if (this.toggleMode==UIButtonGroupMode.Standard){
         //nop
       } else if (this.toggleMode==UIButtonGroupMode.Toggle) {
@@ -158,8 +159,14 @@ export class UIButtonGroup extends UIBaseComponent {
       if (buttonConfig.clickListener){
         buttonConfig.clickListener(buttonConfig.id);
       }
+    }
 
-    });
+    btn.addEventListener('click', buttonClickListener);
+
+    this.listeners[buttonConfig.id] = {
+      button: btn,
+      listener: buttonClickListener,
+    }
 
     return btn;
   }
@@ -177,5 +184,17 @@ export class UIButtonGroup extends UIBaseComponent {
     return ret;
   }
 
+  public destroy(){
+    for (var key in this.listeners) {
+      if (this.listeners.hasOwnProperty(key)) {
+        var btnInfo = this.listeners[key];
+        btnInfo.button.removeEventListener('click', btnInfo.listener);
+        btnInfo.button.remove();
+      }
+    }
+    this.listeners = {}
+    this.buttons = {}
+    super.destroy();
+  }
 
 }
