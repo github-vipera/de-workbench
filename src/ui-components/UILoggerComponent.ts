@@ -380,7 +380,9 @@ class UILoggerToolbarComponent extends UIToolbar {
         change: (value) => {
           console.log("Value changed: ", value);
           this.filter.setText(value);
-          this.target.evaluateAllFilters();
+          setTimeout(() => {
+            this.target.evaluateAllFilters();  
+          });
         }
       })
       searchTextField.classList.add("de-workbench-uilogger-search-field")
@@ -394,14 +396,6 @@ class UILoggerToolbarComponent extends UIToolbar {
       **/
       this.addElement(searchTextField);
 
-      let testButton = new UIToolbarButton()
-                        .setId('find')
-                        .setCaption('Find')
-                        .setTitle('Search into log')
-                        .setWithSpace(false)
-                        .setClassName('de-workbench-uilogger-search-button')
-                        .setHandler(()=>{alert('button1')})
-      this.addButton(testButton);
 
       // Autoscroll toggle option
       let autoscrollToggle = new UIToolbarButton()
