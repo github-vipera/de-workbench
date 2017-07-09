@@ -25,7 +25,7 @@ import { Cordova, CordovaPlatform, CordovaPlugin } from '../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../ui-components/UIListView'
 import { ProjectTypePanel } from '../ui-components/ProjectTypePanel'
 import { Logger } from '../logger/Logger'
-import { UILoggerComponent } from '../ui-components/UILoggerComponent'
+import { UILoggerComponent,LogLine,IFilterableModel } from '../ui-components/UILoggerComponent'
 
 export class LoggerView {
 
@@ -65,16 +65,16 @@ export class LoggerView {
     this.loggerComponent.addLog("LoggerView initUI done.")
     this.loggerComponent.addLog("Another Log line.")
     this.loggerComponent.addLog("Hello World!!")
-    for (var i=0;i<50;i++){
+    for (let i=0;i<500;i++){
       this.loggerComponent.addLog("This is the line " + i)
     }
 
-    /**
-    setInterval(()=>{
-      this.loggerComponent.addLog("This is the line " + new Date() )
-    }, 3000);
-    **/
-    
+
+    /*
+    let i=0;
+    setInterval(() => {
+      this.loggerComponent.addLog("This is the line " + (i++));
+    },500);*/
     Logger.getInstance().debug("LoggerView initUI done.");
   }
 

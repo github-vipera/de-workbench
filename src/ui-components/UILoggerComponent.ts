@@ -94,7 +94,8 @@ export class FilterableLogModel extends BaseLogModel implements IFilterableModel
   private model:LogModel;
   private _listeners:Array<LogModelListener> = [];
   private _logLines:Array<LogLine> = [];
-  private _filters:Array<Filter<LogLine>>
+  private _filters:Array<Filter<LogLine>>=[]
+  private _filteredList:Array<LogLine>=[]
   constructor(model:LogModel){
     super();
     this.model=model;
@@ -105,10 +106,16 @@ export class FilterableLogModel extends BaseLogModel implements IFilterableModel
   }
 
   getRowCount():number{
+    if(this._filters.length>0){
+      return this._filteredList.length;
+    }
     return this.model.getRowCount();
   }
 
   getRowAt(index:number){
+    if(this._filters.length>0){
+      return this._filteredList[index];
+    }
     return this.model.getRowAt(index);
   }
 
@@ -123,19 +130,23 @@ export class FilterableLogModel extends BaseLogModel implements IFilterableModel
   }
 
   rowAppended(logLine:LogLine){
-    _.forEach(this._listeners,function(single){
-      single.rowAppended(logLine);
-    });
+    let newValue = this.applyFilterChain([logLine]);
+    if(newValue.length>0){
+      this._filteredList.push(newValue[0]);
+      _.forEach(this._listeners,function(single){
+        single.rowAppended(logLine);
+      });
+    }
+    // ELSE do nothing!!!!
   }
 
   rowsChanged(){
-    _.forEach(this._listeners,function(single){
-      single.rowsChanged();
-    });
+    this.evaluateAllFilters();
   }
 
   addFilter(filter: Filter<LogLine>){
-    this._filters.push(filter)
+    this._filters.push(filter);
+    this.evaluateAllFilters();
   }
   removeFilter(filter: Filter<LogLine>){
     _.remove(this._filters,function(single){
@@ -146,13 +157,36 @@ export class FilterableLogModel extends BaseLogModel implements IFilterableModel
     this._filters = [];
   }
   evaluateAllFilters(){
-    //TODO
+    this._filteredList=this.applyFilterChain(this.getOrigialValues());
+    _.forEach(this._listeners,function(single){
+      single.rowsChanged();
+    });
+  }
+
+  private getOrigialValues():Array<LogLine>{
+    let values=[];
+    let count = this.model.getRowCount();
+    for(let i=0; i< count; i++){
+      values.push(this.model.getRowAt(i))
+    }
+    return values;
+  }
+
+  private applyFilterChain(currentValues:Array<LogLine>):Array<LogLine>{
+    if(this._filters.length == 0){
+      return currentValues;
+    }
+    for(let filter of this._filters){
+      currentValues = _.filter(currentValues,filter.evaluateFilter.bind(filter));
+    }
+    return currentValues;
   }
 }
 
 
 export class UILogView extends UIBaseComponent implements LogModelListener {
   private model:LogModel;
+  private autoscroll:boolean = true;
   constructor(model?:LogModel){
     super();
     this.model=model != null? model:new BaseLogModel();
@@ -164,17 +198,30 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
       className: "de-workbench-uilogger-loglines"
     });
   }
-  createLogLineModel(logLevel:LogLevel,message:string):LogLine{
-    return {
-      logLevel:logLevel,
-      message:message
-    }
-  }
 
   rowAppended(newLine:LogLine){
+    this.appendNewNode(newLine);
+  }
+
+  isAutoscroll():boolean{
+    return this.autoscroll;
+  }
+
+  setAutoscroll(value:boolean){
+    this.autoscroll=value;
+  }
+
+  private appendNewNode(newLine:LogLine){
     let cssClass= this.getClassByLevel(newLine.logLevel);
     let element:HTMLElement = this.createLogLineElement(newLine.message,cssClass);
     this.element().appendChild(element);
+    this.updateScroll();
+  }
+
+  updateScroll(){
+    if (this.autoscroll){
+      this.mainElement.scrollTop = this.mainElement.scrollHeight;
+    }
   }
 
   getClassByLevel(level:LogLevel):string{
@@ -195,6 +242,24 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
 
   rowsChanged(){
     console.log("rowsChanged","repeat rendering");
+    this.render();
+  }
+
+  private render(){
+    this.clearMainElement();
+    const count=this.model.getRowCount();
+    for(let i=0;i< count;i++){
+      this.appendNewNode(this.model.getRowAt(i));
+    }
+  }
+
+  private clearMainElement(){
+    if(!this.mainElement){
+      return;
+    }
+    while(this.mainElement.firstChild){
+      this.mainElement.removeChild(this.mainElement.firstChild);
+    }
   }
 
   private createLogLineElement(message:string, className?:string):HTMLElement {
@@ -223,17 +288,22 @@ export class UILoggerComponent extends UIBaseComponent {
   private toolbar:UILoggerToolbarComponent;
   //private loglines:HTMLElement;
   private logView:UILogView;
-  private logModel:LogModel;
+  private logModel:FilterableLogModel;
 
-  constructor(){
+  constructor(model?:LogModel){
       super();
-      this.logModel = new FilterableLogModel(new BaseLogModel());
+      this.logModel = new FilterableLogModel(model || new BaseLogModel());
       this.logView= new UILogView(this.logModel);
       this.buildUI();
   }
 
+  public getFilterableModel():FilterableLogModel {
+    return this.logModel;
+  }
+
   private buildUI(){
     this.toolbar = new UILoggerToolbarComponent();
+    this.toolbar.setTarget(this.logModel);
     this.mainElement = createElement('div',{
       elements: [
         this.toolbar.element(),
@@ -249,7 +319,7 @@ export class UILoggerComponent extends UIBaseComponent {
       message: message,
       logLevel:level || LogLevel.DEBUG,
     });
-    this.updateScroll();
+    //this.updateScroll();
     return this;
   }
 
@@ -264,23 +334,41 @@ export class UILoggerComponent extends UIBaseComponent {
     return this;
   }
 
-  public applyFilter(filter:string){
-    //TODO!!
-  }
-
-  public search(search:string){
-    //TODO!!
-  }
-
 }
 
 //<input class='input-search' type='search' placeholder='Search'>
 
-class UILoggerToolbarComponent extends UIToolbar {
+class TextFilter implements Filter<LogLine>{
+  private value:string = null;
+  private regexp:RegExp =null;
+  setText(value:string){
+    this.value=value;
+    if(value){
+      this.regexp=new RegExp(value);
+    }else{
+      this.regexp = null;
+    }
+  }
+  evaluateFilter(log:LogLine):boolean{
+    if(this.value == null || this.regexp == null){
+      return true;
+    }
+    return this.regexp.test(log.message || "");
+  }
+}
 
+class UILoggerToolbarComponent extends UIToolbar {
+    private target:IFilterableModel = null;
+    private filter:TextFilter = new TextFilter();
+    private
     constructor(){
       super();
       this.setupToolbar();
+    }
+
+    setTarget(target:IFilterableModel){
+      this.target = target;
+      this.target.addFilter(this.filter);
     }
 
     private setupToolbar(){
@@ -290,7 +378,9 @@ class UILoggerToolbarComponent extends UIToolbar {
         type:'search',
         placeholder: 'Filter log',
         change: (value) => {
-          console.log("Value changed: ", value)
+          console.log("Value changed: ", value);
+          this.filter.setText(value);
+          this.target.evaluateAllFilters();
         }
       })
       searchTextField.classList.add("de-workbench-uilogger-search-field")
