@@ -33,71 +33,66 @@ export class NewProjectView {
   private editorElement: HTMLElement;
 
   private projectTypeButtons:UIButtonGroup;
+  private projectPlatformButtons: UIButtonGroup;
   private actionButtons:UIButtonGroup;
 
   private extTextField:UITextEditorExtended;
 
+  private modalContainer:HTMLElement;
+
   constructor () {
     this.events = new EventEmitter()
 
-    /**
-    this.element = document.createElement('de-workbench-scheme') //de-workbench-newproject-view
-
-    this.editorElement = createElement('xatom-debug-scheme-editor', {
+    this.modalContainer = createElement('div', {
+      className : 'de-workbench-modal-container'
     })
 
-    let title =  createElement('scheme-label', {
-        elements: [createText('New Project')]
+    // Watermark Icon
+    let watermarkEl = createElement('div',{
+      className: 'de-workbench-modal-watermark'
+    });
+    insertElement(this.modalContainer, watermarkEl);
+
+    // Modal Title
+    let title =  createElement('div', {
+        elements: [createText('New Dynamic Engine Project')],
+        className : 'de-workbench-modal-title'
     })
-    insertElement(this.editorElement, title)
+    insertElement(this.modalContainer, title)
 
-    // Project Name Element
-    let configElement = createElement('xatom-debug-scheme-config', {
-      elements: [
-        createElement('scheme-label', {
-          elements: [createText('New Project Name')]
-        })
-      ]
-    })
-    this.txtProjectName = this.createControlText("Project Name", 'newPrjName', {default:'New Project'});
-    insertElement(configElement, this.txtProjectName)
+    // Project name
+    let projectName = this.createTextControlBlock('project-name','Project Name', 'Your project name');
+    insertElement(this.modalContainer, projectName);
 
-    // Package ID Element
-    let configElement2 = createElement('xatom-debug-scheme-config', {
-      elements: [
-        createElement('scheme-label', {
-          elements: [createText('Package ID')]
-        })
-      ]
-    })
-    this.txtPackageID = this.createControlText("Package ID", 'packageID', {default:'com.yourcomapny.yourapp'});
-    insertElement(configElement2, this.txtPackageID)
+    // Project package id
+    let packageID = this.createTextControlBlock('package-id','Package ID', 'Your project package ID (ex: com.yourcompany.yourapp)');
+    insertElement(this.modalContainer, packageID);
 
-
-    // Destination Path Element
-    this.txtDestinationPath = this.createControlText("Destination Path", 'destinationPath', {default:'Your project path', withButton:true, buttonCaption: 'Choose folder...'});
-    let configElement3 = createElement('xatom-debug-scheme-config', {
-      elements: [
-        createElement('scheme-label', {
-          elements: [createText('Destination Path')]
-        })
-      ]
-    })
-    insertElement(configElement3, this.txtDestinationPath)
-
-
-    // Add all
-    insertElement(this.editorElement, configElement)
-    insertElement(this.editorElement, configElement2)
-    insertElement(this.editorElement, configElement3)
+    // Project path
+    let projectPath = this.createTextControlBlockWithButton('project-path', 'Destination Path', 'Your project path', 'Choose Folder...')
+    insertElement(this.modalContainer, projectPath);
 
     // Project Type Radio
     this.projectTypeButtons = new UIButtonGroup(UIButtonGroupMode.Radio)
-                            .addButton(new UIButtonConfig().setId('a').setCaption('Standard Apache Cordova'))
+                            .addButton(new UIButtonConfig().setId('a').setCaption('Standard Apache Cordova').setSelected(true))
                             .addButton(new UIButtonConfig().setId('b').setCaption('Ionic Framework'))
                             .addButton(new UIButtonConfig().setId('c').setCaption('Ionic Framework 3'));
-    insertElement(this.editorElement, this.projectTypeButtons.element());
+    let projectType = this.createControlBlock('project-type','Project Type', this.projectTypeButtons.element())
+    insertElement(this.modalContainer, projectType);
 
+    // Project template selection
+    let projectTemplate = this.createProjectTemplateSelection();
+
+    // Platform Chooser Block / Install manually
+    this.projectPlatformButtons = new UIButtonGroup(UIButtonGroupMode.Toggle)
+        .addButton(new UIButtonConfig().setId('ios').setCaption('iOS').setSelected(true))
+        .addButton(new UIButtonConfig().setId('android').setCaption('Android').setSelected(true))
+        .addButton(new UIButtonConfig().setId('browser').setCaption('Browser').setSelected(true));
+    let projectPlatforms = this.createControlBlock('project-platforms','Project Platforms', this.projectPlatformButtons.element())
+    insertElement(this.modalContainer, projectPlatforms);
+
+
+    //Action buttons
     this.actionButtons = new UIButtonGroup(UIButtonGroupMode.Standard)
       .addButton(new UIButtonConfig()
             .setId('cancel')
@@ -107,31 +102,27 @@ export class NewProjectView {
             }))
       .addButton(new UIButtonConfig()
             .setId('create')
-            .setButtonType('primary')
+            .setButtonType('success')
             .setCaption('Create')
             .setClickListener(()=>{
                 this.close()
             }))
+    let actionButtonsEl = this.createControlBlock('action-buttons', null, this.actionButtons.element())
+    actionButtonsEl.style.float = "right"
+    insertElement(this.modalContainer, actionButtonsEl);
 
-    insertElement(this.element, [
-      this.editorElement,
-      createElement('xatom-debug-scheme-buttons', {
-        elements: [
-          this.actionButtons.element()
-        ]
-      })]
-    )
-    **/
 
-    this.extTextField = new UITextEditorExtended()
-                    .setButtonCaption('Browse')
-                    .setTextPlaceholder('Here the path')
-                    .addButtonHandler((evt)=>{
-                      alert(this.extTextField.getValue())
-                      this.close();
-                    });
 
-    this.element = this.extTextField.element();
+    let modalWindow = createElement('div',{
+      className : 'de-workbench-modal-window'
+    })
+
+    insertElement(modalWindow,  this.modalContainer)
+
+    this.element = createElement('div',{
+      elements: [ modalWindow ],
+      className : 'de-workbench-modal'
+    })
 
     let modalConfig = {
       item: this.element,
@@ -158,33 +149,91 @@ export class NewProjectView {
     this.extTextField.destroy();
   }
 
-  createControlText (pluginName: string, key: string, config: any) {
-    let value = ''
-    if (value === config.default) {
-      value = null
-    }
-    let inputElement = createTextEditor({
-      value,
-      placeholder: config.default,
-      change: (value) => {
-        console.log("Value changed: ", value)
-        this.events.emit('didChange')
-      }
+  private createTextElement(placeholder:string, id:string){
+    let txtElement = createElement('input',{
+      className: 'input-text native-key-bindings'
     })
-    let elements = [inputElement];
-    if (config && config.withButton){
-      let button = createButton({
-        click: () => {
-          this.events.emit('didRun');
-        }
-      },[
-        createText(config.buttonCaption)
-      ])
-      elements = [inputElement,button];
-    }
-    return createElement('scheme-control', {
-      elements: elements
+    txtElement.setAttribute('id', id);
+    txtElement.setAttribute('type','text')
+    txtElement.setAttribute('placeholder',placeholder)
+    return txtElement
+  }
+
+  private createLabel(caption:string){
+      let labelElement = createElement('label',{
+        elements: [createText(caption)]
+      })
+      return labelElement;
+  }
+
+  private createButton(caption:string):HTMLElement{
+      let buttonEl = createElement('button',{
+        elements: [
+          createText(caption)
+        ],
+        className : 'btn'
+      })
+      return buttonEl;
+  }
+
+  private createTextControlBlock(id:string, caption:string,placeholder:string){
+    let txtField = this.createTextElement(placeholder, id);
+    return this.createControlBlock(id,caption, txtField)
+  }
+
+  private createTextControlBlockWithButton(id:string, caption:string,placeholder:string,buttonCaption:string){
+    let txtField = this.createTextElementWithButton(placeholder, id, buttonCaption);
+    return this.createControlBlock(id,caption, txtField)
+  }
+
+  private createTextElementWithButton(placeholder:string, id:string, buttonCaption:string){
+    let inputEl:HTMLElement = this.createTextElement(placeholder, id);
+    inputEl.style.display = 'inline-block';
+    inputEl.style.width = 'calc(100% - 137px)';
+    inputEl.style.marginRight = "4px"
+
+    let buttonEl = this.createButton(buttonCaption);
+    buttonEl.classList.add('inline-block')
+    buttonEl.classList.add('highlight')
+    buttonEl.style.width='133px';
+
+    let divElement = createElement('div',{
+      elements: [
+        inputEl,buttonEl
+      ],
+        className: ''
     })
+    return divElement;
+  }
+
+  private createControlBlock(id:string, caption:string, element:HTMLElement){
+    var label;
+    if (caption && caption.length>0){
+      label = this.createLabel(caption);
+    }
+    let blockElement = this.createBlock()
+    let innerDiv = createElement('div',{
+      elements: [ element ],
+      className : 'de-workbench-newproj-innerdiv'
+    });
+    if (label){
+      insertElement(blockElement, label);
+    }
+    insertElement(blockElement, innerDiv);
+    return blockElement;
+  }
+
+  private createBlock(){
+    let blockElement = createElement('div',{
+      elements: [
+      ],
+        className: 'block'
+    })
+    return blockElement;
+  }
+
+  private createProjectTemplateSelection():HTMLElement {
+      return null;
   }
 
 }
