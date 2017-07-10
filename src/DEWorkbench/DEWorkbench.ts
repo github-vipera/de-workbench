@@ -7,7 +7,7 @@
  */
 
 import { ToolbarView } from '../toolbar/ToolbarView'
-import { NewProjectView } from '../views/NewProjectView'
+import { NewProjectView } from '../views/NewProject/NewProjectView'
 import { EventEmitter }  from 'events';
 const { CompositeDisposable } = require('atom');
 import { ProjectInspectorView } from '../views/ProjectInspectorView'
