@@ -290,22 +290,17 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
   }
 
   private createLogLineElement(message:string, className?:string):HTMLElement {
-    let completeMessage = UILogView.getFormattedTimestamp() + " - " + message;
     return createElement('div',{
       elements: [
         createElement('div',{
           elements : [
-            createText(completeMessage)
+            createText(message)
           ],
           className: "de-workbench-uilogger-logline-message"
         })
       ],
       className: "de-workbench-uilogger-logline " + (className?className:'')
     })
-  }
-
-  private static getFormattedTimestamp():string{
-    return moment().format('MM-DD hh:mm:ss.SSS');
   }
 }
 
@@ -342,12 +337,17 @@ export class UILoggerComponent extends UIBaseComponent {
 
 
   public addLog(message:string, level?:LogLevel):UILoggerComponent{
+    let completeMessage = UILoggerComponent.getFormattedTimestamp() + " - " + message;
     this.logModel.appendLogLine({
-      message: message,
+      message: completeMessage,
       logLevel:level || LogLevel.DEBUG,
     });
     //this.updateScroll();
     return this;
+  }
+
+  private static getFormattedTimestamp():string{
+    return moment().format('MM-DD hh:mm:ss.SSS');
   }
 
   public updateScroll():UILoggerComponent{
