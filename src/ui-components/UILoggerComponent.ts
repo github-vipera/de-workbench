@@ -22,6 +22,7 @@ import { UIToolbar, UIToolbarButton } from './UIToolbar'
 import { UIListViewModel } from 'UIListView'
 import * as _ from 'lodash'
 import {LogLevel} from '../logger/Logger'
+import {UISelect, UISelectItem, UISelectListener} from './UISelect';
 const moment = require('moment')
 
 export interface LogLine{
@@ -378,10 +379,26 @@ class TextFilter implements Filter<LogLine>{
   }
 }
 
-class UILoggerToolbarComponent extends UIToolbar {
+class LogLevelFilter implements Filter<LogLine> {
+  private level:LogLevel;
+  constructor(initialValue?:LogLevel){
+    this.level=initialValue || LogLevel.TRACE;
+  }
+  getLogLevel():LogLevel {
+    return this.level;
+  }
+  setLogLevel(level:number){
+    this.level=level;
+  }
+  evaluateFilter(log:LogLine):boolean{
+    return log.logLevel > this.level;
+  }
+}
+
+class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
     private target:IFilterableModel = null;
-    private filter:TextFilter = new TextFilter();
-    private
+    private regexpfilter:TextFilter = new TextFilter();
+    private levelFilter:LogLevelFilter = new LogLevelFilter();
     constructor(){
       super();
       this.setupToolbar();
@@ -389,7 +406,8 @@ class UILoggerToolbarComponent extends UIToolbar {
 
     setTarget(target:IFilterableModel){
       this.target = target;
-      this.target.addFilter(this.filter);
+      this.target.addFilter(this.regexpfilter);
+      this.target.addFilter(this.levelFilter);
     }
 
     private setupToolbar(){
@@ -400,7 +418,7 @@ class UILoggerToolbarComponent extends UIToolbar {
         placeholder: 'Filter log',
         change: (value) => {
           console.log("Value changed: ", value);
-          this.filter.setText(value);
+          this.regexpfilter.setText(value);
           setTimeout(() => {
             this.target.evaluateAllFilters();
           });
@@ -409,6 +427,12 @@ class UILoggerToolbarComponent extends UIToolbar {
       searchTextField.classList.add("de-workbench-uilogger-search-field")
       searchTextField.classList.add("inline-block")
       this.addElement(searchTextField);
+
+      let opts= this.createLoggerFilterOptions();
+      let levelSelect= new UISelect(opts);
+      levelSelect.addSelectListener(this);
+      this.addElement(levelSelect.element());
+
       let autoscrollToggle = new UIToolbarButton()
                         .setId('test2')
                         .setToggle(true)
@@ -417,6 +441,23 @@ class UILoggerToolbarComponent extends UIToolbar {
                         .setHandler(()=>{alert('button2')})
       this.addRightButton(autoscrollToggle);
 
+    }
+
+    onItemSelected(value:string){
+      this.levelFilter.setLogLevel(parseInt(value));
+      setTimeout(() => {
+        this.target.evaluateAllFilters();
+      });
+    }
+
+    private createLoggerFilterOptions():Array<UISelectItem>{
+      return [
+        {name:'verbose',value:LogLevel.TRACE.toString()},
+        {name:'debug',value:LogLevel.DEBUG.toString()},
+        {name:'info',value:LogLevel.INFO.toString()},
+        {name:'warn',value:LogLevel.WARN.toString()},
+        {name:'error',value:LogLevel.ERROR.toString()},
+      ];
     }
 
 }
