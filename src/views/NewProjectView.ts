@@ -35,7 +35,7 @@ export class NewProjectView {
   private projectTypeButtons:UIButtonGroup;
   private projectPlatformButtons: UIButtonGroup;
   private actionButtons:UIButtonGroup;
-
+  private projectTemplateSection:HTMLElement;
   private extTextField:UITextEditorExtended;
 
   private modalContainer:HTMLElement;
@@ -60,29 +60,46 @@ export class NewProjectView {
     })
     insertElement(this.modalContainer, title)
 
+
     // Project name
     let projectName = this.createTextControlBlock('project-name','Project Name', 'Your project name');
     insertElement(this.modalContainer, projectName);
+
 
     // Project package id
     let packageID = this.createTextControlBlock('package-id','Package ID', 'Your project package ID (ex: com.yourcompany.yourapp)');
     insertElement(this.modalContainer, packageID);
 
+
     // Project path
     let projectPath = this.createTextControlBlockWithButton('project-path', 'Destination Path', 'Your project path', 'Choose Folder...')
     insertElement(this.modalContainer, projectPath);
 
+
+
+
     // Project Type Radio
     this.projectTypeButtons = new UIButtonGroup(UIButtonGroupMode.Radio)
-                            .addButton(new UIButtonConfig().setId('a').setCaption('Standard Apache Cordova').setSelected(true))
-                            .addButton(new UIButtonConfig().setId('b').setCaption('Ionic Framework'))
-                            .addButton(new UIButtonConfig().setId('c').setCaption('Ionic Framework 3'));
+                            .addButton(new UIButtonConfig().setId('a').setCaption('Standard Apache Cordova').setSelected(true).setClickListener(()=>{
+                              this.selectProjectType('CORDOVA_PLAIN')
+                            }))
+                            .addButton(new UIButtonConfig().setId('b').setCaption('Ionic Framework').setClickListener(()=>{
+                              this.selectProjectType('IONIC')
+                            }))
+                            .addButton(new UIButtonConfig().setId('c').setCaption('Ionic Framework 3').setClickListener(()=>{
+                              this.selectProjectType('IONIC_3')
+                            }));
     let projectType = this.createControlBlock('project-type','Project Type', this.projectTypeButtons.element())
     insertElement(this.modalContainer, projectType);
 
+
+
     // Project template selection
-    let projectTemplate = this.createProjectTemplateSelection();
-    insertElement(this.modalContainer, projectTemplate);
+    this.projectTemplateSection = this.createProjectTemplateSelection();
+    insertElement(this.modalContainer, this.projectTemplateSection);
+    this.showProjectTemplateSection(false)
+
+
 
     // Platform Chooser Block / Install manually
     this.projectPlatformButtons = new UIButtonGroup(UIButtonGroupMode.Toggle)
@@ -133,6 +150,24 @@ export class NewProjectView {
     this.panel = atom.workspace.addModalPanel(modalConfig)
 
 
+  }
+
+  private selectProjectType(type:string){
+    if (type==='CORDOVA_PLAIN'){
+      this.showProjectTemplateSection(false)
+    } else if (type==='IONIC') {
+      this.showProjectTemplateSection(true)
+    } else if (type==='IONIC_3') {
+      this.showProjectTemplateSection(true)
+    }
+  }
+
+  private showProjectTemplateSection(show:boolean){
+    if (show){
+      this.projectTemplateSection.style["display"] = "initial";
+    } else {
+      this.projectTemplateSection.style["display"] = "none";
+    }
   }
 
   open (activePlugin?: Plugin) {
@@ -250,7 +285,7 @@ export class NewProjectView {
         elements:[labelInfo, label, templateBlock]
       })
 
-      templateSection.style["padding-bottom"] = "10px";  
+      templateSection.style["padding-bottom"] = "10px";
 
       return templateSection;
   }
