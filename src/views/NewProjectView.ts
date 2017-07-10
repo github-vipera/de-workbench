@@ -82,6 +82,7 @@ export class NewProjectView {
 
     // Project template selection
     let projectTemplate = this.createProjectTemplateSelection();
+    insertElement(this.modalContainer, projectTemplate);
 
     // Platform Chooser Block / Install manually
     this.projectPlatformButtons = new UIButtonGroup(UIButtonGroupMode.Toggle)
@@ -233,7 +234,25 @@ export class NewProjectView {
   }
 
   private createProjectTemplateSelection():HTMLElement {
-      return null;
+      let labelInfo = this.createLabel("In order to create a Ionic project you need to have installed on your computer the Ionic cli utility.To check if it's already installed launch 'ionic help' command into the terminal.");
+      labelInfo.classList.add('text-warning')
+
+      let label = this.createLabel('Project Template');
+
+      let templateCombo = createElement('select',{
+        className : 'form-control'
+      });
+
+      let templateBlock = this.createControlBlock('project-template',null,templateCombo);
+      templateBlock.classList.add('settings-view')
+
+      let templateSection = createElement('div',{
+        elements:[labelInfo, label, templateBlock]
+      })
+
+      templateSection.style["padding-bottom"] = "10px";  
+
+      return templateSection;
   }
 
 }
