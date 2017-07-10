@@ -50,7 +50,7 @@ import { LoggerView } from '../views/LoggerView'
    constructor(options:WorkbenchOptions){
      Logger.getInstance().info("Initializing DEWorkbench...");
 
-     let cu = new CordovaUtils();
+     //let cu = new CordovaUtils();
 
      this.projectManager = ProjectManager.getInstance();
 
@@ -76,12 +76,12 @@ import { LoggerView } from '../views/LoggerView'
      });
 
      // Create a prject inspector dock window
-     this.projectInspectorView = new ProjectInspectorView();
+     //this.projectInspectorView = new ProjectInspectorView();
 
      // Create the Logger inspector
-     this.loggerView = new LoggerView();
+     //this.loggerView = new LoggerView();
 
-     this.debugAreaView = new DebugAreaView();
+     //this.debugAreaView = new DebugAreaView();
 
      attachEventFromObject(this.events, [
        'didToggleToolbar'
@@ -103,14 +103,23 @@ import { LoggerView } from '../views/LoggerView'
    }
 
    openProjectInspector(){
+     if (!this.projectInspectorView){
+       this.projectInspectorView = new ProjectInspectorView();
+     }
      this.projectInspectorView.open();
    }
 
    openDebugArea(){
+     if (!this.debugAreaView){
+       this.debugAreaView = new DebugAreaView();
+     }
      this.debugAreaView.open();
    }
 
    openLogger(){
+     if (!this.loggerView){
+       this.loggerView = new LoggerView();
+     }
      this.loggerView.open();
    }
 
