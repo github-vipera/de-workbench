@@ -36,6 +36,7 @@ export interface LogLine{
 }
 export interface LogModelListener{
   rowAppended(newLine:LogLine):void
+  rowDropped(logLine:LogLine,index?:number):void
   rowsChanged():void
 }
 
@@ -50,11 +51,19 @@ export interface LogModel {
 export class BaseLogModel implements LogModel{
   private listeners:Array<LogModelListener> = [];
   private logLines:Array<LogLine> = [];
-  public constructor (){
-
+  private maxLineCount:number = 500;
+  public constructor (maxLineCount?:number){
+    if(maxLineCount){
+      this.maxLineCount = maxLineCount;
+    }
   }
   appendLogLine(logLine:LogLine):void {
     this.logLines.push(logLine);
+    if(this.logLines.length > this.maxLineCount){
+      let logLine = this.logLines[0];
+      this.logLines = _.drop(this.logLines);
+      this.fireRowDrop(logLine);
+    }
     this.fireRowAdd(logLine);
   }
   getRowCount():number{
@@ -65,7 +74,6 @@ export class BaseLogModel implements LogModel{
   }
   addListener(listener:LogModelListener){
     this.listeners.push(listener);
-
   }
   removeListener(listener:LogModelListener):void{
     _.remove(this.listeners,function(single){
@@ -75,6 +83,11 @@ export class BaseLogModel implements LogModel{
   fireRowAdd(logLine:LogLine){
     _.forEach(this.listeners,function(list){
       list.rowAppended(logLine)
+    });
+  }
+  fireRowDrop(logLine:LogLine,index?:number){
+    _.forEach(this.listeners,function(list){
+      list.rowDropped(logLine,index || 0);
     });
   }
 }
@@ -140,6 +153,16 @@ export class FilterableLogModel extends BaseLogModel implements IFilterableModel
     // ELSE do nothing!!!!
   }
 
+  rowDropped(line:LogLine){
+    let update:boolean = this.applyFilterChain([line]).length > 0;
+    if(update){
+      this._filteredList = _.drop(this._filteredList);
+      _.forEach(this._listeners,function(single){
+        single.rowDropped(line);
+      });
+    }
+  }
+
   rowsChanged(){
     this.evaluateAllFilters();
   }
@@ -199,10 +222,6 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
     });
   }
 
-  rowAppended(newLine:LogLine){
-    this.appendNewNode(newLine);
-  }
-
   isAutoscroll():boolean{
     return this.autoscroll;
   }
@@ -238,6 +257,14 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
         return "error";
     }
     return "debug";
+  }
+
+  rowAppended(newLine:LogLine){
+    this.appendNewNode(newLine);
+  }
+
+  rowDropped(line:LogLine){
+    this.mainElement.removeChild(this.mainElement.firstChild);
   }
 
   rowsChanged(){
@@ -381,23 +408,13 @@ class UILoggerToolbarComponent extends UIToolbar {
           console.log("Value changed: ", value);
           this.filter.setText(value);
           setTimeout(() => {
-            this.target.evaluateAllFilters();  
+            this.target.evaluateAllFilters();
           });
         }
       })
       searchTextField.classList.add("de-workbench-uilogger-search-field")
       searchTextField.classList.add("inline-block")
-      /**
-      let searchTextField = createElement('input',{
-        className: 'input-search inline-block de-workbench-uilogger-search-field'
-      })
-      searchTextField.placeholder = 'Search into the log';
-      searchTextField.type = 'Search into the log';
-      **/
       this.addElement(searchTextField);
-
-
-      // Autoscroll toggle option
       let autoscrollToggle = new UIToolbarButton()
                         .setId('test2')
                         .setToggle(true)
@@ -405,8 +422,6 @@ class UILoggerToolbarComponent extends UIToolbar {
                         .setChecked(true)
                         .setHandler(()=>{alert('button2')})
       this.addRightButton(autoscrollToggle);
-
-
 
     }
 
