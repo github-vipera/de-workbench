@@ -23,12 +23,19 @@
   overflow: auto;
 }
 
-.de-workbench-uilogger-logline-message {
-  cursor: default;
-}
+
 
 .de-workbench-uilogger-logline {
   cursor: default;
+  .de-workbench-uilogger-logline-message {
+    cursor: default;
+  }
+  &.warn {
+    color: @text-color-warning
+  }
+  &.error{
+    color: @text-color-error
+  }
 }
 
 .de-workbench-uilogger-search-field {

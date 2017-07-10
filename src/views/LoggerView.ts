@@ -24,10 +24,10 @@ import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../ui-components/UIListView'
 import { ProjectTypePanel } from '../ui-components/ProjectTypePanel'
-import { Logger } from '../logger/Logger'
+import { Logger,LoggerListener ,LogLevel} from '../logger/Logger'
 import { UILoggerComponent,LogLine,IFilterableModel } from '../ui-components/UILoggerComponent'
 
-export class LoggerView {
+export class LoggerView implements LoggerListener {
 
   private element: HTMLElement
   private events: EventEmitter
@@ -37,13 +37,25 @@ export class LoggerView {
   private loggerComponent:UILoggerComponent;
 
   constructor () {
-    Logger.getInstance().debug("LoggerView initializing...");
+    //this.bindWihtLogger();
+    Logger.getInstance().info("LoggerView initializing...");
 
     this.atomWorkspace = atom.workspace;
     this.events = new EventEmitter()
 
     this.initUI();
+    this.bindWithLogger();
 
+  }
+
+  bindWithLogger(){
+    console.log("bindWithLogger");
+    Logger.getInstance().addLoggingListener(this);
+    Logger.getInstance().debug("LoggerView -> bind with log done");
+  }
+
+  onLogging(level:LogLevel, msg:string){
+    this.loggerComponent.addLog(msg,level);
   }
 
   /**
@@ -51,31 +63,13 @@ export class LoggerView {
    */
   initUI() {
     Logger.getInstance().debug("LoggerView initUI called...");
-
     this.loggerComponent = new UILoggerComponent();
-
     // Create the main UI
     this.element = createElement('div',{
       elements : [
       ]
     });
-
     insertElement(this.element, this.loggerComponent.element());
-
-    this.loggerComponent.addLog("LoggerView initUI done.")
-    this.loggerComponent.addLog("Another Log line.")
-    this.loggerComponent.addLog("Hello World!!")
-    for (let i=0;i<500;i++){
-      this.loggerComponent.addLog("This is the line " + i)
-    }
-
-
-    /*
-    let i=0;
-    setInterval(() => {
-      this.loggerComponent.addLog("This is the line " + (i++));
-    },500);*/
-    Logger.getInstance().debug("LoggerView initUI done.");
   }
 
   /**

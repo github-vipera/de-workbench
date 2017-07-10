@@ -21,15 +21,9 @@ import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UIToolbar, UIToolbarButton } from './UIToolbar'
 import { UIListViewModel } from 'UIListView'
 import * as _ from 'lodash'
+import {LogLevel} from '../logger/Logger'
 const moment = require('moment')
 
-export enum LogLevel {
-  'TRACE',
-  'DEBUG',
-  'INFO',
-  'WARN',
-  'ERROR',
-}
 export interface LogLine{
   logLevel:LogLevel
   message:string
@@ -237,8 +231,8 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
     this.updateScroll();
   }
 
-  updateScroll(){
-    if (this.autoscroll){
+  updateScroll(force?:boolean){
+    if (this.autoscroll || force){
       this.mainElement.scrollTop = this.mainElement.scrollHeight;
     }
   }
@@ -305,10 +299,8 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
 }
 
 export class UILoggerComponent extends UIBaseComponent {
-
   public readonly autoscroll:boolean = true;
   private toolbar:UILoggerToolbarComponent;
-  //private loglines:HTMLElement;
   private logView:UILogView;
   private logModel:FilterableLogModel;
 
@@ -351,9 +343,11 @@ export class UILoggerComponent extends UIBaseComponent {
   }
 
   public updateScroll():UILoggerComponent{
-    if (this.autoscroll){
+    /*if (this.autoscroll){
       this.mainElement.scrollTop = this.mainElement.scrollHeight;
     }
+    return this;*/
+    this.logView.updateScroll(true);
     return this;
   }
 
@@ -371,7 +365,7 @@ class TextFilter implements Filter<LogLine>{
   setText(value:string){
     this.value=value;
     if(value){
-      this.regexp=new RegExp(value);
+      this.regexp=new RegExp(_.escapeRegExp(value));
     }else{
       this.regexp = null;
     }
