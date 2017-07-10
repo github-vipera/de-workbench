@@ -21,6 +21,7 @@
 import { EventEmitter }  from 'events'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../ui-components/UIButtonGroup'
 import { UITextEditorExtended } from '../ui-components/UITextEditorExtended'
+import { DEWBResourceManager } from "../DEWorkbench/DEWBResourceManager"
 
 export class NewProjectView {
 
@@ -43,6 +44,11 @@ export class NewProjectView {
   constructor () {
     this.events = new EventEmitter()
 
+    /**
+    var obj = DEWBResourceManager.getJSONResource('project_types.json');
+    alert(JSON.stringify(obj));
+    **/
+    
     this.modalContainer = createElement('div', {
       className : 'de-workbench-modal-container'
     })
