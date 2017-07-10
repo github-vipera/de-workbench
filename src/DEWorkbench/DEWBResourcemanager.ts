@@ -15,18 +15,6 @@ const fs = require('fs')
 
 export class DEWBResourceManager {
 
-  private static instance: DEWBResourceManager;
-
-  private constructor(){
-  }
-
-  static getInstance() {
-      if (!DEWBResourceManager.instance) {
-          DEWBResourceManager.instance = new DEWBResourceManager();
-      }
-      return DEWBResourceManager.instance;
-  }
-
   public static getResourcePath(resourceName:string):string{
     let packagePath = atom["packages"].getActivePackage('de-workbench').path;
     return packagePath + "/resources/" + resourceName;
