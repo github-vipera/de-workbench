@@ -28,6 +28,7 @@ import { DEWBResourceManager } from "../../DEWorkbench/DEWBResourceManager"
 import { NewProjectTypeSelector } from './NewProjectTypeSelector'
 import { Cordova, NewProjectInfo } from '../../cordova/Cordova'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
+import { NewProjectProgressPanel } from './NewProjectProgressPanel'
 
 const remote = require('remote');
 const dialog = remote.require('electron').dialog;
@@ -47,6 +48,11 @@ export class NewProjectView {
   private actionButtons:UIButtonGroup;
   private projectTemplateSection:HTMLElement;
   private newProjectTypeSelector:NewProjectTypeSelector;
+
+  private newProjectProgressPanel:NewProjectProgressPanel;
+
+  // Process Log Panel
+  private logOverlayElement:HTMLElement;
 
   private modalContainer:HTMLElement;
 
@@ -119,6 +125,12 @@ export class NewProjectView {
     insertElement(this.modalContainer, modalActionButtons);
 
 
+    // Create Logger Overlay
+    this.newProjectProgressPanel = new NewProjectProgressPanel();
+    this.newProjectProgressPanel.hide()
+    insertElement(this.modalContainer, this.newProjectProgressPanel.element());
+
+
     let modalWindow = createElement('div',{
       className : 'de-workbench-modal-window'
     })
@@ -137,11 +149,15 @@ export class NewProjectView {
     modalConfig['className'] = 'de-workbench-modal'
     this.panel = atom.workspace.addModalPanel(modalConfig)
 
+
+
   }
 
   protected doCreateProject(){
     let newPrjInfo:NewProjectInfo = this.getNewProjectInfo();
     if (this.validateNewProjectInfo(newPrjInfo)){
+      this.newProjectProgressPanel.show()
+      this.newProjectProgressPanel.startLog()
       ProjectManager.getInstance().cordova.createNewProject(newPrjInfo).then((result)=>{
         console.log("Created! " , result)
         alert("Created! " + result);
@@ -305,6 +321,9 @@ export class NewProjectView {
   }
 
   protected destroy(){
+    this.newProjectProgressPanel.destroy();
+    this.newProjectProgressPanel = undefined;
+
     this.projectPlatformButtons.destroy();
     this.projectPlatformButtons = undefined;
 
