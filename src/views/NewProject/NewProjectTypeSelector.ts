@@ -111,6 +111,14 @@ export class NewProjectTypeSelector extends UIBaseComponent {
     super.destroy();
   }
 
+  public getProjectType(){
+      return this.projectTypeButtons.getSelectedButtons()[0];
+  }
+
+  public getTemplateName(){
+      return this.projectTemplateSelector.getSelectedTemplate();
+  }
+
 }
 
 class ProjectTemplateSelector extends UIBaseComponent {
@@ -169,6 +177,11 @@ class ProjectTemplateSelector extends UIBaseComponent {
     }
     this.cmbTemplates.setItems(items);
   }
+
+  public getSelectedTemplate():string {
+    return this.cmbTemplates.getSelectedItem();
+  }
+
 
 
 }

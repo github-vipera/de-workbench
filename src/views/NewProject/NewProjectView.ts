@@ -34,7 +34,9 @@ export interface NewProjectInfo {
   projectName:string;
   packagedID:string;
   path:string;
-  platforms:Array<string>
+  platforms:Array<string>,
+  projectType:string;
+  templateName:string;
 }
 
 export class NewProjectView {
@@ -146,8 +148,29 @@ export class NewProjectView {
 
   protected doCreateProject(){
     let newPrjInfo:NewProjectInfo = this.getNewProjectInfo();
-    alert(JSON.stringify(newPrjInfo))
-    //TODO!!
+    if (this.validateNewProjectInfo(newPrjInfo)){
+      //TODO!! create!
+    }
+  }
+
+  private validateNewProjectInfo(newPrjInfo:NewProjectInfo):boolean {
+    if (newPrjInfo.projectName==null || newPrjInfo.projectName.length==0){
+      alert("Invalid project name");
+      return false;
+    }
+    if (newPrjInfo.packagedID==null || newPrjInfo.packagedID.length==0){
+      alert("Invalid package ID");
+      return false;
+    }
+    if (newPrjInfo.path==null || newPrjInfo.path.length==0){
+      alert("Invalid project folder");
+      return false;
+    }
+    if (newPrjInfo.platforms==null || newPrjInfo.platforms.length==0){
+      alert("No platform selected.");
+      return false;
+    }
+    return true;
   }
 
   private showProjectTemplateSection(show:boolean){
@@ -275,7 +298,9 @@ export class NewProjectView {
         projectName : this.getCurrentSelectedProjectName(),
         packagedID : this.getCurrentSelectedPackagedID(),
         path : this.getCurrentSelectedFolder(),
-        platforms : this.getCurrentSelectedPlatforms()
+        platforms : this.getCurrentSelectedPlatforms(),
+        projectType: this.newProjectTypeSelector.getProjectType(),
+        templateName: this.newProjectTypeSelector.getTemplateName()
       }
   }
 
