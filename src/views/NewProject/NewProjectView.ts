@@ -39,13 +39,13 @@ export interface NewProjectInfo {
 
 export class NewProjectView {
 
+  private readonly TXT_PROJECT_NAME:string = 'deweb-new-project-name'
+  private readonly TXT_PROJECT_PACKAGE_ID:string = 'deweb-new-package-id'
+  private readonly TXT_PROJECT_PATH:string = 'deweb-new-project-path'
+
   private element: HTMLElement
   private events: EventEmitter
   private panel: any
-  //private txtProjectName: HTMLElement;
-  //private txtPackageID:HTMLElement;
-  //private txtDestinationPath:HTMLElement;
-  //private editorElement: HTMLElement;
 
   private projectPlatformButtons: UIButtonGroup;
   private actionButtons:UIButtonGroup;
@@ -56,7 +56,6 @@ export class NewProjectView {
 
   constructor () {
     this.events = new EventEmitter()
-
 
     this.modalContainer = createElement('div', {
       className : 'de-workbench-modal-container'
@@ -77,18 +76,18 @@ export class NewProjectView {
 
 
     // Project name
-    let projectName = this.createTextControlBlock('deweb-new-project-name','Project Name', 'Your project name');
+    let projectName = this.createTextControlBlock(this.TXT_PROJECT_NAME,'Project Name', 'Your project name');
     insertElement(this.modalContainer, projectName);
 
 
     // Project package id
-    let packageID = this.createTextControlBlock('deweb-new-package-id','Package ID', 'Your project package ID (ex: com.yourcompany.yourapp)');
+    let packageID = this.createTextControlBlock(this.TXT_PROJECT_PACKAGE_ID ,'Package ID', 'Your project package ID (ex: com.yourcompany.yourapp)');
     insertElement(this.modalContainer, packageID);
 
 
     // Project path
     let buttonListener = ()=>{ this.chooseFolder() }
-    let projectPath = this.createTextControlBlockWithButton('deweb-new-project-path', 'Destination Path', 'Your project path', 'Choose Folder...', buttonListener)
+    let projectPath = this.createTextControlBlockWithButton(this.TXT_PROJECT_PATH, 'Destination Path', 'Your project path', 'Choose Folder...', buttonListener)
     insertElement(this.modalContainer, projectPath);
 
 
@@ -169,21 +168,36 @@ export class NewProjectView {
   }
 
   private createTextElement(placeholder:string, id:string){
-    /**
-    let txtElement = createElement('atom-text-editor',{
-      className: 'editor mini'
-    })
-    txtElement.setAttribute('mini','')
-    txtElement.setAttribute('data-grammar','text plain null-grammar')
-    txtElement.setAttribute('tab-index',tabIndex)
-    **/
     let txtElement = createElement('input',{
       className: 'input-text native-key-bindings'
     })
     txtElement.setAttribute('id', id);
     txtElement.setAttribute('type','text')
     txtElement.setAttribute('placeholder',placeholder)
+    txtElement.setAttribute('tab-index',"-1")
+
+    txtElement.addEventListener('keydown', (evt)=>{
+      var TABKEY = 9;
+      if(evt.keyCode == TABKEY) {
+        let nextControl = this.getNextControlFocus(evt.srcElement.id, evt);
+      }
+    })
+
     return txtElement
+  }
+
+  private getNextControlFocus(currentID, evt){
+      console.log("getNextControlFocus ", currentID);
+      if (currentID==this.TXT_PROJECT_NAME){
+        document.getElementById(this.TXT_PROJECT_PACKAGE_ID).focus()
+      } else   if (currentID==this.TXT_PROJECT_PACKAGE_ID){
+        document.getElementById(this.TXT_PROJECT_PATH).focus()
+      } else   if (currentID==this.TXT_PROJECT_PATH){
+        document.getElementById(this.TXT_PROJECT_NAME).focus()
+      } else {
+
+      }
+      return null;
   }
 
   private createButton(caption:string):HTMLElement{
@@ -232,23 +246,23 @@ export class NewProjectView {
       properties: ['openDirectory']
     });
     if (path && path.length>0){
-      let txtEl = document.getElementById('deweb-new-project-path');
+      let txtEl = document.getElementById(this.TXT_PROJECT_PATH);
       txtEl["value"] = path;
     }
   }
 
   protected getCurrentSelectedFolder():string{
-    let txtEl = document.getElementById('deweb-new-project-path');
+    let txtEl = document.getElementById(this.TXT_PROJECT_PATH);
     return txtEl["value"];
   }
 
   protected getCurrentSelectedPackagedID():string{
-    let txtEl = document.getElementById('deweb-new-package-id');
+    let txtEl = document.getElementById(this.TXT_PROJECT_PACKAGE_ID);
     return txtEl["value"];
   }
 
   protected getCurrentSelectedProjectName():string{
-    let txtEl = document.getElementById('deweb-new-project-name');
+    let txtEl = document.getElementById(this.TXT_PROJECT_NAME);
     return txtEl["value"];
   }
 
