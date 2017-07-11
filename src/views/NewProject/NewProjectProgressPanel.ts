@@ -82,6 +82,7 @@ export class NewProjectProgressPanel extends UIBaseComponent implements LoggerLi
 
 
   public destroy(){
+    this.loggerComponent.destroy();
     super.destroy();
   }
 
