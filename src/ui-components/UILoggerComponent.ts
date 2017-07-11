@@ -422,20 +422,9 @@ class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
     }
 
     private setupToolbar(){
-
-      // Search field
       this.createAndAddSearchFilter(this)
       let subToolbar=this.createButtonToolbar();
-      this.createAndAddLogLevelSelect(subToolbar);
-      this.addElement(subToolbar.element());
-      /*let autoscrollToggle = new UIToolbarButton()
-                        .setId('test2')
-                        .setToggle(true)
-                        .setTitle('Auto scroll')
-                        .setChecked(true)
-                        .setHandler(()=>{alert('button2')})*/
-      //this.addRightButton(autoscrollToggle);
-
+      this.addElementNoSpace(subToolbar.element());
     }
     createAndAddSearchFilter(container:UIToolbar){
       let searchTextField = createTextEditor({
@@ -451,22 +440,29 @@ class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
       })
       searchTextField.classList.add("de-workbench-uilogger-search-field")
       searchTextField.classList.add("inline-block")
-      container.addElement(searchTextField);
+      container.addElementNoSpace(searchTextField);
     }
 
     createAndAddLogLevelSelect(container:UIToolbar){
       let opts= this.createLoggerFilterOptions();
       let levelSelect= new UISelect(opts);
       levelSelect.addSelectListener(this);
-      container.addElement(levelSelect.element());
+      container.addElementNoSpace(levelSelect.element());
     }
 
     createButtonToolbar():UIToolbar{
       let buttonToolbar:UIToolbar=new UIToolbar();
+      this.createAndAddLogLevelSelect(buttonToolbar);
       let autoScrollButton:UIToolbarButton = new UIToolbarButton();
       autoScrollButton.setId("autoScroll");
-      autoScrollButton.setIcon("move-down");
+      autoScrollButton.setWithSpace(false);
+      autoScrollButton.setIcon(" icon-move-down");
       buttonToolbar.addButton(autoScrollButton);
+      let clearLog:UIToolbarButton = new UIToolbarButton();
+      clearLog.setId("autoScroll");
+      clearLog.setIcon(" icon-move-down");
+      clearLog.setWithSpace(false);
+      buttonToolbar.addButton(clearLog);
       return buttonToolbar;
     }
 
