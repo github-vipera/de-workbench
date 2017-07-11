@@ -24,7 +24,6 @@
 
 import { EventEmitter }  from 'events'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
-import { DEWBResourceManager } from "../../DEWorkbench/DEWBResourceManager"
 import { NewProjectTypeSelector } from './NewProjectTypeSelector'
 import { Cordova, NewProjectInfo } from '../../cordova/Cordova'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'

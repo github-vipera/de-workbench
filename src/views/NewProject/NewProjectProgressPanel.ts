@@ -24,7 +24,6 @@
 import { EventEmitter }  from 'events'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 import { UITextEditorExtended } from '../../ui-components/UITextEditorExtended'
-import { DEWBResourceManager } from "../../DEWorkbench/DEWBResourceManager"
 import { UIBaseComponent, UIComponent } from '../../ui-components/UIComponent'
 import { UISelect, UISelectItem } from '../../ui-components/UISelect'
 import { UILoggerComponent } from '../../ui-components/UILoggerComponent'
