@@ -305,27 +305,37 @@ export class UILoggerComponent extends UIBaseComponent {
   private logView:UILogView;
   private logModel:FilterableLogModel;
 
-  constructor(model?:LogModel){
+  constructor(showToolbar?:boolean){
       super();
-      this.logModel = new FilterableLogModel(model || new BaseLogModel());
+      this.logModel = new FilterableLogModel(new BaseLogModel());
       this.logView= new UILogView(this.logModel);
-      this.buildUI();
+      this.buildUI(showToolbar || false);
   }
 
   public getFilterableModel():FilterableLogModel {
     return this.logModel;
   }
 
-  private buildUI(){
-    this.toolbar = new UILoggerToolbarComponent();
-    this.toolbar.setTarget(this.logModel);
-    this.mainElement = createElement('div',{
-      elements: [
-        this.toolbar.element(),
-        this.logView.element()
-      ],
-      className: "de-workbench-uilogger-container"
-    })
+  private buildUI(showToolbar){
+    if(showToolbar){
+      this.toolbar = new UILoggerToolbarComponent();
+      this.toolbar.setTarget(this.logModel);
+      this.mainElement = createElement('div',{
+        elements: [
+          this.toolbar.element(),
+          this.logView.element()
+        ],
+        className: "de-workbench-uilogger-container"
+      })
+    }else{
+      this.mainElement = createElement('div',{
+        elements: [
+          this.logView.element()
+        ],
+        className: "de-workbench-uilogger-container"
+      })
+    }
+
   }
 
 
@@ -353,6 +363,7 @@ export class UILoggerComponent extends UIBaseComponent {
   }
 
   public setAutoscroll(autoscroll:boolean):UILoggerComponent{
+    this.logView.setAutoscroll(autoscroll);
     return this;
   }
 
@@ -413,6 +424,20 @@ class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
     private setupToolbar(){
 
       // Search field
+      this.createAndAddSearchFilter(this)
+      let subToolbar=this.createButtonToolbar();
+      this.createAndAddLogLevelSelect(subToolbar);
+      this.addElement(subToolbar.element());
+      /*let autoscrollToggle = new UIToolbarButton()
+                        .setId('test2')
+                        .setToggle(true)
+                        .setTitle('Auto scroll')
+                        .setChecked(true)
+                        .setHandler(()=>{alert('button2')})*/
+      //this.addRightButton(autoscrollToggle);
+
+    }
+    createAndAddSearchFilter(container:UIToolbar){
       let searchTextField = createTextEditor({
         type:'search',
         placeholder: 'Filter log',
@@ -426,21 +451,23 @@ class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
       })
       searchTextField.classList.add("de-workbench-uilogger-search-field")
       searchTextField.classList.add("inline-block")
-      this.addElement(searchTextField);
+      container.addElement(searchTextField);
+    }
 
+    createAndAddLogLevelSelect(container:UIToolbar){
       let opts= this.createLoggerFilterOptions();
       let levelSelect= new UISelect(opts);
       levelSelect.addSelectListener(this);
-      this.addElement(levelSelect.element());
+      container.addElement(levelSelect.element());
+    }
 
-      let autoscrollToggle = new UIToolbarButton()
-                        .setId('test2')
-                        .setToggle(true)
-                        .setTitle('Auto scroll')
-                        .setChecked(true)
-                        .setHandler(()=>{alert('button2')})
-      this.addRightButton(autoscrollToggle);
-
+    createButtonToolbar():UIToolbar{
+      let buttonToolbar:UIToolbar=new UIToolbar();
+      let autoScrollButton:UIToolbarButton = new UIToolbarButton();
+      autoScrollButton.setId("autoScroll");
+      autoScrollButton.setIcon("move-down");
+      buttonToolbar.addButton(autoScrollButton);
+      return buttonToolbar;
     }
 
     onItemSelected(value:string){

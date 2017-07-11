@@ -63,7 +63,7 @@ export class LoggerView implements LoggerListener {
    */
   initUI() {
     Logger.getInstance().debug("LoggerView initUI called...");
-    this.loggerComponent = new UILoggerComponent();
+    this.loggerComponent = new UILoggerComponent(true);
     // Create the main UI
     this.element = createElement('div',{
       elements : [
