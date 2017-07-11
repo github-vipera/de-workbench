@@ -40,6 +40,7 @@ export class NewProjectTypeSelector extends UIBaseComponent {
   private projectTemplateSection:any;
   private projectTemplateSelector:ProjectTemplateSelector;
   private captionElement:HTMLElement;
+  private buttonListener:Function;
 
   constructor(){
     super();
@@ -52,6 +53,8 @@ export class NewProjectTypeSelector extends UIBaseComponent {
     this.projectTypeButtons = new UIButtonGroup(UIButtonGroupMode.Radio);
     let selectorBlock = createControlBlock('project-type','Project Type',this.projectTypeButtons.element());
 
+    this.buttonListener = (evt)=>{ this.onTypeSelected(evt) }
+
     // Load project types from resources
     this.projectTypes = DEWBResourceManager.getJSONResource('project_types.json')["projectTypes"];
     for (var i=0;i<this.projectTypes.length;i++){
@@ -59,18 +62,11 @@ export class NewProjectTypeSelector extends UIBaseComponent {
         this.projectTypeButtons.addButton(new UIButtonConfig().setId(projectType.name)
                                                               .setCaption(projectType.description)
                                                               .setSelected(i==0)
-                                                              .setClickListener(this.onTypeSelected))
+                                                              .setClickListener(this.buttonListener))
     }
 
     // Template selector
     this.projectTemplateSelector = new ProjectTemplateSelector();
-
-
-    /**
-    this.projectTemplateSection = this.createProjectTemplateSelection();
-    insertElement(this.modalContainer, this.projectTemplateSection);
-    this.showProjectTemplateSection(false)
-    **/
 
     this.mainElement = createElement('div',{
       elements: [
@@ -79,10 +75,28 @@ export class NewProjectTypeSelector extends UIBaseComponent {
       ],
       className : 'block'
     })
+
+    //select first type
+    this.onTypeSelected(this.projectTypes[0].name)
   }
 
-  private onTypeSelected(evt){
-    //TODO!!
+  private getProjectTypeByName(name:string){
+    for (var i=0;i<this.projectTypes.length;i++){
+      if (this.projectTypes[i].name===name){
+        return this.projectTypes[i];
+      }
+    }
+    return null;
+  }
+
+  private onTypeSelected(typeId:string){
+    let projectType = this.getProjectTypeByName(typeId);
+    if (projectType && projectType.templates && projectType.templates.length>0){
+      this.projectTemplateSelector.setTemplates(projectType.templates);
+      this.projectTemplateSelector.show()
+    } else {
+      this.projectTemplateSelector.hide()
+    }
   }
 
   public destroy(){
@@ -126,7 +140,7 @@ class ProjectTemplateSelector extends UIBaseComponent {
       ]
     })
 
-
+    this.hide();
   }
 
   public show(){
@@ -146,6 +160,15 @@ class ProjectTemplateSelector extends UIBaseComponent {
   public setTemplates(templates:Array<string>){
     while (this.cmbTemplates.firstChild) {
       this.cmbTemplates.removeChild(this.cmbTemplates.firstChild);
+    }
+    for (var i=0;i<templates.length;i++){
+      let optionEl = createElement('option',{
+        elements: [
+          createText(templates[i])
+        ]
+      })
+      optionEl.setAttribute("id", templates[i]);
+      insertElement(this.cmbTemplates, optionEl)
     }
   }
 
