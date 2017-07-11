@@ -1,19 +1,19 @@
 {
   "projectTypes": [
     {
-      "name": "CORDOVA_PLAIN",
+      "name": "cordova",
       "description" : "Standard Apache Cordova",
       "templates" : []
     },
     {
-      "name": "CORDOVA_IONIC_1",
+      "name": "ionic",
       "description" : "Ionic Framework",
       "templates" : [
         "blank", "tabs" , "sidemenu", "maps"
       ]
     },
     {
-      "name": "CORDOVA_IONIC_3",
+      "name": "ionic2",
       "description" : "Ionic 3 Framework",
       "templates" : [
         "blank", "tabs" , "sidemenu", "conference", "tutorial", "aws"

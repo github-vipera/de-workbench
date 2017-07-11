@@ -33,6 +33,9 @@ export class CordovaExecutor extends CommandExecutor {
     var args = [];
     var options = this.getCmdOptions();
     var execNpmInstall = false;
+    if (!projectInfo.path){
+      projectInfo.path = path.join(projectInfo.basePath ,  projectInfo.name);
+    }
     if (projectInfo.type === 'ionic1') {
       cmd = "ionic"
       var newPath = projectInfo.basePath;
@@ -76,13 +79,13 @@ export class CordovaExecutor extends CommandExecutor {
                 this.execNpmInstall(projectInfo.path).then(resolve, reject);
               }
             }, (err) => {
-              reject("Creation Fail");
+              reject("Creation Failed ("+err+")");
             })
           }, (err) => {
-            reject("Creation Fail");
+            reject("Creation Failed ("+err+")");
           })
         } else {
-          reject("Creation Fail");
+          reject("Creation Failed");
         }
       });
     });

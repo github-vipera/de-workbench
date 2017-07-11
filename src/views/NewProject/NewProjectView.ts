@@ -26,18 +26,12 @@ import { EventEmitter }  from 'events'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 import { DEWBResourceManager } from "../../DEWorkbench/DEWBResourceManager"
 import { NewProjectTypeSelector } from './NewProjectTypeSelector'
+import { Cordova, NewProjectInfo } from '../../cordova/Cordova'
+import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 
 const remote = require('remote');
 const dialog = remote.require('electron').dialog;
 
-export interface NewProjectInfo {
-  projectName:string;
-  packagedID:string;
-  path:string;
-  platforms:Array<string>,
-  projectType:string;
-  templateName:string;
-}
 
 export class NewProjectView {
 
@@ -143,26 +137,32 @@ export class NewProjectView {
     modalConfig['className'] = 'de-workbench-modal'
     this.panel = atom.workspace.addModalPanel(modalConfig)
 
-
   }
 
   protected doCreateProject(){
     let newPrjInfo:NewProjectInfo = this.getNewProjectInfo();
     if (this.validateNewProjectInfo(newPrjInfo)){
-      //TODO!! create!
+      ProjectManager.getInstance().cordova.createNewProject(newPrjInfo).then((result)=>{
+        console.log("Created! " , result)
+        alert("Created! " + result);
+      },(err)=>{
+        console.log("Failure! " , err)
+        alert("Failure! " + err);
+      });
     }
+    console.log("Creation launched!")
   }
 
   private validateNewProjectInfo(newPrjInfo:NewProjectInfo):boolean {
-    if (newPrjInfo.projectName==null || newPrjInfo.projectName.length==0){
+    if (newPrjInfo.name==null || newPrjInfo.name.length==0){
       alert("Invalid project name");
       return false;
     }
-    if (newPrjInfo.packagedID==null || newPrjInfo.packagedID.length==0){
+    if (newPrjInfo.packageId==null || newPrjInfo.packageId.length==0){
       alert("Invalid package ID");
       return false;
     }
-    if (newPrjInfo.path==null || newPrjInfo.path.length==0){
+    if (newPrjInfo.basePath==null || newPrjInfo.basePath.length==0){
       alert("Invalid project folder");
       return false;
     }
@@ -295,12 +295,12 @@ export class NewProjectView {
 
   protected getNewProjectInfo():NewProjectInfo {
       return {
-        projectName : this.getCurrentSelectedProjectName(),
-        packagedID : this.getCurrentSelectedPackagedID(),
-        path : this.getCurrentSelectedFolder(),
+        name : this.getCurrentSelectedProjectName(),
+        packageId : this.getCurrentSelectedPackagedID(),
+        basePath : this.getCurrentSelectedFolder(),
         platforms : this.getCurrentSelectedPlatforms(),
-        projectType: this.newProjectTypeSelector.getProjectType(),
-        templateName: this.newProjectTypeSelector.getTemplateName()
+        type: this.newProjectTypeSelector.getProjectType(),
+        template: this.newProjectTypeSelector.getTemplateName()
       }
   }
 

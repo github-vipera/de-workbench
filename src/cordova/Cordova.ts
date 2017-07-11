@@ -44,6 +44,16 @@ export class CordovaPlugin {
   public sourceType:string = '';
 }
 
+export interface NewProjectInfo {
+  name:string;
+  packageId:string;
+  basePath:string;
+  platforms:Array<string>,
+  type:string;
+  template:string;
+}
+
+
 export class Cordova {
 
   private cordovaUtils: CordovaUtils;
@@ -208,7 +218,7 @@ export class Cordova {
   /**
    * Creates a new Cordova project with the given parameters
    */
-  public createNewProject(projectInfo: any): Promise<any> {
+  public createNewProject(projectInfo: NewProjectInfo): Promise<any> {
     Logger.getInstance().debug("createNewProject: ", projectInfo)
     let executor = new CordovaExecutor(null);
     return executor.createNewProject(projectInfo);
