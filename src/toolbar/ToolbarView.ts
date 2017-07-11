@@ -53,8 +53,6 @@ export class ToolbarView {
   private logoElement: HTMLElement;
   private buildButton: HTMLElement;
 
-  foo mistake
-
   constructor (options: ToolbarOptions) {
     this.events = new EventEmitter();
     this.element = createElement('de-workbench-toolbar');
