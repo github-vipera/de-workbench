@@ -2,5 +2,7 @@ language: node_js
 node_js:
   - "6.3"
 sudo: false
+before_install:
+- npm install -g typescript
 script:
-- npm compile
+- npm run-script compile
