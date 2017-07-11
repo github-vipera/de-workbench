@@ -24,7 +24,6 @@
 
 import { EventEmitter }  from 'events'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
-import { UITextEditorExtended } from '../../ui-components/UITextEditorExtended'
 import { DEWBResourceManager } from "../../DEWorkbench/DEWBResourceManager"
 import { NewProjectTypeSelector } from './NewProjectTypeSelector'
 
@@ -33,16 +32,14 @@ export class NewProjectView {
   private element: HTMLElement
   private events: EventEmitter
   private panel: any
-  private txtProjectName: HTMLElement;
-  private txtPackageID:HTMLElement;
-  private txtDestinationPath:HTMLElement;
-  private editorElement: HTMLElement;
+  //private txtProjectName: HTMLElement;
+  //private txtPackageID:HTMLElement;
+  //private txtDestinationPath:HTMLElement;
+  //private editorElement: HTMLElement;
 
-  private projectTypeButtons:UIButtonGroup;
   private projectPlatformButtons: UIButtonGroup;
   private actionButtons:UIButtonGroup;
   private projectTemplateSection:HTMLElement;
-  private extTextField:UITextEditorExtended;
   private newProjectTypeSelector:NewProjectTypeSelector;
 
   private modalContainer:HTMLElement;
@@ -112,9 +109,6 @@ export class NewProjectView {
             .setClickListener(()=>{
                 this.close()
             }))
-    //let actionButtonsEl = createControlBlock('action-buttons', null, this.actionButtons.element())
-    //actionButtonsEl.style.float = "right"
-    //insertElement(this.modalContainer, actionButtonsEl);
     let modalActionButtons = createModalActionButtons(this.actionButtons.element());
     insertElement(this.modalContainer, modalActionButtons);
 
@@ -140,16 +134,6 @@ export class NewProjectView {
 
   }
 
-  private selectProjectType(type:string){
-    if (type==='CORDOVA_PLAIN'){
-      this.showProjectTemplateSection(false)
-    } else if (type==='IONIC') {
-      this.showProjectTemplateSection(true)
-    } else if (type==='IONIC_3') {
-      this.showProjectTemplateSection(true)
-    }
-  }
-
   private showProjectTemplateSection(show:boolean){
     if (show){
       this.projectTemplateSection.style["display"] = "initial";
@@ -164,13 +148,7 @@ export class NewProjectView {
 
   close () {
     this.panel.hide()
-    this.element = undefined;
-    this.panel = undefined;
     this.destroy()
-  }
-
-  protected destroy(){
-    this.extTextField.destroy();
   }
 
   private createTextElement(placeholder:string, id:string){
@@ -221,6 +199,25 @@ export class NewProjectView {
         className: ''
     })
     return divElement;
+  }
+
+  protected destroy(){
+    this.projectPlatformButtons.destroy();
+    this.projectPlatformButtons = undefined;
+
+    this.actionButtons.destroy();
+    this.actionButtons = undefined;
+
+    this.newProjectTypeSelector.destroy();
+    this.newProjectTypeSelector = undefined;
+
+    this.modalContainer.remove();
+    this.modalContainer = undefined;
+
+    this.element = undefined;
+    this.panel = undefined;
+
+    this.events = undefined;
   }
 
 
