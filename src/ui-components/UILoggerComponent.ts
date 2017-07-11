@@ -41,6 +41,7 @@ export interface LogModel {
   getRowCount():number
   addListener(listener:LogModelListener):void
   removeListener(listener:LogModelListener):void
+  clear():void
 }
 
 export class BaseLogModel implements LogModel{
@@ -75,6 +76,10 @@ export class BaseLogModel implements LogModel{
       return single == listener;
     });
   }
+  clear():void{
+    this.logLines = [];
+    this.fireRowChanges();
+  }
   fireRowAdd(logLine:LogLine){
     _.forEach(this.listeners,function(list){
       list.rowAppended(logLine)
@@ -83,6 +88,11 @@ export class BaseLogModel implements LogModel{
   fireRowDrop(logLine:LogLine,index?:number){
     _.forEach(this.listeners,function(list){
       list.rowDropped(logLine,index || 0);
+    });
+  }
+  fireRowChanges(){
+    _.forEach(this.listeners,function(list){
+      list.rowsChanged();
     });
   }
 }
@@ -156,6 +166,10 @@ export class FilterableLogModel extends BaseLogModel implements IFilterableModel
         single.rowDropped(line);
       });
     }
+  }
+
+  clear(){
+    this.model.clear();
   }
 
   rowsChanged(){
@@ -320,6 +334,16 @@ export class UILoggerComponent extends UIBaseComponent {
     if(showToolbar){
       this.toolbar = new UILoggerToolbarComponent();
       this.toolbar.setTarget(this.logModel);
+      this.toolbar.setActionDelegate((action:LoggerToolbarAction) => {
+        switch(action){
+          case "toggleAutoscroll":
+            this.setAutoscroll(!this.autoscroll);
+          break;
+          case "clearLog":
+            this.logModel.clear();
+          break;
+        }
+      })
       this.mainElement = createElement('div',{
         elements: [
           this.toolbar.element(),
@@ -345,7 +369,6 @@ export class UILoggerComponent extends UIBaseComponent {
       message: completeMessage,
       logLevel:level || LogLevel.DEBUG,
     });
-    //this.updateScroll();
     return this;
   }
 
@@ -406,10 +429,14 @@ class LogLevelFilter implements Filter<LogLine> {
   }
 }
 
+type ActionDelegate=(type:LoggerToolbarAction) => void
+type LoggerToolbarAction ="toggleAutoscroll"|"clearLog";
+
 class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
     private target:IFilterableModel = null;
     private regexpfilter:TextFilter = new TextFilter();
     private levelFilter:LogLevelFilter = new LogLevelFilter();
+    private actionDelegate:ActionDelegate = null;
     constructor(){
       super();
       this.setupToolbar();
@@ -419,6 +446,10 @@ class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
       this.target = target;
       this.target.addFilter(this.regexpfilter);
       this.target.addFilter(this.levelFilter);
+    }
+
+    setActionDelegate(delegate:ActionDelegate){
+      this.actionDelegate = delegate;
     }
 
     private setupToolbar(){
@@ -457,11 +488,21 @@ class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
       autoScrollButton.setId("autoScroll");
       autoScrollButton.setWithSpace(false);
       autoScrollButton.setIcon(" icon-move-down");
+      autoScrollButton.handler=() => {
+        if(this.actionDelegate){
+          this.actionDelegate("toggleAutoscroll");
+        }
+      };
       buttonToolbar.addButton(autoScrollButton);
       let clearLog:UIToolbarButton = new UIToolbarButton();
-      clearLog.setId("autoScroll");
-      clearLog.setIcon(" icon-move-down");
+      clearLog.setId("clearLog");
+      clearLog.setIcon(" icon-trashcan");
       clearLog.setWithSpace(false);
+      clearLog.handler=() => {
+        if(this.actionDelegate){
+          this.actionDelegate("clearLog");
+        }
+      };
       buttonToolbar.addButton(clearLog);
       return buttonToolbar;
     }
