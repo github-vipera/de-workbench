@@ -82,5 +82,8 @@ export class UISelect extends UIBaseComponent {
     return options;
   }
 
+  getSelectedItem():string{
+    return this.mainElement['value'];
+  }
 
 }
