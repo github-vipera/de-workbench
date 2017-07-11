@@ -18,7 +18,8 @@
    createTextEditor,
    createControlBlock,
    createLabel,
-   createBlock
+   createBlock,
+   createModalActionButtons
  } from '../../element/index';
 
 import { EventEmitter }  from 'events'
@@ -86,29 +87,6 @@ export class NewProjectView {
     this.newProjectTypeSelector = new NewProjectTypeSelector();
     insertElement(this.modalContainer, this.newProjectTypeSelector.element());
 
-    /**
-    // Project Type Radio
-    this.projectTypeButtons = new UIButtonGroup(UIButtonGroupMode.Radio)
-                            .addButton(new UIButtonConfig().setId('a').setCaption('Standard Apache Cordova').setSelected(true).setClickListener(()=>{
-                              this.selectProjectType('CORDOVA_PLAIN')
-                            }))
-                            .addButton(new UIButtonConfig().setId('b').setCaption('Ionic Framework').setClickListener(()=>{
-                              this.selectProjectType('IONIC')
-                            }))
-                            .addButton(new UIButtonConfig().setId('c').setCaption('Ionic Framework 3').setClickListener(()=>{
-                              this.selectProjectType('IONIC_3')
-                            }));
-    let projectType = this.createControlBlock('project-type','Project Type', this.projectTypeButtons.element())
-    insertElement(this.modalContainer, projectType);
-
-
-
-    // Project template selection
-    this.projectTemplateSection = this.createProjectTemplateSelection();
-    insertElement(this.modalContainer, this.projectTemplateSection);
-    this.showProjectTemplateSection(false)
-
-    **/
 
     // Platform Chooser Block / Install manually
     this.projectPlatformButtons = new UIButtonGroup(UIButtonGroupMode.Toggle)
@@ -134,10 +112,11 @@ export class NewProjectView {
             .setClickListener(()=>{
                 this.close()
             }))
-    let actionButtonsEl = createControlBlock('action-buttons', null, this.actionButtons.element())
-    actionButtonsEl.style.float = "right"
-    insertElement(this.modalContainer, actionButtonsEl);
-
+    //let actionButtonsEl = createControlBlock('action-buttons', null, this.actionButtons.element())
+    //actionButtonsEl.style.float = "right"
+    //insertElement(this.modalContainer, actionButtonsEl);
+    let modalActionButtons = createModalActionButtons(this.actionButtons.element());
+    insertElement(this.modalContainer, modalActionButtons);
 
 
     let modalWindow = createElement('div',{
@@ -203,13 +182,6 @@ export class NewProjectView {
     txtElement.setAttribute('placeholder',placeholder)
     return txtElement
   }
-  /**
-  private createLabel(caption:string){
-      let labelElement = createElement('label',{
-        elements: [createText(caption)]
-      })
-      return labelElement;
-  }**/
 
   private createButton(caption:string):HTMLElement{
       let buttonEl = createElement('button',{
@@ -251,35 +223,5 @@ export class NewProjectView {
     return divElement;
   }
 
-  /**
-  private createProjectTemplateSelection():HTMLElement {
-      let labelInfo = createLabel("In order to create a Ionic project you need to have installed on your computer the Ionic cli utility.To check if it's already installed launch 'ionic help' command into the terminal.");
-      labelInfo.classList.add('text-warning')
-
-      let label = createLabel('Project Template');
-
-      let templateCombo = createElement('select',{
-        className : 'form-control'
-      });
-
-      let templateBlock = createControlBlock('project-template',null,templateCombo);
-      templateBlock.classList.add('settings-view')
-
-      let templateSection = createElement('div',{
-        elements:[labelInfo, label, templateBlock]
-      })
-
-      templateSection.style["padding-bottom"] = "10px";
-
-      return templateSection;
-  }**/
-
-  /**
-  private loadAvailableProjectTemplates():Object {
-    // for now loads from local resources, todo! load from remote resource
-    var obj = DEWBResourceManager.getJSONResource('project_types.json');
-    return obj;
-  }
-  **/
 
 }

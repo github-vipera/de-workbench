@@ -90,3 +90,14 @@ export function createControlBlock(id:string, caption:string, element:HTMLElemen
   insertElement(blockElement, innerDiv);
   return blockElement;
 }
+
+export function createModalActionButtons(buttons:HTMLElement):HTMLElement{
+  let actionButtonsEl = createControlBlock('action-buttons', null, buttons)
+  actionButtonsEl.style.float = "right"
+
+  let container = createElement('div',{
+    elements: [ actionButtonsEl ],
+    className : 'de-workbench-modal-action-buttons-container'
+  })
+  return container;
+}
