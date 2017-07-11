@@ -27,6 +27,16 @@ import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-compo
 import { DEWBResourceManager } from "../../DEWorkbench/DEWBResourceManager"
 import { NewProjectTypeSelector } from './NewProjectTypeSelector'
 
+const remote = require('remote');
+const dialog = remote.require('electron').dialog;
+
+export interface NewProjectInfo {
+  projectName:string;
+  packagedID:string;
+  path:string;
+  platforms:Array<string>
+}
+
 export class NewProjectView {
 
   private element: HTMLElement
@@ -67,17 +77,18 @@ export class NewProjectView {
 
 
     // Project name
-    let projectName = this.createTextControlBlock('project-name','Project Name', 'Your project name');
+    let projectName = this.createTextControlBlock('deweb-new-project-name','Project Name', 'Your project name');
     insertElement(this.modalContainer, projectName);
 
 
     // Project package id
-    let packageID = this.createTextControlBlock('package-id','Package ID', 'Your project package ID (ex: com.yourcompany.yourapp)');
+    let packageID = this.createTextControlBlock('deweb-new-package-id','Package ID', 'Your project package ID (ex: com.yourcompany.yourapp)');
     insertElement(this.modalContainer, packageID);
 
 
     // Project path
-    let projectPath = this.createTextControlBlockWithButton('project-path', 'Destination Path', 'Your project path', 'Choose Folder...')
+    let buttonListener = ()=>{ this.chooseFolder() }
+    let projectPath = this.createTextControlBlockWithButton('deweb-new-project-path', 'Destination Path', 'Your project path', 'Choose Folder...', buttonListener)
     insertElement(this.modalContainer, projectPath);
 
 
@@ -107,7 +118,7 @@ export class NewProjectView {
             .setButtonType('success')
             .setCaption('Create')
             .setClickListener(()=>{
-                this.close()
+                this.doCreateProject()
             }))
     let modalActionButtons = createModalActionButtons(this.actionButtons.element());
     insertElement(this.modalContainer, modalActionButtons);
@@ -134,6 +145,12 @@ export class NewProjectView {
 
   }
 
+  protected doCreateProject(){
+    let newPrjInfo:NewProjectInfo = this.getNewProjectInfo();
+    alert(JSON.stringify(newPrjInfo))
+    //TODO!!
+  }
+
   private showProjectTemplateSection(show:boolean){
     if (show){
       this.projectTemplateSection.style["display"] = "initial";
@@ -152,6 +169,14 @@ export class NewProjectView {
   }
 
   private createTextElement(placeholder:string, id:string){
+    /**
+    let txtElement = createElement('atom-text-editor',{
+      className: 'editor mini'
+    })
+    txtElement.setAttribute('mini','')
+    txtElement.setAttribute('data-grammar','text plain null-grammar')
+    txtElement.setAttribute('tab-index',tabIndex)
+    **/
     let txtElement = createElement('input',{
       className: 'input-text native-key-bindings'
     })
@@ -176,12 +201,12 @@ export class NewProjectView {
     return createControlBlock(id,caption, txtField)
   }
 
-  private createTextControlBlockWithButton(id:string, caption:string,placeholder:string,buttonCaption:string){
-    let txtField = this.createTextElementWithButton(placeholder, id, buttonCaption);
+  private createTextControlBlockWithButton(id:string, caption:string,placeholder:string,buttonCaption:string, buttonListener){
+    let txtField = this.createTextElementWithButton(placeholder, id, buttonCaption, buttonListener);
     return createControlBlock(id,caption, txtField)
   }
 
-  private createTextElementWithButton(placeholder:string, id:string, buttonCaption:string){
+  private createTextElementWithButton(placeholder:string, id:string, buttonCaption:string, buttonListener){
     let inputEl:HTMLElement = this.createTextElement(placeholder, id);
     inputEl.style.display = 'inline-block';
     inputEl.style.width = 'calc(100% - 137px)';
@@ -191,6 +216,7 @@ export class NewProjectView {
     buttonEl.classList.add('inline-block')
     buttonEl.classList.add('highlight')
     buttonEl.style.width='133px';
+    buttonEl.addEventListener('click', buttonListener);
 
     let divElement = createElement('div',{
       elements: [
@@ -199,6 +225,44 @@ export class NewProjectView {
         className: ''
     })
     return divElement;
+  }
+
+  protected chooseFolder(){
+    var path = dialog.showOpenDialog({
+      properties: ['openDirectory']
+    });
+    if (path && path.length>0){
+      let txtEl = document.getElementById('deweb-new-project-path');
+      txtEl["value"] = path;
+    }
+  }
+
+  protected getCurrentSelectedFolder():string{
+    let txtEl = document.getElementById('deweb-new-project-path');
+    return txtEl["value"];
+  }
+
+  protected getCurrentSelectedPackagedID():string{
+    let txtEl = document.getElementById('deweb-new-package-id');
+    return txtEl["value"];
+  }
+
+  protected getCurrentSelectedProjectName():string{
+    let txtEl = document.getElementById('deweb-new-project-name');
+    return txtEl["value"];
+  }
+
+  protected getCurrentSelectedPlatforms():Array<string>{
+    return this.projectPlatformButtons.getSelectedButtons()
+  }
+
+  protected getNewProjectInfo():NewProjectInfo {
+      return {
+        projectName : this.getCurrentSelectedProjectName(),
+        packagedID : this.getCurrentSelectedPackagedID(),
+        path : this.getCurrentSelectedFolder(),
+        platforms : this.getCurrentSelectedPlatforms()
+      }
   }
 
   protected destroy(){

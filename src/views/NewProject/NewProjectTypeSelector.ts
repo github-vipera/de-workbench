@@ -26,6 +26,7 @@ import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-compo
 import { UITextEditorExtended } from '../../ui-components/UITextEditorExtended'
 import { DEWBResourceManager } from "../../DEWorkbench/DEWBResourceManager"
 import { UIBaseComponent, UIComponent } from '../../ui-components/UIComponent'
+import { UISelect, UISelectItem } from '../../ui-components/UISelect'
 
 class ProjectTypeInfo {
   public name:string;
@@ -114,7 +115,8 @@ export class NewProjectTypeSelector extends UIBaseComponent {
 
 class ProjectTemplateSelector extends UIBaseComponent {
 
-  private cmbTemplates:HTMLElement;
+  //private cmbTemplates:HTMLElement;
+  private cmbTemplates:UISelect;
 
   constructor(){
     super();
@@ -123,16 +125,13 @@ class ProjectTemplateSelector extends UIBaseComponent {
 
   private initUI(){
 
+    this.cmbTemplates = new UISelect();
+
     // Info Label
     let labelInfo = createLabel("In order to create a Ionic project you need to have installed on your computer the Ionic cli utility.To check if it's already installed launch 'ionic help' command into the terminal.");
     labelInfo.classList.add('text-warning')
 
-    // Combo Box
-    this.cmbTemplates = createElement('select',{
-      className : 'form-control'
-    });
-
-    let block = createControlBlock('project-template-selector','Project Template', this.cmbTemplates,'settings-view');
+    let block = createControlBlock('project-template-selector','Project Template', this.cmbTemplates.element(),'settings-view');
 
     this.mainElement = createElement('div',{
       elements:[
@@ -152,24 +151,23 @@ class ProjectTemplateSelector extends UIBaseComponent {
   }
 
   public destroy(){
-    this.cmbTemplates.remove()
-    super.destroy();
+    this.cmbTemplates.setItems([]);
+    this.cmbTemplates.destroy();
     this.cmbTemplates = undefined;
+    super.destroy();
   }
 
   public setTemplates(templates:Array<string>){
-    while (this.cmbTemplates.firstChild) {
-      this.cmbTemplates.removeChild(this.cmbTemplates.firstChild);
-    }
+    this.cmbTemplates.setItems([]);
+    let items = new Array<UISelectItem>();
     for (var i=0;i<templates.length;i++){
-      let optionEl = createElement('option',{
-        elements: [
-          createText(templates[i])
-        ]
-      })
-      optionEl.setAttribute("id", templates[i]);
-      insertElement(this.cmbTemplates, optionEl)
+      let item:UISelectItem = {
+        name : templates[i],
+        value : templates[i],
+      };
+      items.push(item);
     }
+    this.cmbTemplates.setItems(items);
   }
 
 
