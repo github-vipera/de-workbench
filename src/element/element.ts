@@ -53,3 +53,40 @@ export function createElement (tagName, options?) {
   }
   return element;
 }
+
+
+export function createLabel(caption:string){
+  let labelElement = createElement('label',{
+    elements: [createText(caption)]
+  })
+  return labelElement;
+}
+
+export function createBlock(){
+  let blockElement = createElement('div',{
+    elements: [
+    ],
+      className: 'block'
+  })
+  return blockElement;
+}
+
+export function createControlBlock(id:string, caption:string, element:HTMLElement, innerDivClassName?:string){
+  var label;
+  if (caption && caption.length>0){
+    label = createLabel(caption);
+  }
+  let blockElement = createBlock()
+  let innerDiv = createElement('div',{
+    elements: [ element ],
+    className : 'de-workbench-controlblock-innerdiv'
+  });
+  if (innerDivClassName){
+    innerDiv.classList.add(innerDivClassName);
+  }
+  if (label){
+    insertElement(blockElement, label);
+  }
+  insertElement(blockElement, innerDiv);
+  return blockElement;
+}

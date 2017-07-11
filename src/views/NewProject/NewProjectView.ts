@@ -15,13 +15,17 @@
    createIcon,
    createIconFromPath,
    attachEventFromObject,
-   createTextEditor
+   createTextEditor,
+   createControlBlock,
+   createLabel,
+   createBlock
  } from '../../element/index';
 
 import { EventEmitter }  from 'events'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 import { UITextEditorExtended } from '../../ui-components/UITextEditorExtended'
 import { DEWBResourceManager } from "../../DEWorkbench/DEWBResourceManager"
+import { NewProjectTypeSelector } from './NewProjectTypeSelector'
 
 export class NewProjectView {
 
@@ -38,6 +42,7 @@ export class NewProjectView {
   private actionButtons:UIButtonGroup;
   private projectTemplateSection:HTMLElement;
   private extTextField:UITextEditorExtended;
+  private newProjectTypeSelector:NewProjectTypeSelector;
 
   private modalContainer:HTMLElement;
 
@@ -78,8 +83,10 @@ export class NewProjectView {
     insertElement(this.modalContainer, projectPath);
 
 
+    this.newProjectTypeSelector = new NewProjectTypeSelector();
+    insertElement(this.modalContainer, this.newProjectTypeSelector.element());
 
-
+    /**
     // Project Type Radio
     this.projectTypeButtons = new UIButtonGroup(UIButtonGroupMode.Radio)
                             .addButton(new UIButtonConfig().setId('a').setCaption('Standard Apache Cordova').setSelected(true).setClickListener(()=>{
@@ -101,14 +108,14 @@ export class NewProjectView {
     insertElement(this.modalContainer, this.projectTemplateSection);
     this.showProjectTemplateSection(false)
 
-
+    **/
 
     // Platform Chooser Block / Install manually
     this.projectPlatformButtons = new UIButtonGroup(UIButtonGroupMode.Toggle)
         .addButton(new UIButtonConfig().setId('ios').setCaption('iOS').setSelected(true))
         .addButton(new UIButtonConfig().setId('android').setCaption('Android').setSelected(true))
         .addButton(new UIButtonConfig().setId('browser').setCaption('Browser').setSelected(true));
-    let projectPlatforms = this.createControlBlock('project-platforms','Project Platforms', this.projectPlatformButtons.element())
+    let projectPlatforms = createControlBlock('project-platforms','Project Platforms', this.projectPlatformButtons.element())
     insertElement(this.modalContainer, projectPlatforms);
 
 
@@ -127,7 +134,7 @@ export class NewProjectView {
             .setClickListener(()=>{
                 this.close()
             }))
-    let actionButtonsEl = this.createControlBlock('action-buttons', null, this.actionButtons.element())
+    let actionButtonsEl = createControlBlock('action-buttons', null, this.actionButtons.element())
     actionButtonsEl.style.float = "right"
     insertElement(this.modalContainer, actionButtonsEl);
 
@@ -196,13 +203,13 @@ export class NewProjectView {
     txtElement.setAttribute('placeholder',placeholder)
     return txtElement
   }
-
+  /**
   private createLabel(caption:string){
       let labelElement = createElement('label',{
         elements: [createText(caption)]
       })
       return labelElement;
-  }
+  }**/
 
   private createButton(caption:string):HTMLElement{
       let buttonEl = createElement('button',{
@@ -216,12 +223,12 @@ export class NewProjectView {
 
   private createTextControlBlock(id:string, caption:string,placeholder:string){
     let txtField = this.createTextElement(placeholder, id);
-    return this.createControlBlock(id,caption, txtField)
+    return createControlBlock(id,caption, txtField)
   }
 
   private createTextControlBlockWithButton(id:string, caption:string,placeholder:string,buttonCaption:string){
     let txtField = this.createTextElementWithButton(placeholder, id, buttonCaption);
-    return this.createControlBlock(id,caption, txtField)
+    return createControlBlock(id,caption, txtField)
   }
 
   private createTextElementWithButton(placeholder:string, id:string, buttonCaption:string){
@@ -244,43 +251,18 @@ export class NewProjectView {
     return divElement;
   }
 
-  private createControlBlock(id:string, caption:string, element:HTMLElement){
-    var label;
-    if (caption && caption.length>0){
-      label = this.createLabel(caption);
-    }
-    let blockElement = this.createBlock()
-    let innerDiv = createElement('div',{
-      elements: [ element ],
-      className : 'de-workbench-newproj-innerdiv'
-    });
-    if (label){
-      insertElement(blockElement, label);
-    }
-    insertElement(blockElement, innerDiv);
-    return blockElement;
-  }
-
-  private createBlock(){
-    let blockElement = createElement('div',{
-      elements: [
-      ],
-        className: 'block'
-    })
-    return blockElement;
-  }
-
+  /**
   private createProjectTemplateSelection():HTMLElement {
-      let labelInfo = this.createLabel("In order to create a Ionic project you need to have installed on your computer the Ionic cli utility.To check if it's already installed launch 'ionic help' command into the terminal.");
+      let labelInfo = createLabel("In order to create a Ionic project you need to have installed on your computer the Ionic cli utility.To check if it's already installed launch 'ionic help' command into the terminal.");
       labelInfo.classList.add('text-warning')
 
-      let label = this.createLabel('Project Template');
+      let label = createLabel('Project Template');
 
       let templateCombo = createElement('select',{
         className : 'form-control'
       });
 
-      let templateBlock = this.createControlBlock('project-template',null,templateCombo);
+      let templateBlock = createControlBlock('project-template',null,templateCombo);
       templateBlock.classList.add('settings-view')
 
       let templateSection = createElement('div',{
@@ -290,12 +272,14 @@ export class NewProjectView {
       templateSection.style["padding-bottom"] = "10px";
 
       return templateSection;
-  }
+  }**/
 
+  /**
   private loadAvailableProjectTemplates():Object {
     // for now loads from local resources, todo! load from remote resource
     var obj = DEWBResourceManager.getJSONResource('project_types.json');
     return obj;
   }
+  **/
 
 }
