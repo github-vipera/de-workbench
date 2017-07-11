@@ -25,7 +25,8 @@
   "main": "./lib/main",
   "showWelcome": true,
   "scripts": {
-    "start": "tsc -w"
+    "start": "tsc -w",
+    "compile": "tsc"
   },
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
