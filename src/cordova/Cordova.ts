@@ -48,6 +48,7 @@ export interface NewProjectInfo {
   name:string;
   packageId:string;
   basePath:string;
+  path:string;
   platforms:Array<string>,
   type:string;
   template:string;

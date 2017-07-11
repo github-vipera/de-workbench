@@ -29,9 +29,11 @@ import { NewProjectTypeSelector } from './NewProjectTypeSelector'
 import { Cordova, NewProjectInfo } from '../../cordova/Cordova'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { NewProjectProgressPanel } from './NewProjectProgressPanel'
+import { UINotifications } from '../../ui-components/UINotifications'
 
 const remote = require('remote');
 const dialog = remote.require('electron').dialog;
+const path = require("path");
 
 
 export class NewProjectView {
@@ -160,10 +162,17 @@ export class NewProjectView {
       this.newProjectProgressPanel.startLog()
       ProjectManager.getInstance().cordova.createNewProject(newPrjInfo).then((result)=>{
         console.log("Created! " , result)
-        alert("Created! " + result);
+        this.newProjectProgressPanel.hide()
+        this.newProjectProgressPanel.stopLog()
+        this.close()
+        UINotifications.showInfo("Project created successfully.")
+        atom.open({'pathsToOpen': [newPrjInfo.path], '.newWindow': true});
       },(err)=>{
         console.log("Failure! " , err)
-        alert("Failure! " + err);
+        this.newProjectProgressPanel.hide()
+        this.newProjectProgressPanel.stopLog()
+        this.close()
+        UINotifications.showInfo("Project creation error.")
       });
     }
     console.log("Creation launched!")
@@ -314,6 +323,7 @@ export class NewProjectView {
         name : this.getCurrentSelectedProjectName(),
         packageId : this.getCurrentSelectedPackagedID(),
         basePath : this.getCurrentSelectedFolder(),
+        path: path.join(this.getCurrentSelectedFolder(), this.getCurrentSelectedProjectName()),
         platforms : this.getCurrentSelectedPlatforms(),
         type: this.newProjectTypeSelector.getProjectType(),
         template: this.newProjectTypeSelector.getTemplateName()

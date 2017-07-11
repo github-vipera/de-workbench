@@ -48,7 +48,7 @@ export class NewProjectProgressPanel extends UIBaseComponent implements LoggerLi
         className : 'de-workbench-newproj-logger-overlay'
     });
 
-    this.loggerComponent = new UILoggerComponent();
+    this.loggerComponent = new UILoggerComponent(false);
     this.loggerComponent.element().classList.add('de-workbench-newproj-logger-component')
     insertElement(this.logOverlayElement, this.loggerComponent.element())
 
