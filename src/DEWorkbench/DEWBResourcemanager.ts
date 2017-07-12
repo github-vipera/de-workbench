@@ -7,7 +7,6 @@
  */
 
 import { EventEmitter }  from 'events'
-import { Cordova } from '../cordova/Cordova'
 import { Logger } from '../logger/Logger'
 
 const fs = require('fs')
