@@ -24,6 +24,7 @@ export interface UITreeItem {
   name:string;
   className?:string;
   icon?:string;
+  expanded?:boolean;
   htmlElement?:HTMLElement;
   children?:Array<UITreeItem>;
   selected?:boolean;
@@ -125,7 +126,10 @@ export class UITreeView extends UIBaseComponent {
 
     let listClassName = 'list-item';
     if (childCount>0){
-      listClassName = 'list-nested-item collapsed'
+      listClassName = 'list-nested-item'
+    }
+    if (!item.expanded){
+      listClassName += ' collapsed'
     }
     let treeItem = createElement('li',{
       className : 'de-woekbench-treeview-treeitem entry ' + listClassName ,
