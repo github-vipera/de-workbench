@@ -23,6 +23,7 @@ export interface UITreeItem {
   id:string;
   name:string;
   className?:string;
+  icon?:string;
   htmlElement?:HTMLElement;
   children?:Array<UITreeItem>;
   selected?:boolean;
@@ -75,28 +76,26 @@ export class UITreeView extends UIBaseComponent {
 
     let rootItemEl = this.buildTreeItem(this.model.root);
 
-    /*
-    let treeContainer = createElement('div',{
-        className : 'de-woekbench-treeview-container'
-    })
-    */
-
     let ulMainTree = createElement('ul',{
         elements : [ rootItemEl ],
         className: 'list-tree has-collapsable-children'
     })
-
-    //insertElement(treeContainer, this.ulMainTree)
 
     return ulMainTree;
   }
 
   private buildTreeItem(item:UITreeItem){
 
+    let iconClass = "";
+    if (item.icon){
+      iconClass = "icon " + item.icon
+    }
     // create item caption
     let treeItemCaption = createElement('span',{
-      elements :  [ createText(item.name)]
+      elements :  [ createText(item.name)],
+      className: iconClass
     })
+
     let treeItemHeader = createElement('div',{
       elements: [ treeItemCaption ],
       className: 'header list-item'
@@ -124,8 +123,12 @@ export class UITreeView extends UIBaseComponent {
       }
     }
 
+    let listClassName = 'list-item';
+    if (childCount>0){
+      listClassName = 'list-nested-item collapsed'
+    }
     let treeItem = createElement('li',{
-      className : 'de-woekbench-treeview-treeitem entry list-nested-item collapsed',
+      className : 'de-woekbench-treeview-treeitem entry ' + listClassName ,
       elements : [ treeItemHeader, treeItemChildren ]
     })
     treeItem.setAttribute("treeitemId", item.id)

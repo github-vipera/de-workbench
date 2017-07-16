@@ -47,15 +47,16 @@ export class VariantsView  extends UIBaseComponent {
     let root:UITreeItem = {
       id : 'root',
       name: 'root',
+      icon: 'icon-file-directory',
       children: [
           { id: 'test', name: 'test'},
-          { id: 'test2', name: 'test 2', selected: true,
+          { id: 'test2', name: 'test 2', selected: true, icon: 'icon-file-directory',
             children: [
               { id: 'test6', name: 'test 6'},
               { id: 'test7', name: 'test 7'}
             ]
           },
-          { id: 'test3', name: 'test 3',
+          { id: 'test3', name: 'test 3', icon: 'icon-file-directory',
             children : [
               { id: 'test4', name: 'test 4'},
               { id: 'test5', name: 'test 5'}
