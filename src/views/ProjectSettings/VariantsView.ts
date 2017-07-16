@@ -25,10 +25,13 @@ import { Logger } from '../../logger/Logger'
 import { UIPluginsList } from '../../ui-components/UIPluginsList'
 import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
+import { UITreeView, UITreeViewModel, UITreeItem } from '../../ui-components/UITreeView'
 
 export class VariantsView  extends UIBaseComponent {
 
   private stackedPage: UIStackedView;
+  private treeModel:UITreeViewModel;
+  private treeView:UITreeView;
 
   constructor(){
     super();
@@ -40,6 +43,40 @@ export class VariantsView  extends UIBaseComponent {
                         .setTitle('Build Variants');
 
     this.mainElement = this.stackedPage.element();
+
+    let root:UITreeItem = {
+      id : 'root',
+      name: 'root',
+      children: [
+          { id: 'test', name: 'test'},
+          { id: 'test2', name: 'test 2', selected: true,
+            children: [
+              { id: 'test6', name: 'test 6'},
+              { id: 'test7', name: 'test 7'}
+            ]
+          },
+          { id: 'test3', name: 'test 3',
+            children : [
+              { id: 'test4', name: 'test 4'},
+              { id: 'test5', name: 'test 5'}
+            ]
+          },
+      ]
+    }
+    this.treeModel = {
+      root: root
+    };
+
+
+    let treeView = new UITreeView(this.treeModel);
+    let div = createElement('div', { className: 'test-treeview-container'})
+    insertElement(div, treeView.element())
+    this.stackedPage.setInnerView(div)
+
+    div.style.width = '400px';
+    div.style.height = '400px';
+    div.style.border = 'solid 1px white';
+
 
   }
 
