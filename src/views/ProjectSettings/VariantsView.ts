@@ -51,7 +51,7 @@ export class VariantsView  extends UIBaseComponent {
       icon: 'icon-file-directory',
       children: [
           { id: 'test', name: 'test', icon: 'test-ts-icon'},
-          { id: 'test2', name: 'test 2', selected: true, icon: 'icon-file-directory',
+          { id: 'test2', name: 'test 2', icon: 'icon-file-directory',
             children: [
               { id: 'test6', name: 'test 6'},
               { id: 'test7', name: 'test 7'}

@@ -39,6 +39,7 @@ export class UITreeView extends UIBaseComponent {
 
   private model:UITreeViewModel;
   private treeElement: HTMLElement;
+  private currentSelection: string;
 
   constructor(model?:UITreeViewModel){
     super();
@@ -79,7 +80,7 @@ export class UITreeView extends UIBaseComponent {
 
     let ulMainTree = createElement('ul',{
         elements : [ rootItemEl ],
-        className: 'list-tree has-collapsable-children'
+        className: 'list-tree has-collapsable-children focusable-panel'
     })
 
     return ulMainTree;
@@ -102,13 +103,13 @@ export class UITreeView extends UIBaseComponent {
       className: 'header list-item'
     });
     treeItemHeader.setAttribute("treeitemId", item.id)
+    treeItemHeader.setAttribute("id", "de-woekbench-treeview-treeitem-header-" + item.id)
     if (item.selected){
         treeItemHeader.classList.add("selected")
     }
 
     treeItemHeader.addEventListener('click',(evt)=>{
-      let itemId = evt.currentTarget.attributes["treeitemId"].value;
-      this.toggleTreeItem(itemId);
+      this.onItemClicked(evt);
     })
 
     // create children
@@ -140,6 +141,33 @@ export class UITreeView extends UIBaseComponent {
     return treeItem;
   }
 
+  protected onItemClicked(evt){
+    // Expand/Collapse if necessary
+    let itemId = evt.currentTarget.attributes["treeitemId"].value;
+    this.toggleTreeItemExpansion(itemId);
+
+    // Select the item
+    if (this.currentSelection){
+      // remove current selection
+      this.selectItemById(this.currentSelection, false);
+    }
+    this.selectItemById(itemId, true);
+    this.currentSelection = itemId;
+  }
+
+  public getCurrentSelectedItemId():string{
+    return this.currentSelection
+  }
+
+  public selectItemById(id:string,select:boolean){
+    let el = this.mainElement.querySelector('#de-woekbench-treeview-treeitem-header-' + id)
+    if (select){
+      el.classList.add("selected");
+    } else {
+      el.classList.remove("selected");
+    }
+  }
+
   public buildItemElementId(id:string):string{
     return "de-woekbench-treeview-treeitem-li-" +  id;
   }
@@ -154,7 +182,7 @@ export class UITreeView extends UIBaseComponent {
     el.classList.add("collapsed");
   }
 
-  public toggleTreeItem(id:string){
+  public toggleTreeItemExpansion(id:string){
     let el = this.getTreeItemById(id);
     el.classList.toggle("collapsed");
   }
