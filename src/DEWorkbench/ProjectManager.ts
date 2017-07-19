@@ -64,6 +64,15 @@ export class ProjectManager {
       return undefined;
     }
 
+    getAllAvailableProjects():Array<any>{
+      let currentPaths = atom.project["getPaths"]();
+      if(currentPaths){
+        return currentPaths;
+      }else{
+        return [];
+      }
+    }
+
     /**
      * Return true if an editore opened and selected is available
      */

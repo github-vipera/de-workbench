@@ -21,6 +21,8 @@ import {
   createIconFromPath,
   attachEventFromObject
 } from '../element/index';
+import { UIRunComponent } from '../ui-components/UIRunComponent'
+
 
 export interface ToolbarOptions {
   didNewProject?: Function,
@@ -61,12 +63,12 @@ export class ToolbarView {
     insertElement(this.element, this.logoElement)
 
     //<Label class="fa" text="\uf293"></Label>
-    let testFA = createElement('a',{
+    /*let testFA = createElement('a',{
       elements: [ createText('pippo')],
       className : "fa"
     })
     testFA.setAttribute("text","\uf293")
-    insertElement(this.element, testFA)
+    insertElement(this.element, testFA)*/
 
     this.newProjectButton = createButton({
       click: () => {
@@ -76,6 +78,16 @@ export class ToolbarView {
       createIcon('newproj')
     ]);
     insertElement(this.element, this.newProjectButton)
+
+    this.buildButton = createButton({
+      disabled: false,
+      click: () => {
+        this.events.emit('didProjectSettings');
+      }
+    },[
+      createIcon('build')
+    ]);
+    insertElement(this.element, this.buildButton)
 
 
     this.runButton = createButton({
@@ -98,20 +110,38 @@ export class ToolbarView {
     ]);
     insertElement(this.element, this.stopButton)
 
-
-    this.buildButton = createButton({
-      disabled: false,
-      click: () => {
-        this.events.emit('didProjectSettings');
-      }
-    },[
-      createIcon('build')
-    ]);
-    insertElement(this.element, this.buildButton)
-
+    let runComponent:UIRunComponent = new UIRunComponent();
+    insertElement(this.element,runComponent.element());
 
     // toggle panes
-    let toggleButtons = createGroupButtons([
+    let toggleButtons = this.createToogleButtons();
+    toggleButtons.classList.add('bugs-toggle-buttons')
+    insertElement(this.element, toggleButtons)
+
+
+    attachEventFromObject(this.events, [
+      'didRun',
+      'didStop',
+      'didNewProject',
+      'didBuild',
+      'didToggleToolbar',
+      'didTogglePrjInspector',
+      'didToggleDebugArea',
+      'didProjectSettings'
+    ], options);
+
+  }
+
+  private toggleAtomTitleBar (value: boolean) {
+    let titleBar = document.querySelector('atom-panel .title-bar') as HTMLElement
+    if (get(titleBar, 'nodeType', false) && titleBar.parentNode) {
+      (<HTMLElement> titleBar.parentNode).style.display = value ? null : 'none'
+    }
+  }
+
+
+  private createToogleButtons():HTMLElement{
+    return createGroupButtons([
       createButton({
         tooltip: {
           subscriptions: this.subscriptions,
@@ -140,29 +170,7 @@ export class ToolbarView {
         },
         click: () => this.events.emit('didToggleDebugArea')
       }, [createIcon('panel-right')])
-    ])
-    toggleButtons.classList.add('bugs-toggle-buttons')
-    insertElement(this.element, toggleButtons)
-
-
-    attachEventFromObject(this.events, [
-      'didRun',
-      'didStop',
-      'didNewProject',
-      'didBuild',
-      'didToggleToolbar',
-      'didTogglePrjInspector',
-      'didToggleDebugArea',
-      'didProjectSettings'
-    ], options);
-
-  }
-
-  private toggleAtomTitleBar (value: boolean) {
-    let titleBar = document.querySelector('atom-panel .title-bar') as HTMLElement
-    if (get(titleBar, 'nodeType', false) && titleBar.parentNode) {
-      (<HTMLElement> titleBar.parentNode).style.display = value ? null : 'none'
-    }
+    ]);
   }
 
   public displayAsTitleBar () {
