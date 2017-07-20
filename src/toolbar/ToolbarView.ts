@@ -21,7 +21,7 @@ import {
   createIconFromPath,
   attachEventFromObject
 } from '../element/index';
-import { UIRunComponent } from '../ui-components/UIRunComponent'
+import { UIRunSelectorComponent } from '../ui-components/UIRunSelectorComponent'
 
 
 export interface ToolbarOptions {
@@ -110,7 +110,7 @@ export class ToolbarView {
     ]);
     insertElement(this.element, this.stopButton)
 
-    let runComponent:UIRunComponent = new UIRunComponent();
+    let runComponent:UIRunSelectorComponent = new UIRunSelectorComponent();
     insertElement(this.element,runComponent.element());
 
     // toggle panes

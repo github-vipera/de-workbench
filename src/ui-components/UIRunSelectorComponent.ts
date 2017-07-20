@@ -15,16 +15,19 @@ import {
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UISelect ,UISelectItem} from './UISelect'
+import { UISelectButton } from './UISelectButton'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import * as _ from 'lodash'
 import * as path from 'path'
 
-export class UIRunComponent extends UIBaseComponent {
+export class UIRunSelectorComponent extends UIBaseComponent {
   projectSelector:UISelect = null;
+  selectButton:UISelectButton;
   taskSelector:HTMLElement = null;
   constructor(){
     super();
     this.initUI();
+    this.subscribeEvents();
   }
 
   initUI():void{
@@ -33,16 +36,8 @@ export class UIRunComponent extends UIBaseComponent {
     });
     let projects:Array<string> = this.getAllAvailableProjects();
     this.projectSelector=this.createProjectSelector(projects);
-    insertElement(this.mainElement,createButton({
-      className:"select-btn"
-    },[
-      createText("Select project"),
-      this.projectSelector.element(),
-      createElement('div', {
-        className: 'bugs-scheme-arrow'
-      })
-    ]));
-
+    this.selectButton = new UISelectButton(this.projectSelector);
+    insertElement(this.mainElement,this.selectButton.element());
     let tasks:Array<any> = []; //TODO
     this.taskSelector = createButton({
       className:"task-btn"
@@ -50,29 +45,49 @@ export class UIRunComponent extends UIBaseComponent {
       createText("...")
     ]);
     insertElement(this.mainElement,this.taskSelector);
-
   }
+
+  subscribeEvents(){
+    ProjectManager.getInstance().didProjectChanged(this.reloadProjectList.bind(this));
+  }
+
+  reloadProjectList(){
+    let projects:Array<string> = this.getAllAvailableProjects();
+    let items:Array<UISelectItem> = this.createProjectSelectOptions(projects);
+    this.projectSelector.setItems(items);
+    this.selectButton.setSelectedItem(items[0].value)
+  }
+
   getAllAvailableProjects():Array<string>{
     return ProjectManager.getInstance().getAllAvailableProjects();
   }
 
   createProjectSelector(projects:Array<string>):UISelect{
+    let options:Array<UISelectItem> = this.createProjectSelectOptions(projects);
+    console.log("OPTIONS:",options);
+    return new UISelect(options);
+  }
+
+  createProjectSelectOptions(projects:Array<string>):Array<UISelectItem>{
     let options:Array<UISelectItem> = [];
     if(!projects || projects.length == 0){
       options.push({
         name:'No projects',
         value:''
       });
-      return new UISelect(options);
+      return options;
     }
     _.forEach(projects,(item) => {
       options.push({
-        name: path.dirname(item),
+        name: path.basename(item),
         value:item
       })
     })
-    console.log("OPTIONS:",options);
-    return new UISelect(options);
+    return options;
+  }
+
+  destroy(){
+    //TODO
   }
 
 

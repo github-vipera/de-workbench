@@ -52,7 +52,7 @@ export class UISelect extends UIBaseComponent {
   onChange(evt:any){
     _.forEach(this.listeners,(single:UISelectListener) => {
       single.onItemSelected(this.mainElement['value'])
-    })
+    });
   }
 
   getItems(){
@@ -80,6 +80,10 @@ export class UISelect extends UIBaseComponent {
       options.push(createOption(item.name,item.value));
     });
     return options;
+  }
+
+  setSelectedItem(value:string){
+    this.mainElement['value'] = value;
   }
 
   getSelectedItem():string{

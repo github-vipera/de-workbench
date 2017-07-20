@@ -46,6 +46,7 @@ export class ProjectManager {
     }
 
     private firePathChanges(){
+      this.events.emit('didChangePaths');
       console.log("PathChanges");
       let ok = this.fireEditorChanged();
       if (!ok){
@@ -108,6 +109,10 @@ export class ProjectManager {
 
     public didProjectChanged(callback:Function){
       this.events.on('didProjectChanged', callback);
+    }
+
+    public didPathChanged(callback:Function){
+      this.events.on('didPathChanged', callback);
     }
 
     getCurrentProjectPath(): string {
