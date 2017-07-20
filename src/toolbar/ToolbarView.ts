@@ -54,6 +54,7 @@ export class ToolbarView {
   private stopButton: HTMLElement;
   private logoElement: HTMLElement;
   private buildButton: HTMLElement;
+  private runSelector:UIRunSelectorComponent;
 
   constructor (options: ToolbarOptions) {
     this.events = new EventEmitter();
@@ -110,8 +111,8 @@ export class ToolbarView {
     ]);
     insertElement(this.element, this.stopButton)
 
-    let runComponent:UIRunSelectorComponent = new UIRunSelectorComponent();
-    insertElement(this.element,runComponent.element());
+    this.runSelector = new UIRunSelectorComponent();
+    insertElement(this.element,this.runSelector.element());
 
     // toggle panes
     let toggleButtons = this.createToogleButtons();

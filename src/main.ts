@@ -43,8 +43,6 @@ export default {
       this.subscriptions = new CompositeDisposable();
       // add commands subs
       this.subscriptions.add(commands);
-
-
   },
 
   deactivate () {
