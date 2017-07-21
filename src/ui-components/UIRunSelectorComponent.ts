@@ -12,7 +12,7 @@ import {
   attachEventFromObject,
   createTextEditor
 } from '../element/index';
-
+import { EventEmitter }  from 'events';
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UISelect ,UISelectItem} from './UISelect'
 import { UISelectButton } from './UISelectButton'
@@ -24,8 +24,10 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   projectSelector:UISelect = null;
   selectButton:UISelectButton;
   taskSelector:HTMLElement = null;
-  constructor(){
+  events:EventEmitter
+  constructor(events:EventEmitter){
     super();
+    this.events = events;
     this.initUI();
     this.subscribeEvents();
   }
@@ -45,6 +47,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
       createText("...")
     ]);
     insertElement(this.mainElement,this.taskSelector);
+    this.taskSelector.addEventListener('click',this.onTaskSelectClick.bind(this));
   }
 
   subscribeEvents(){
@@ -52,6 +55,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   }
 
   reloadProjectList(){
+    console.log("reloadProjectList");
     let projects:Array<string> = this.getAllAvailableProjects();
     let items:Array<UISelectItem> = this.createProjectSelectOptions(projects);
     this.projectSelector.setItems(items);
@@ -86,8 +90,15 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     return options;
   }
 
+  onTaskSelectClick(){
+    console.log("onTaskSelectClick");
+    this.events.emit('didSelectTaskClick');
+  }
+
   destroy(){
-    //TODO
+    this.taskSelector.removeEventListener('click',this.onTaskSelectClick.bind(this));
+    this.selectButton.destroy();
+    this.element().remove();
   }
 
 

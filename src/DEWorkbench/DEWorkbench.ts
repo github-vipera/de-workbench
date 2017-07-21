@@ -17,6 +17,7 @@ import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Logger } from '../logger/Logger'
 import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsView'
 import { LoggerView } from '../views/LoggerView'
+import {TaskConfigView} from '../views/TaskConfig/TastConfigView'
 
  import {
    createText,
@@ -72,6 +73,13 @@ import { LoggerView } from '../views/LoggerView'
       },
       didProjectSettings: () => {
           this.showProjectSettings();
+      },
+      didSelectProjectForRun: () => {
+        console.log("didSelectProjectForRun");
+      },
+      didSelectTaskClick: () => {
+        console.log("didSelectTaskClick");
+        this.showCordovaTaskModal();
       }
      });
 
@@ -156,6 +164,13 @@ import { LoggerView } from '../views/LoggerView'
 
    getToolbarElement() {
        return this.toolbarView.getElement();
+   }
+
+   showCordovaTaskModal(){
+     console.log("showCordovaTaskModal");
+     let taskConfigView:TaskConfigView = new TaskConfigView("Task Configuration");
+     taskConfigView.show();
+
    }
 
    destroy () {

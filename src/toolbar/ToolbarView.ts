@@ -33,6 +33,8 @@ export interface ToolbarOptions {
   didToggleToolbar?: Function,
   didTogglePrjInspector?: Function,
   didToggleDebugArea?: Function
+  didSelectProjectForRun?: Function,
+  didSelectTaskClick?:Function
   /**
   didOpenScheme?: Function,
   didRun?: Function,
@@ -111,7 +113,7 @@ export class ToolbarView {
     ]);
     insertElement(this.element, this.stopButton)
 
-    this.runSelector = new UIRunSelectorComponent();
+    this.runSelector = new UIRunSelectorComponent(this.events);
     insertElement(this.element,this.runSelector.element());
 
     // toggle panes
@@ -128,7 +130,9 @@ export class ToolbarView {
       'didToggleToolbar',
       'didTogglePrjInspector',
       'didToggleDebugArea',
-      'didProjectSettings'
+      'didProjectSettings',
+      'didSelectProjectForRun',
+      'didSelectTaskClick'
     ], options);
 
   }
