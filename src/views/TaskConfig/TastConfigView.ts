@@ -16,7 +16,9 @@ import {
 import { UIModalView } from '../../ui-components/UIModalView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIButtonGroup,UIButtonGroupMode,UIButtonConfig } from '../../ui-components/UIButtonGroup'
+import { TaskViewPanel } from './TaskViewPanel';
 export class TaskConfigView extends UIModalView {
+  taskPanel:TaskViewPanel;
   constructor(title:string){
     super(title);
     this.initUI();
@@ -34,9 +36,9 @@ export class TaskConfigView extends UIModalView {
                 this.close();
             }))
       .addButton(new UIButtonConfig()
-            .setId('create')
+            .setId('run')
             .setButtonType('success')
-            .setCaption('Create')
+            .setCaption('Run')
             .setClickListener(()=>{
 
             }))
@@ -47,6 +49,12 @@ export class TaskConfigView extends UIModalView {
   close(){
     super.hide();
     this.destroy();
+  }
+
+  addContent():void{
+    this.taskPanel= new TaskViewPanel();
+    insertElement(this.modalContainer,this.taskPanel.element());
+
   }
 
 }

@@ -77,8 +77,12 @@ export class UIModalView implements UIModalWindow {
     if(this.panel.isVisible()){
       this.panel.hide();
     }
-    this.modalContainer.remove();
+    this.destroyModalContainer();
     this.panel = null;
+  }
+
+  destroyModalContainer(){
+    this.modalContainer.remove();
   }
 
   protected addHeader(){
