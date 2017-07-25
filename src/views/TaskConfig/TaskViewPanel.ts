@@ -22,7 +22,7 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.initUI();
   }
   initUI(){
-    this.mainElement = createElement('div',{
+    this.mainElement = createElement('atom-panel',{
       className:'de-workbench-taskpanel-content',
       elements:[
       ]
@@ -47,7 +47,7 @@ class TaskViewSelectorPanel extends UIBaseComponent{
       name: 'task',
       expanded : true,
       children: [
-          { id: 'default', name: 'Cordova', icon: 'icon-file-directory',
+          { id: 'default', name: 'Cordova', icon: null,
             expanded : true,
             children: [
               { id: 'cordovaPrepare', name: 'Prepare'},
@@ -65,7 +65,7 @@ class TaskViewSelectorPanel extends UIBaseComponent{
   }
   initUI(){
     this.treeView = new UITreeView(this.treeModel);
-    this.mainElement = createElement('div',{
+    this.mainElement = createElement('atom-panel',{
       className:'de-workbench-taskpanel-tree-area',
       elements:[
         this.treeView.element()
