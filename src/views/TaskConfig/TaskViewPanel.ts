@@ -10,12 +10,15 @@ import {
   attachEventFromObject,
   createTextEditor,
   createSelect,
-  createOption
+  createOption,
+  createControlBlock
 } from '../../element/index';
 
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { CordovaTaskConfiguration } from '../../cordova/CordovaTaskConfig'
 import { UITreeViewModel, UITreeItem, UITreeView } from '../../ui-components/UITreeView'
+
+
 class TaskViewContentPanel extends UIBaseComponent{
   constructor(){
     super();
@@ -42,6 +45,7 @@ class TaskViewSelectorPanel extends UIBaseComponent{
     this.initUI();
   }
   buildTreeModel():void{
+    let customTaskNode= this.createCustomTaskNode();
     let root:UITreeItem = {
       id : 'root',
       name: 'task',
@@ -56,12 +60,13 @@ class TaskViewSelectorPanel extends UIBaseComponent{
               { id: 'cordovaBuildRun', name: 'Build & Run'}
             ]
           },
-          { id: 'custom', name: 'Custom', icon: 'test-ts-icon'},
+          customTaskNode
       ]
-    }
+    };
     this.treeModel = {
       root: root
     };
+
   }
   initUI(){
     this.treeView = new UITreeView(this.treeModel);
@@ -71,6 +76,10 @@ class TaskViewSelectorPanel extends UIBaseComponent{
         this.treeView.element()
       ]
     });
+  }
+  createCustomTaskNode():UITreeItem{
+    //TODO load from project file
+    return { id: 'custom', name: 'Custom', icon: 'test-ts-icon'};
   }
 }
 

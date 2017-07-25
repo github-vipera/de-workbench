@@ -38,7 +38,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     });
     let projects:Array<string> = this.getAllAvailableProjects();
     this.projectSelector=this.createProjectSelector(projects);
-    this.selectButton = new UISelectButton(this.projectSelector);
+    this.selectButton = new UISelectButton(this.projectSelector,"Select Project",{ withArrow: true});
     insertElement(this.mainElement,this.selectButton.element());
     let tasks:Array<any> = []; //TODO
     this.taskSelector = createButton({
