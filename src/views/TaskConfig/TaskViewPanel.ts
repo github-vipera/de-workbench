@@ -15,6 +15,65 @@ import {
 
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { CordovaTaskConfiguration } from '../../cordova/CordovaTaskConfig'
+import { UITreeViewModel, UITreeItem, UITreeView } from '../../ui-components/UITreeView'
+class TaskViewContentPanel extends UIBaseComponent{
+  constructor(){
+    super();
+    this.initUI();
+  }
+  initUI(){
+    this.mainElement = createElement('div',{
+      className:'de-workbench-taskpanel-content',
+      elements:[
+      ]
+    });
+  }
+  contextualize(selectedTask:CordovaTaskConfiguration,projectInfo){
+
+  }
+}
+
+class TaskViewSelectorPanel extends UIBaseComponent{
+  treeModel:UITreeViewModel;
+  treeView:UITreeView;
+  constructor(){
+    super();
+    this.buildTreeModel();
+    this.initUI();
+  }
+  buildTreeModel():void{
+    let root:UITreeItem = {
+      id : 'root',
+      name: 'task',
+      expanded : true,
+      children: [
+          { id: 'default', name: 'Cordova', icon: 'icon-file-directory',
+            expanded : true,
+            children: [
+              { id: 'cordovaPrepare', name: 'Prepare'},
+              { id: 'cordovaBuild', name: 'Build'},
+              { id: 'cordovaRun', name: 'Run'},
+              { id: 'cordovaBuildRun', name: 'Build & Run'}
+            ]
+          },
+          { id: 'custom', name: 'Custom', icon: 'test-ts-icon'},
+      ]
+    }
+    this.treeModel = {
+      root: root
+    };
+  }
+  initUI(){
+    this.treeView = new UITreeView(this.treeModel);
+    this.mainElement = createElement('div',{
+      className:'de-workbench-taskpanel-tree-area',
+      elements:[
+        this.treeView.element()
+      ]
+    });
+  }
+}
+
 export class TaskViewPanel extends UIBaseComponent{
   constructor(){
     super();
@@ -24,22 +83,21 @@ export class TaskViewPanel extends UIBaseComponent{
     this.mainElement = createElement('div',{
       className:'de-workbench-taskpanel-container'
     });
+    let threeViewPanel = this.createTreeViewPanel();
     let taskContentPanel = this.createContentPanel();
 
-
-
-    insertElement(this.mainElement,taskContentPanel);
+    insertElement(this.mainElement,threeViewPanel.element());
+    insertElement(this.mainElement,taskContentPanel.element());
   }
 
-  createContentPanel():HTMLElement{
-    let taskContentPanel =createElement('div',{
-      className:'de-workbench-taskpanel-content',
-      elements:[
-        createText("todo"),
-        createText("todo")
-      ]
-    });
+  private createContentPanel():TaskViewContentPanel{
+    let taskContentPanel = new TaskViewContentPanel();
     return taskContentPanel;
+  }
+
+  private createTreeViewPanel():TaskViewSelectorPanel{
+    let taskThreeViewContainer = new TaskViewSelectorPanel();
+    return taskThreeViewContainer;
   }
 
   getConfiguration():CordovaTaskConfiguration{
