@@ -15,7 +15,7 @@ import {
 } from '../../element/index';
 
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { CordovaTaskConfiguration } from '../../cordova/CordovaTaskConfig'
+import { CordovaTaskConfiguration } from '../../cordova/CordovaTasks'
 import { UITreeViewModel, UITreeItem, UITreeView } from '../../ui-components/UITreeView'
 
 

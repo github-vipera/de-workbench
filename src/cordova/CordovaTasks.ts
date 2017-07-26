@@ -15,7 +15,6 @@ export class CordovaTaskConfiguration {
   private _selectedPlatform: CordovaPlatform
   private _variantName:string
   private _isRelease:boolean
-  private _mockConfig:MockConfiguration
   private _nodeTasks:Array<String>
   constructor(taskType?:CordovaTaskType){
     this.taskType = taskType;
@@ -61,14 +60,6 @@ export class CordovaTaskConfiguration {
     this._isRelease = value;
   }
 
-  get mockConfig():MockConfiguration{
-    return this._mockConfig
-  }
-
-  set mockConfig(value:MockConfiguration){
-    this._mockConfig = value;
-  }
-
   get nodeTasks():Array<String>{
     return this._nodeTasks
   }
@@ -85,6 +76,43 @@ export class CordovaTaskConfiguration {
 
   static toJSON(taskConfig: CordovaTaskConfiguration):string {
     return JSON.stringify(taskConfig);
+  }
+
+}
+
+export class CordovaRunConfiguration extends CordovaTaskConfiguration{
+    private _mockConfig:MockConfiguration;
+    constructor(){
+      super();
+    }
+
+    get mockConfig():MockConfiguration{
+      return this._mockConfig
+    }
+
+    set mockConfig(value:MockConfiguration){
+      this._mockConfig = value;
+    }
+}
+
+export abstract class CordovaTask {
+  private _name:string;
+  private _configuration: CordovaTaskConfiguration;
+  constructor (name:string,configuration?:CordovaTaskConfiguration){
+    this._name=name;
+    this._configuration= configuration;
+  }
+
+  get name():string{
+    return this._name;
+  }
+
+  get configuration():CordovaTaskConfiguration{
+    return this._configuration;
+  }
+
+  set configuration(configuration:CordovaTaskConfiguration){
+    this._configuration= configuration;
   }
 
 }
