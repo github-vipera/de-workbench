@@ -18,7 +18,7 @@
  } from '../element/index';
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
-
+import { forEach, remove } from 'lodash'
 export interface UITreeItem {
   id:string;
   name:string;
@@ -33,6 +33,11 @@ export interface UITreeItem {
 export interface UITreeViewModel {
   root:UITreeItem;
   className?:string;
+  getItemById?(id:string,model:UITreeViewModel):UITreeItem; // optional, if provided, listeners receive both id and item of selection
+}
+
+export interface UITreeViewSelectListener {
+  onItemSelected(itemId:string,item?:UITreeItem):void
 }
 
 export class UITreeView extends UIBaseComponent {
@@ -40,6 +45,7 @@ export class UITreeView extends UIBaseComponent {
   private model:UITreeViewModel;
   private treeElement: HTMLElement;
   private currentSelection: string;
+  private listeners: Array<UITreeViewSelectListener> = [];
 
   constructor(model?:UITreeViewModel){
     super();
@@ -50,7 +56,6 @@ export class UITreeView extends UIBaseComponent {
   }
 
   private initUI(){
-
     this.mainElement =  createElement('div', {
         elements: [
               ],
@@ -141,6 +146,15 @@ export class UITreeView extends UIBaseComponent {
     return treeItem;
   }
 
+  addSelectListener(listener:UITreeViewSelectListener){
+    this.listeners.push(listener);
+  }
+  removeSelectListener(listener:UITreeViewSelectListener){
+    remove(this.listeners,function(single){
+      return single == listener;
+    });
+  }
+
   protected onItemClicked(evt){
     // Expand/Collapse if necessary
     let itemId = evt.currentTarget.attributes["treeitemId"].value;
@@ -153,6 +167,17 @@ export class UITreeView extends UIBaseComponent {
     }
     this.selectItemById(itemId, true);
     this.currentSelection = itemId;
+    this.fireSelectionChange(this.currentSelection);
+  }
+
+  protected fireSelectionChange(itemId:string){
+    forEach(this.listeners,(single:UITreeViewSelectListener) => {
+      let item:UITreeItem=null;
+      if(this.model.getItemById){
+        item=this.model.getItemById(itemId,this.model);
+      }
+      single.onItemSelected(itemId,item);
+    });
   }
 
   public getCurrentSelectedItemId():string{
@@ -194,9 +219,30 @@ export class UITreeView extends UIBaseComponent {
 
   public destroy(){
     this.model = undefined;
+    this.listeners = null;
     if (this.treeElement){
       this.treeElement.remove()
     }
     super.destroy();
   }
+}
+
+
+export function findItemInTreeModel(itemId:string,model:UITreeViewModel){
+    function _findInTreeItem(item:UITreeItem){
+      if(item.id == itemId){
+        return item;
+      }
+      if(!item.children){
+        return null;
+      }
+      for(let i=0;i < item.children.length; i ++){
+        let found = _findInTreeItem(item.children[i]);
+        if(found){
+          return found;
+        }
+      }
+    }
+
+    return _findInTreeItem(model.root);
 }

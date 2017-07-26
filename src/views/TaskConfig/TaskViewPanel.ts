@@ -15,9 +15,9 @@ import {
 } from '../../element/index';
 
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { CordovaTaskConfiguration } from '../../cordova/CordovaTasks'
-import { UITreeViewModel, UITreeItem, UITreeView } from '../../ui-components/UITreeView'
-
+import { CordovaTaskConfiguration,CordovaTask } from '../../cordova/CordovaTasks'
+import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
+import { find,forEach } from 'lodash'
 
 class TaskViewContentPanel extends UIBaseComponent{
   constructor(){
@@ -31,12 +31,12 @@ class TaskViewContentPanel extends UIBaseComponent{
       ]
     });
   }
-  contextualize(selectedTask:CordovaTaskConfiguration,projectInfo){
+  contextualize(selectedTask:CordovaTask,projectInfo){
 
   }
 }
 
-class TaskViewSelectorPanel extends UIBaseComponent{
+class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectListener{
   treeModel:UITreeViewModel;
   treeView:UITreeView;
   constructor(){
@@ -64,12 +64,14 @@ class TaskViewSelectorPanel extends UIBaseComponent{
       ]
     };
     this.treeModel = {
-      root: root
+      root: root,
+      getItemById:findItemInTreeModel
     };
 
   }
   initUI(){
     this.treeView = new UITreeView(this.treeModel);
+    this.treeView.addSelectListener(this);
     this.mainElement = createElement('atom-panel',{
       className:'de-workbench-taskpanel-tree-area',
       elements:[
@@ -80,6 +82,10 @@ class TaskViewSelectorPanel extends UIBaseComponent{
   createCustomTaskNode():UITreeItem{
     //TODO load from project file
     return { id: 'custom', name: 'Custom', icon: 'test-ts-icon'};
+  }
+
+  onItemSelected(itemId:string,item){
+    console.log("selected: ",itemId,item);
   }
 }
 
