@@ -1,28 +1,33 @@
 @import "variables";
 
-.de-workbench-uiruncomponent-container {
+.de-workbench-uiruncomponent{
   display: inline-block;
+  border-left: 1px dotted;
+  padding-left: 5px;
+  margin-left: 5px;
+  .de-workbench-uiruncomponent-container {
+    display: inline-block;
 
-  .btn {
-     background-image: none!important;
-     background-color: @button-background-color!important;
-     line-height: @component-line-height;
-     outline: none!important;
-     &[disabled] {
-       opacity: .5;
+    .btn {
+       background-image: none!important;
+       background-color: @button-background-color!important;
+       line-height: @component-line-height;
+       outline: none!important;
+       &[disabled] {
+         opacity: .5;
+       }
+       &:hover,
+       &:focus {
+         background-color: @button-background-color-hover!important;
+       }
+       &:active {
+         background-color: @background-color-info!important;
+       }
      }
-     &:hover,
-     &:focus {
-       background-color: @button-background-color-hover!important;
-     }
-     &:active {
-       background-color: @background-color-info!important;
-     }
-   }
 
-
-  .task-btn {
-    border-bottom-left-radius: 0px;
-    border-top-left-radius: 0px;
+    .task-btn {
+      border-bottom-left-radius: 0px;
+      border-top-left-radius: 0px;
+    }
   }
 }

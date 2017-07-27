@@ -92,29 +92,7 @@ export class ToolbarView {
     ]);
     insertElement(this.element, this.buildButton)
 
-
-    this.runButton = createButton({
-      click: () => {
-        this.events.emit('didRun');
-      }
-    },[
-      createIcon('run')
-    ]);
-    insertElement(this.element, this.runButton)
-
-
-    this.stopButton = createButton({
-      disabled: true,
-      click: () => {
-        this.events.emit('didStop');
-      }
-    },[
-      createIcon('stop')
-    ]);
-    insertElement(this.element, this.stopButton)
-
-    this.runSelector = new UIRunSelectorComponent(this.events);
-    insertElement(this.element,this.runSelector.element());
+    this.createRunComponents();
 
     // toggle panes
     let toggleButtons = this.createToogleButtons();
@@ -142,6 +120,36 @@ export class ToolbarView {
     if (get(titleBar, 'nodeType', false) && titleBar.parentNode) {
       (<HTMLElement> titleBar.parentNode).style.display = value ? null : 'none'
     }
+  }
+
+  private createRunComponents(){
+    let runContainer:HTMLElement = createElement('div',{
+      className:"de-workbench-uiruncomponent"
+    });
+    insertElement(this.element,runContainer);
+
+    this.runButton = createButton({
+      click: () => {
+        this.events.emit('didRun');
+      }
+    },[
+      createIcon('run')
+    ]);
+    insertElement(runContainer, this.runButton)
+
+
+    this.stopButton = createButton({
+      disabled: true,
+      click: () => {
+        this.events.emit('didStop');
+      }
+    },[
+      createIcon('stop')
+    ]);
+    insertElement(runContainer, this.stopButton)
+
+    this.runSelector = new UIRunSelectorComponent(this.events);
+    insertElement(runContainer,this.runSelector.element());
   }
 
 
