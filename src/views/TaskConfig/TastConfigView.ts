@@ -17,14 +17,14 @@ import { UIModalView } from '../../ui-components/UIModalView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIButtonGroup,UIButtonGroupMode,UIButtonConfig } from '../../ui-components/UIButtonGroup'
 import { TaskViewPanel } from './TaskViewPanel';
+import { EventEmitter }  from 'events';
 export class TaskConfigView extends UIModalView {
   taskPanel:TaskViewPanel;
-  constructor(title:string){
-    super(title);
-    this.initUI();
-  }
-  initUI(){
+  events:EventEmitter;
 
+  constructor(title:string,events:EventEmitter){
+    super(title);
+    this.events=events;
   }
 
   addFooter(){
@@ -40,7 +40,9 @@ export class TaskConfigView extends UIModalView {
             .setButtonType('success')
             .setCaption('Run')
             .setClickListener(()=>{
-
+              let taskConfig = this.taskPanel.getConfiguration();
+              this.events.emit("didRunTask",taskConfig);
+              this.close();
             }))
       let modalActionButtons = createModalActionButtons(actionButtons.element());
       insertElement(this.modalContainer, modalActionButtons);
@@ -54,7 +56,6 @@ export class TaskConfigView extends UIModalView {
   addContent():void{
     this.taskPanel= new TaskViewPanel();
     insertElement(this.modalContainer,this.taskPanel.element());
-
   }
 
 }

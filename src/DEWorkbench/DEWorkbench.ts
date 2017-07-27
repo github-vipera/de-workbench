@@ -19,6 +19,8 @@ import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsVie
 import { LoggerView } from '../views/LoggerView'
 import { TaskConfigView } from '../views/TaskConfig/TastConfigView'
 import {CordovaProjectInfo} from '../cordova/Cordova'
+import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
+import { TaskExecutor} from '../tasks/TaskExecutor'
 
  import {
    createText,
@@ -48,7 +50,8 @@ import {CordovaProjectInfo} from '../cordova/Cordova'
    public loggerView: LoggerView
    private events: EventEmitter;
    public projectManager: ProjectManager;
-
+   public selectedProjectForTask: CordovaProjectInfo;
+   private taskExecutor:TaskExecutor;
    constructor(options:WorkbenchOptions){
      Logger.getInstance().info("Initializing DEWorkbench...");
 
@@ -77,6 +80,7 @@ import {CordovaProjectInfo} from '../cordova/Cordova'
       },
       didSelectProjectForRun: (projectInfo:CordovaProjectInfo) => {
         console.log("didSelectProjectForRun",projectInfo);
+        this.selectedProjectForTask = projectInfo;
       },
       didSelectTaskClick: () => {
         console.log("didSelectTaskClick");
@@ -169,10 +173,34 @@ import {CordovaProjectInfo} from '../cordova/Cordova'
 
    showCordovaTaskModal(){
      console.log("showCordovaTaskModal");
-
-     let taskConfigView:TaskConfigView = new TaskConfigView("Task Configuration");
+     if(this.selectedProjectForTask == null){
+       Logger.getInstance().warn("select project before run task");
+       return;
+     }
+     this.events.removeAllListeners('didRunTask');
+     this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
+     let taskConfigView:TaskConfigView = new TaskConfigView("Task Configuration",this.events);
      taskConfigView.show();
+   }
 
+   onTaskRunRequired(taskConfiguration:CordovaTaskConfiguration){
+     if(!taskConfiguration){
+       Logger.getInstance().warn("Null task selected");
+       return;
+     }
+     Logger.getInstance().info("Require execute of task", taskConfiguration.name, this.selectedProjectForTask);
+     let project = this.selectedProjectForTask;
+     this.getTaskExecutor().executeTask(taskConfiguration,project).catch((err:Error) => {
+       Logger.getInstance().error(err.message, err.stack);
+     });
+   }
+
+
+   getTaskExecutor():TaskExecutor{
+     if(!this.taskExecutor){
+       this.taskExecutor = new TaskExecutor();
+     }
+     return this.taskExecutor;
    }
 
    destroy () {

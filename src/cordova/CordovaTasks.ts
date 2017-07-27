@@ -10,14 +10,23 @@ export type CordovaTaskType = "prepare" | "compile" | "build" | "run";
 
 
 export class CordovaTaskConfiguration {
+  private _name:string
   private _taskType: CordovaTaskType
-  private _projectPath:string
   private _selectedPlatform: CordovaPlatform
   private _variantName:string
   private _isRelease:boolean
   private _nodeTasks:Array<String>
-  constructor(taskType?:CordovaTaskType){
+  constructor(name?:string,taskType?:CordovaTaskType){
+    this._name=name
     this.taskType = taskType;
+  }
+
+  get name():string{
+    return this._name;
+  }
+
+  set name(value:string){
+    this._name=value;
   }
 
   get taskType():CordovaTaskType{
@@ -26,14 +35,6 @@ export class CordovaTaskConfiguration {
 
   set taskType(value:CordovaTaskType){
     this._taskType = value;
-  }
-
-  get projectInfo():string{
-    return this._projectPath
-  }
-
-  set projectInfo(value:string){
-    this._projectPath = value;
   }
 
   get selectedPlatform():CordovaPlatform{

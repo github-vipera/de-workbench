@@ -32,13 +32,14 @@ class TaskViewContentPanel extends UIBaseComponent{
     });
   }
   contextualize(selectedTask:CordovaTask,projectInfo){
-    
+    //TODO
   }
 }
 
 class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectListener{
   treeModel:UITreeViewModel;
   treeView:UITreeView;
+  taskSelectionListener:(itemId:string) => void
   constructor(){
     super();
     this.buildTreeModel();
@@ -86,7 +87,15 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
 
   onItemSelected(itemId:string,item){
     console.log("selected: ",itemId,item);
+    if(this.taskSelectionListener){
+      this.taskSelectionListener(item);
+    }
   }
+
+  setOnTaskChangeListener(callback: (itemId:string) => void):void{
+    this.taskSelectionListener = callback;
+  }
+
 }
 
 export class TaskViewPanel extends UIBaseComponent{
@@ -99,6 +108,10 @@ export class TaskViewPanel extends UIBaseComponent{
       className:'de-workbench-taskpanel-container'
     });
     let threeViewPanel = this.createTreeViewPanel();
+    threeViewPanel.setOnTaskChangeListener((itemId:string) => {
+      console.log("selected task: ",itemId)
+    });
+
     let taskContentPanel = this.createContentPanel();
 
     insertElement(this.mainElement,threeViewPanel.element());
@@ -116,6 +129,9 @@ export class TaskViewPanel extends UIBaseComponent{
   }
 
   getConfiguration():CordovaTaskConfiguration{
-    return null;
+    let taskConfig:CordovaTaskConfiguration = new CordovaTaskConfiguration("Cordova Build","build");
+    taskConfig.isRelease=false;
+    taskConfig.selectedPlatform = {name:'android'};
+    return taskConfig;
   }
 }
