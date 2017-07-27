@@ -17,7 +17,8 @@ import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Logger } from '../logger/Logger'
 import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsView'
 import { LoggerView } from '../views/LoggerView'
-import {TaskConfigView} from '../views/TaskConfig/TastConfigView'
+import { TaskConfigView } from '../views/TaskConfig/TastConfigView'
+import {CordovaProjectInfo} from '../cordova/Cordova'
 
  import {
    createText,
@@ -74,8 +75,8 @@ import {TaskConfigView} from '../views/TaskConfig/TastConfigView'
       didProjectSettings: () => {
           this.showProjectSettings();
       },
-      didSelectProjectForRun: () => {
-        console.log("didSelectProjectForRun");
+      didSelectProjectForRun: (projectInfo:CordovaProjectInfo) => {
+        console.log("didSelectProjectForRun",projectInfo);
       },
       didSelectTaskClick: () => {
         console.log("didSelectTaskClick");
@@ -168,6 +169,7 @@ import {TaskConfigView} from '../views/TaskConfig/TastConfigView'
 
    showCordovaTaskModal(){
      console.log("showCordovaTaskModal");
+
      let taskConfigView:TaskConfigView = new TaskConfigView("Task Configuration");
      taskConfigView.show();
 

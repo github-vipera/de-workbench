@@ -32,7 +32,7 @@ class TaskViewContentPanel extends UIBaseComponent{
     });
   }
   contextualize(selectedTask:CordovaTask,projectInfo){
-
+    
   }
 }
 

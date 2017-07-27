@@ -24,8 +24,8 @@ import { CordovaExecutor } from './CordovaExecutor';
 
 export class CordovaPlatform {
   public name: string;
-  public version: string;
-  public virtualRun: boolean;
+  public version?: string;
+  public virtualRun?: boolean;
 }
 
 export class CordovaPlugin {
@@ -52,6 +52,16 @@ export interface NewProjectInfo {
   platforms:Array<string>,
   type:string;
   template:string;
+}
+
+export interface CordovaProjectInfo {
+  path:string
+  id:string
+  version:string
+  platforms:Array<CordovaPlatform>
+  variants:Array<string>
+  projectSettings?:any
+  plugins?:Array<CordovaPlugin>
 }
 
 
@@ -120,7 +130,7 @@ export class Cordova {
           plugin.name = key;
           plugin.id = pluginRaw["plugin"]["$"]["id"];
           plugin.version = pluginRaw["plugin"]["$"]["version"];
-          plugin.description = pluginRaw["plugin"]["description"][0];
+          plugin.description = (pluginRaw["plugin"]["description"] || [])[0];
           plugin.isTopLevel = pluginRaw["is_top_level"];
           plugin.installed = true;
           plugin.info = pluginRaw;
@@ -306,6 +316,33 @@ export class Cordova {
         resolve(obj);
       });
     })
+  }
+
+  public async getCordovaProjectInfo(projectRoot:string,loadPlugins?:boolean):Promise<CordovaProjectInfo>{
+    let json = await this.getProjectInfo(projectRoot);
+    if(!json || !json.cordova){
+      return null; // is not a cordova project
+    }
+    let cdv= json.cordova;
+    if(!cdv.platforms){
+      cdv.platforms = [];
+    }
+    let cordovaPlatforms:Array<CordovaPlatform> = [];
+    cdv.platforms.forEach((single) => {
+        cordovaPlatforms.push({name: single});
+    });
+    let cordovaPlugins:Array<CordovaPlugin> = null;
+    if(loadPlugins){
+      cordovaPlugins = await this.getInstalledPlugins(projectRoot);
+    }
+    return {
+      id:json.name,
+      version:json.version,
+      path:projectRoot,
+      platforms:cordovaPlatforms,
+      plugins:cordovaPlugins,
+      variants:[]
+    };
   }
 
 

@@ -35,7 +35,7 @@ export class ProjectManager {
       //atom.workspace["onDidChangeActiveTextEditor"](() => this.fireEditorChanged());
       atom.workspace["onDidChangeActivePaneItem"](() => this.fireEditorChanged());
       atom.workspace["onDidOpen"](() => this.fireEditorChanged());
-      atom.project["onDidChangePaths"](() => this.firePathChanges());
+      atom.project["onDidChangePaths"](() => this.firePathChanged());
     }
 
     static getInstance() {
@@ -45,8 +45,8 @@ export class ProjectManager {
         return ProjectManager.instance;
     }
 
-    private firePathChanges(){
-      this.events.emit('didChangePaths');
+    private firePathChanged(){
+      this.events.emit('didPathChanged');
       console.log("PathChanges");
       let ok = this.fireEditorChanged();
       if (!ok){
