@@ -15,6 +15,10 @@ export class TaskExecutor{
     this.currentTask = taskConfig;
     try{
       switch(this.currentTask.taskType){
+        case "prepare":
+            await this.executePrepare(project);
+            this.currentTask = null;
+        break;
         case "build":
             await this.executeBuild(project);
             this.currentTask = null
@@ -29,6 +33,11 @@ export class TaskExecutor{
       throw err;
     }
   }
+  public async executeTaskChain(taskChain:Array<CordovaTaskConfiguration>,project:CordovaProjectInfo){
+    for(let task of taskChain){
+      await this.executeTask(task,project);
+    }
+  }
   isBusy():boolean{
     return this.currentTask != null;
   }
@@ -40,5 +49,10 @@ export class TaskExecutor{
   async executeRun(project:CordovaProjectInfo){
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
     return this.cordova.runProject(project.path, platform ,null,{});
+  }
+
+  async executePrepare(project:CordovaProjectInfo){
+    let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
+    return this.cordova.prepareProjectWithBrowserPatch(project.path);
   }
 }
