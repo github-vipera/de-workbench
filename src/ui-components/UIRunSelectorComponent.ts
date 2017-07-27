@@ -66,8 +66,13 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     console.log("reloadProjectList");
     let projects:Array<string> = this.getAllAvailableProjects();
     let items:Array<UISelectItem> = this.createProjectSelectOptions(projects);
+    let selected:string = this.projectSelector.getSelectedItem();
     this.projectSelector.setItems(items);
-    this.selectButton.setSelectedItem(items[0].value)
+    let reloadSelection:boolean = (!selected || selected != this.projectSelector.getSelectedItem()) ? true : false;
+    if(reloadSelection){
+      this.selectButton.setSelectedItem(items[0].value)
+      this.onSelectProject(items[0].value);
+    }
   }
 
   getAllAvailableProjects():Array<string>{

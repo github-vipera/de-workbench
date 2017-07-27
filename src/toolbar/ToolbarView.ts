@@ -123,10 +123,10 @@ export class ToolbarView {
   }
 
   private createRunComponents(){
+    
     let runContainer:HTMLElement = createElement('div',{
       className:"de-workbench-uiruncomponent"
     });
-    insertElement(this.element,runContainer);
 
     this.runButton = createButton({
       click: () => {
@@ -150,6 +150,8 @@ export class ToolbarView {
 
     this.runSelector = new UIRunSelectorComponent(this.events);
     insertElement(runContainer,this.runSelector.element());
+
+    insertElement(this.element,runContainer);
   }
 
 
