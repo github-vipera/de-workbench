@@ -130,7 +130,7 @@ export class Cordova {
           plugin.name = key;
           plugin.id = pluginRaw["plugin"]["$"]["id"];
           plugin.version = pluginRaw["plugin"]["$"]["version"];
-          plugin.description = (pluginRaw["plugin"]["description"] || [])[0];
+          plugin.description = (pluginRaw["plugin"]["description"] || ["n.a"])[0];
           plugin.isTopLevel = pluginRaw["is_top_level"];
           plugin.installed = true;
           plugin.info = pluginRaw;
