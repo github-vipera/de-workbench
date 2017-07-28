@@ -16,6 +16,7 @@ import { EventEmitter }  from 'events';
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UISelect, UISelectItem, UISelectListener} from './UISelect'
 import { UISelectButton } from './UISelectButton'
+import { UIStatusIndicatorComponent , UIIndicatorStatus } from './UIStatusIndicatorComponent'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { CordovaProjectInfo } from '../cordova/Cordova'
 import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
@@ -54,9 +55,10 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     let projects:Array<string> = this.getAllAvailableProjects();
     this.projectSelector=this.createProjectSelector(projects);
     this.projectSelector.addSelectListener(this.projectSelectListener);
-    this.selectButton = new UISelectButton(this.projectSelector,"Select Project",{ withArrow: true});
+    this.selectButton = new UISelectButton(this.projectSelector,"Select Project",{ withArrow: true, rightIcon:'arrow-down'});
     insertElement(this.mainElement,this.selectButton.element());
     this.addTaskSelectorButton();
+    this.addStatusIndicator();
     this.taskSelector.addEventListener('click',this.onTaskSelectClick.bind(this));
   }
 
@@ -69,6 +71,10 @@ export class UIRunSelectorComponent extends UIBaseComponent {
       this.taskSelectorText
     ]);
     insertElement(this.mainElement,this.taskSelector);
+  }
+  addStatusIndicator():void {
+    let statusContainer = new UIStatusIndicatorComponent("No task in progress");
+    insertElement(this.mainElement,statusContainer.element());
   }
 
   subscribeEvents(){

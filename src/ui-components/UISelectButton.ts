@@ -19,7 +19,6 @@ import {find} from 'lodash'
 
 export interface UISelectButtonOptions {
   withArrow?:boolean
-  leftIcon?:string,
   rightIcon?:string
 }
 
@@ -48,6 +47,9 @@ export class UISelectButton extends UIBaseComponent implements UISelectListener 
       elements[elements.length] = createElement('div', {
         className: 'bugs-scheme-arrow'
       })
+    }
+    if(this.uiOptions.rightIcon){
+      elements[elements.length] = createIcon(this.uiOptions.rightIcon);
     }
     this.mainElement = createButton({
       className:"select-btn"
