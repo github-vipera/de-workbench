@@ -30,7 +30,7 @@ export class TaskManager{
     cdvBuild.displayName='Build';
     let cdvRun = new CordovaTaskConfiguration('CordovaRun','run');
     cdvRun.displayName='Run';
-    let cdvBuildAndRun = new CordovaTaskConfiguration('CordovaBuidRun');
+    let cdvBuildAndRun = new CordovaTaskConfiguration('CordovaBuidRun','buildRun');
     cdvBuildAndRun.displayName='Build & Run';
     let tasks:Array<CordovaTaskConfiguration> = [cdvPrepare, cdvBuild, cdvRun, cdvBuildAndRun];
     return tasks;

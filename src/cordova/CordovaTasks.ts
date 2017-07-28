@@ -6,7 +6,7 @@ export interface MockConfiguration {
   jsLibraryLoaderPath?:string
 }
 
-export type CordovaTaskType = "prepare" | "compile" | "build" | "run";
+export type CordovaTaskType = "prepare" | "compile" | "build" | "run" | "buildRun";
 
 
 export class CordovaTaskConfiguration {

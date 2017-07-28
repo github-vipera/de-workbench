@@ -26,6 +26,10 @@ export class TaskExecutor{
         case "run":
             await this.executeRun(project);
             this.currentTask = null
+        case "buildRun":
+            await this.executeBuild(project);
+            // TODO publish progress
+            await this.executeRun(project)
         break;
       }
     }catch(err){
