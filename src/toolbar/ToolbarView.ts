@@ -22,6 +22,7 @@ import {
   attachEventFromObject
 } from '../element/index';
 import { UIRunSelectorComponent } from '../ui-components/UIRunSelectorComponent'
+import { UIStatusIndicatorComponent, UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
 
 
 export interface ToolbarOptions {
@@ -57,6 +58,7 @@ export class ToolbarView {
   private logoElement: HTMLElement;
   private buildButton: HTMLElement;
   private runSelector:UIRunSelectorComponent;
+  private statusIndicator: UIStatusIndicatorComponent;
 
   constructor (options: ToolbarOptions) {
     this.events = new EventEmitter();
@@ -93,6 +95,7 @@ export class ToolbarView {
     insertElement(this.element, this.buildButton)
 
     this.createRunComponents();
+    this.createStatusIndicator();
 
     // toggle panes
     let toggleButtons = this.createToogleButtons();
@@ -154,6 +157,11 @@ export class ToolbarView {
     insertElement(this.element,runContainer);
   }
 
+  private createStatusIndicator(){
+    this.statusIndicator = new UIStatusIndicatorComponent("No task in progress");
+    insertElement(this.element,this.statusIndicator.element());
+  }
+
 
   private createToogleButtons():HTMLElement{
     return createGroupButtons([
@@ -209,6 +217,20 @@ export class ToolbarView {
 
   public getElement (): HTMLElement {
     return this.element;
+  }
+
+  // Utilities:
+  public setInProgressStatus(msg:string,iconName?:string){
+    this.statusIndicator.setStatus(UIIndicatorStatus.Busy,msg,iconName || 'sync');
+  }
+  public setSuccessStatus(msg:string,iconName?:string){
+    this.statusIndicator.setStatus(UIIndicatorStatus.Success,msg,iconName || 'status-success');
+  }
+  public setIdleStatus(msg:string,iconName?:string){
+    this.statusIndicator.setStatus(UIIndicatorStatus.Idle,msg,iconName);
+  }
+  public setErrorStatus(msg:string,iconName?:string){
+    this.statusIndicator.setStatus(UIIndicatorStatus.Busy,msg,iconName || 'status-error');
   }
 
 }

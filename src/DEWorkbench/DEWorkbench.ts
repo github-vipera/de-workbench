@@ -180,10 +180,11 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
      this.events.removeAllListeners('didRunTask');
      this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
      let taskConfigView:TaskConfigView = new TaskConfigView("Task Configuration",this.events);
+     taskConfigView.setProject(this.selectedProjectForTask);
      taskConfigView.show();
-     setTimeout(() => {
+     /*setTimeout(() => {
        taskConfigView.setProject(this.selectedProjectForTask);
-     },200)
+     },200)*/
    }
 
    onTaskRunRequired(taskConfiguration:CordovaTaskConfiguration){
@@ -196,7 +197,15 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
      Logger.getInstance().info("Require execute of task", taskConfiguration.name, this.selectedProjectForTask);
      this.toolbarView.setTaskConfiguration(taskConfiguration);
      let project = this.selectedProjectForTask;
-     this.getTaskExecutor().executeTask(taskConfiguration,project).catch((err:Error) => {
+     let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
+     this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
+     this.getTaskExecutor().executeTask(taskConfiguration,project).then(() => {
+       this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
+     },(reason) => {
+       this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
+        Logger.getInstance().error(reason);
+     }).catch((err:Error) => {
+       this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
        Logger.getInstance().error(err.message, err.stack);
      });
    }
