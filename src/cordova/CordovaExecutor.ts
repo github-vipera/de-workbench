@@ -16,7 +16,7 @@ import { CommandExecutor } from '../utils/CommandExecutor';
 import { Logger } from '../logger/Logger'
 import { CordovaUtils } from './CordovaUtils'
 
-const DEVICE_AUTO_DEF ="[AUTO]"
+export const DEVICE_AUTO_DEF ="[AUTO]"
 
 export class CordovaExecutor extends CommandExecutor {
 

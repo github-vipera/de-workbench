@@ -11,6 +11,7 @@ export type CordovaTaskType = "prepare" | "compile" | "build" | "run";
 
 export class CordovaTaskConfiguration {
   private _name:string
+  private _displayName:string
   private _taskType: CordovaTaskType
   private _selectedPlatform: CordovaPlatform
   private _variantName:string
@@ -27,6 +28,14 @@ export class CordovaTaskConfiguration {
 
   set name(value:string){
     this._name=value;
+  }
+
+  get displayName():string{
+    return this._displayName;
+  }
+
+  set displayName(value:string){
+    this._displayName=value;
   }
 
   get taskType():CordovaTaskType{

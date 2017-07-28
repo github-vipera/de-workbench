@@ -53,6 +53,7 @@ export class TaskExecutor{
 
   async executePrepare(project:CordovaProjectInfo){
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
-    return this.cordova.prepareProjectWithBrowserPatch(project.path);
+    //return this.cordova.prepareProjectWithBrowserPatch(project.path);
+    return this.cordova.prepareProject(project.path,platform);
   }
 }

@@ -18,6 +18,7 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIButtonGroup,UIButtonGroupMode,UIButtonConfig } from '../../ui-components/UIButtonGroup'
 import { TaskViewPanel } from './TaskViewPanel';
 import { EventEmitter }  from 'events';
+import { CordovaProjectInfo } from '../../cordova/Cordova';
 export class TaskConfigView extends UIModalView {
   taskPanel:TaskViewPanel;
   events:EventEmitter;
@@ -56,6 +57,10 @@ export class TaskConfigView extends UIModalView {
   addContent():void{
     this.taskPanel= new TaskViewPanel();
     insertElement(this.modalContainer,this.taskPanel.element());
+  }
+
+  setProject(project:CordovaProjectInfo){
+    this.taskPanel.setProject(project);
   }
 
 }

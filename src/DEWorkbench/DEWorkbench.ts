@@ -181,6 +181,9 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
      this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
      let taskConfigView:TaskConfigView = new TaskConfigView("Task Configuration",this.events);
      taskConfigView.show();
+     setTimeout(() => {
+       taskConfigView.setProject(this.selectedProjectForTask);
+     },200)
    }
 
    onTaskRunRequired(taskConfiguration:CordovaTaskConfiguration){
