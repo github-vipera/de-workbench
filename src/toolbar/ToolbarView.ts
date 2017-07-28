@@ -221,7 +221,7 @@ export class ToolbarView {
 
   // Utilities:
   public setInProgressStatus(msg:string,iconName?:string){
-    this.statusIndicator.setStatus(UIIndicatorStatus.Busy,msg,iconName || 'sync');
+    this.statusIndicator.setStatus(UIIndicatorStatus.Busy,msg,iconName || 'status-warning');
   }
   public setSuccessStatus(msg:string,iconName?:string){
     this.statusIndicator.setStatus(UIIndicatorStatus.Success,msg,iconName || 'status-success');
