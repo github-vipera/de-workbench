@@ -202,10 +202,10 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
      this.getTaskExecutor().executeTask(taskConfiguration,project).then(() => {
        this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
      },(reason) => {
-       this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
+       this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
         Logger.getInstance().error(reason);
      }).catch((err:Error) => {
-       this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
+       this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
        Logger.getInstance().error(err.message, err.stack);
      });
    }

@@ -30,6 +30,7 @@ export class TaskExecutor{
             await this.executeBuild(project);
             // TODO publish progress
             await this.executeRun(project)
+            this.currentTask = null
         break;
       }
     }catch(err){
