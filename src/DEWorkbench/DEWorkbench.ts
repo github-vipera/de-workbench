@@ -184,11 +184,14 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
    }
 
    onTaskRunRequired(taskConfiguration:CordovaTaskConfiguration){
+     console.log("onTaskRunRequired",taskConfiguration);
      if(!taskConfiguration){
        Logger.getInstance().warn("Null task selected");
+       this.toolbarView.setTaskConfiguration(null);
        return;
      }
      Logger.getInstance().info("Require execute of task", taskConfiguration.name, this.selectedProjectForTask);
+     this.toolbarView.setTaskConfiguration(taskConfiguration);
      let project = this.selectedProjectForTask;
      this.getTaskExecutor().executeTask(taskConfiguration,project).catch((err:Error) => {
        Logger.getInstance().error(err.message, err.stack);

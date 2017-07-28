@@ -123,7 +123,7 @@ export class ToolbarView {
   }
 
   private createRunComponents(){
-    
+
     let runContainer:HTMLElement = createElement('div',{
       className:"de-workbench-uiruncomponent"
     });
@@ -198,6 +198,9 @@ export class ToolbarView {
     this.element.classList.remove('bugs-title-bar')
   }
 
+  public setTaskConfiguration(configuration){
+    this.runSelector.setTaskConfiguration(configuration);
+  }
 
   public destroy () {
     this.element.remove();

@@ -18,13 +18,21 @@ import { UISelect, UISelectItem, UISelectListener} from './UISelect'
 import { UISelectButton } from './UISelectButton'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { CordovaProjectInfo } from '../cordova/Cordova'
+import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
 import * as _ from 'lodash'
 import * as path from 'path'
+
+export interface UITaskInfo {
+  id:string;
+  name:string;
+}
 
 export class UIRunSelectorComponent extends UIBaseComponent {
   projectSelector:UISelect = null;
   selectButton:UISelectButton;
   taskSelector:HTMLElement = null;
+  taskSelectorText:Text = null;
+  taskInfo:CordovaTaskConfiguration;
   events:EventEmitter
   projectSelectListener:UISelectListener;
   constructor(events:EventEmitter){
@@ -48,14 +56,19 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     this.projectSelector.addSelectListener(this.projectSelectListener);
     this.selectButton = new UISelectButton(this.projectSelector,"Select Project",{ withArrow: true});
     insertElement(this.mainElement,this.selectButton.element());
+    this.addTaskSelectorButton();
+    this.taskSelector.addEventListener('click',this.onTaskSelectClick.bind(this));
+  }
+
+  addTaskSelectorButton(){
     let tasks:Array<any> = []; //TODO
+    this.taskSelectorText = createText("...");
     this.taskSelector = createButton({
       className:"task-btn"
     },[
-      createText("...")
+      this.taskSelectorText
     ]);
     insertElement(this.mainElement,this.taskSelector);
-    this.taskSelector.addEventListener('click',this.onTaskSelectClick.bind(this));
   }
 
   subscribeEvents(){
@@ -121,6 +134,19 @@ export class UIRunSelectorComponent extends UIBaseComponent {
       })
 
     })
+  }
+
+  private updateTaskText(taskInfo:CordovaTaskConfiguration){
+    this.taskSelectorText.textContent = taskInfo == null ? '...' : taskInfo.name;
+  }
+
+  setTaskConfiguration(taskInfo:CordovaTaskConfiguration):void{
+    this.taskInfo = taskInfo;
+    this.updateTaskText(taskInfo);
+
+  }
+  getTaskConfiguration():CordovaTaskConfiguration {
+    return this.taskInfo;
   }
 
   destroy(){
