@@ -60,12 +60,18 @@ export class ToolbarView {
   private runSelector:UIRunSelectorComponent;
   private statusIndicator: UIStatusIndicatorComponent;
 
+  private toolbarElement: HTMLElement;
+  private toolbarAnchor: HTMLElement;
+
+  private isVisible: boolean;
+
   constructor (options: ToolbarOptions) {
     this.events = new EventEmitter();
-    this.element = createElement('de-workbench-toolbar');
+
+    this.toolbarElement = createElement('de-workbench-toolbar');
 
     this.logoElement = createIcon('logo')
-    insertElement(this.element, this.logoElement)
+    insertElement(this.toolbarElement, this.logoElement)
 
     //<Label class="fa" text="\uf293"></Label>
     /*let testFA = createElement('a',{
@@ -82,7 +88,7 @@ export class ToolbarView {
     },[
       createIcon('newproj')
     ]);
-    insertElement(this.element, this.newProjectButton)
+    insertElement(this.toolbarElement, this.newProjectButton)
 
     this.buildButton = createButton({
       disabled: false,
@@ -92,7 +98,7 @@ export class ToolbarView {
     },[
       createIcon('build')
     ]);
-    insertElement(this.element, this.buildButton)
+    insertElement(this.toolbarElement, this.buildButton)
 
     this.createRunComponents();
     this.createStatusIndicator();
@@ -100,7 +106,7 @@ export class ToolbarView {
     // toggle panes
     let toggleButtons = this.createToogleButtons();
     toggleButtons.classList.add('bugs-toggle-buttons')
-    insertElement(this.element, toggleButtons)
+    insertElement(this.toolbarElement, toggleButtons)
 
 
     attachEventFromObject(this.events, [
@@ -116,6 +122,22 @@ export class ToolbarView {
       'didToggleConsole'
     ], options);
 
+    this.toolbarAnchor = createElement('de-workbench-toolbar-anchor',{
+      elements: [
+        createElement('span', {
+          elements: [ createText(' ')]
+        })
+      ]
+    });
+    this.toolbarAnchor.addEventListener('click',()=>{
+      this.toggle();
+    })
+
+    this.element = createElement('de-workbench-toolbar-container',{
+      elements: [ this.toolbarElement, this.toolbarAnchor ]
+    })
+
+    this.isVisible = true;
   }
 
   private toggleAtomTitleBar (value: boolean) {
@@ -154,14 +176,25 @@ export class ToolbarView {
     this.runSelector = new UIRunSelectorComponent(this.events);
     insertElement(runContainer,this.runSelector.element());
 
-    insertElement(this.element,runContainer);
+    insertElement(this.toolbarElement,runContainer);
   }
 
   private createStatusIndicator(){
     this.statusIndicator = new UIStatusIndicatorComponent("No task in progress");
-    insertElement(this.element,this.statusIndicator.element());
+    insertElement(this.toolbarElement,this.statusIndicator.element());
   }
 
+  public toggle(){
+    if (this.isVisible){
+      this.isVisible = false;
+      this.toolbarElement.style.display = "none";
+      this.toolbarAnchor.style.display = "block";
+    } else {
+      this.isVisible = true;
+      this.toolbarElement.style.display = "block";
+      this.toolbarAnchor.style.display = "none";
+    }
+  }
 
   private createToogleButtons():HTMLElement{
     return createGroupButtons([
@@ -191,12 +224,12 @@ export class ToolbarView {
 
   public displayAsTitleBar () {
     this.toggleAtomTitleBar(false)
-    this.element.classList.add('bugs-title-bar')
+    this.toolbarElement.classList.add('bugs-title-bar')
   }
 
   public displayDefault () {
     this.toggleAtomTitleBar(true)
-    this.element.classList.remove('bugs-title-bar')
+    this.toolbarElement.classList.remove('bugs-title-bar')
   }
 
   public setTaskConfiguration(configuration){
@@ -204,6 +237,8 @@ export class ToolbarView {
   }
 
   public destroy () {
+    this.toolbarElement.remove();
+    this.toolbarAnchor.remove();
     this.element.remove();
     this.subscriptions.dispose();
   }

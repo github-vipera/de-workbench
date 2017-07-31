@@ -29,9 +29,6 @@ export default {
     })
     let DEWorkbenchClass = require('./DEWorkbench/DEWorkbench').DEWorkbench;
     this.deWorkbench = new DEWorkbenchClass({
-      didToggleToolbar: () => {
-          this.toggleToolbar();
-      }
     });
     window["deWorkbench"] = this.deWorkbench; //make it public only for debugging purpose
 
@@ -65,12 +62,7 @@ export default {
 
   toggleToolbar() {
     console.log("Toggle toolbar");
-    let visible = this.toolbarPanel.visible
-    if (visible) {
-      this.toolbarPanel.hide()
-    } else {
-      this.toolbarPanel.show()
-    }
+    this.deWorkbench.toggleToolbar()
   },
 
   toggleLogger(){

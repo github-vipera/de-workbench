@@ -136,7 +136,7 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
    }
 
    toggleToolbar() {
-     this.events.emit('didToggleToolbar');
+     this.toolbarView.toggle();
    }
 
    toggleDebugArea(){
