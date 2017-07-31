@@ -18,10 +18,10 @@ export class UILineLoader extends UIBaseComponent{
     });
   }
   public setOnLoading(value:boolean){
-    if(this.onLoading != value){
+    //if(this.onLoading != value){
       this.onLoading = value;
       this.updateUI();
-    }
+    //}
   }
   private updateUI(){
     this.mainElement.classList[this.onLoading ? 'add' : 'remove']('active')

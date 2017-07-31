@@ -22,6 +22,7 @@ import { TaskManager } from '../../tasks/TaskManager'
 import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
 import { find,forEach,map } from 'lodash'
 import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
+import { UILineLoader } from '../../ui-components/UILineLoader'
 
 class TaskViewContentPanel extends UIBaseComponent{
   taskConfig:CordovaTaskConfiguration
@@ -29,6 +30,7 @@ class TaskViewContentPanel extends UIBaseComponent{
   private deviceManager:CordovaDeviceManager;
   private platformSelect:UISelect;
   private deviceSelect:UISelect;
+  private deviceLineLoader: UILineLoader;
   private isRelease:HTMLElement
 
   constructor(){
@@ -64,18 +66,23 @@ class TaskViewContentPanel extends UIBaseComponent{
 
   private createDeviceSelect(){
     this.deviceSelect = new UISelect();
-    let row=this.createFormRow(createText('Device / Emulator'),this.deviceSelect.element());
+    this.deviceLineLoader= new UILineLoader();
+    let wrapper=createElement('div',{
+      className:'line-loader-wrapper',
+      elements:[
+        this.deviceSelect.element(),
+        this.deviceLineLoader.element()
+      ]
+    });
+    let row=this.createFormRow(createText('Device / Emulator'),wrapper);
     insertElement(this.mainElement,row);
   }
 
   private async updateDevices(platform:CordovaPlatform){
-    /*let model:Array<UISelectItem> = [{
-      value:'[AUTO]',
-      name: '-- Auto --'
-    }]*/
     if(!this.deviceManager || !platform){
       return Promise.resolve([]);
     }
+    this.deviceLineLoader.setOnLoading(true);
     let devices= await this.deviceManager.getDeviceList(platform.name);
     let model:Array<UISelectItem> = map<CordovaDevice,UISelectItem>(devices,(single:CordovaDevice) => {
       return {
@@ -84,6 +91,7 @@ class TaskViewContentPanel extends UIBaseComponent{
       }
     });
     this.deviceSelect.setItems(model)
+    this.deviceLineLoader.setOnLoading(false);
   }
 
   private createFormRow(text:Text,element:HTMLElement):HTMLElement{
