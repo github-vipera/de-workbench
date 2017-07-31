@@ -48,7 +48,7 @@ export class CordovaUtils {
     return res;
   }
 
-  parseDeviceList(stringValue){
+  public parseDeviceList(stringValue){
       if(!stringValue){
         return [];
       }
@@ -117,7 +117,7 @@ export class CordovaUtils {
           }
           platformsList.push(platform);
       }
-      
+
       return {
         "installed": platformsList
       }

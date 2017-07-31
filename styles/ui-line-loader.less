@@ -1,0 +1,25 @@
+@import "variables";
+div.status-loading {
+   display: none;
+   &.active {
+     display: block;
+   }
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   height: 2px;
+   width: 100%;
+   border-bottom-left-radius: @component-border-radius;
+   border-bottom-right-radius: @component-border-radius;
+   background-color: fade(@background-color-info, 10%);
+   &:before {
+     content: '';
+     position: absolute;
+     width: 0%;
+     height: 100%;
+     background-color: @background-color-info;
+     animation: slideIn 1.2s linear alternate infinite;
+     border-bottom-left-radius: @component-border-radius;
+     border-bottom-right-radius: @component-border-radius;
+   }
+ }

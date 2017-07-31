@@ -21,10 +21,12 @@ import { CordovaTaskConfiguration,CordovaTask } from '../../cordova/CordovaTasks
 import { TaskManager } from '../../tasks/TaskManager'
 import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
 import { find,forEach,map } from 'lodash'
+import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
 
 class TaskViewContentPanel extends UIBaseComponent{
   taskConfig:CordovaTaskConfiguration
   projectInfo:CordovaProjectInfo
+  private deviceManager:CordovaDeviceManager;
   private platformSelect:UISelect;
   private deviceSelect:UISelect;
   private isRelease:HTMLElement
@@ -66,11 +68,21 @@ class TaskViewContentPanel extends UIBaseComponent{
     insertElement(this.mainElement,row);
   }
 
-  private updateDevices(){
-    let model:Array<UISelectItem> = [{
+  private async updateDevices(platform:CordovaPlatform){
+    /*let model:Array<UISelectItem> = [{
       value:'[AUTO]',
       name: '-- Auto --'
-    }]
+    }]*/
+    if(!this.deviceManager || !platform){
+      return Promise.resolve([]);
+    }
+    let devices= await this.deviceManager.getDeviceList(platform.name);
+    let model:Array<UISelectItem> = map<CordovaDevice,UISelectItem>(devices,(single:CordovaDevice) => {
+      return {
+        value:single.targetId,
+        name:single.name
+      }
+    });
     this.deviceSelect.setItems(model)
   }
 
@@ -87,14 +99,27 @@ class TaskViewContentPanel extends UIBaseComponent{
   contextualize(taskConfig:CordovaTaskConfiguration,projectInfo:CordovaProjectInfo){
     this.taskConfig = taskConfig;
     this.projectInfo = projectInfo;
+    if(!this.deviceManager){
+      this.deviceManager = new CordovaDeviceManager(this.projectInfo.path);
+    }
     setTimeout(() => {
-      this.loadConfig();
+      this.contextualizeImpl();
     });
   }
 
-  private loadConfig(){
-    this.updatePlatforms();
-    this.updateDevices();
+  private contextualizeImpl(){
+    if(!this.getSelectedPlatform()){
+      this.updatePlatforms();
+    }
+    this.updateDevices(this.getSelectedPlatform());
+  }
+
+  private getSelectedPlatform():CordovaPlatform{
+    let platformValue = this.platformSelect.getSelectedItem();
+    if(platformValue){
+      return { name:platformValue };
+    }
+    return null;
   }
 
   getCurrentConfiguration():CordovaTaskConfiguration{

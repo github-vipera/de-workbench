@@ -380,4 +380,27 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
+  getAllDeviceByPlatform(platform:string):Promise<any>{
+    if(platform === "browser"){
+      return Promise.resolve([DEVICE_AUTO_DEF]);
+    }
+
+    var cmd="cordova run " + platform + " --list";
+    var options=this.getCmdOptions();
+    return new Promise((resolve,reject) => {
+      exec(cmd,options,(error, stdout, stderr) => {
+        if(error){
+          console.error(error.toString());
+          reject(error);
+          return;
+        }
+        console.log("exec getAllDeviceByPlatform done " + stdout);
+        var detectedDevice= new CordovaUtils().parseDeviceList(stdout);
+        detectedDevice.unshift(DEVICE_AUTO_DEF);
+        resolve(detectedDevice);
+      });
+    });
+  }
+
+
 }
