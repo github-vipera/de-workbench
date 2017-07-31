@@ -7,8 +7,8 @@
  */
 
 const { CompositeDisposable } = require('atom')
-
-import { DEWorkbench } from './DEWorkbench/DEWorkbench'
+declare function require(moduleName: string): any;
+//import { DEWorkbench } from './DEWorkbench/DEWorkbench'
 
 export default {
 
@@ -19,35 +19,43 @@ export default {
 
   activate (state: any) {
       console.log("DEWB activated.");
-      require('atom-package-deps').install('atomify', true).then(function(res){
-        console.log("Dep packages installed.");
-      })
-      this.deWorkbench = new DEWorkbench({
-        didToggleToolbar: () => {
-            this.toggleToolbar();
-        }
-      });
-      window["deWorkbench"] = this.deWorkbench; //make it public only for debugging purpose
+      setTimeout(this.deferredActivation.bind(this),1000);
+  },
 
-      let value = 'HeaderPanel';
-      this.toolbarPanel = atom.workspace[`add${value}`]({
-        item: this.deWorkbench.getToolbarElement()
-      });
+  deferredActivation(){
+    console.log("DEWB deferredActivation.");
+    require('atom-package-deps').install('atomify', true).then(function(res){
+      console.log("Dep packages installed.");
+    })
+    let DEWorkbenchClass = require('./DEWorkbench/DEWorkbench').DEWorkbench;
+    this.deWorkbench = new DEWorkbenchClass({
+      didToggleToolbar: () => {
+          this.toggleToolbar();
+      }
+    });
+    window["deWorkbench"] = this.deWorkbench; //make it public only for debugging purpose
 
-      // add commands
-      let commands = atom.commands.add('atom-workspace', {
-          'dewb-menu-view-:toolbar-toggle': () => this.toggleToolbar(),
-          'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector(),
-          'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger()
-        });
-      this.subscriptions = new CompositeDisposable();
-      // add commands subs
-      this.subscriptions.add(commands);
+    let value = 'HeaderPanel';
+    this.toolbarPanel = atom.workspace[`add${value}`]({
+      item: this.deWorkbench.getToolbarElement()
+    });
+
+    // add commands
+    let commands = atom.commands.add('atom-workspace', {
+        'dewb-menu-view-:toolbar-toggle': () => this.toggleToolbar(),
+        'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector(),
+        'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger()
+      });
+    this.subscriptions = new CompositeDisposable();
+    // add commands subs
+    this.subscriptions.add(commands);
   },
 
   deactivate () {
       console.log('DEWB deactivated.');
-      this.deWorkbench.destroy();
+      if(this.deWorkbench){
+        this.deWorkbench.destroy();
+      }
   },
 
 
