@@ -6,7 +6,7 @@ import {
   createIcon
 } from '../element/index';
 import { UIBaseComponent } from './UIComponent'
-export default class UILineLoader extends UIBaseComponent{
+export class UILineLoader extends UIBaseComponent{
   private onLoading:boolean =false;
   constructor(){
     super();
