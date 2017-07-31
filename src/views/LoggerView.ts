@@ -23,7 +23,6 @@ import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../ui-components/UIListView'
-import { ProjectTypePanel } from '../ui-components/ProjectTypePanel'
 import { Logger,LoggerListener ,LogLevel} from '../logger/Logger'
 import { UILoggerComponent,LogLine,IFilterableModel } from '../ui-components/UILoggerComponent'
 

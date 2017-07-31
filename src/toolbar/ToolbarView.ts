@@ -32,9 +32,9 @@ export interface ToolbarOptions {
   didBuild?: Function,
   didProjectSettings?: Function,
   didToggleToolbar?: Function,
-  didTogglePrjInspector?: Function,
   didToggleDebugArea?: Function
   didSelectProjectForRun?: Function,
+  didToggleConsole?: Function,
   didSelectTaskClick?:Function
   /**
   didOpenScheme?: Function,
@@ -109,11 +109,11 @@ export class ToolbarView {
       'didNewProject',
       'didBuild',
       'didToggleToolbar',
-      'didTogglePrjInspector',
       'didToggleDebugArea',
       'didProjectSettings',
       'didSelectProjectForRun',
-      'didSelectTaskClick'
+      'didSelectTaskClick',
+      'didToggleConsole'
     ], options);
 
   }
@@ -172,13 +172,6 @@ export class ToolbarView {
         },
         click: () => this.events.emit('didToggleToolbar')
       }, [createIcon('up-arrow')]),
-      createButton({
-        tooltip: {
-          subscriptions: this.subscriptions,
-          title: 'Toggle Project Inspector'
-        },
-        click: () => this.events.emit('didTogglePrjInspector')
-      }, [createIcon('sort')]),
       createButton({
         tooltip: {
           subscriptions: this.subscriptions,

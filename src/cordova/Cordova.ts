@@ -301,11 +301,12 @@ export class Cordova {
     return executor.runProject(projectRoot, platform, target, options);
   }
 
-  public getProjectInfoSync(projectRoot:string):any {
+  public getPackageJson(projectRoot:string):any {
     let jsonPath = path.join(projectRoot, "package.json");
     return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
   }
 
+  /**
   public getProjectInfo(projectRoot:string):Promise<any> {
     return new Promise((resolve, reject) => {
       let jsonPath = path.join(projectRoot, "package.json");
@@ -317,9 +318,10 @@ export class Cordova {
       });
     })
   }
+  **/
 
-  public async getCordovaProjectInfo(projectRoot:string,loadPlugins?:boolean):Promise<CordovaProjectInfo>{
-    let json = await this.getProjectInfo(projectRoot);
+  public async getProjectInfo(projectRoot:string,loadPlugins?:boolean):Promise<CordovaProjectInfo>{
+    let json = this.getPackageJson(projectRoot);
     if(!json || !json.cordova){
       return null; // is not a cordova project
     }

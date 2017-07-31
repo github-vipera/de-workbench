@@ -130,7 +130,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   onSelectProject(path:string){
     console.log("onSelectProject",path);
     setTimeout(() => {
-      ProjectManager.getInstance().cordova.getCordovaProjectInfo(path).then((info:CordovaProjectInfo) => {
+      ProjectManager.getInstance().cordova.getProjectInfo(path).then((info:CordovaProjectInfo) => {
           console.log(info);
           this.events.emit('didSelectProjectForRun',info);
       },(reason) => {

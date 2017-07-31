@@ -10,7 +10,6 @@ import { ToolbarView } from '../toolbar/ToolbarView'
 import { NewProjectView } from '../views/NewProject/NewProjectView'
 import { EventEmitter }  from 'events';
 const { CompositeDisposable } = require('atom');
-import { ProjectInspectorView } from '../views/ProjectInspectorView'
 import { DebugAreaView }from '../views/DebugAreaView'
 import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
@@ -35,17 +34,15 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
 
  export interface WorkbenchOptions {
    didToggleToolbar?: Function,
-   didTogglePrjInspector?: Function,
    didToggleDebugArea?:Function,
-   didProjectSettings?:Function
+   didProjectSettings?:Function,
+   didToggleConsole?:Function
 }
 
 
  export class DEWorkbench {
 
    public toolbarView: ToolbarView
-   //public newProjectView: NewProjectView
-   public projectInspectorView: ProjectInspectorView
    public debugAreaView: DebugAreaView
    public loggerView: LoggerView
    private events: EventEmitter;
@@ -69,14 +66,14 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
       didToggleToolbar: () => {
           this.toggleToolbar();
       },
-      didTogglePrjInspector: () => {
-        this.togglePrjInspector();
-      },
       didToggleDebugArea: () => {
         this.toggleDebugArea();
       },
       didProjectSettings: () => {
           this.showProjectSettings();
+      },
+      didToggleConsole:() => {
+        this.toggleLogger();
       },
       didSelectProjectForRun: (projectInfo:CordovaProjectInfo) => {
         console.log("didSelectProjectForRun",projectInfo);
@@ -87,9 +84,6 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
         this.showCordovaTaskModal();
       }
      });
-
-     // Create a prject inspector dock window
-     //this.projectInspectorView = new ProjectInspectorView();
 
      // Create the Logger inspector
      //this.loggerView = new LoggerView();
@@ -116,10 +110,6 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
    }
 
    openProjectInspector(){
-     if (!this.projectInspectorView){
-       this.projectInspectorView = new ProjectInspectorView();
-     }
-     this.projectInspectorView.open();
    }
 
    openDebugArea(){
@@ -147,12 +137,6 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
 
    toggleToolbar() {
      this.events.emit('didToggleToolbar');
-   }
-
-   togglePrjInspector(){
-     Logger.getInstance().debug("DEWorkbench togglePrjInspector called");
-     this.events.emit('didTogglePrjInspector');
-     this.openProjectInspector();
    }
 
    toggleDebugArea(){
