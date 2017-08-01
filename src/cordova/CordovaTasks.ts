@@ -1,5 +1,6 @@
 'use babel'
 import {Cordova, CordovaPlatform} from './Cordova'
+import { CordovaDevice } from './CordovaDeviceManager'
 
 export interface MockConfiguration {
   mockFilePath:string
@@ -7,6 +8,13 @@ export interface MockConfiguration {
 }
 
 export type CordovaTaskType = "prepare" | "compile" | "build" | "run" | "buildRun";
+export interface TaskConstraints {
+  isDeviceEnabled:boolean,
+  isMockConfigEnabled:boolean,
+  mockConfig?:MockConfiguration
+  isNodeTaskEnabled:boolean
+  isEnvVarEnabled:boolean
+}
 
 
 export class CordovaTaskConfiguration {
@@ -17,6 +25,10 @@ export class CordovaTaskConfiguration {
   private _variantName:string
   private _isRelease:boolean
   private _nodeTasks:Array<String>
+  private _device:CordovaDevice
+  private _envVariables: Array<{name:string, value:string}>
+  private _constraints: TaskConstraints
+
   constructor(name?:string,taskType?:CordovaTaskType){
     this._name=name
     this.taskType = taskType;
@@ -76,6 +88,30 @@ export class CordovaTaskConfiguration {
 
   set nodeTasks(value:Array<String>){
     this._nodeTasks = value;
+  }
+
+  get constraints():TaskConstraints {
+    return this._constraints;
+  }
+
+  set constraints(value:TaskConstraints) {
+    this._constraints=value;
+  }
+
+  get device():CordovaDevice {
+    return this._device;
+  }
+
+  set device(value:CordovaDevice) {
+    this._device=value;
+  }
+
+  get envVariables():Array<{name:string,value:string}> {
+    return this._envVariables;
+  }
+
+  set envVariables(value:Array<{name:string,value:string}>) {
+    this._envVariables=value;
   }
 
   static fromJSON(json:Object):CordovaTaskConfiguration {

@@ -62,6 +62,7 @@ export interface CordovaProjectInfo {
   variants:Array<string>
   projectSettings?:any
   plugins?:Array<CordovaPlugin>
+  npmScripts?:Array<string>
 }
 
 
@@ -342,6 +343,7 @@ export class Cordova {
       version:json.version,
       path:projectRoot,
       platforms:cordovaPlatforms,
+      npmScripts:json.scripts || [],
       plugins:cordovaPlugins,
       variants:[]
     };

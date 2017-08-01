@@ -15,9 +15,9 @@ import {
 } from '../../element/index';
 
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { UISelect, UISelectItem } from '../../ui-components/UISelect'
+import { UISelect, UISelectItem, UISelectListener } from '../../ui-components/UISelect'
 import { CordovaPlatform, CordovaProjectInfo } from '../../cordova/Cordova'
-import { CordovaTaskConfiguration,CordovaTask } from '../../cordova/CordovaTasks'
+import { CordovaTaskConfiguration, CordovaTask, TaskConstraints } from '../../cordova/CordovaTasks'
 import { TaskManager } from '../../tasks/TaskManager'
 import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
 import { find,forEach,map } from 'lodash'
@@ -29,6 +29,7 @@ class TaskViewContentPanel extends UIBaseComponent{
   projectInfo:CordovaProjectInfo
   private deviceManager:CordovaDeviceManager;
   private platformSelect:UISelect;
+  private platformSelectListener:UISelectListener;
   private deviceSelect:UISelect;
   private deviceLineLoader: UILineLoader;
   private isRelease:HTMLElement
@@ -37,6 +38,7 @@ class TaskViewContentPanel extends UIBaseComponent{
     super();
     this.initUI();
   }
+
   private initUI(){
     this.mainElement = createElement('atom-panel',{
       className:'de-workbench-taskpanel-content',
@@ -47,9 +49,16 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.createPlatformSelect();
     this.createDeviceSelect();
   }
+
   private createPlatformSelect(){
     this.platformSelect = new UISelect();
-    let row=this.createFormRow(createText('Platform'),this.platformSelect.element());
+    this.platformSelectListener = {
+      onItemSelected:() => {
+        this.updateDevices(this.getSelectedPlatform());
+      }
+    };
+    this.platformSelect.addSelectListener(this.platformSelectListener);
+    let row=this.createFormRow(createText('Platform'),this.platformSelect.element(),'platforms');
     insertElement(this.mainElement,row);
   }
 
@@ -74,7 +83,7 @@ class TaskViewContentPanel extends UIBaseComponent{
         this.deviceLineLoader.element()
       ]
     });
-    let row=this.createFormRow(createText('Device / Emulator'),wrapper);
+    let row=this.createFormRow(createText('Device / Emulator'),wrapper,'devices');
     insertElement(this.mainElement,row);
   }
 
@@ -94,9 +103,14 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.deviceLineLoader.setOnLoading(false);
   }
 
-  private createFormRow(text:Text,element:HTMLElement):HTMLElement{
+  private createRowId(elementId:string):string{
+    return "row-" + elementId;
+  }
+
+  private createFormRow(text:Text,element:HTMLElement,rowId?:string):HTMLElement{
     let row=createElement('div',{
       className:'control-row',
+      id: this.createRowId(rowId || element.id),
       elements:[
         text,
         element]
@@ -115,17 +129,42 @@ class TaskViewContentPanel extends UIBaseComponent{
     });
   }
 
+  private setRowVisible(rowId:string,visible:boolean){
+    var el = document.getElementById(rowId);
+    if(el && el.style){
+      el.style.display = visible? 'block' : 'none';
+    }
+  }
+
   private contextualizeImpl(){
     if(!this.getSelectedPlatform()){
       this.updatePlatforms();
     }
-    this.updateDevices(this.getSelectedPlatform());
+    this.applyConstraintsToView(this.taskConfig.constraints);
+  }
+
+  private applyConstraintsToView(constraints:TaskConstraints){
+      if(constraints.isDeviceEnabled){
+        this.updateDevices(this.getSelectedPlatform());
+      }
+      this.setRowVisible(this.createRowId('devices'),constraints.isDeviceEnabled);
   }
 
   private getSelectedPlatform():CordovaPlatform{
     let platformValue = this.platformSelect.getSelectedItem();
     if(platformValue){
       return { name:platformValue };
+    }
+    return null;
+  }
+
+  private getSelectedDevice():CordovaDevice {
+    let value= this.deviceSelect.getSelectedItem();
+    if(value){
+      return {
+        targetId:value,
+        name:value
+      }
     }
     return null;
   }
@@ -138,6 +177,7 @@ class TaskViewContentPanel extends UIBaseComponent{
     return this.taskConfig;
   }
 }
+
 
 class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectListener{
   private treeModel:UITreeViewModel;
