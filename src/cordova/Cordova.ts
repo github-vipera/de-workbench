@@ -57,6 +57,10 @@ export interface NewProjectInfo {
 export interface CordovaProjectInfo {
   path:string
   id:string
+  displayName:string
+  description:string
+  author:string
+  license:string
   version:string
   platforms:Array<CordovaPlatform>
   variants:Array<string>
@@ -377,6 +381,10 @@ export class Cordova {
     }
     return {
       id:json.name,
+      displayName:json.displayName,
+      description:json.description,
+      author:json.author,
+      license:json.license,
       version:json.version,
       path:projectRoot,
       platforms:cordovaPlatforms,

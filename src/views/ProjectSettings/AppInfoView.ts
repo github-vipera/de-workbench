@@ -24,6 +24,7 @@ import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { Logger } from '../../logger/Logger'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
+import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 
 export class AppInfoView extends UIBaseComponent {
 
@@ -35,6 +36,8 @@ export class AppInfoView extends UIBaseComponent {
   private licenseCtrl: UIInputFormElement;
   private versionCtrl: UIInputFormElement;
   private currentProjectPath:string;
+
+  private actionButtons:UIButtonGroup;
 
   constructor(){
     super();
@@ -64,6 +67,28 @@ export class AppInfoView extends UIBaseComponent {
       this.onTextValueChanged(evtCtrl);
     })
 
+    //Action buttons
+    this.actionButtons = new UIButtonGroup(UIButtonGroupMode.Standard)
+      .addButton(new UIButtonConfig()
+            .setId('revertChanges')
+            .setCaption('Revert Changes')
+            .setClickListener(()=>{
+                this.reload()
+            }))
+      .addButton(new UIButtonConfig()
+            .setId('saveChanges')
+            .setButtonType('success')
+            .setCaption('Save changes')
+            .setClickListener(()=>{
+              alert("TODO save!")
+            }))
+    let actionButtonsContainer = createElement('div',{
+      elements: [
+        this.actionButtons.element()
+      ],
+      className: 'de-workbench-appinfo-form-action-buttons'
+    });
+
     this.mainFormElement = createElement('form',{
       elements: [
         this.nameCtrl.element(),
@@ -71,14 +96,32 @@ export class AppInfoView extends UIBaseComponent {
         this.descriptionCtrl.element(),
         this.authorCtrl.element(),
         this.licenseCtrl.element(),
-        this.versionCtrl.element()
+        this.versionCtrl.element(),
+        actionButtonsContainer
       ],
       className: 'de-workbench-appinfo-form general-info-form'
     });
+
+
     this.mainFormElement.setAttribute("tabindex", "-1")
     this.mainElement = this.mainFormElement;
 
+    this.reload();
+  }
 
+  private reload(){
+    ProjectManager.getInstance().cordova.getProjectInfo(this.currentProjectPath, false).then((ret)=>{
+      this.nameCtrl.setValue(ret.id);
+      this.displayName.setValue(ret.displayName);
+      this.descriptionCtrl.setValue(ret.description);
+      this.authorCtrl.setValue(ret.author);
+      this.licenseCtrl.setValue(ret.license);
+      this.versionCtrl.setValue(ret.version);
+    });
+  }
+
+  private saveChanges(){
+    //TODO!! save
   }
 
   private onTextValueChanged(sourceCtrl:UIInputFormElement){
