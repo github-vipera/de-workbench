@@ -78,6 +78,7 @@ export class UIModalView implements UIModalWindow {
       this.panel.hide();
     }
     this.destroyModalContainer();
+    this.panel['destroy']();
     this.panel = null;
   }
 
