@@ -25,6 +25,7 @@ import { Logger } from '../../logger/Logger'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
+import { UINotifications } from '../../ui-components/UINotifications'
 
 export class AppInfoView extends UIBaseComponent {
 
@@ -80,7 +81,7 @@ export class AppInfoView extends UIBaseComponent {
             .setButtonType('success')
             .setCaption('Save changes')
             .setClickListener(()=>{
-              alert("TODO save!")
+              this.saveChanges()
             }))
     let actionButtonsContainer = createElement('div',{
       elements: [
@@ -109,9 +110,13 @@ export class AppInfoView extends UIBaseComponent {
     this.reload();
   }
 
-  private reload(){
+  private async reload(){
     ProjectManager.getInstance().cordova.getProjectInfo(this.currentProjectPath, false).then((ret)=>{
-      this.nameCtrl.setValue(ret.id);
+      if (ret==null){
+        //This is not a Cordova Project
+        return;
+      }
+      this.nameCtrl.setValue(ret.name);
       this.displayName.setValue(ret.displayName);
       this.descriptionCtrl.setValue(ret.description);
       this.authorCtrl.setValue(ret.author);
@@ -120,8 +125,16 @@ export class AppInfoView extends UIBaseComponent {
     });
   }
 
-  private saveChanges(){
-    //TODO!! save
+  private async saveChanges(){
+    var currentPackageJson = await ProjectManager.getInstance().cordova.getPackageJson(this.currentProjectPath);
+    currentPackageJson.name = this.nameCtrl.getValue();
+    currentPackageJson.displayName = this.displayName.getValue();
+    currentPackageJson.description = this.descriptionCtrl.getValue();
+    currentPackageJson.author = this.authorCtrl.getValue();
+    currentPackageJson.license = this.licenseCtrl.getValue();
+    currentPackageJson.version = this.versionCtrl.getValue();
+    await ProjectManager.getInstance().cordova.storePackageJson(this.currentProjectPath, currentPackageJson);
+    UINotifications.showInfo("Project information changes saved successfully.")
   }
 
   private onTextValueChanged(sourceCtrl:UIInputFormElement){

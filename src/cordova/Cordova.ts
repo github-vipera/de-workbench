@@ -56,7 +56,7 @@ export interface NewProjectInfo {
 
 export interface CordovaProjectInfo {
   path:string
-  id:string
+  name:string
   displayName:string
   description:string
   author:string
@@ -339,6 +339,11 @@ export class Cordova {
     return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
   }
 
+  public storePackageJson(projectRoot:string, packageJson:Object) {
+    let jsonPath = path.join(projectRoot, "package.json");
+    fs.writeFileSync(jsonPath, JSON.stringify(packageJson), 'utf8')
+  }
+
   public stopExecutor(){
     if(this.sharedExecutor){
       this.sharedExecutor.stopSpawn();
@@ -380,7 +385,7 @@ export class Cordova {
       cordovaPlugins = await this.getInstalledPlugins(projectRoot);
     }
     return {
-      id:json.name,
+      name:json.name,
       displayName:json.displayName,
       description:json.description,
       author:json.author,
@@ -395,6 +400,15 @@ export class Cordova {
   }
 
 
-
+  public async saveProjectInfo(projectRoot:string, projectInfo:CordovaProjectInfo):Promise<any>{
+    var packageJson = this.getPackageJson(projectRoot);
+    packageJson.name = projectInfo.name;
+    packageJson.displayName = projectInfo.displayName;
+    packageJson.description = projectInfo.description;
+    packageJson.author = projectInfo.author;
+    packageJson.license = projectInfo.license;
+    packageJson.version = projectInfo.version;
+    this.storePackageJson(projectRoot, packageJson)
+  }
 
 }

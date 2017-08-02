@@ -61,7 +61,7 @@ export class UIInputFormElement extends UIBaseComponent {
       return this;
   }
 
-  public getValue():String{
+  public getValue():string{
     return this.getModel().getText()
   }
 
