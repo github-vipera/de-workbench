@@ -103,12 +103,6 @@ export class CommunityPluginsView extends UIBaseComponent {
       className : 'block'
     })
 
-    /**
-    this.progress = createElement('progress',{
-    });
-    this.progress.style.width = "100%";
-    **/
-
     // Search Form
     this.searchForm = createElement('div',{
         elements : [
