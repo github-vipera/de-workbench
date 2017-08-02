@@ -49,6 +49,7 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
    public projectManager: ProjectManager;
    public selectedProjectForTask: CordovaProjectInfo;
    private taskExecutor:TaskExecutor;
+   private taskConfiguration:CordovaTaskConfiguration;
    constructor(options:WorkbenchOptions){
      Logger.getInstance().info("Initializing DEWorkbench...");
 
@@ -82,6 +83,12 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
       didSelectTaskClick: () => {
         console.log("didSelectTaskClick");
         this.showCordovaTaskModal();
+      },
+      didStop:() => {
+        this.onStopTask();
+      },
+      didRun : () => {
+        this.onTaskRunRequired(this.taskConfiguration);
       }
      });
 
@@ -95,7 +102,8 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
      ], options);
 
      ProjectManager.getInstance().didProjectChanged((projectPath)=>this.onProjectChanged(projectPath));
-
+     //this.events.on('didStop',this.onStopTask.bind(this));
+     this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
      Logger.getInstance().info("DEWorkbench initialized successfully.");
    }
 
@@ -161,18 +169,14 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
        Logger.getInstance().warn("select project before run task");
        return;
      }
-     this.events.removeAllListeners('didRunTask');
-     this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
      let taskConfigView:TaskConfigView = new TaskConfigView("Task Configuration",this.events);
      taskConfigView.setProject(this.selectedProjectForTask);
      taskConfigView.show();
-     /*setTimeout(() => {
-       taskConfigView.setProject(this.selectedProjectForTask);
-     },200)*/
    }
 
    onTaskRunRequired(taskConfiguration:CordovaTaskConfiguration){
      console.log("onTaskRunRequired",taskConfiguration);
+     this.taskConfiguration = taskConfiguration;
      if(!taskConfiguration){
        Logger.getInstance().warn("Null task selected");
        this.toolbarView.setTaskConfiguration(null);
@@ -192,6 +196,13 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
        this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
        Logger.getInstance().error(err.message, err.stack);
      });
+   }
+
+   onStopTask(){
+     console.log("onStopTask");
+     if(this.taskExecutor && this.taskExecutor.isBusy()){
+       this.taskExecutor.stop();
+     }
    }
 
 

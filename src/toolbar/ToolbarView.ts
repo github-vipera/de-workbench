@@ -250,15 +250,19 @@ export class ToolbarView {
   // Utilities:
   public setInProgressStatus(msg:string,iconName?:string){
     this.statusIndicator.setStatus(UIIndicatorStatus.Busy,msg,iconName || 'status-warning');
+    this.stopButton.removeAttribute('disabled');
   }
   public setSuccessStatus(msg:string,iconName?:string){
     this.statusIndicator.setStatus(UIIndicatorStatus.Success,msg,iconName || 'status-success');
+    this.stopButton.setAttribute('disabled','true');
   }
   public setIdleStatus(msg:string,iconName?:string){
     this.statusIndicator.setStatus(UIIndicatorStatus.Idle,msg,iconName);
+    this.stopButton.setAttribute('disabled','true');
   }
   public setErrorStatus(msg:string,iconName?:string){
     this.statusIndicator.setStatus(UIIndicatorStatus.Error,msg,iconName || 'status-error');
+    this.stopButton.setAttribute('disabled','true');
   }
 
 }
