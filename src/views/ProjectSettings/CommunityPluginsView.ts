@@ -32,18 +32,21 @@ import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-co
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { CordovaPluginsFinder } from '../../cordova/CordovaPluginsFinder'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
+import { UILineLoader } from '../../ui-components/UILineLoader'
 
 export class CommunityPluginsView extends UIBaseComponent {
 
   private pluginList: UIPluginsList;
   private searchForm:HTMLElement;
   private searchTextEditor:HTMLElement;
-  private progress:HTMLElement;
+  //private progress:HTMLElement;
 
   private btnGroupPlatformChooser: UIButtonGroup;
   private btnChooseIOS:HTMLElement;
   private btnChooseAndroid:HTMLElement;
   private btnChooseBrowser:HTMLElement;
+
+  private lineLoader:UILineLoader;
 
 
   constructor(){
@@ -56,6 +59,8 @@ export class CommunityPluginsView extends UIBaseComponent {
   }
 
   protected initUI(){
+
+    this.lineLoader = new UILineLoader()
 
     // Editor Block
     this.searchTextEditor = createElement('input',{
@@ -98,17 +103,17 @@ export class CommunityPluginsView extends UIBaseComponent {
       className : 'block'
     })
 
-
+    /**
     this.progress = createElement('progress',{
     });
     this.progress.style.width = "100%";
+    **/
 
     // Search Form
     this.searchForm = createElement('div',{
         elements : [
           blockEditor,
-          blockPlatformChooser,
-          this.progress
+          blockPlatformChooser
         ],
         className: 'de-workbench-community-plugins-search-form'
     });
@@ -120,7 +125,8 @@ export class CommunityPluginsView extends UIBaseComponent {
     this.mainElement = createElement('div',{
         elements : [
           this.searchForm,
-          this.pluginList.element()
+          this.pluginList.element(),
+          this.lineLoader.element()
         ],
         className: 'de-workbench-community-plugins-list'
     })
@@ -169,11 +175,7 @@ export class CommunityPluginsView extends UIBaseComponent {
    * Show/Hide progress bar
    */
   private showProgress(show:boolean){
-    if (show){
-      this.progress.style.display = "inherit";
-    } else {
-      this.progress.style.display = "none";
-    }
+    this.lineLoader.setOnLoading(show);
   }
 
   /**
