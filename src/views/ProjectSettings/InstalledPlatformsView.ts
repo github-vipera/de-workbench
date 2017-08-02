@@ -33,6 +33,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
   private installedPlatformList: UIListView;
   private installedPlatformListModel : InstalledPlatformListModel;
   private currentProjectPath:string;
+  private btnInstallNewPlatform: UIButtonMenu;
 
   constructor(){
     super();
@@ -53,18 +54,16 @@ export class InstalledPlatformsView extends UIBaseComponent {
 
     // ============================================================================
     // Install new platform button
-    let btnInstallNewPlatform = new UIButtonMenu()
+    this.btnInstallNewPlatform = new UIButtonMenu()
                                       .setCaption('Install New Platform...')
                                       .setInfoMessage('Select a new Platform to install')
+                                      .setEmptyMessage('  NOTE: No other platforms are available to install')
                                       .setOnSelectionListener((menuItem)=>{
                                         alert("You have selected " + menuItem.value)
                                       })
-    btnInstallNewPlatform.setMenuItems([ {value:'ios', displayName:'iOS'},
-                                         {value:'android', displayName: 'Android'},
-                                         {value:'browser', displayName: 'Browser'}])
     let installNewPatformCtrl = createElement('div',{
       elements: [
-        btnInstallNewPlatform.element()
+        this.btnInstallNewPlatform.element()
       ],
       className: 'install-platform-ctrl'
     })
@@ -82,10 +81,32 @@ export class InstalledPlatformsView extends UIBaseComponent {
     this.mainFormElement.setAttribute("tabindex", "-1")
     this.mainElement = this.mainFormElement;
 
+    this.reload();
+  }
+
+  updateAvailableToInstallPlatforms(){
+    // change available to install platforms
+    var platforms = this.installedPlatformListModel.getCurrentPlatforms();
+
+    var availableToInstall = [ {value:'ios', displayName:'iOS'},
+                      {value:'android', displayName: 'Android'},
+                      {value:'browser', displayName: 'Browser'}];
+
+    // remove from list the already installed platforms
+    for (var i=0;i<platforms.length;i++){
+      _.remove(availableToInstall, {
+          value: platforms[i].name
+      });
+    }
+
+    this.btnInstallNewPlatform.setMenuItems(availableToInstall);
+  }
+
+  public reload(){
     this.installedPlatformListModel.reload(()=>{
+      this.updateAvailableToInstallPlatforms();
       this.installedPlatformList.modelChanged();
     })
-
   }
 
   createListControlBlock(caption:string, control:UIListView):HTMLElement{
@@ -104,8 +125,6 @@ export class InstalledPlatformsView extends UIBaseComponent {
     })
     return blockElement;
   }
-
-
 
 }
 
@@ -177,6 +196,10 @@ class InstalledPlatformListModel implements UIListViewModel {
       this.platformElements = {};
       didDone();
     });
+  }
+
+  public getCurrentPlatforms():Array<CordovaPlatform>{
+      return this.platforms;
   }
 
 }

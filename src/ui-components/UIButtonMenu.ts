@@ -33,6 +33,7 @@ export class UIButtonMenu extends UIBaseComponent {
   private listView:any;
   private panel:any;
   private infoMessage:string;
+  private emptyMessage:string;
   private onSelectListener:Function;
 
   constructor(){
@@ -67,6 +68,7 @@ export class UIButtonMenu extends UIBaseComponent {
     this.listView = new SelectListView({
       items: this.items,
       infoMessage: this.infoMessage,
+      emptyMessage: this.emptyMessage,
       elementForItem: this.createMenuElement,
       filterKeyForItem: (item) => item.displayName,
       didConfirmSelection: (item) => {
@@ -117,6 +119,11 @@ export class UIButtonMenu extends UIBaseComponent {
 
   public setInfoMessage(message:string):UIButtonMenu{
     this.infoMessage = message;
+    return this;
+  }
+
+  public setEmptyMessage(message:string):UIButtonMenu{
+    this.emptyMessage = message;
     return this;
   }
 
