@@ -51,7 +51,11 @@ export class UIButtonMenu extends UIBaseComponent {
       this.showMenu();
     });
 
+  }
 
+  public setCaption(caption:string):UIButtonMenu{
+    this.mainElement.innerText=caption;
+    return this;
   }
 
   public setMenuItems(items:Array<UIMenuItem>):UIButtonMenu {

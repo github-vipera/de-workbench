@@ -54,9 +54,10 @@ export class InstalledPlatformsView extends UIBaseComponent {
     // ============================================================================
     // Install new platform button
     let btnInstallNewPlatform = new UIButtonMenu()
+                                      .setCaption('Install New Platform...')
                                       .setInfoMessage('Select a new Platform to install')
                                       .setOnSelectionListener((menuItem)=>{
-                                        alert("XXXXYou have selected " + menuItem.value)
+                                        alert("You have selected " + menuItem.value)
                                       })
     btnInstallNewPlatform.setMenuItems([ {value:'ios', displayName:'iOS'},
                                          {value:'android', displayName: 'Android'},
