@@ -26,6 +26,7 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
 import * as _ from 'lodash'
 import { UIButtonMenu } from '../../ui-components/UIButtonMenu'
+import { UINotifications } from '../../ui-components/UINotifications'
 
 export class InstalledPlatformsView extends UIBaseComponent {
 
@@ -59,7 +60,14 @@ export class InstalledPlatformsView extends UIBaseComponent {
                                       .setInfoMessage('Select a new Platform to install')
                                       .setEmptyMessage('  NOTE: No other platforms are available to install')
                                       .setOnSelectionListener((menuItem)=>{
-                                        alert("You have selected " + menuItem.value)
+                                        const selected = atom.confirm({
+                                            message: 'Install New Platform',
+                                            detailedMessage: 'Do you want to confirm the ' + menuItem.displayName +' platform installation ?',
+                                            buttons: ['Yes, install it', 'Cancel']
+                                          });
+                                          if (selected==0){
+                                            this.doInstallPlatform(menuItem.value);
+                                          }
                                       })
     let installNewPatformCtrl = createElement('div',{
       elements: [
@@ -82,6 +90,13 @@ export class InstalledPlatformsView extends UIBaseComponent {
     this.mainElement = this.mainFormElement;
 
     this.reload();
+  }
+
+  doInstallPlatform(platformName:string){
+    ProjectManager.getInstance().cordova.addPlatform(this.currentProjectPath, platformName).then(()=>{
+      UINotifications.showInfo("Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +" installed successfully.")
+      this.reload()
+    })
   }
 
   updateAvailableToInstallPlatforms(){

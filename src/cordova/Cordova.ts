@@ -119,6 +119,13 @@ export class Cordova {
     return ret.installed;
   }
 
+  public async addPlatform(projectRoot:string, platformName:string){
+    Logger.getInstance().debug("addPlatform called for ...", projectRoot, platformName);
+    let executor = new CordovaExecutor(null);
+    let projectInfo = await this.getProjectInfo(projectRoot, false);
+    await executor.addPlatform(projectInfo, platformName);
+  }
+
   /**
    * Returns a list of installed plugins for a Cordova Project
    */

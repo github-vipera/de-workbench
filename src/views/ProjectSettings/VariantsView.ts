@@ -44,6 +44,7 @@ export class VariantsView  extends UIBaseComponent {
 
     this.mainElement = this.stackedPage.element();
 
+    /**
     let root:UITreeItem = {
       id : 'root',
       name: 'root',
@@ -78,7 +79,7 @@ export class VariantsView  extends UIBaseComponent {
     div.style.width = '400px';
     div.style.height = '400px';
     div.style.border = 'solid 1px white';
-
+    **/
 
   }
 

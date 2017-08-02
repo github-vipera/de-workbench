@@ -104,6 +104,40 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
+  public addPlatform(projectInfo, platformName:string): Promise<any>{
+    Logger.getInstance().info("Adding platform "+ platformName+" for ", projectInfo);
+    var cmd="cordova"
+    var args = ["platform","add", platformName, "--save"];
+    var platformsStr = " " + platformName +" ";
+    var options={
+        cwd: projectInfo.path,
+        detached:false
+    };
+    cmd = this.prepareCommand(cmd);
+    this.spawnRef = spawn(cmd, args, options);
+    return new Promise((resolve,reject) => {
+      this.spawnRef.stdout.on('data', (data) => {
+          Logger.getInstance().debug(`[Adding platform  [${platformsStr}] to  ${projectInfo.name}]: ${data}`)
+          console.log(`[Adding platforms  [${platformsStr}] to  ${projectInfo.name}]: ${data}`);
+      });
+      this.spawnRef.stderr.on('data', (data) => {
+          Logger.getInstance().error("[scriptTools] " + data.toString())
+          console.error(`[Adding platform  [${platformsStr}] to  ${projectInfo.name}]: ${data}`);
+      });
+
+      this.spawnRef.on('close', (code) => {
+          console.log(`[Adding Platform [${platformsStr}] to ${projectInfo.name}] child process exited with code ${code}`);
+          Logger.getInstance().info(`[Adding Platform [${platformsStr}] to ${projectInfo.name}] child process exited with code ${code}`)
+          this.spawnRef = undefined;
+          if(code === 0){
+            resolve("Add Platform done");
+          }else{
+            reject("Add Platform Fail");
+          }
+      });
+    });
+  }
+
   public addPlatforms(projectInfo): Promise<any>{
     Logger.getInstance().info("Adding platforms for ", projectInfo);
     var cmd="cordova"
