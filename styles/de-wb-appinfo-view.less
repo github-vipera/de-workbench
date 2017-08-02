@@ -1,0 +1,62 @@
+/*!
+ * DE Workbench
+ * Copyright(c) 2017 Williams Medina <williams.medinaa@gmail.com>
+ * MIT Licensed
+ */
+
+@import "variables";
+
+.de-workbench-appinfo-form {
+  width: 100%;
+}
+
+
+.platform-renderer {
+
+  display: flex;
+  padding: 6px;
+
+  .platform-name {
+    padding-left: 2px;
+    padding-right: 10px;
+    font-size: 10pt;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  .platform-version {
+    margin-top: auto;
+    margin-bottom: auto;
+    flex-grow: 2;
+  }
+}
+
+.platform-icon {
+  width:  35px !important;
+  height: 35px !important;
+  margin: 4px !important;
+}
+
+.btn-uninstall-platform {
+  height: 30px !important;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 4px !important;
+  margin-left: 4px !important;
+}
+
+.installed-platform-list {
+  border: solid 1px @inset-panel-background-color;
+
+  .de-workbench-listview-tb td {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: dotted 1px @inset-panel-background-color;
+  }
+
+  .de-workbench-listview-tb td:hover {
+    background-color: @button-background-color-hover;
+  }
+
+}
