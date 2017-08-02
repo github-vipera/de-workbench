@@ -28,12 +28,14 @@ import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-co
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { CommunityPluginsView } from './CommunityPluginsView'
 import { AppInfoView } from './AppInfoView'
+import { InstalledPlatformsView } from './InstalledPlatformsView'
 
 export class GeneralSettingsView extends UIBaseComponent {
 
   private tabbedView: UITabbedView;
   private stackedPage: UIStackedView;
   private appInfoView: AppInfoView;
+  private installedPlatformsView: InstalledPlatformsView;
 
   constructor(){
     super();
@@ -43,11 +45,12 @@ export class GeneralSettingsView extends UIBaseComponent {
   private buildUI(){
 
     this.appInfoView = new AppInfoView();
+    this.installedPlatformsView = new InstalledPlatformsView();
 
     this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
 
     this.tabbedView.addView(new UITabbedViewItem('app_info', 'App Info', this.appInfoView.element() ).setTitleClass('icon icon-settings'));
-    this.tabbedView.addView(new UITabbedViewItem('installed_platforms',    'Installed Platforms',  this.createSimpleEmptyView('Manage Platforms here')).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('installed_platforms',    'Installed Platforms',  this.installedPlatformsView.element() ).setTitleClass('icon icon-settings'));
 
     this.stackedPage = new UIStackedView()
                         .setTitle('General Settings')
