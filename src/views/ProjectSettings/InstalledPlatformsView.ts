@@ -27,6 +27,7 @@ import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
 import * as _ from 'lodash'
 import { UIButtonMenu } from '../../ui-components/UIButtonMenu'
 import { UINotifications } from '../../ui-components/UINotifications'
+import { UILineLoader } from '../../ui-components/UILineLoader'
 
 export class InstalledPlatformsView extends UIBaseComponent {
 
@@ -35,6 +36,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
   private installedPlatformListModel : InstalledPlatformListModel;
   private currentProjectPath:string;
   private btnInstallNewPlatform: UIButtonMenu;
+  private lineLoader: UILineLoader;
 
   constructor(){
     super();
@@ -42,6 +44,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
   }
 
   private buildUI(){
+    this.lineLoader = new UILineLoader()
 
     this.currentProjectPath = ProjectManager.getInstance().getCurrentProjectPath();
 
@@ -49,7 +52,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
     // Installed platform list
     this.installedPlatformListModel = new InstalledPlatformListModel(this.currentProjectPath);
     this.installedPlatformList = new UIListView(this.installedPlatformListModel);
-    var listCtrl = this.createListControlBlock("", this.installedPlatformList)
+    var listCtrl = this.createListControlBlock("", this.installedPlatformList, this.lineLoader)
     // ============================================================================
 
 
@@ -93,9 +96,14 @@ export class InstalledPlatformsView extends UIBaseComponent {
   }
 
   doInstallPlatform(platformName:string){
+    this.lineLoader.setOnLoading(true)
     ProjectManager.getInstance().cordova.addPlatform(this.currentProjectPath, platformName).then(()=>{
       UINotifications.showInfo("Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +" installed successfully.")
       this.reload()
+      this.lineLoader.setOnLoading(false)
+    }).catch((err)=>{
+      UINotifications.showError("Error adding Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +". See the logs for more details.")
+      this.lineLoader.setOnLoading(false)
     })
   }
 
@@ -118,13 +126,15 @@ export class InstalledPlatformsView extends UIBaseComponent {
   }
 
   public reload(){
+    this.lineLoader.setOnLoading(true)
     this.installedPlatformListModel.reload(()=>{
       this.updateAvailableToInstallPlatforms();
       this.installedPlatformList.modelChanged();
+      this.lineLoader.setOnLoading(false)
     })
   }
 
-  createListControlBlock(caption:string, control:UIListView):HTMLElement{
+  createListControlBlock(caption:string, control:UIListView, loader:UILineLoader):HTMLElement{
     var label = createElement('label', {
       elements: [
         createText(caption)
@@ -134,7 +144,8 @@ export class InstalledPlatformsView extends UIBaseComponent {
     var blockElement = createElement('div',{
       elements: [
         label,
-        control.element()
+        control.element(),
+        loader.element()
       ],
       className: 'block control-group'
     })
