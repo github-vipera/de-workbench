@@ -3,15 +3,11 @@ import {
   createText,
   createElement,
   insertElement,
-  createGroupButtons,
   createButton,
   createIcon,
-  createIconFromPath,
   attachEventFromObject,
-  createTextEditor,
   createSelect,
-  createOption,
-  createControlBlock
+  createInput
 } from '../../element/index';
 
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
@@ -31,8 +27,9 @@ class TaskViewContentPanel extends UIBaseComponent{
   private platformSelect:UISelect;
   private platformSelectListener:UISelectListener;
   private deviceSelect:UISelect;
+  private npmScriptsSelect:UISelect;
   private deviceLineLoader: UILineLoader;
-  private isRelease:HTMLElement
+  private isReleaseEl:HTMLElement
 
   constructor(){
     super();
@@ -48,6 +45,9 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.mainElement.classList.add('form-container');
     this.createPlatformSelect();
     this.createDeviceSelect();
+    this.createCheckboxSelect();
+    this.createNodeTaskSelector();
+    //this.createMockPanel();
   }
 
   private createPlatformSelect(){
@@ -71,6 +71,31 @@ class TaskViewContentPanel extends UIBaseComponent{
       };
     });
     this.platformSelect.setItems(model)
+  }
+
+  private createNodeTaskSelector(){
+    this.npmScriptsSelect = new UISelect();
+    let row=this.createFormRow(createText('Npm scripts (before task)'),this.npmScriptsSelect.element(),'npmScript');
+    insertElement(this.mainElement,row);
+  }
+
+  private updateNodeScripts(){
+    let npmScripts:Array<string> = this.projectInfo ? this.projectInfo.npmScripts : [];
+    let model:Array<UISelectItem> = map<any,UISelectItem>(npmScripts,(value:string ,key:string) => {
+      return {
+        name:key,
+        value:key
+      }
+    });
+    model.unshift({
+      name:'-- None -- ',
+      value:''
+    })
+    this.npmScriptsSelect.setItems(model);
+  }
+
+  private createMockPanel(){
+
   }
 
   private createDeviceSelect(){
@@ -107,7 +132,7 @@ class TaskViewContentPanel extends UIBaseComponent{
     return "row-" + elementId;
   }
 
-  private createFormRow(text:Text,element:HTMLElement,rowId?:string):HTMLElement{
+  private createFormRow(text: HTMLElement | Text,element:HTMLElement,rowId?:string):HTMLElement{
     let row=createElement('div',{
       className:'control-row',
       id: this.createRowId(rowId || element.id),
@@ -148,6 +173,11 @@ class TaskViewContentPanel extends UIBaseComponent{
         this.updateDevices(this.getSelectedPlatform());
       }
       this.setRowVisible(this.createRowId('devices'),constraints.isDeviceEnabled);
+
+      if(constraints.isNodeTaskEnabled){
+        this.updateNodeScripts();
+      }
+      this.setRowVisible(this.createRowId('npmScript'),constraints.isNodeTaskEnabled);
   }
 
   private getSelectedPlatform():CordovaPlatform{
@@ -169,6 +199,21 @@ class TaskViewContentPanel extends UIBaseComponent{
     return null;
   }
 
+  private createCheckboxSelect(){
+    this.isReleaseEl = createInput({
+      type:'checkbox'
+    });
+    this.isReleaseEl.classList.remove('form-control');
+    this.isReleaseEl.setAttribute('name','release');
+    let label:HTMLElement= createElement('label',{
+      className:"label-for"
+    });
+    label.innerText = 'Release'
+    label.setAttribute('for','release');
+    let row= this.createFormRow(label,this.isReleaseEl,'isRelease')
+    insertElement(this.mainElement,row);
+  }
+
   getCurrentConfiguration():CordovaTaskConfiguration{
     let platformValue = this.platformSelect.getSelectedItem();
     if(platformValue){
@@ -177,6 +222,11 @@ class TaskViewContentPanel extends UIBaseComponent{
     return this.taskConfig;
   }
 }
+
+
+
+// SELECTOR PANEL
+
 
 
 class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectListener{
@@ -242,6 +292,10 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
   }
 
 }
+
+
+
+// VIEW PANEL (aka main panel)
 
 export class TaskViewPanel extends UIBaseComponent{
   private threeViewPanel: TaskViewSelectorPanel;
