@@ -28,6 +28,7 @@ import { UIBaseComponent, UIComponent } from '../../ui-components/UIComponent'
 import { UISelect, UISelectItem } from '../../ui-components/UISelect'
 import { UILoggerComponent } from '../../ui-components/UILoggerComponent'
 import { Logger,LoggerListener ,LogLevel} from '../../logger/Logger'
+import { UILineLoader } from '../../ui-components/UILineLoader'
 
 
 export class NewProjectProgressPanel extends UIBaseComponent implements LoggerListener {
@@ -51,7 +52,7 @@ export class NewProjectProgressPanel extends UIBaseComponent implements LoggerLi
     this.loggerComponent.element().classList.add('de-workbench-newproj-logger-component')
     insertElement(this.logOverlayElement, this.loggerComponent.element())
 
-    let progressLineContainer = createElement('div',{
+    /*let progressLineContainer = createElement('div',{
       elements: [
         createElement('progress',{
           className: 'de-workbench-newproj-logger-progressline'
@@ -59,8 +60,18 @@ export class NewProjectProgressPanel extends UIBaseComponent implements LoggerLi
       ],
       className: 'de-workbench-newproj-logger-progressline-container'
     })
-    insertElement(this.logOverlayElement, progressLineContainer)
+    insertElement(this.logOverlayElement, progressLineContainer)*/
 
+    let progressInd = new UILineLoader();
+    progressInd.setOnLoading(true);
+
+    let progressLineContainer = createElement('div',{
+      elements: [
+        progressInd.element()
+      ],
+      className: 'de-workbench-newproj-logger-progressline-container'
+    })
+    insertElement(this.logOverlayElement, progressLineContainer);
     this.mainElement = this.logOverlayElement;
     //private loggerComponent: UILoggerComponent;
 
