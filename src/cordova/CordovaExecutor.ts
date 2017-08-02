@@ -206,9 +206,15 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
+
   public removePlatforms(platformList,projectRoot:string){
+    Logger.getInstance().debug("removePlatforms called for ", platformList);
     _.forEach(platformList,(item,index)=>{
-      platformList[index]=item.name;
+      if (typeof(item)==="string"){
+        platformList[index]=item;
+      } else {
+        platformList[index]=item.name;
+      }
     })
     console.log("Executing remove-platform for ",platformList);
     var cmd="cordova"

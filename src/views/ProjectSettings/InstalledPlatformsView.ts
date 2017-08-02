@@ -50,7 +50,8 @@ export class InstalledPlatformsView extends UIBaseComponent {
 
     // ============================================================================
     // Installed platform list
-    this.installedPlatformListModel = new InstalledPlatformListModel(this.currentProjectPath);
+    this.installedPlatformListModel = new InstalledPlatformListModel(this.currentProjectPath)
+                                      .setActionListener(this.doAction.bind(this));
     this.installedPlatformList = new UIListView(this.installedPlatformListModel);
     var listCtrl = this.createListControlBlock("", this.installedPlatformList, this.lineLoader)
     // ============================================================================
@@ -66,7 +67,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
                                         const selected = atom.confirm({
                                             message: 'Install New Platform',
                                             detailedMessage: 'Do you want to confirm the ' + menuItem.displayName +' platform installation ?',
-                                            buttons: ['Yes, install it', 'Cancel']
+                                            buttons: ['Yes, Install it', 'Cancel']
                                           });
                                           if (selected==0){
                                             this.doInstallPlatform(menuItem.value);
@@ -93,6 +94,31 @@ export class InstalledPlatformsView extends UIBaseComponent {
     this.mainElement = this.mainFormElement;
 
     this.reload();
+  }
+
+  doAction(platformInfo:CordovaPlatform, action:number){
+    if (action===0){
+      const selected = atom.confirm({
+          message: 'Uninstall Platform',
+          detailedMessage: "Are you sure you want to uninstall the " + PlatformUtils.toPlatformDisplayName(platformInfo.name) +" platform ?",
+          buttons: ['Yes, Remove It', 'Cancel']
+        });
+        if (selected==0){
+          this.doUninstallPlatform(platformInfo.name)
+        }
+    }
+  }
+
+  doUninstallPlatform(platformName:string){
+    this.lineLoader.setOnLoading(true)
+    ProjectManager.getInstance().cordova.removePlatform(this.currentProjectPath, platformName).then(()=>{
+      UINotifications.showInfo("Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +" uninstalled successfully.")
+      this.reload()
+      this.lineLoader.setOnLoading(false)
+    }).catch((err)=>{
+      UINotifications.showError("Error unistalling Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +". See the logs for more details.")
+      this.lineLoader.setOnLoading(false)
+    })
   }
 
   doInstallPlatform(platformName:string){
@@ -156,9 +182,10 @@ export class InstalledPlatformsView extends UIBaseComponent {
 
 class InstalledPlatformListModel implements UIListViewModel {
 
-  projectPath:string;
-  platforms:Array<CordovaPlatform>;
-  platformElements:any;
+  private projectPath:string;
+  private platforms:Array<CordovaPlatform>;
+  private platformElements:any;
+  private actionListener:Function;
 
   constructor(projectPath:string){
     this.projectPath = projectPath;
@@ -200,6 +227,11 @@ class InstalledPlatformListModel implements UIListViewModel {
     return "installed-platform-list";
   }
 
+  setActionListener(actionListener:Function):InstalledPlatformListModel{
+    this.actionListener = actionListener;
+    return this;
+  }
+
   private getRenderer(row:number):PlatformRenderer {
       if (this.platformElements[""+row]){
         return this.platformElements[""+row];
@@ -212,7 +244,7 @@ class InstalledPlatformListModel implements UIListViewModel {
 
   private createRenderer(row:number):PlatformRenderer {
     var platformInfo:CordovaPlatform = this.platforms[row];
-    var ret = new PlatformRenderer(platformInfo);
+    var ret = new PlatformRenderer(platformInfo, this.onItemAction.bind(this));
     return ret;
   }
 
@@ -228,14 +260,22 @@ class InstalledPlatformListModel implements UIListViewModel {
       return this.platforms;
   }
 
+  onItemAction(platformInfo:CordovaPlatform, action:number){
+    if (this.actionListener){
+      this.actionListener(platformInfo, action)
+    }
+  }
+
 }
 
 class PlatformRenderer extends UIBaseComponent {
 
-  platformInfo:CordovaPlatform;
+  private platformInfo:CordovaPlatform;
+  private itemActionListener:Function;
 
-  constructor(platformInfo:CordovaPlatform){
+  constructor(platformInfo:CordovaPlatform, itemActionListener:Function){
     super();
+    this.itemActionListener = itemActionListener;
     this.platformInfo = platformInfo;
     this.buildUI();
   }
@@ -265,7 +305,9 @@ class PlatformRenderer extends UIBaseComponent {
           className: 'btn inline-block-tigh btn-uninstall-platform'
         })
       btnManualInstall.addEventListener('click',(evt)=>{
-        console.log('Uninstall platforms selected: ', this.platformInfo);
+        if (this.itemActionListener){
+          this.itemActionListener(this.platformInfo,0)
+        }
       });
 
     this.mainElement = createElement('div',{
@@ -280,7 +322,6 @@ class PlatformRenderer extends UIBaseComponent {
     )
 
   }
-
 }
 
 class PlatformUtils {
@@ -296,24 +337,3 @@ class PlatformUtils {
     }
   }
 }
-
-
-
-/**
- initialize: ->
-   super
-   @addClass('overlay from-top')
-   @setItems(['Hello', 'World'])
-   @panel ?= atom.workspace.addModalPanel(item: this)
-   @panel.show()
-   @focusFilterEditor()
-
- viewForItem: (item) ->
-   "<li>#{item}</li>"
-
- confirmed: (item) ->
-   console.log("#{item} was selected")
-
- cancelled: ->
-   console.log("This view was cancelled")
-   **/

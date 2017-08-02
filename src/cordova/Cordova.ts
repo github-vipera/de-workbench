@@ -126,6 +126,12 @@ export class Cordova {
     await executor.addPlatform(projectInfo, platformName);
   }
 
+  public async removePlatform(projectRoot:string, platformName:string){
+    Logger.getInstance().debug("removePlatform called "+platformName +" for ...", projectRoot);
+    let executor = new CordovaExecutor(null);
+    await executor.removePlatforms([platformName], projectRoot);
+  }
+
   /**
    * Returns a list of installed plugins for a Cordova Project
    */
