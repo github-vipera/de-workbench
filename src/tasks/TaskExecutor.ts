@@ -61,4 +61,8 @@ export class TaskExecutor{
     //return this.cordova.prepareProjectWithBrowserPatch(project.path);
     return this.cordova.prepareProject(project.path,platform);
   }
+
+  stop(){
+    this.cordova.stopExecutor();
+  }
 }

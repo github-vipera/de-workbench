@@ -70,6 +70,7 @@ export class Cordova {
 
   private cordovaUtils: CordovaUtils;
   //private cordovaPluginScanner: CordovaPluginScanner;
+  private sharedExecutor : CordovaExecutor;
 
   constructor() {
     Logger.getInstance().debug("Creating Cordova...");
@@ -263,13 +264,24 @@ export class Cordova {
     return executor.removePlatforms(platformList, projectRoot);
   }
 
+
+  private rejectForBusySharedExecutor():Promise<any> {
+    return Promise.reject({
+      'ERROR_CODE':'EXECUTOR_BUSY',
+      'ERROR_MESSAGE':'Executor is busy'
+    });
+  }
+
   /**
    * Runs build command fot the given Cordova project
    */
   public buildProject(projectRoot: string, platform:string, options:any): Promise<any> {
-    Logger.getInstance().debug("buildProject: ", projectRoot)
-    let executor = new CordovaExecutor(null);
-    return executor.runBuild(projectRoot, platform, options);
+    Logger.getInstance().debug("buildProject: ", projectRoot);
+    if(this.isBusy()){
+      return this.rejectForBusySharedExecutor();
+    }
+    this.sharedExecutor = new CordovaExecutor(null);
+    return this.sharedExecutor.runBuild(projectRoot, platform, options);
   }
 
   /**
@@ -277,8 +289,15 @@ export class Cordova {
    */
   public cleanProject(projectRoot: string, platform:string): Promise<any> {
     Logger.getInstance().debug("cleanProject: ", projectRoot)
-    let executor = new CordovaExecutor(null);
-    return executor.runClean(projectRoot, platform);
+    if(this.isBusy()){
+      return this.rejectForBusySharedExecutor();
+    }
+    this.sharedExecutor = new CordovaExecutor(null);
+    return this.sharedExecutor.runClean(projectRoot, platform);
+  }
+
+  public isBusy():boolean{
+    return this.sharedExecutor && this.sharedExecutor.isBusy();
   }
 
   /**
@@ -286,26 +305,44 @@ export class Cordova {
    */
   public prepareProject(projectRoot: string, platform:string): Promise<any> {
     Logger.getInstance().debug("prepareProject: ", projectRoot)
-    let executor = new CordovaExecutor(null);
-    return executor.runPrepare(projectRoot, platform);
+    if(this.isBusy()){
+      return this.rejectForBusySharedExecutor();
+    }
+    this.sharedExecutor = new CordovaExecutor(null);
+    return this.sharedExecutor.runPrepare(projectRoot, platform);
   }
 
   public prepareProjectWithBrowserPatch(projectRoot: string): Promise<any> {
     Logger.getInstance().debug("prepareProject: ", projectRoot)
-    let executor = new CordovaExecutor(null);
-    return executor.runPrepareWithBrowserPatch(projectRoot);
+    if(this.isBusy()){
+      return this.rejectForBusySharedExecutor();
+    }
+    this.sharedExecutor = new CordovaExecutor(null);
+    return this.sharedExecutor.runPrepareWithBrowserPatch(projectRoot);
   }
 
   public runProject(projectRoot:string,platform:string,target:string,options:any): Promise<any> {
     Logger.getInstance().debug("runProject: ", projectRoot)
-    let executor = new CordovaExecutor(null);
-    return executor.runProject(projectRoot, platform, target, options);
+    if(this.isBusy()){
+      return this.rejectForBusySharedExecutor();
+    }
+    this.sharedExecutor = new CordovaExecutor(null);
+    return this.sharedExecutor.runProject(projectRoot, platform, target, options);
   }
 
   public getPackageJson(projectRoot:string):any {
     let jsonPath = path.join(projectRoot, "package.json");
     return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
   }
+
+  public stopExecutor(){
+    if(this.sharedExecutor){
+      this.sharedExecutor.stopSpawn();
+    }
+  }
+
+
+
 
   /**
   public getProjectInfo(projectRoot:string):Promise<any> {

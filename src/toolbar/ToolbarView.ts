@@ -258,7 +258,7 @@ export class ToolbarView {
     this.statusIndicator.setStatus(UIIndicatorStatus.Idle,msg,iconName);
   }
   public setErrorStatus(msg:string,iconName?:string){
-    this.statusIndicator.setStatus(UIIndicatorStatus.Busy,msg,iconName || 'status-error');
+    this.statusIndicator.setStatus(UIIndicatorStatus.Error,msg,iconName || 'status-error');
   }
 
 }

@@ -402,5 +402,16 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
+  stopSpawn(){
+    super.stopSpawn();
+    if (!this.spawnRef) {
+      return;
+    }
+    kill(this.spawnRef.pid);
+  }
+  isBusy():boolean{
+    console.log("isBusy called");
+    return (super.isBusy() || this.spawnRef != null);
+  }
 
 }
