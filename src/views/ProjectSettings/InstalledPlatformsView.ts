@@ -23,8 +23,9 @@ import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { Logger } from '../../logger/Logger'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
 import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
+import * as _ from 'lodash'
+import { UIButtonMenu } from '../../ui-components/UIButtonMenu'
 
 export class InstalledPlatformsView extends UIBaseComponent {
 
@@ -42,19 +43,43 @@ export class InstalledPlatformsView extends UIBaseComponent {
 
     this.currentProjectPath = ProjectManager.getInstance().getCurrentProjectPath();
 
+    // ============================================================================
+    // Installed platform list
     this.installedPlatformListModel = new InstalledPlatformListModel(this.currentProjectPath);
     this.installedPlatformList = new UIListView(this.installedPlatformListModel);
     var listCtrl = this.createListControlBlock("", this.installedPlatformList)
+    // ============================================================================
+
+
+    // ============================================================================
+    // Install new platform button
+    let btnInstallNewPlatform = new UIButtonMenu()
+                                      .setInfoMessage('Select a new Platform to install')
+                                      .setOnSelectionListener((menuItem)=>{
+                                        alert("XXXXYou have selected " + menuItem.value)
+                                      })
+    btnInstallNewPlatform.setMenuItems([ {value:'ios', displayName:'iOS'},
+                                         {value:'android', displayName: 'Android'},
+                                         {value:'browser', displayName: 'Browser'}])
+    let installNewPatformCtrl = createElement('div',{
+      elements: [
+        btnInstallNewPlatform.element()
+      ],
+      className: 'install-platform-ctrl'
+    })
+    // ============================================================================
+
+
 
     this.mainFormElement = createElement('form',{
       elements: [
-        listCtrl
+        listCtrl,
+        installNewPatformCtrl
       ],
-      className: 'de-workbench-appinfo-form'
+      className: 'de-workbench-appinfo-form installed-platforms-form'
     });
     this.mainFormElement.setAttribute("tabindex", "-1")
     this.mainElement = this.mainFormElement;
-
 
     this.installedPlatformListModel.reload(()=>{
       this.installedPlatformList.modelChanged();
@@ -79,13 +104,9 @@ export class InstalledPlatformsView extends UIBaseComponent {
     return blockElement;
   }
 
-  private onTextValueChanged(sourceCtrl:UIInputFormElement){
-    console.log("Changed value: ", sourceCtrl.getValue())
-  }
+
 
 }
-
-
 
 class InstalledPlatformListModel implements UIListViewModel {
 
@@ -175,7 +196,7 @@ class PlatformRenderer extends UIBaseComponent {
 
     var platformNameDiv = createElement('div',{
           elements: [
-            createText(this.toPlatformDisplayName(this.platformInfo.name))
+            createText(PlatformUtils.toPlatformDisplayName(this.platformInfo.name))
           ],
           className: 'platform-name'
     })
@@ -210,7 +231,10 @@ class PlatformRenderer extends UIBaseComponent {
 
   }
 
-  toPlatformDisplayName(platformName:string){
+}
+
+class PlatformUtils {
+  public static toPlatformDisplayName(platformName:string){
     if (platformName==='ios'){
       return "iOS";
     }
@@ -221,5 +245,25 @@ class PlatformRenderer extends UIBaseComponent {
       return "Browser";
     }
   }
-
 }
+
+
+
+/**
+ initialize: ->
+   super
+   @addClass('overlay from-top')
+   @setItems(['Hello', 'World'])
+   @panel ?= atom.workspace.addModalPanel(item: this)
+   @panel.show()
+   @focusFilterEditor()
+
+ viewForItem: (item) ->
+   "<li>#{item}</li>"
+
+ confirmed: (item) ->
+   console.log("#{item} was selected")
+
+ cancelled: ->
+   console.log("This view was cancelled")
+   **/

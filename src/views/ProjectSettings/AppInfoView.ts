@@ -73,7 +73,7 @@ export class AppInfoView extends UIBaseComponent {
         this.licenseCtrl.element(),
         this.versionCtrl.element()
       ],
-      className: 'de-workbench-appinfo-form'
+      className: 'de-workbench-appinfo-form general-info-form'
     });
     this.mainFormElement.setAttribute("tabindex", "-1")
     this.mainElement = this.mainFormElement;
