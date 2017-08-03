@@ -29,7 +29,7 @@ export class CordovaPluginsFinder {
     /**
      * Build the query
      */
-    private buildQueryParamsString(names,keywords,platforms):string{
+    private buildQueryParamsString(names,keywords,platforms?):string{
       var ret = "";
       var i = 0;
       if (keywords && keywords.length>0){
@@ -41,6 +41,7 @@ export class CordovaPluginsFinder {
         }
       }
 
+      /**
       //the platforms are keywords
       if (platforms && platforms.length>0){
         for (i=0;i<platforms.length;i++){
@@ -50,6 +51,7 @@ export class CordovaPluginsFinder {
           ret += "keywords:" + platforms[i];
         }
       }
+      **/
 
       if (names && names.length>0){
         for (i=0;i<names.length;i++){
@@ -80,7 +82,7 @@ export class CordovaPluginsFinder {
     public search(names,keywords,platforms):Promise<Array<CordovaPlugin>>{
       return new Promise((resolve, reject) => {
         var baseQueryUrl = 'https://npmsearch.com/query?fields=name,keywords,license,description,author,modified,homepage,version,rating&ecosystem:cordova&sort=rating:desc&size=500&start=0';
-        var queryParams = this.buildQueryParamsString(names, keywords, platforms);
+        var queryParams = this.buildQueryParamsString(names, keywords);
         Logger.getInstance().debug("Query:" + queryParams);
         var queryUrl = baseQueryUrl + queryParams; //'q=keywords:camera+AND+author:neuber';
         Logger.getInstance().debug("QueryURL:" + queryUrl);
@@ -94,7 +96,7 @@ export class CordovaPluginsFinder {
               let rawJsonArr:any = JSON.parse(body).results;
               for (var i=0;i<rawJsonArr.length;i++){
                 let rawJson = rawJsonArr[i];
-                if (CordovaPluginsFinder.isCordovaPlugin(rawJson)){
+                if (CordovaPluginsFinder.filterPlugin(rawJson, platforms)){
                   let cordovaPlugin = new CordovaPlugin();
                   cordovaPlugin.author = rawJson.author[0];
                   cordovaPlugin.description = rawJson.description[0];
@@ -107,13 +109,66 @@ export class CordovaPluginsFinder {
                   try {
                     cordovaPlugin.rating = parseFloat(rawJson.rating[0]);
                   } catch (ex){}
-                  pluginsArray.push(cordovaPlugin);
+                  cordovaPlugin.platforms = CordovaPluginsFinder.readAvailablePlatforms(rawJson);
+
+                  let platformIsOk = CordovaPluginsFinder.filterForPlatforms(cordovaPlugin, platforms);
+
+                  if (platformIsOk){
+                    pluginsArray.push(cordovaPlugin);
+                  }
+
                 }
               }
               resolve(pluginsArray);
             }
         });
       });
+    }
+
+    private static filterForPlatforms(plugin:CordovaPlugin, platforms:Array<string>):boolean{
+      if (!platforms){
+        return true; //no filter
+      }
+      for (var i=0;i<platforms.length;i++){
+        if (_.findIndex(plugin.platforms,{ 'name' : platforms[i]}) >-1){
+          return true;
+        }
+      }
+      return false;
+    }
+
+    private static readAvailablePlatforms(jsonRaw:any):Array<string>{
+      if (!jsonRaw.keywords){
+        return [];
+      }
+      let ret = new Array();
+      if (CordovaPluginsFinder.isPlatformSupported(jsonRaw,'ios')){
+        ret.push({ name:"ios", displayName: "iOS" })
+      }
+      if (CordovaPluginsFinder.isPlatformSupported(jsonRaw,'android')){
+        ret.push({ name:"android", displayName: "Android" })
+      }
+      if (CordovaPluginsFinder.isPlatformSupported(jsonRaw,'browser')){
+        ret.push({ name:"browser", displayName: "Browser" })
+      }
+      return ret
+    }
+
+    private static isPlatformSupported(jsonRaw:any, platform:string):boolean {
+      if (_.indexOf(jsonRaw.keywords, 'cordova-' + platform )>-1){
+        return true;
+      }
+      else if (_.indexOf(jsonRaw.keywords, platform )>-1){
+        return true;
+      }
+      else return false;
+    }
+
+    private static filterPlugin(jsonRaw:any, platforms:Array<string>):boolean{
+      if (!CordovaPluginsFinder.isCordovaPlugin(jsonRaw)){
+        return false;
+      }
+      return true;
     }
 
     private static isCordovaPlugin(jsonRaw:any):boolean{

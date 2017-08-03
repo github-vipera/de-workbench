@@ -148,12 +148,12 @@ export class CommunityPluginsView extends UIBaseComponent {
     this.showProgress(true);
     let cpf = new CordovaPluginsFinder();
     let names = '';
-    let platforms = '';
 
     let search = this.searchTextEditor["value"];
     let keywords = _.split(search, ' ');
+    let platforms = ['ios','android','browser'];
 
-    cpf.search(keywords,keywords,null).then((results:Array<CordovaPlugin>)=>{
+    cpf.search(keywords,keywords,platforms).then((results:Array<CordovaPlugin>)=>{
       //alert(results);
       console.log("Plugins finder results: ", results);
       this.pluginList.setPlugins(results);

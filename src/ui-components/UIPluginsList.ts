@@ -21,6 +21,7 @@ import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UIListView, UIListViewModel  } from './UIListView'
 import { CordovaPlugin } from '../cordova/Cordova'
 const moment = require('moment')
+const _ = require("lodash");
 
 export class UIPluginsList extends UIListView {
 
@@ -267,9 +268,10 @@ class UIPluginMetaSection extends UIBaseComponent {
         className:'badge badge-info de-workbench-plugins-list-item-rating'
       })
 
+      let platformsEl:HTMLElement = this.renderPlatforms(this.pluginInfo.platforms);
 
       let metaUser = createElement('div',{
-        elements : [ ratingEl, userOwnerEl ],
+        elements : [ ratingEl, userOwnerEl, platformsEl ],
         className : 'de-workbench-plugins-list-meta-user'
       });
 
@@ -304,6 +306,16 @@ class UIPluginMetaSection extends UIBaseComponent {
       this.callbackFunc = callbackFunc;
     }
 
+    private renderPlatforms(platforms:Array<string>):HTMLElement {
+      let textValue = "(" + _.map(platforms, 'displayName').join(",") +")";
+
+      return createElement('span',{
+       elements: [
+         createText(textValue)
+       ],
+       className:'de-workbench-plugins-list-item-platforms'
+     })
+    }
 
 }
 
