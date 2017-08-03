@@ -32,6 +32,7 @@ export class CordovaPluginsFinder {
     private buildQueryParamsString(names,keywords,platforms?):string{
       var ret = "";
       var i = 0;
+
       if (keywords && keywords.length>0){
         for (i=0;i<keywords.length;i++){
           if (ret.length>0){
@@ -59,6 +60,15 @@ export class CordovaPluginsFinder {
             ret += "+OR+";
           }
           ret += "name:*" + names[i] +"*";
+        }
+      }
+
+      if (names && names.length>0){
+        for (i=0;i<names.length;i++){
+          if (ret.length>0){
+            ret += "+OR+";
+          }
+          ret += "description:*" + names[i] +"*";
         }
       }
 
