@@ -42,6 +42,7 @@ export class CordovaPlugin {
   public repository:string = '';
   public repositoryType:string = '';
   public sourceType:string = '';
+  public lastUpdateTime:string = '';
 }
 
 export interface NewProjectInfo {
@@ -354,7 +355,7 @@ export class Cordova {
 
   public storePackageJson(projectRoot:string, packageJson:Object) {
     let jsonPath = path.join(projectRoot, "package.json");
-    fs.writeFileSync(jsonPath, JSON.stringify(packageJson), 'utf8')
+    fs.writeFileSync(jsonPath, JSON.stringify(packageJson, null, "\t"), 'utf8')
   }
 
   public stopExecutor(){

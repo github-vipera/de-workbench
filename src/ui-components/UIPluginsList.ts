@@ -20,6 +20,7 @@
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UIListView, UIListViewModel  } from './UIListView'
 import { CordovaPlugin } from '../cordova/Cordova'
+const moment = require('moment')
 
 export class UIPluginsList extends UIListView {
 
@@ -190,18 +191,35 @@ class UIPluginBodySection extends UIBaseComponent {
       ]
     })
     pluginNameEl.className = "de-workbench-plugins-list-item-plugname";
+    pluginNameEl.setAttribute('homepage', this.pluginInfo.homepage)
+    pluginNameEl.setAttribute('href', this.pluginInfo.homepage)
 
     let pluginVersionEl = createElement('span', {
       elements: [
-        createText(this.pluginInfo.version)
+        createText("v" +this.pluginInfo.version)
       ]
     })
     pluginVersionEl.className = "de-workbench-plugins-list-item-plugversion";
 
+    let lastUpdateTimeStr = "Not Available";
+    if (this.pluginInfo.lastUpdateTime){
+      try {
+        var date = new Date(this.pluginInfo.lastUpdateTime);
+        lastUpdateTimeStr = moment(date).fromNow();
+      } catch(ex){}
+    }
+    let pluginUpdateDateEl = createElement('span',{
+      elements: [
+        createText("Last update: " + lastUpdateTimeStr)
+      ]
+    })
+    pluginUpdateDateEl.className = "de-workbench-plugins-list-item-lastupdate";
+
     let nameEl = createElement('h4', {
       elements: [
         pluginNameEl,
-        pluginVersionEl
+        pluginVersionEl,
+        pluginUpdateDateEl
       ]
     })
 
@@ -236,7 +254,7 @@ class UIPluginMetaSection extends UIBaseComponent {
       let userOwner  = this.pluginInfo.author
       let userOwnerEl:HTMLElement = createElement('a',{
         elements: [
-          createText(userOwner)
+          createText("by " + userOwner)
         ]
       });
       userOwnerEl.setAttribute("href", this.pluginInfo.homepage);

@@ -60,11 +60,13 @@ export class CordovaPluginsFinder {
         }
       }
 
+      /**
       //Limit to Cordova
       if (ret.length>0){
         ret += "+AND+";
       }
       ret += 'keywords:"ecosystem:cordova"';
+      **/
 
       if (ret.length>0){
         ret = "&q=" + ret;
@@ -77,34 +79,46 @@ export class CordovaPluginsFinder {
      */
     public search(names,keywords,platforms):Promise<Array<CordovaPlugin>>{
       return new Promise((resolve, reject) => {
-        var baseQueryUrl = 'http://npmsearch.com/query?fields=name,keywords,license,description,author,modified,homepage,version,rating&ecosystem:cordova&sort=rating:desc&size=500&start=0';
+        var baseQueryUrl = 'https://npmsearch.com/query?fields=name,keywords,license,description,author,modified,homepage,version,rating&ecosystem:cordova&sort=rating:desc&size=500&start=0';
         var queryParams = this.buildQueryParamsString(names, keywords, platforms);
         Logger.getInstance().debug("Query:" + queryParams);
         var queryUrl = baseQueryUrl + queryParams; //'q=keywords:camera+AND+author:neuber';
         Logger.getInstance().debug("QueryURL:" + queryUrl);
         httpReq(queryUrl, function (error, response, body) {
             if (error){
-              Logger.getInstance().error("Query error: ", error);
+              Logger.getInstance().error("Cordova Plugins Query error: ", error);
               reject(error);
             } else {
-              Logger.getInstance().error("Query OK");
+              Logger.getInstance().info("Cordova Plugins Query Success");
               let pluginsArray = new Array();
               let rawJsonArr:any = JSON.parse(body).results;
               for (var i=0;i<rawJsonArr.length;i++){
                 let rawJson = rawJsonArr[i];
-                let cordovaPlugin = new CordovaPlugin();
-                cordovaPlugin.author = rawJson.author[0];
-                cordovaPlugin.description = rawJson.description[0];
-                cordovaPlugin.version = rawJson.version[0];
-                cordovaPlugin.id = rawJson.name[0];
-                cordovaPlugin.name = rawJson.name[0];
-                cordovaPlugin.installed = false;
-                pluginsArray.push(cordovaPlugin);
+                if (CordovaPluginsFinder.isCordovaPlugin(rawJson)){
+                  let cordovaPlugin = new CordovaPlugin();
+                  cordovaPlugin.author = rawJson.author[0];
+                  cordovaPlugin.description = rawJson.description[0];
+                  cordovaPlugin.version = rawJson.version[0];
+                  cordovaPlugin.id = rawJson.name[0];
+                  cordovaPlugin.name = rawJson.name[0];
+                  cordovaPlugin.installed = false;
+                  cordovaPlugin.homepage = "https://www.npmjs.com/package/" + cordovaPlugin.name;
+                  cordovaPlugin.lastUpdateTime = rawJson.modified[0];
+                  pluginsArray.push(cordovaPlugin);
+                }
               }
               resolve(pluginsArray);
             }
         });
       });
+    }
+
+    private static isCordovaPlugin(jsonRaw:any):boolean{
+      if (jsonRaw.keywords){
+        return (_.indexOf(jsonRaw.keywords, 'ecosystem:cordova')>-1)
+      } else {
+        return false;
+      }
     }
 
 }
