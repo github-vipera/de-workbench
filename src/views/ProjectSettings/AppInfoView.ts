@@ -26,6 +26,7 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 import { UINotifications } from '../../ui-components/UINotifications'
+import { Shell } from '../../utils/Shell'
 
 export class AppInfoView extends UIBaseComponent {
 
