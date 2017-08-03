@@ -54,6 +54,6 @@ class DEStorageImpl implements DEStorage{
 }
 export class DEStorageFactory {
   getDEStorage():DEStorage{
-    return null;
+    return new DEStorageImpl();
   }
 }
