@@ -64,6 +64,7 @@ export class UIButtonGroup extends UIBaseComponent {
   private toggleMode:UIButtonGroupMode;
   private buttons:any;
   private listeners:any;
+  private changeListeners:Array<Function>;
 
   constructor(toggleMode:UIButtonGroupMode){
     super();
@@ -74,6 +75,7 @@ export class UIButtonGroup extends UIBaseComponent {
   private buildUI(){
     this.buttons = {};
     this.listeners = {};
+    this.changeListeners = new Array();
 
     this.buttonGroup = createElement('div',{
       elements: [
@@ -159,6 +161,10 @@ export class UIButtonGroup extends UIBaseComponent {
       if (buttonConfig.clickListener){
         buttonConfig.clickListener(buttonConfig.id);
       }
+
+      for (var i=0;i<this.changeListeners.length;i++){
+        this.changeListeners[i](buttonConfig)
+      }
     }
 
     btn.addEventListener('click', buttonClickListener);
@@ -169,6 +175,11 @@ export class UIButtonGroup extends UIBaseComponent {
     }
 
     return btn;
+  }
+
+  public addChangeListener(listener:Function):UIButtonGroup{
+    this.changeListeners.push(listener)
+    return this
   }
 
   public getSelectedButtons():Array<string>{

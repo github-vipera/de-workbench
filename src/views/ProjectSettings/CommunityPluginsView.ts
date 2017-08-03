@@ -80,7 +80,10 @@ export class CommunityPluginsView extends UIBaseComponent {
     this.btnGroupPlatformChooser = new UIButtonGroup(UIButtonGroupMode.Toggle)
         .addButton(new UIButtonConfig().setId('ios').setCaption('iOS').setSelected(true))
         .addButton(new UIButtonConfig().setId('android').setCaption('Android').setSelected(true))
-        .addButton(new UIButtonConfig().setId('browser').setCaption('Browser').setSelected(true));
+        .addButton(new UIButtonConfig().setId('browser').setCaption('Browser').setSelected(true))
+        .addChangeListener((buttonConfig:UIButtonConfig)=>{
+          this.submitSearch();
+        });
 
     let btnManualInstall:HTMLElement = createElement('button',{
           elements: [
@@ -145,15 +148,16 @@ export class CommunityPluginsView extends UIBaseComponent {
    * Submit the search to the npm registry
    */
   private submitSearch(){
-    this.showProgress(true);
     let cpf = new CordovaPluginsFinder();
     let names = '';
 
     let platforms = this.btnGroupPlatformChooser.getSelectedButtons();
-
     let search = this.searchTextEditor["value"];
+    if (search.length==0 || platforms.length==0){
+      return;
+    }
+    this.showProgress(true);
     let keywords = _.split(search, ' ');
-    //let platforms = ['ios','android','browser'];
 
     cpf.search(keywords,keywords,platforms).then((results:Array<CordovaPlugin>)=>{
       //alert(results);
