@@ -275,9 +275,14 @@ class UIPluginMetaSection extends UIBaseComponent {
         className : 'de-workbench-plugins-list-meta-user'
       });
 
-      let metaButtons = new UIPluginMetaButtons()
-                .showButtons(UIPluginMetaButtons.BTN_TYPE_UNINSTALL)
-                .setButtonEnabled(UIPluginMetaButtons.BTN_TYPE_UNINSTALL, true);
+      let metaButtons = new UIPluginMetaButtons();
+       if (this.pluginInfo.installed){
+         metaButtons.showButtons(UIPluginMetaButtons.BTN_TYPE_UNINSTALL)
+                    .setButtonEnabled(UIPluginMetaButtons.BTN_TYPE_UNINSTALL, true);
+       } else {
+         metaButtons.showButtons(UIPluginMetaButtons.BTN_TYPE_INSTALL)
+                    .setButtonEnabled(UIPluginMetaButtons.BTN_TYPE_INSTALL, true);
+       }
       metaButtons.setEventListener((buttonClicked)=>{
         alert("Clicked " + buttonClicked + " for " + this.pluginInfo.id);
         // TODO!! notify listeners

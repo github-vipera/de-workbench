@@ -48,6 +48,7 @@ export class CommunityPluginsView extends UIBaseComponent {
 
   private lineLoader:UILineLoader;
 
+  private queryResultsMessage:HTMLElement;
 
   constructor(){
     super();
@@ -94,6 +95,22 @@ export class CommunityPluginsView extends UIBaseComponent {
       btnManualInstall.addEventListener('click',(evt)=>{
         console.log('Platforms selected: ', this.btnGroupPlatformChooser.getSelectedButtons());
       });
+
+    this.queryResultsMessage = createElement('span',{
+      elements: [
+        createText("No plugins found")
+      ],
+      className: 'de-workbench-community-plugins-query-results'
+    });
+    this.setQueryResultMessage(null);
+/**
+    ,{
+      elements: [
+        createText('No plugins found');
+      ],
+      className: ''
+    })
+    **/
     // End Platform Chooser Block / Install manually
 
 
@@ -101,7 +118,8 @@ export class CommunityPluginsView extends UIBaseComponent {
       elements: [
         this.btnGroupPlatformChooser.element(),
         createButtonSpacer(),
-        btnManualInstall
+        btnManualInstall,
+        this.queryResultsMessage
       ],
       className : 'block'
     })
@@ -143,6 +161,28 @@ export class CommunityPluginsView extends UIBaseComponent {
     });
   }
 
+  private setQueryResultMessage(count?:number){
+    if (!count){
+      //hide
+      this.queryResultsMessage.setAttribute('hidden','')
+    }
+    if (count>0){
+      //show green count
+      if (count==1){
+        this.queryResultsMessage.innerText = count + " plugin found."
+      } else {
+        this.queryResultsMessage.innerText = count + " plugins found."
+      }
+      this.queryResultsMessage.removeAttribute('hidden')
+      this.queryResultsMessage.setAttribute('queryres','1')
+    }
+    if (count==0){
+      //show red warn
+      this.queryResultsMessage.innerText = "No plugins found."
+      this.queryResultsMessage.removeAttribute('hidden')
+      this.queryResultsMessage.setAttribute('queryres','0')
+    }
+  }
 
   /**
    * Submit the search to the npm registry
@@ -161,11 +201,17 @@ export class CommunityPluginsView extends UIBaseComponent {
 
     cpf.search(keywords,keywords,platforms).then((results:Array<CordovaPlugin>)=>{
       //alert(results);
-      console.log("Plugins finder results: ", results);
+      //console.log("Plugins finder results: ", results);
       this.pluginList.setPlugins(results);
+
+      this.setQueryResultMessage(results.length)
+
       this.showProgress(false);
     }, (err)=>{
       alert("Error: " + err);
+
+      this.setQueryResultMessage(null)
+
       this.showProgress(false);
     });
 
