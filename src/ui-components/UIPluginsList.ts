@@ -260,8 +260,16 @@ class UIPluginMetaSection extends UIBaseComponent {
       userOwnerEl.setAttribute("href", this.pluginInfo.homepage);
       userOwnerEl.className = "de-workbench-plugins-list-item-owner";
 
+      let ratingEl:HTMLElement = createElement('span',{
+        elements: [
+          createText(""+this.pluginInfo.rating)
+        ],
+        className:'badge badge-info de-workbench-plugins-list-item-rating'
+      })
+
+
       let metaUser = createElement('div',{
-        elements : [ userOwnerEl ],
+        elements : [ ratingEl, userOwnerEl ],
         className : 'de-workbench-plugins-list-meta-user'
       });
 

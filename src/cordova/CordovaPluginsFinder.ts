@@ -104,6 +104,9 @@ export class CordovaPluginsFinder {
                   cordovaPlugin.installed = false;
                   cordovaPlugin.homepage = "https://www.npmjs.com/package/" + cordovaPlugin.name;
                   cordovaPlugin.lastUpdateTime = rawJson.modified[0];
+                  try {
+                    cordovaPlugin.rating = parseFloat(rawJson.rating[0]);
+                  } catch (ex){}
                   pluginsArray.push(cordovaPlugin);
                 }
               }

@@ -43,6 +43,8 @@ export class CordovaPlugin {
   public repositoryType:string = '';
   public sourceType:string = '';
   public lastUpdateTime:string = '';
+  public rating:number = 0;
+  public platforms:Array<string> = [];
 }
 
 export interface NewProjectInfo {
