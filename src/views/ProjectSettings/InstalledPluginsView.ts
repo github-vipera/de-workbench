@@ -121,8 +121,7 @@ export class InstalledPluginsView  extends UIBaseComponent {
 
   public reload(){
     ProjectManager.getInstance().cordova.getInstalledPlugins(this.currentProjectRoot).then((installedPlugins:Array<CordovaPlugin>)=>{
-      this.pluginList.clearList();
-      this.pluginList.addPlugins(installedPlugins);
+      this.pluginList.setPlugins(installedPlugins);
     });
   }
 }

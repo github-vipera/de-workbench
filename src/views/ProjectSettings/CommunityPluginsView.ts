@@ -177,7 +177,17 @@ export class CommunityPluginsView extends UIBaseComponent {
   }
 
   private doUninstallPlugin(pluginInfo){
-    alert("doUninstallPlugin!! " + pluginInfo.name)
+    this.showProgress(true)
+    this.pluginList.setPluginUInstallPending(pluginInfo, true);
+    ProjectManager.getInstance().cordova.removePlugin(this.currentProjectRoot, pluginInfo).then(()=>{
+      UINotifications.showInfo("Plugin "+pluginInfo.name +" uninstalled successfully.")
+      this.showProgress(false)
+      this.pluginList.setPluginUInstallPending(pluginInfo, false);
+    }).catch(()=>{
+      UINotifications.showError("Error uninstalling plugin "+pluginInfo.name +". See the log for more details.")
+      this.showProgress(false)
+      this.pluginList.setPluginUInstallPending(pluginInfo, false);
+    })
   }
 
   private setQueryResultMessage(count?:number){
@@ -219,8 +229,15 @@ export class CommunityPluginsView extends UIBaseComponent {
     let keywords = _.split(search, ' ');
 
     cpf.search(keywords,keywords,platforms).then((results:Array<CordovaPlugin>)=>{
-      //Logger.getInstance().debug("Plugins finder results count " + results.length);
-      this.pluginList.setPlugins(results);
+
+      ProjectManager.getInstance().cordova.getInstalledPlugins(this.currentProjectRoot).then((installedPlugins:Array<CordovaPlugin>)=>{
+        //re-process for already installed plugins
+        let processedResults:Array<CordovaPlugin> = this.markInstalledPlugins(results, installedPlugins);
+        this.pluginList.setPlugins(processedResults);
+      });
+
+      //this.pluginList.setPlugins(results);
+
 
       this.setQueryResultMessage(results.length)
 
@@ -235,28 +252,22 @@ export class CommunityPluginsView extends UIBaseComponent {
 
   }
 
+  private markInstalledPlugins(pluginList:Array<CordovaPlugin>, installedPlugins:Array<CordovaPlugin>):Array<CordovaPlugin>{
+      for (var i=0;i<installedPlugins.length;i++){
+        let index = _.findIndex(pluginList, { 'name' : installedPlugins[i].name })
+        if (index>-1){
+          pluginList[index].installed = true
+        }
+      }
+      return pluginList;
+  }
+
   /*
    * Show/Hide progress bar
    */
   private showProgress(show:boolean){
     this.lineLoader.setOnLoading(show);
   }
-
-  /**
-  private getSelectedPlatforms():Array<string>{
-    let ret:Array<string> = new Array();
-    if (this.btnChooseIOS.classList.contains('selected')){
-      ret.push("iOS");
-    }
-    if (this.btnChooseAndroid.classList.contains('selected')){
-      ret.push("Android");
-    }
-    if (this.btnChooseBrowser.classList.contains('selected')){
-      ret.push("Browser");
-    }
-    return ret;
-  }
-  **/
 
   public destroy(){
     this.pluginList.destroy()
