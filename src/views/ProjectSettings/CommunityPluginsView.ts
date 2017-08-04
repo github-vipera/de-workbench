@@ -169,6 +169,7 @@ export class CommunityPluginsView extends UIBaseComponent {
       UINotifications.showInfo("Plugin "+pluginInfo.name +" installed successfully.")
       this.showProgress(false)
       this.pluginList.setPluginInstallPending(pluginInfo, false);
+      this.submitSearch()
     }).catch(()=>{
       UINotifications.showError("Error installing plugin "+pluginInfo.name +". See the log for more details.")
       this.showProgress(false)
@@ -183,6 +184,7 @@ export class CommunityPluginsView extends UIBaseComponent {
       UINotifications.showInfo("Plugin "+pluginInfo.name +" uninstalled successfully.")
       this.showProgress(false)
       this.pluginList.setPluginUInstallPending(pluginInfo, false);
+      this.submitSearch()
     }).catch(()=>{
       UINotifications.showError("Error uninstalling plugin "+pluginInfo.name +". See the log for more details.")
       this.showProgress(false)
@@ -235,8 +237,6 @@ export class CommunityPluginsView extends UIBaseComponent {
         let processedResults:Array<CordovaPlugin> = this.markInstalledPlugins(results, installedPlugins);
         this.pluginList.setPlugins(processedResults);
       });
-
-      //this.pluginList.setPlugins(results);
 
 
       this.setQueryResultMessage(results.length)
