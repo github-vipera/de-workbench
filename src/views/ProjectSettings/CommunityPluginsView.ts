@@ -169,7 +169,7 @@ export class CommunityPluginsView extends UIBaseComponent {
       this.showProgress(false)
       this.pluginList.setPluginInstallPending(pluginInfo, false);
     }).catch(()=>{
-      UINotifications.showInfo("Error installing plugin "+pluginInfo.name +". See the log for more details.")
+      UINotifications.showError("Error installing plugin "+pluginInfo.name +". See the log for more details.")
       this.showProgress(false)
       this.pluginList.setPluginInstallPending(pluginInfo, false);
     })

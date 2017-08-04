@@ -142,6 +142,13 @@ export class Cordova {
     await executor.addPlugin(projectInfo, pluginInfo.id, null);
   }
 
+  public async removePlugin(projectRoot: string,pluginInfo:CordovaPlugin){
+    Logger.getInstance().debug("removePlugin called with "+ pluginInfo.name +" for " + projectRoot);
+    let executor = new CordovaExecutor(null);
+    let projectInfo = await this.getProjectInfo(projectRoot, false);
+    await executor.removePlugin(projectInfo, pluginInfo.id);
+  }
+
   /**
    * Returns a list of installed plugins for a Cordova Project
    */
@@ -228,6 +235,7 @@ export class Cordova {
   /**
    * Remove a plugin from a Cordova project
    **/
+   /**
   public removePlugin(projectRoot: string, pluginSpec: string): Promise<string> {
     Logger.getInstance().info("removePlugin ", projectRoot, pluginSpec)
     let executor = new CordovaExecutor(projectRoot);
@@ -242,6 +250,7 @@ export class Cordova {
       });
     });
   }
+  **/
 
   /**
    * Returns the assets path for the given platform

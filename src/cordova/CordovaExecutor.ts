@@ -223,7 +223,7 @@ export class CordovaExecutor extends CommandExecutor {
     this.spawnRef = spawn(cmd, args, options);
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
-          Logger.getInstance().debug(`[Adding platform  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`)
+          Logger.getInstance().debug(`[Adding Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`)
           console.log(`[Adding Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
       });
       this.spawnRef.stderr.on('data', (data) => {
@@ -243,6 +243,40 @@ export class CordovaExecutor extends CommandExecutor {
       });
     });
   }
+
+  public removePlugin(projectInfo, pluginSpec):Promise<any>{
+    Logger.getInstance().info("Removing plugin ", pluginSpec);
+    var cmd="cordova"
+    var args=["plugin","remove",pluginSpec];
+    var options={
+        cwd: projectInfo.path,
+        detached:false
+    };
+    cmd = this.prepareCommand(cmd);
+    this.spawnRef = spawn(cmd, args, options);
+    return new Promise((resolve,reject) => {
+      this.spawnRef.stdout.on('data', (data) => {
+          Logger.getInstance().debug(`[Removing Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`)
+          console.log(`[Removing Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
+      });
+      this.spawnRef.stderr.on('data', (data) => {
+          Logger.getInstance().error("[scriptTools] " + data.toString())
+          console.error(`[Removing Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
+      });
+
+      this.spawnRef.on('close', (code) => {
+          console.log(`[Removing Platform [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`);
+          Logger.getInstance().info(`[Removing Plugin [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`)
+          this.spawnRef = undefined;
+          if(code === 0){
+            resolve("Remove Plugin done");
+          }else{
+            reject("Remove Plugin Fail");
+          }
+      });
+    });
+  }
+
 
   public removePlatforms(platformList,projectRoot:string){
     Logger.getInstance().debug("removePlatforms called for ", platformList);

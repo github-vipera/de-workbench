@@ -33,15 +33,18 @@ export class InstalledPluginsView  extends UIBaseComponent {
   private pluginList: UIPluginsList;
   private stackedPage: UIStackedView;
   private lineLoader:UILineLoader;
+  private currentProjectRoot:string;
 
   constructor(){
     super();
+
+    this.currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
+
     this.buildUI();
 
-    let currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
     let cordova:Cordova = ProjectManager.getInstance().cordova;
 
-    cordova.getInstalledPlugins(currentProjectRoot).then((installedPlugins:Array<CordovaPlugin>)=>{
+    cordova.getInstalledPlugins(this.currentProjectRoot).then((installedPlugins:Array<CordovaPlugin>)=>{
       this.pluginList.addPlugins(installedPlugins);
     });
 
@@ -93,16 +96,14 @@ export class InstalledPluginsView  extends UIBaseComponent {
   private doUninstallPlugin(pluginInfo){
     this.showProgress(true)
     this.pluginList.setPluginUInstallPending(pluginInfo, true);
-    /**
-    ProjectManager.getInstance().cordova.addPlugin(this.currentProjectRoot, pluginInfo).then(()=>{
-      UINotifications.showInfo("Plugin "+pluginInfo.name +" installed successfully.")
+    ProjectManager.getInstance().cordova.removePlugin(this.currentProjectRoot, pluginInfo).then(()=>{
+      UINotifications.showInfo("Plugin "+pluginInfo.name +" uninstalled successfully.")
       this.showProgress(false)
       this.pluginList.setPluginUInstallPending(pluginInfo, false);
     }).catch(()=>{
-      UINotifications.showInfo("Error installing plugin "+pluginInfo.name +". See the log for more details.")
+      UINotifications.showError("Error uninstalling plugin "+pluginInfo.name +". See the log for more details.")
       this.showProgress(false)
       this.pluginList.setPluginUInstallPending(pluginInfo, false);
     })
-    **/
   }
 }
