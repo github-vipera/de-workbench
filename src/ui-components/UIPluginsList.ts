@@ -23,18 +23,35 @@ import { CordovaPlugin } from '../cordova/Cordova'
 const moment = require('moment')
 const _ = require("lodash");
 
+
+export interface DisplayConfiguration {
+  ratingVisible: boolean,
+  lastUpdateVisible: boolean,
+  platformsVisible: boolean,
+  authorVisible: boolean
+}
+
 export class UIPluginsList extends UIListView {
 
     private pluginListModel: PluginsListModel;
     private callbackFunc:Function;
+    private displayConfiguration:DisplayConfiguration;
 
     constructor(){
         super(null);
+
+        this.displayConfiguration = {
+          ratingVisible: true,
+          lastUpdateVisible: true,
+          platformsVisible: true,
+          authorVisible: true
+        }
+
         this.initModel();
     }
 
     private initModel(){
-      this.pluginListModel =  new PluginsListModel().setEventListener((pluginInfo, actionType)=>{
+      this.pluginListModel =  new PluginsListModel(this.displayConfiguration).setEventListener((pluginInfo, actionType)=>{
         if (this.callbackFunc){
           this.callbackFunc(pluginInfo, actionType)
         }
@@ -72,17 +89,40 @@ export class UIPluginsList extends UIListView {
       this.pluginListModel.setPluginInstallPending(pluginInfo, installing);
     }
 
-}
+    public setRatingVisible(visible:boolean):UIPluginsList{
+      this.displayConfiguration.ratingVisible = visible;
+      this.updateUI();
+      return this;
+    }
 
+    public setLastUpdateVisible(visible:boolean):UIPluginsList{
+      this.displayConfiguration.lastUpdateVisible = visible;
+      this.updateUI();
+      return this;
+    }
+
+    public setPlatformsVisible(visible:boolean):UIPluginsList{
+      this.displayConfiguration.platformsVisible = visible;
+      this.updateUI();
+      return this;
+    }
+
+    private updateUI(){
+      this.pluginListModel.updateUI(this.displayConfiguration);
+    }
+
+}
 
 class PluginsListModel implements UIListViewModel {
 
   private pluginList:Array<UIPluginItem>;
   private pluginsMap:any={};
   private callbackFunc:Function;
+  private displayConfiguration:DisplayConfiguration;
 
-  constructor(){
+  constructor(displayConfiguration:DisplayConfiguration){
       this.pluginList = new Array<UIPluginItem>();
+      this.displayConfiguration = displayConfiguration;
   }
 
   public addPlugins(plugins:Array<CordovaPlugin>){
@@ -93,7 +133,7 @@ class PluginsListModel implements UIListViewModel {
   }
 
   public addPlugin(pluginInfo:CordovaPlugin){
-    let pluginItem = new UIPluginItem(pluginInfo);
+    let pluginItem = new UIPluginItem(pluginInfo, this.displayConfiguration);
     pluginItem.setEventListener((pluginInfo, actionType)=>{
       if (this.callbackFunc){
         this.callbackFunc(pluginInfo, actionType);
@@ -147,6 +187,13 @@ class PluginsListModel implements UIListViewModel {
     }
   }
 
+  public updateUI(displayConfiguration:DisplayConfiguration){
+    this.displayConfiguration = displayConfiguration;
+    for (var i=0;i<this.pluginList.length;i++){
+      this.pluginList[i].updateUI(displayConfiguration)
+    }
+  }
+
 }
 
 export class UIPluginItem extends UIBaseComponent {
@@ -158,10 +205,12 @@ export class UIPluginItem extends UIBaseComponent {
     private metSection:UIPluginMetaSection;
     private bodySection:UIPluginBodySection;
     private statsSection:UIPluginStatsSection;
+    private displayConfiguration:DisplayConfiguration;
 
-    constructor(pluginInfo:CordovaPlugin){
+    constructor(pluginInfo:CordovaPlugin, displayConfiguration:DisplayConfiguration){
       super();
       this.pluginInfo = pluginInfo;
+      this.displayConfiguration = displayConfiguration;
       this.buildUI();
     }
 
@@ -191,6 +240,13 @@ export class UIPluginItem extends UIBaseComponent {
       });
     }
 
+    public updateUI(displayConfiguration:DisplayConfiguration){
+      this.displayConfiguration = displayConfiguration;
+      this.metSection.updateUI(displayConfiguration);
+      this.bodySection.updateUI(displayConfiguration);
+      this.statsSection.updateUI(displayConfiguration);
+    }
+
     public setEventListener(callbackFunc:Function):UIPluginItem{
       this.callbackFunc = callbackFunc;
       return this;
@@ -207,6 +263,7 @@ export class UIPluginItem extends UIBaseComponent {
 export class UIPluginStatsSection extends UIBaseComponent {
 
   public pluginInfo:CordovaPlugin;
+  private displayConfiguration:DisplayConfiguration;
 
   constructor(pluginInfo:CordovaPlugin){
     super();
@@ -229,7 +286,12 @@ export class UIPluginStatsSection extends UIBaseComponent {
   }
 
   public setPluginInstallPending(installing:boolean){
-    //TODO!!
+    //NOP
+  }
+
+  public updateUI(displayConfiguration:DisplayConfiguration){
+    this.displayConfiguration = displayConfiguration;
+    //NOP
   }
 
 }
@@ -237,6 +299,7 @@ export class UIPluginStatsSection extends UIBaseComponent {
 export class UIPluginBodySection extends UIBaseComponent {
 
   public pluginInfo:CordovaPlugin;
+  private displayConfiguration:DisplayConfiguration;
 
   constructor(pluginInfo:CordovaPlugin){
     super();
@@ -301,6 +364,11 @@ export class UIPluginBodySection extends UIBaseComponent {
     //TODO!!
   }
 
+  public updateUI(displayConfiguration:DisplayConfiguration){
+    this.displayConfiguration = displayConfiguration;
+    //NOP
+  }
+
 }
 
 export class UIPluginMetaSection extends UIBaseComponent {
@@ -308,6 +376,7 @@ export class UIPluginMetaSection extends UIBaseComponent {
     public pluginInfo:CordovaPlugin;
     private callbackFunc:Function;
     private metaButtons:UIPluginMetaButtons;
+    private displayConfiguration:DisplayConfiguration;
 
     constructor(pluginInfo:CordovaPlugin){
         super();
@@ -391,6 +460,11 @@ export class UIPluginMetaSection extends UIBaseComponent {
       this.metaButtons.setPluginInstallPending(installing);
     }
 
+    public updateUI(displayConfiguration:DisplayConfiguration){
+      this.displayConfiguration = displayConfiguration;
+      this.metaButtons.updateUI(displayConfiguration)
+    }
+
 }
 
 export class UIPluginMetaButtons extends UIBaseComponent {
@@ -401,6 +475,7 @@ export class UIPluginMetaButtons extends UIBaseComponent {
   private btnInstall:HTMLElement;
   private btnUninstall:HTMLElement;
   private callbackFunc:Function;
+  private displayConfiguration:DisplayConfiguration;
 
   private spinner:HTMLElement;
 
@@ -490,6 +565,36 @@ export class UIPluginMetaButtons extends UIBaseComponent {
       this.spinner.style.display = "none";
       this.btnInstall.style.display = "block";
     }
+  }
+
+  public updateUI(displayConfiguration:DisplayConfiguration){
+    this.displayConfiguration = displayConfiguration;
+    //NOP
+  }
+
+}
+
+export class UIPluginSection extends UIBaseComponent {
+
+  public pluginInfo:CordovaPlugin;
+  private displayConfiguration:DisplayConfiguration;
+
+  constructor(pluginInfo:CordovaPlugin){
+    super();
+    this.pluginInfo = pluginInfo;
+    this.buildUI();
+  }
+
+  protected buildUI(){
+      //NOP, override in subclass
+  }
+
+  public updateUI(displayConfiguration:DisplayConfiguration){
+    this.displayConfiguration = displayConfiguration;
+  }
+
+  public setPluginInstallPending(installing:boolean){
+    //TODO!!
   }
 
 }
