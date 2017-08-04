@@ -76,9 +76,6 @@ export interface CordovaProjectInfo {
 
 export class Cordova {
 
-  public static get EVT_PLUGIN_ADDED():string { return "dewb.project.cordova.pluginAdded"; }
-  public static get EVT_PLUGIN_REMOVED():string { return "dewb.project.cordova.pluginRemoved"; }
-
   private cordovaUtils: CordovaUtils;
   //private cordovaPluginScanner: CordovaPluginScanner;
   private sharedExecutor : CordovaExecutor;
@@ -131,12 +128,14 @@ export class Cordova {
     let executor = new CordovaExecutor(null);
     let projectInfo = await this.getProjectInfo(projectRoot, false);
     await executor.addPlatform(projectInfo, platformName);
+    EventBus.getInstance().publish(EventBus.EVT_PLATFORM_ADDED, projectRoot, platformName)
   }
 
   public async removePlatform(projectRoot:string, platformName:string){
     Logger.getInstance().debug("removePlatform called "+platformName +" for ...", projectRoot);
     let executor = new CordovaExecutor(null);
     await executor.removePlatforms([platformName], projectRoot);
+    EventBus.getInstance().publish(EventBus.EVT_PLATFORM_REMOVED, projectRoot, platformName)
   }
 
   public async addPlugin(projectRoot: string,pluginInfo:CordovaPlugin){
@@ -144,7 +143,7 @@ export class Cordova {
     let executor = new CordovaExecutor(null);
     let projectInfo = await this.getProjectInfo(projectRoot, false);
     await executor.addPlugin(projectInfo, pluginInfo.id, null);
-    EventBus.getInstance().publish(Cordova.EVT_PLUGIN_ADDED, projectRoot, pluginInfo)
+    EventBus.getInstance().publish(EventBus.EVT_PLUGIN_ADDED, projectRoot, pluginInfo)
   }
 
   public async removePlugin(projectRoot: string,pluginInfo:CordovaPlugin){
@@ -152,7 +151,7 @@ export class Cordova {
     let executor = new CordovaExecutor(null);
     let projectInfo = await this.getProjectInfo(projectRoot, false);
     await executor.removePlugin(projectInfo, pluginInfo.id);
-    EventBus.getInstance().publish(Cordova.EVT_PLUGIN_REMOVED, projectRoot, pluginInfo)
+    EventBus.getInstance().publish(EventBus.EVT_PLUGIN_REMOVED, projectRoot, pluginInfo)
   }
 
   /**
@@ -211,52 +210,6 @@ export class Cordova {
       });
     });
   }
-
-  /**
-   * Add a new plugin to a Cordova project
-   **/
-   /**
-  public addPlugin(projectRoot: string, pluginSpec: string, installOpt: any): Promise<string> {
-    Logger.getInstance().info("addPlugin ", projectRoot, pluginSpec, installOpt)
-    let executor = new CordovaExecutor(projectRoot);
-    var args = ["plugin", "add", pluginSpec];
-    installOpt = installOpt || {};
-    if (installOpt.searchPath) {
-      args[args.length] = '--searchpath';
-      args[args.length] = installOpt.searchPath;
-    }
-    var that = this;
-    return new Promise((resolve, reject) => {
-      executor.runSpawn("cordova", args, "Plugin_Add", false).then((res) => {
-        console.log("Plugin_Add result:", res);
-        resolve.bind(that)(res);
-      }, (err) => {
-        console.error(err);
-        reject(err);
-      });
-    });
-  }
-  **/
-
-  /**
-   * Remove a plugin from a Cordova project
-   **/
-   /**
-  public removePlugin(projectRoot: string, pluginSpec: string): Promise<string> {
-    Logger.getInstance().info("removePlugin ", projectRoot, pluginSpec)
-    let executor = new CordovaExecutor(projectRoot);
-    var args = ["plugin", "remove", "--save", pluginSpec];
-    return new Promise((resolve, reject) => {
-      executor.runSpawn("cordova", args, "Plugin_Remve", false).then((res) => {
-        console.log("Plugin_Add result:", res);
-        resolve(res);
-      }, (err) => {
-        console.error(err);
-        reject(err);
-      });
-    });
-  }
-  **/
 
   /**
    * Returns the assets path for the given platform

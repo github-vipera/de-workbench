@@ -45,13 +45,13 @@ export class InstalledPluginsView  extends UIBaseComponent {
 
 
     // Subscribe interesting events
-    EventBus.getInstance().subscribe(Cordova.EVT_PLUGIN_ADDED, (eventData)=>{
+    EventBus.getInstance().subscribe(EventBus.EVT_PLUGIN_ADDED, (eventData)=>{
       // the first item in eventData is the project root
       if (eventData[0]===this.currentProjectRoot){
         this.reload()
       }
     });
-    EventBus.getInstance().subscribe(Cordova.EVT_PLUGIN_REMOVED, (eventData)=>{
+    EventBus.getInstance().subscribe(EventBus.EVT_PLUGIN_REMOVED, (eventData)=>{
       // the first item in eventData is the project root
       if (eventData[0]===this.currentProjectRoot){
         this.reload()

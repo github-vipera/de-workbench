@@ -9,6 +9,7 @@
 import { EventEmitter }  from 'events'
 import { Cordova } from '../cordova/Cordova'
 import { Logger } from '../logger/Logger'
+import { EventBus } from '../DEWorkbench/EventBus'
 
 
 export class ProjectManager {
@@ -109,15 +110,16 @@ export class ProjectManager {
 
     public didProjectChanged(callback:Function){
       this.events.on('didProjectChanged', callback);
+      EventBus.getInstance().publish(EventBus.EVT_PROJECT_CHANGED, this.currentProjectPath)
     }
 
     public didPathChanged(callback:Function){
       this.events.on('didPathChanged', callback);
+      EventBus.getInstance().publish(EventBus.EVT_PATH_CHANGED, this.currentProjectPath)
     }
 
     getCurrentProjectPath(): string {
       return this.currentProjectPath;
     }
-
 
 }

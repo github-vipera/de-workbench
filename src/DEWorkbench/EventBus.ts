@@ -13,6 +13,13 @@ import { Logger } from '../logger/Logger'
 
 export class EventBus {
 
+    public static get EVT_PROJECT_CHANGED():string { return "dewb.project.workspace.projectChanged"; }
+    public static get EVT_PATH_CHANGED():string { return "dewb.project.workspace.pathChanged"; }
+    public static get EVT_PLUGIN_ADDED():string { return "dewb.project.cordova.pluginAdded"; }
+    public static get EVT_PLUGIN_REMOVED():string { return "dewb.project.cordova.pluginRemoved"; }
+    public static get EVT_PLATFORM_ADDED():string { return "dewb.project.cordova.platformRemoved"; }
+    public static get EVT_PLATFORM_REMOVED():string { return "dewb.project.cordova.platformRemoved"; }
+
     private static instance: EventBus;
     private _eventBus:any;
 
