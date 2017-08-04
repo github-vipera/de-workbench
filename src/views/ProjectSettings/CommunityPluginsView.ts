@@ -63,6 +63,21 @@ export class CommunityPluginsView extends UIBaseComponent {
 
   protected initUI(){
 
+    // Subscribe interesting events
+    EventBus.getInstance().subscribe(EventBus.EVT_PLUGIN_ADDED, (eventData)=>{
+      // the first item in eventData is the project root
+      if (eventData[0]===this.currentProjectRoot){
+        this.submitSearch()
+      }
+    });
+    EventBus.getInstance().subscribe(EventBus.EVT_PLUGIN_REMOVED, (eventData)=>{
+      // the first item in eventData is the project root
+      if (eventData[0]===this.currentProjectRoot){
+        this.submitSearch()
+      }
+    });
+    // end event bus subscription
+
     this.lineLoader = new UILineLoader()
 
     // Editor Block
@@ -88,6 +103,7 @@ export class CommunityPluginsView extends UIBaseComponent {
           this.submitSearch();
         });
 
+    /**
     let btnManualInstall:HTMLElement = createElement('button',{
           elements: [
             createText("Install manually...")
@@ -98,7 +114,7 @@ export class CommunityPluginsView extends UIBaseComponent {
         console.log('Platforms selected: ', this.btnGroupPlatformChooser.getSelectedButtons());
         let cv = new ConsoleView();
         cv.show()
-      });
+      });**/
 
     this.queryResultsMessage = createElement('span',{
       elements: [
@@ -114,7 +130,7 @@ export class CommunityPluginsView extends UIBaseComponent {
       elements: [
         this.btnGroupPlatformChooser.element(),
         createButtonSpacer(),
-        btnManualInstall,
+        /*btnManualInstall,*/
         this.queryResultsMessage
       ],
       className : 'block'
@@ -172,7 +188,6 @@ export class CommunityPluginsView extends UIBaseComponent {
       UINotifications.showInfo("Plugin "+pluginInfo.name +" installed successfully.")
       this.showProgress(false)
       this.pluginList.setPluginInstallPending(pluginInfo, false);
-      this.submitSearch()
     }).catch(()=>{
       UINotifications.showError("Error installing plugin "+pluginInfo.name +". See the log for more details.")
       this.showProgress(false)
@@ -187,7 +202,6 @@ export class CommunityPluginsView extends UIBaseComponent {
       UINotifications.showInfo("Plugin "+pluginInfo.name +" uninstalled successfully.")
       this.showProgress(false)
       this.pluginList.setPluginUInstallPending(pluginInfo, false);
-      this.submitSearch()
     }).catch(()=>{
       UINotifications.showError("Error uninstalling plugin "+pluginInfo.name +". See the log for more details.")
       this.showProgress(false)
