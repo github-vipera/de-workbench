@@ -26,13 +26,14 @@ import { EventEmitter }  from 'events'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { Logger } from '../../logger/Logger'
-import { UIPluginsList } from '../../ui-components/UIPluginsList'
+import { UIPluginsList, UIPluginMetaButtons } from '../../ui-components/UIPluginsList'
 import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { CordovaPluginsFinder } from '../../cordova/CordovaPluginsFinder'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 import { UILineLoader } from '../../ui-components/UILineLoader'
+import { UINotifications } from '../../ui-components/UINotifications'
 
 export class CommunityPluginsView extends UIBaseComponent {
 
@@ -47,14 +48,14 @@ export class CommunityPluginsView extends UIBaseComponent {
   private btnChooseBrowser:HTMLElement;
 
   private lineLoader:UILineLoader;
+  private currentProjectRoot:string;
 
   private queryResultsMessage:HTMLElement;
 
   constructor(){
     super();
 
-    let currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
-    let cordova:Cordova = ProjectManager.getInstance().cordova;
+    this.currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
 
     this.initUI();
   }
@@ -103,14 +104,6 @@ export class CommunityPluginsView extends UIBaseComponent {
       className: 'de-workbench-community-plugins-query-results'
     });
     this.setQueryResultMessage(null);
-/**
-    ,{
-      elements: [
-        createText('No plugins found');
-      ],
-      className: ''
-    })
-    **/
     // End Platform Chooser Block / Install manually
 
 
@@ -134,7 +127,16 @@ export class CommunityPluginsView extends UIBaseComponent {
     });
 
     // Plugins list
-    this.pluginList = new UIPluginsList();
+    this.pluginList = new UIPluginsList().setEventListener((pluginInfo, actionType)=>{
+      if (actionType===UIPluginMetaButtons.BTN_TYPE_INSTALL){
+        this.doInstallPlugin(pluginInfo)
+      }
+      else if (actionType===UIPluginMetaButtons.BTN_TYPE_UNINSTALL){
+        this.doUninstallPlugin(pluginInfo)
+      } else {
+        Logger.getInstance().warn("Action unknwon " + actionType);
+      }
+    });
 
     // Main element
     this.mainElement = createElement('div',{
@@ -157,8 +159,25 @@ export class CommunityPluginsView extends UIBaseComponent {
 
     $('[platform-select]').click(function(evt){
       $(evt.currentTaget).toggleClass("selected");
-      alert("toggle");
     });
+  }
+
+  private doInstallPlugin(pluginInfo){
+    this.showProgress(true)
+    this.pluginList.setPluginInstallPending(pluginInfo, true);
+    ProjectManager.getInstance().cordova.addPlugin(this.currentProjectRoot, pluginInfo).then(()=>{
+      UINotifications.showInfo("Plugin "+pluginInfo.name +" installed successfully.")
+      this.showProgress(false)
+      this.pluginList.setPluginInstallPending(pluginInfo, false);
+    }).catch(()=>{
+      UINotifications.showInfo("Error installing plugin "+pluginInfo.name +". See the log for more details.")
+      this.showProgress(false)
+      this.pluginList.setPluginInstallPending(pluginInfo, false);
+    })
+  }
+
+  private doUninstallPlugin(pluginInfo){
+    alert("doUninstallPlugin!! " + pluginInfo.name)
   }
 
   private setQueryResultMessage(count?:number){
@@ -200,8 +219,7 @@ export class CommunityPluginsView extends UIBaseComponent {
     let keywords = _.split(search, ' ');
 
     cpf.search(keywords,keywords,platforms).then((results:Array<CordovaPlugin>)=>{
-      //alert(results);
-      //console.log("Plugins finder results: ", results);
+      //Logger.getInstance().debug("Plugins finder results count " + results.length);
       this.pluginList.setPlugins(results);
 
       this.setQueryResultMessage(results.length)

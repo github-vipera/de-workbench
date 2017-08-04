@@ -206,6 +206,43 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
+  public addPlugin(projectInfo, pluginSpec, installOpt):Promise<any>{
+    Logger.getInstance().info("Adding plugin ", pluginSpec);
+    var cmd="cordova"
+    var args=["plugin","add",pluginSpec];
+    installOpt= installOpt || {};
+    if(installOpt.searchPath){
+      args[args.length]='--searchpath';
+      args[args.length]=installOpt.searchPath;
+    }
+    var options={
+        cwd: projectInfo.path,
+        detached:false
+    };
+    cmd = this.prepareCommand(cmd);
+    this.spawnRef = spawn(cmd, args, options);
+    return new Promise((resolve,reject) => {
+      this.spawnRef.stdout.on('data', (data) => {
+          Logger.getInstance().debug(`[Adding platform  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`)
+          console.log(`[Adding Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
+      });
+      this.spawnRef.stderr.on('data', (data) => {
+          Logger.getInstance().error("[scriptTools] " + data.toString())
+          console.error(`[Adding Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
+      });
+
+      this.spawnRef.on('close', (code) => {
+          console.log(`[Adding Platform [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`);
+          Logger.getInstance().info(`[Adding Plugin [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`)
+          this.spawnRef = undefined;
+          if(code === 0){
+            resolve("Add Plugin done");
+          }else{
+            reject("Add Plugin Fail");
+          }
+      });
+    });
+  }
 
   public removePlatforms(platformList,projectRoot:string){
     Logger.getInstance().debug("removePlatforms called for ", platformList);

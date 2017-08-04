@@ -26,6 +26,7 @@ const _ = require("lodash");
 export class UIPluginsList extends UIListView {
 
     private pluginListModel: PluginsListModel;
+    private callbackFunc:Function;
 
     constructor(){
         super(null);
@@ -33,7 +34,11 @@ export class UIPluginsList extends UIListView {
     }
 
     private initModel(){
-      this.pluginListModel =  new PluginsListModel();
+      this.pluginListModel =  new PluginsListModel().setEventListener((pluginInfo, actionType)=>{
+        if (this.callbackFunc){
+          this.callbackFunc(pluginInfo, actionType)
+        }
+      });
       this.setModel(this.pluginListModel);
     }
 
@@ -58,12 +63,23 @@ export class UIPluginsList extends UIListView {
       this.modelChanged();
     }
 
+    public setEventListener(callbackFunc:Function):UIPluginsList{
+      this.callbackFunc = callbackFunc;
+      return this;
+    }
+
+    public setPluginInstallPending(pluginInfo:CordovaPlugin,installing:boolean){
+      this.pluginListModel.setPluginInstallPending(pluginInfo, installing);
+    }
+
 }
 
 
 class PluginsListModel implements UIListViewModel {
 
   private pluginList:Array<UIPluginItem>;
+  private pluginsMap:any={};
+  private callbackFunc:Function;
 
   constructor(){
       this.pluginList = new Array<UIPluginItem>();
@@ -78,7 +94,18 @@ class PluginsListModel implements UIListViewModel {
 
   public addPlugin(pluginInfo:CordovaPlugin){
     let pluginItem = new UIPluginItem(pluginInfo);
+    pluginItem.setEventListener((pluginInfo, actionType)=>{
+      if (this.callbackFunc){
+        this.callbackFunc(pluginInfo, actionType);
+      }
+    })
     this.pluginList.push(pluginItem)
+    this.pluginsMap[pluginInfo.id] = pluginItem;
+  }
+
+  public setEventListener(callbackFunc:Function):PluginsListModel{
+    this.callbackFunc = callbackFunc;
+    return this;
   }
 
   hasHeader():boolean {
@@ -110,7 +137,16 @@ class PluginsListModel implements UIListViewModel {
 
   public clear(){
     this.pluginList = new Array<UIPluginItem>();
+    this.pluginsMap = {};
   }
+
+  public setPluginInstallPending(pluginInfo:CordovaPlugin,installing:boolean){
+    let pluginItem:UIPluginItem = this.pluginsMap[pluginInfo.id];
+    if (pluginItem){
+      pluginItem.setPluginInstallPending(installing);
+    }
+  }
+
 }
 
 export class UIPluginItem extends UIBaseComponent {
@@ -118,6 +154,10 @@ export class UIPluginItem extends UIBaseComponent {
     public readonly pluginInfo:CordovaPlugin;
 
     private statsEl: HTMLElement;
+    private callbackFunc:Function;
+    private metSection:UIPluginMetaSection;
+    private bodySection:UIPluginBodySection;
+    private statsSection:UIPluginStatsSection;
 
     constructor(pluginInfo:CordovaPlugin){
       super();
@@ -128,28 +168,43 @@ export class UIPluginItem extends UIBaseComponent {
     private buildUI(){
 
       // BODY PART ========================================================================
-      let body = new UIPluginBodySection(this.pluginInfo);
+      this.bodySection = new UIPluginBodySection(this.pluginInfo);
 
 
       // META PART ========================================================================
-      let meta = new UIPluginMetaSection(this.pluginInfo);
+      this.metSection = new UIPluginMetaSection(this.pluginInfo).setEventListener((plugin, actionType)=>{
+        if (this.callbackFunc){
+          this.callbackFunc(plugin,actionType)
+        }
+      });
 
 
       // STATS PART ========================================================================
-      let stats = new UIPluginStatsSection(this.pluginInfo);
+      this.statsSection = new UIPluginStatsSection(this.pluginInfo);
 
 
       this.mainElement = createElement('div',{
         elements : [
-            stats.element(), body.element(), meta.element()
+            this.statsSection.element(), this.bodySection.element(), this.metSection.element()
         ],
         className: 'de-workbench-plugins-list-item'
       });
     }
 
+    public setEventListener(callbackFunc:Function):UIPluginItem{
+      this.callbackFunc = callbackFunc;
+      return this;
+    }
+
+    public setPluginInstallPending(installing:boolean){
+      this.bodySection.setPluginInstallPending(installing)
+      this.metSection.setPluginInstallPending(installing)
+      this.statsSection.setPluginInstallPending(installing)
+    }
+
 }
 
-class UIPluginStatsSection extends UIBaseComponent {
+export class UIPluginStatsSection extends UIBaseComponent {
 
   public pluginInfo:CordovaPlugin;
 
@@ -173,9 +228,13 @@ class UIPluginStatsSection extends UIBaseComponent {
     this.mainElement.style.display = 'none'
   }
 
+  public setPluginInstallPending(installing:boolean){
+    //TODO!!
+  }
+
 }
 
-class UIPluginBodySection extends UIBaseComponent {
+export class UIPluginBodySection extends UIBaseComponent {
 
   public pluginInfo:CordovaPlugin;
 
@@ -238,12 +297,17 @@ class UIPluginBodySection extends UIBaseComponent {
     });
   }
 
+  public setPluginInstallPending(installing:boolean){
+    //TODO!!
+  }
+
 }
 
-class UIPluginMetaSection extends UIBaseComponent {
+export class UIPluginMetaSection extends UIBaseComponent {
 
     public pluginInfo:CordovaPlugin;
     private callbackFunc:Function;
+    private metaButtons:UIPluginMetaButtons;
 
     constructor(pluginInfo:CordovaPlugin){
         super();
@@ -275,24 +339,24 @@ class UIPluginMetaSection extends UIBaseComponent {
         className : 'de-workbench-plugins-list-meta-user'
       });
 
-      let metaButtons = new UIPluginMetaButtons();
+      this.metaButtons = new UIPluginMetaButtons();
        if (this.pluginInfo.installed){
-         metaButtons.showButtons(UIPluginMetaButtons.BTN_TYPE_UNINSTALL)
+         this.metaButtons.showButtons(UIPluginMetaButtons.BTN_TYPE_UNINSTALL)
                     .setButtonEnabled(UIPluginMetaButtons.BTN_TYPE_UNINSTALL, true);
        } else {
-         metaButtons.showButtons(UIPluginMetaButtons.BTN_TYPE_INSTALL)
+         this.metaButtons.showButtons(UIPluginMetaButtons.BTN_TYPE_INSTALL)
                     .setButtonEnabled(UIPluginMetaButtons.BTN_TYPE_INSTALL, true);
        }
-      metaButtons.setEventListener((buttonClicked)=>{
-        alert("Clicked " + buttonClicked + " for " + this.pluginInfo.id);
-        // TODO!! notify listeners
+      this.metaButtons.setEventListener((buttonClicked)=>{
+        //alert("Clicked " + buttonClicked + " for " + this.pluginInfo.id);
+        this.callbackFunc(this.pluginInfo, buttonClicked)
       });
 
       let metaControls = createElement('div',{
         elements : [
           createElement('div',{
             elements : [
-              metaButtons.element()
+              this.metaButtons.element()
             ],
             className : 'btn-toolbar'
           })
@@ -307,8 +371,9 @@ class UIPluginMetaSection extends UIBaseComponent {
       });
     }
 
-    public setEventListener(callbackFunc:Function){
+    public setEventListener(callbackFunc:Function):UIPluginMetaSection{
       this.callbackFunc = callbackFunc;
+      return this;
     }
 
     private renderPlatforms(platforms:Array<string>):HTMLElement {
@@ -322,9 +387,13 @@ class UIPluginMetaSection extends UIBaseComponent {
      })
     }
 
+    public setPluginInstallPending(installing:boolean){
+      this.metaButtons.setPluginInstallPending(installing);
+    }
+
 }
 
-class UIPluginMetaButtons extends UIBaseComponent {
+export class UIPluginMetaButtons extends UIBaseComponent {
 
   public static readonly BTN_TYPE_INSTALL:number = 1;
   public static readonly BTN_TYPE_UNINSTALL:number = 2;
@@ -332,6 +401,8 @@ class UIPluginMetaButtons extends UIBaseComponent {
   private btnInstall:HTMLElement;
   private btnUninstall:HTMLElement;
   private callbackFunc:Function;
+
+  private spinner:HTMLElement;
 
   constructor(){
     super();
@@ -343,6 +414,13 @@ class UIPluginMetaButtons extends UIBaseComponent {
   }
 
   private buildUI(){
+
+    //<span class='loading loading-spinner-tiny inline-block'></span>
+    this.spinner = createElement('span',{
+      className: 'loading loading-spinner-small plugin-install-spinner'
+    })
+    this.spinner.style.display = "none"
+
     this.btnInstall = this.buildButton('Install');
     this.btnInstall.className = this.btnInstall.className + " btn-info icon icon-cloud-download install-button";
     this.btnInstall.addEventListener('click', (evt)=>{
@@ -361,6 +439,7 @@ class UIPluginMetaButtons extends UIBaseComponent {
       elements : [
         this.btnInstall,
         this.btnUninstall,
+        this.spinner
       ],
       className : 'btn-group'
     });
@@ -401,6 +480,16 @@ class UIPluginMetaButtons extends UIBaseComponent {
       this.btnUninstall["disabled"] = !enabled;
     }
     return this;
+  }
+
+  public setPluginInstallPending(installing:boolean){
+    if (installing){
+      this.btnInstall.style.display = "none";
+      this.spinner.style.display = "block";
+    } else {
+      this.spinner.style.display = "none";
+      this.btnInstall.style.display = "block";
+    }
   }
 
 }
