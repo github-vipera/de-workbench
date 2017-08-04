@@ -217,11 +217,11 @@ export class UIPluginItem extends UIBaseComponent {
     private buildUI(){
 
       // BODY PART ========================================================================
-      this.bodySection = new UIPluginBodySection(this.pluginInfo);
+      this.bodySection = new UIPluginBodySection(this.pluginInfo, this.displayConfiguration);
 
 
       // META PART ========================================================================
-      this.metSection = new UIPluginMetaSection(this.pluginInfo).setEventListener((plugin, actionType)=>{
+      this.metSection = new UIPluginMetaSection(this.pluginInfo, this.displayConfiguration).setEventListener((plugin, actionType)=>{
         if (this.callbackFunc){
           this.callbackFunc(plugin,actionType)
         }
@@ -229,7 +229,7 @@ export class UIPluginItem extends UIBaseComponent {
 
 
       // STATS PART ========================================================================
-      this.statsSection = new UIPluginStatsSection(this.pluginInfo);
+      this.statsSection = new UIPluginStatsSection(this.pluginInfo, this.displayConfiguration);
 
 
       this.mainElement = createElement('div',{
@@ -260,18 +260,39 @@ export class UIPluginItem extends UIBaseComponent {
 
 }
 
-export class UIPluginStatsSection extends UIBaseComponent {
+export class UIPluginSection extends UIBaseComponent {
 
-  public pluginInfo:CordovaPlugin;
-  private displayConfiguration:DisplayConfiguration;
+  protected pluginInfo:CordovaPlugin;
+  protected displayConfiguration:DisplayConfiguration;
 
-  constructor(pluginInfo:CordovaPlugin){
+  constructor(pluginInfo:CordovaPlugin, displayConfiguration:DisplayConfiguration){
     super();
+    this.displayConfiguration = displayConfiguration;
     this.pluginInfo = pluginInfo;
     this.buildUI();
   }
 
-  private buildUI(){
+  protected buildUI(){
+      //NOP, override in subclass
+  }
+
+  public updateUI(displayConfiguration:DisplayConfiguration){
+    this.displayConfiguration = displayConfiguration;
+  }
+
+  public setPluginInstallPending(installing:boolean){
+    //TODO!!
+  }
+
+}
+
+export class UIPluginStatsSection extends UIPluginSection {
+
+  constructor(pluginInfo:CordovaPlugin, displayConfiguration:DisplayConfiguration){
+    super(pluginInfo, displayConfiguration);
+  }
+
+  protected buildUI(){
     this.mainElement = createElement('div', {
       elements: [
         createElement('span',{
@@ -285,29 +306,21 @@ export class UIPluginStatsSection extends UIBaseComponent {
     this.mainElement.style.display = 'none'
   }
 
-  public setPluginInstallPending(installing:boolean){
-    //NOP
-  }
-
   public updateUI(displayConfiguration:DisplayConfiguration){
-    this.displayConfiguration = displayConfiguration;
+    super.updateUI(displayConfiguration);
     //NOP
   }
 
 }
 
-export class UIPluginBodySection extends UIBaseComponent {
+export class UIPluginBodySection extends UIPluginSection {
 
-  public pluginInfo:CordovaPlugin;
-  private displayConfiguration:DisplayConfiguration;
-
-  constructor(pluginInfo:CordovaPlugin){
-    super();
-    this.pluginInfo = pluginInfo;
-    this.buildUI();
+  constructor(pluginInfo:CordovaPlugin, displayConfiguration:DisplayConfiguration){
+    super(pluginInfo, displayConfiguration);
   }
 
-  private buildUI(){
+  protected buildUI(){
+    super.buildUI();
     let pluginNameEl = createElement('a', {
       elements: [
         createText(this.pluginInfo.name)
@@ -360,31 +373,24 @@ export class UIPluginBodySection extends UIBaseComponent {
     });
   }
 
-  public setPluginInstallPending(installing:boolean){
-    //TODO!!
-  }
-
   public updateUI(displayConfiguration:DisplayConfiguration){
-    this.displayConfiguration = displayConfiguration;
+    super.updateUI(displayConfiguration);
     //NOP
   }
 
 }
 
-export class UIPluginMetaSection extends UIBaseComponent {
+export class UIPluginMetaSection extends UIPluginSection {
 
-    public pluginInfo:CordovaPlugin;
-    private callbackFunc:Function;
-    private metaButtons:UIPluginMetaButtons;
-    private displayConfiguration:DisplayConfiguration;
+    protected callbackFunc:Function;
+    protected metaButtons:UIPluginMetaButtons;
 
-    constructor(pluginInfo:CordovaPlugin){
-        super();
-        this.pluginInfo = pluginInfo;
-        this.buildUI();
+    constructor(pluginInfo:CordovaPlugin, displayConfiguration:DisplayConfiguration){
+      super(pluginInfo, displayConfiguration);
     }
 
-    private buildUI(){
+    protected buildUI(){
+      super.buildUI();
       let userOwner  = this.pluginInfo.author
       let userOwnerEl:HTMLElement = createElement('a',{
         elements: [
@@ -408,7 +414,7 @@ export class UIPluginMetaSection extends UIBaseComponent {
         className : 'de-workbench-plugins-list-meta-user'
       });
 
-      this.metaButtons = new UIPluginMetaButtons();
+      this.metaButtons = new UIPluginMetaButtons(this.pluginInfo, this.displayConfiguration);
        if (this.pluginInfo.installed){
          this.metaButtons.showButtons(UIPluginMetaButtons.BTN_TYPE_UNINSTALL)
                     .setButtonEnabled(UIPluginMetaButtons.BTN_TYPE_UNINSTALL, true);
@@ -461,13 +467,14 @@ export class UIPluginMetaSection extends UIBaseComponent {
     }
 
     public updateUI(displayConfiguration:DisplayConfiguration){
-      this.displayConfiguration = displayConfiguration;
+      super.updateUI(displayConfiguration);
       this.metaButtons.updateUI(displayConfiguration)
     }
 
+
 }
 
-export class UIPluginMetaButtons extends UIBaseComponent {
+export class UIPluginMetaButtons extends UIPluginSection {
 
   public static readonly BTN_TYPE_INSTALL:number = 1;
   public static readonly BTN_TYPE_UNINSTALL:number = 2;
@@ -475,21 +482,19 @@ export class UIPluginMetaButtons extends UIBaseComponent {
   private btnInstall:HTMLElement;
   private btnUninstall:HTMLElement;
   private callbackFunc:Function;
-  private displayConfiguration:DisplayConfiguration;
 
   private spinner:HTMLElement;
 
-  constructor(){
-    super();
-    this.buildUI();
+  constructor(pluginInfo:CordovaPlugin, displayConfiguration:DisplayConfiguration){
+    super(pluginInfo, displayConfiguration);
   }
 
   public setEventListener(callbackFunc:Function){
     this.callbackFunc = callbackFunc;
   }
 
-  private buildUI(){
-
+  protected buildUI(){
+    super.buildUI();
     //<span class='loading loading-spinner-tiny inline-block'></span>
     this.spinner = createElement('span',{
       className: 'loading loading-spinner-small plugin-install-spinner'
@@ -568,33 +573,8 @@ export class UIPluginMetaButtons extends UIBaseComponent {
   }
 
   public updateUI(displayConfiguration:DisplayConfiguration){
-    this.displayConfiguration = displayConfiguration;
+    super.updateUI(displayConfiguration);
     //NOP
-  }
-
-}
-
-export class UIPluginSection extends UIBaseComponent {
-
-  public pluginInfo:CordovaPlugin;
-  private displayConfiguration:DisplayConfiguration;
-
-  constructor(pluginInfo:CordovaPlugin){
-    super();
-    this.pluginInfo = pluginInfo;
-    this.buildUI();
-  }
-
-  protected buildUI(){
-      //NOP, override in subclass
-  }
-
-  public updateUI(displayConfiguration:DisplayConfiguration){
-    this.displayConfiguration = displayConfiguration;
-  }
-
-  public setPluginInstallPending(installing:boolean){
-    //TODO!!
   }
 
 }
