@@ -9,6 +9,10 @@
 const { CompositeDisposable } = require('atom')
 declare function require(moduleName: string): any;
 //import { DEWorkbench } from './DEWorkbench/DEWorkbench'
+import { Logger } from './logger/Logger'
+import { InkProvider } from './DEWorkbench/DEWBExternalServiceProvider'
+
+const {allowUnsafeEval, allowUnsafeNewFunction} = require('loophole');
 
 export default {
 
@@ -16,6 +20,7 @@ export default {
   toolbarPanel: null,
   subscriptions: null,
   loggerView: null,
+  ink: null,
 
   activate (state: any) {
       console.log("DEWB activated.");
@@ -24,9 +29,11 @@ export default {
 
   deferredActivation(){
     console.log("DEWB deferredActivation.");
-    require('atom-package-deps').install('atomify', true).then(function(res){
+
+    require('atom-package-deps').install('de-workbench', false).then(function(res){
       console.log("Dep packages installed.");
     })
+
     let DEWorkbenchClass = require('./DEWorkbench/DEWorkbench').DEWorkbench;
     this.deWorkbench = new DEWorkbenchClass({
     });
@@ -68,6 +75,43 @@ export default {
   toggleLogger(){
     console.log("Toggle Logger");
     this.deWorkbench.toggleLogger();
+  },
+
+  consumeInk: function (ink) {
+    this.ink = ink;
+    InkProvider.getInstance().setInk(this.ink);
+
+    /**
+    let cons = ink.Console.fromId('dewb-language-client')
+    cons.setModes([
+      {
+        grammar: 'javascript'
+      }
+    ]);
+    cons.open({
+      split: 'down',
+      searchAllPanes: true
+    })
+
+    cons.onEval(function(arg) {
+      var editor;
+      editor = arg.editor;
+      cons.logInput();
+      cons.done();
+      //console.log(editor.getText())
+      //Logger.getInstance().info("Typed ", editor.getText() )
+      try {
+        let evaluated = null;//eval(editor.getText())
+        var docTemplate = allowUnsafeEval(() => allowUnsafeNewFunction(() => evaluated = eval(editor.getText())));
+        cons.stdout(evaluated);
+        return cons.input();
+      } catch (error){
+        cons.stderr(error);
+        return cons.input();
+      }
+    });
+    **/
+
   }
 
 }
