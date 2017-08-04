@@ -42,12 +42,7 @@ export class InstalledPluginsView  extends UIBaseComponent {
 
     this.buildUI();
 
-    let cordova:Cordova = ProjectManager.getInstance().cordova;
-
-    cordova.getInstalledPlugins(this.currentProjectRoot).then((installedPlugins:Array<CordovaPlugin>)=>{
-      this.pluginList.addPlugins(installedPlugins);
-    });
-
+    this.reload();
   }
 
   private buildUI(){
@@ -98,6 +93,7 @@ export class InstalledPluginsView  extends UIBaseComponent {
     this.pluginList.setPluginUInstallPending(pluginInfo, true);
     ProjectManager.getInstance().cordova.removePlugin(this.currentProjectRoot, pluginInfo).then(()=>{
       UINotifications.showInfo("Plugin "+pluginInfo.name +" uninstalled successfully.")
+      this.reload();
       this.showProgress(false)
       this.pluginList.setPluginUInstallPending(pluginInfo, false);
     }).catch(()=>{
@@ -105,5 +101,12 @@ export class InstalledPluginsView  extends UIBaseComponent {
       this.showProgress(false)
       this.pluginList.setPluginUInstallPending(pluginInfo, false);
     })
+  }
+
+  public reload(){
+    ProjectManager.getInstance().cordova.getInstalledPlugins(this.currentProjectRoot).then((installedPlugins:Array<CordovaPlugin>)=>{
+      this.pluginList.clearList();
+      this.pluginList.addPlugins(installedPlugins);
+    });
   }
 }
