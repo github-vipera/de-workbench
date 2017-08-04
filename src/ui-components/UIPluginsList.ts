@@ -89,6 +89,10 @@ export class UIPluginsList extends UIListView {
       this.pluginListModel.setPluginInstallPending(pluginInfo, installing);
     }
 
+    public setPluginUInstallPending(pluginInfo:CordovaPlugin,unistalling:boolean){
+      this.pluginListModel.setPluginUInstallPending(pluginInfo, unistalling);
+    }
+
     public setRatingVisible(visible:boolean):UIPluginsList{
       this.displayConfiguration.ratingVisible = visible;
       this.updateUI();
@@ -187,6 +191,13 @@ class PluginsListModel implements UIListViewModel {
     }
   }
 
+  public setPluginUInstallPending(pluginInfo:CordovaPlugin,unistalling:boolean){
+    let pluginItem:UIPluginItem = this.pluginsMap[pluginInfo.id];
+    if (pluginItem){
+      pluginItem.setPluginUInstallPending(unistalling);
+    }
+  }
+
   public updateUI(displayConfiguration:DisplayConfiguration){
     this.displayConfiguration = displayConfiguration;
     for (var i=0;i<this.pluginList.length;i++){
@@ -258,6 +269,12 @@ export class UIPluginItem extends UIBaseComponent {
       this.statsSection.setPluginInstallPending(installing)
     }
 
+    public setPluginUInstallPending(unistalling:boolean){
+      this.bodySection.setPluginUInstallPending(unistalling)
+      this.metSection.setPluginUInstallPending(unistalling)
+      this.statsSection.setPluginUInstallPending(unistalling)
+    }
+
 }
 
 export class UIPluginSection extends UIBaseComponent {
@@ -270,6 +287,7 @@ export class UIPluginSection extends UIBaseComponent {
     this.displayConfiguration = displayConfiguration;
     this.pluginInfo = pluginInfo;
     this.buildUI();
+    this.updateUI(this.displayConfiguration);
   }
 
   protected buildUI(){
@@ -281,7 +299,17 @@ export class UIPluginSection extends UIBaseComponent {
   }
 
   public setPluginInstallPending(installing:boolean){
-    //TODO!!
+  }
+
+  public setPluginUInstallPending(unistalling:boolean){
+  }
+
+  protected changeElementVisibility(element:HTMLElement, visible:boolean){
+      if (!visible){
+        element.style.visibility = "hidden"
+      } else {
+        element.style.visibility = "visible"
+      }
   }
 
 }
@@ -315,6 +343,8 @@ export class UIPluginStatsSection extends UIPluginSection {
 
 export class UIPluginBodySection extends UIPluginSection {
 
+  private pluginUpdateDateEl:HTMLElement;
+
   constructor(pluginInfo:CordovaPlugin, displayConfiguration:DisplayConfiguration){
     super(pluginInfo, displayConfiguration);
   }
@@ -337,6 +367,7 @@ export class UIPluginBodySection extends UIPluginSection {
     })
     pluginVersionEl.className = "de-workbench-plugins-list-item-plugversion";
 
+    // Last Update
     let lastUpdateTimeStr = "Not Available";
     if (this.pluginInfo.lastUpdateTime){
       try {
@@ -344,18 +375,21 @@ export class UIPluginBodySection extends UIPluginSection {
         lastUpdateTimeStr = moment(date).fromNow();
       } catch(ex){}
     }
-    let pluginUpdateDateEl = createElement('span',{
+    this.pluginUpdateDateEl = createElement('span',{
       elements: [
         createText("Last update: " + lastUpdateTimeStr)
       ]
     })
-    pluginUpdateDateEl.className = "de-workbench-plugins-list-item-lastupdate";
+    this.pluginUpdateDateEl.className = "de-workbench-plugins-list-item-lastupdate";
+    // end Last Update
 
+
+    // Name
     let nameEl = createElement('h4', {
       elements: [
         pluginNameEl,
         pluginVersionEl,
-        pluginUpdateDateEl
+        this.pluginUpdateDateEl
       ]
     })
 
@@ -365,17 +399,20 @@ export class UIPluginBodySection extends UIPluginSection {
       ]
     })
     descEl.className = "de-workbench-plugins-list-item-plugdesc";
+    // end nameEl
+
 
     this.mainElement = createElement('div',{
       elements : [
           nameEl, descEl
       ]
     });
+
   }
 
   public updateUI(displayConfiguration:DisplayConfiguration){
     super.updateUI(displayConfiguration);
-    //NOP
+    this.changeElementVisibility(this.pluginUpdateDateEl ,displayConfiguration.lastUpdateVisible)
   }
 
 }
@@ -384,6 +421,8 @@ export class UIPluginMetaSection extends UIPluginSection {
 
     protected callbackFunc:Function;
     protected metaButtons:UIPluginMetaButtons;
+    protected ratingEl:HTMLElement;
+    protected platformsEl:HTMLElement;
 
     constructor(pluginInfo:CordovaPlugin, displayConfiguration:DisplayConfiguration){
       super(pluginInfo, displayConfiguration);
@@ -391,6 +430,8 @@ export class UIPluginMetaSection extends UIPluginSection {
 
     protected buildUI(){
       super.buildUI();
+
+      // Owner
       let userOwner  = this.pluginInfo.author
       let userOwnerEl:HTMLElement = createElement('a',{
         elements: [
@@ -399,21 +440,33 @@ export class UIPluginMetaSection extends UIPluginSection {
       });
       userOwnerEl.setAttribute("href", this.pluginInfo.homepage);
       userOwnerEl.className = "de-workbench-plugins-list-item-owner";
+      // end Owner
 
-      let ratingEl:HTMLElement = createElement('span',{
+
+      // Rating
+      this.ratingEl = createElement('span',{
         elements: [
           createText(""+this.pluginInfo.rating)
         ],
         className:'badge badge-info de-workbench-plugins-list-item-rating'
       })
+      // end Rating
 
-      let platformsEl:HTMLElement = this.renderPlatforms(this.pluginInfo.platforms);
 
+      // Supported platforms
+      this.platformsEl = this.renderPlatforms(this.pluginInfo.platforms);
+      // end Supported platforms
+
+
+      // Owner
       let metaUser = createElement('div',{
-        elements : [ ratingEl, userOwnerEl, platformsEl ],
+        elements : [ this.ratingEl, userOwnerEl, this.platformsEl ],
         className : 'de-workbench-plugins-list-meta-user'
       });
+      // end Owner
 
+
+      // Controls
       this.metaButtons = new UIPluginMetaButtons(this.pluginInfo, this.displayConfiguration);
        if (this.pluginInfo.installed){
          this.metaButtons.showButtons(UIPluginMetaButtons.BTN_TYPE_UNINSTALL)
@@ -437,6 +490,8 @@ export class UIPluginMetaSection extends UIPluginSection {
           })
         ]
       });
+      // end Controls
+
 
       this.mainElement = createElement('div',{
         elements : [
@@ -466,9 +521,15 @@ export class UIPluginMetaSection extends UIPluginSection {
       this.metaButtons.setPluginInstallPending(installing);
     }
 
+    public setPluginUInstallPending(installing:boolean){
+      this.metaButtons.setPluginUInstallPending(installing);
+    }
+
     public updateUI(displayConfiguration:DisplayConfiguration){
       super.updateUI(displayConfiguration);
       this.metaButtons.updateUI(displayConfiguration)
+      this.changeElementVisibility(this.ratingEl ,displayConfiguration.ratingVisible)
+      this.changeElementVisibility(this.platformsEl ,displayConfiguration.platformsVisible)
     }
 
 
@@ -499,7 +560,7 @@ export class UIPluginMetaButtons extends UIPluginSection {
     this.spinner = createElement('span',{
       className: 'loading loading-spinner-small plugin-install-spinner'
     })
-    this.spinner.style.display = "none"
+    this.spinner.style.visibility = "hidden"
 
     this.btnInstall = this.buildButton('Install');
     this.btnInstall.className = this.btnInstall.className + " btn-info icon icon-cloud-download install-button";
@@ -564,11 +625,21 @@ export class UIPluginMetaButtons extends UIPluginSection {
 
   public setPluginInstallPending(installing:boolean){
     if (installing){
-      this.btnInstall.style.display = "none";
-      this.spinner.style.display = "block";
+      this.btnInstall.style.visibility = "hidden";
+      this.spinner.style.visibility = "visible";
     } else {
-      this.spinner.style.display = "none";
-      this.btnInstall.style.display = "block";
+      this.spinner.style.visibility = "hidden";
+      this.btnInstall.style.visibility = "visible";
+    }
+  }
+
+  public setPluginUInstallPending(unistalling:boolean){
+    if (unistalling){
+      this.btnUninstall.style.visibility = "hidden";
+      this.spinner.style.visibility = "visible";
+    } else {
+      this.spinner.style.visibility = "hidden";
+      this.btnUninstall.style.visibility = "visible";
     }
   }
 

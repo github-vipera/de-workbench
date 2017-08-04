@@ -40,7 +40,6 @@ export class CommunityPluginsView extends UIBaseComponent {
   private pluginList: UIPluginsList;
   private searchForm:HTMLElement;
   private searchTextEditor:HTMLElement;
-  //private progress:HTMLElement;
 
   private btnGroupPlatformChooser: UIButtonGroup;
   private btnChooseIOS:HTMLElement;
