@@ -155,42 +155,44 @@ export class Cordova {
         let plugins = new Array();
         Object.keys(results.plugins).forEach((key) => {
           let pluginRaw = pluginsRaw.plugins[key];
-          let plugin = new CordovaPlugin();
-          plugin.name = key;
-          plugin.id = pluginRaw["plugin"]["$"]["id"];
-          plugin.version = pluginRaw["plugin"]["$"]["version"];
-          plugin.description = (pluginRaw["plugin"]["description"] || ["n.a"])[0];
-          plugin.isTopLevel = pluginRaw["is_top_level"];
-          plugin.installed = true;
-          plugin.info = pluginRaw;
-          // gets extra info if availables
-          if (pluginRaw["packageJson"]){
-            if (pluginRaw["packageJson"]["author"]){
-              if (pluginRaw["packageJson"]["author"] instanceof Object){
-                if (pluginRaw["packageJson"]["author"]){
-                  plugin.author = pluginRaw["packageJson"]["author"]["name"];
+          if (pluginRaw["plugin"] && pluginRaw["plugin"]["$"]){
+            let plugin = new CordovaPlugin();
+            plugin.name = key;
+            plugin.id = pluginRaw["plugin"]["$"]["id"];
+            plugin.version = pluginRaw["plugin"]["$"]["version"];
+            plugin.description = (pluginRaw["plugin"]["description"] || ["n.a"])[0];
+            plugin.isTopLevel = pluginRaw["is_top_level"];
+            plugin.installed = true;
+            plugin.info = pluginRaw;
+            // gets extra info if availables
+            if (pluginRaw["packageJson"]){
+              if (pluginRaw["packageJson"]["author"]){
+                if (pluginRaw["packageJson"]["author"] instanceof Object){
+                  if (pluginRaw["packageJson"]["author"]){
+                    plugin.author = pluginRaw["packageJson"]["author"]["name"];
+                  }
+                } else {
+                  plugin.author = pluginRaw["packageJson"]["author"];
                 }
-              } else {
-                plugin.author = pluginRaw["packageJson"]["author"];
+              }
+              if (pluginRaw["packageJson"]["license"]){
+                plugin.license = pluginRaw["packageJson"]["license"];
+              }
+              if (pluginRaw["packageJson"]["repository"] && pluginRaw["packageJson"]["repository"]["url"]){
+                plugin.repository = pluginRaw["packageJson"]["repository"]["url"];
+              }
+              if (pluginRaw["packageJson"]["repository"] && pluginRaw["packageJson"]["repository"]["type"]){
+                plugin.repositoryType = pluginRaw["packageJson"]["type"];
+              }
+              if (pluginRaw["packageJson"]["homepage"]){
+                plugin.homepage = pluginRaw["packageJson"]["homepage"];
               }
             }
-            if (pluginRaw["packageJson"]["license"]){
-              plugin.license = pluginRaw["packageJson"]["license"];
+            if (pluginRaw["source"] && pluginRaw["source"]["type"]){
+              plugin.sourceType = pluginRaw["source"]["type"];
             }
-            if (pluginRaw["packageJson"]["repository"] && pluginRaw["packageJson"]["repository"]["url"]){
-              plugin.repository = pluginRaw["packageJson"]["repository"]["url"];
-            }
-            if (pluginRaw["packageJson"]["repository"] && pluginRaw["packageJson"]["repository"]["type"]){
-              plugin.repositoryType = pluginRaw["packageJson"]["type"];
-            }
-            if (pluginRaw["packageJson"]["homepage"]){
-              plugin.homepage = pluginRaw["packageJson"]["homepage"];
-            }
-        }
-          if (pluginRaw["source"] && pluginRaw["source"]["type"]){
-            plugin.sourceType = pluginRaw["source"]["type"];
+            plugins.push(plugin);
           }
-          plugins.push(plugin);
         });
         resolve(plugins);
       });
