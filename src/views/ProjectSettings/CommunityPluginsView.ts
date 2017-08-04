@@ -35,6 +35,7 @@ import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-compo
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UINotifications } from '../../ui-components/UINotifications'
 import { EventBus } from '../../DEWorkbench/EventBus'
+import { ConsoleView } from '../ConsoleView'
 
 export class CommunityPluginsView extends UIBaseComponent {
 
@@ -95,6 +96,8 @@ export class CommunityPluginsView extends UIBaseComponent {
         })
       btnManualInstall.addEventListener('click',(evt)=>{
         console.log('Platforms selected: ', this.btnGroupPlatformChooser.getSelectedButtons());
+        let cv = new ConsoleView();
+        cv.show()
       });
 
     this.queryResultsMessage = createElement('span',{

@@ -12,7 +12,7 @@ declare function require(moduleName: string): any;
 import { Logger } from './logger/Logger'
 import { InkProvider } from './DEWorkbench/DEWBExternalServiceProvider'
 
-const {allowUnsafeEval, allowUnsafeNewFunction} = require('loophole');
+//const {allowUnsafeEval, allowUnsafeNewFunction} = require('loophole');
 
 export default {
 
