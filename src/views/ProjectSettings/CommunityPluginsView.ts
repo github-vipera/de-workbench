@@ -34,6 +34,7 @@ import { CordovaPluginsFinder } from '../../cordova/CordovaPluginsFinder'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UINotifications } from '../../ui-components/UINotifications'
+import { EventBus } from '../../DEWorkbench/EventBus'
 
 export class CommunityPluginsView extends UIBaseComponent {
 

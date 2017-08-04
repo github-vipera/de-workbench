@@ -27,6 +27,7 @@ import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UINotifications } from '../../ui-components/UINotifications'
+import { EventBus } from '../../DEWorkbench/EventBus'
 
 export class InstalledPluginsView  extends UIBaseComponent {
 
@@ -41,6 +42,22 @@ export class InstalledPluginsView  extends UIBaseComponent {
     this.currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
 
     this.buildUI();
+
+
+    // Subscribe interesting events
+    EventBus.getInstance().subscribe(Cordova.EVT_PLUGIN_ADDED, (eventData)=>{
+      // the first item in eventData is the project root
+      if (eventData[0]===this.currentProjectRoot){
+        this.reload()
+      }
+    });
+    EventBus.getInstance().subscribe(Cordova.EVT_PLUGIN_REMOVED, (eventData)=>{
+      // the first item in eventData is the project root
+      if (eventData[0]===this.currentProjectRoot){
+        this.reload()
+      }
+    });
+    // end event bus subscription
 
     this.reload();
   }
@@ -93,7 +110,6 @@ export class InstalledPluginsView  extends UIBaseComponent {
     this.pluginList.setPluginUInstallPending(pluginInfo, true);
     ProjectManager.getInstance().cordova.removePlugin(this.currentProjectRoot, pluginInfo).then(()=>{
       UINotifications.showInfo("Plugin "+pluginInfo.name +" uninstalled successfully.")
-      this.reload();
       this.showProgress(false)
       this.pluginList.setPluginUInstallPending(pluginInfo, false);
     }).catch(()=>{

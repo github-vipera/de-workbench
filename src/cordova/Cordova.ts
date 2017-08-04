@@ -21,6 +21,7 @@ import { CordovaUtils } from './CordovaUtils';
 import { CordovaPluginScanner } from './CordovaPluginScanner';
 import { Logger } from '../logger/Logger'
 import { CordovaExecutor } from './CordovaExecutor';
+import { EventBus } from '../DEWorkbench/EventBus'
 
 export class CordovaPlatform {
   public name: string;
@@ -74,6 +75,9 @@ export interface CordovaProjectInfo {
 
 
 export class Cordova {
+
+  public static get EVT_PLUGIN_ADDED():string { return "dewb.project.cordova.pluginAdded"; }
+  public static get EVT_PLUGIN_REMOVED():string { return "dewb.project.cordova.pluginRemoved"; }
 
   private cordovaUtils: CordovaUtils;
   //private cordovaPluginScanner: CordovaPluginScanner;
@@ -140,6 +144,7 @@ export class Cordova {
     let executor = new CordovaExecutor(null);
     let projectInfo = await this.getProjectInfo(projectRoot, false);
     await executor.addPlugin(projectInfo, pluginInfo.id, null);
+    EventBus.getInstance().publish(Cordova.EVT_PLUGIN_ADDED, projectRoot, pluginInfo)
   }
 
   public async removePlugin(projectRoot: string,pluginInfo:CordovaPlugin){
@@ -147,6 +152,7 @@ export class Cordova {
     let executor = new CordovaExecutor(null);
     let projectInfo = await this.getProjectInfo(projectRoot, false);
     await executor.removePlugin(projectInfo, pluginInfo.id);
+    EventBus.getInstance().publish(Cordova.EVT_PLUGIN_REMOVED, projectRoot, pluginInfo)
   }
 
   /**
