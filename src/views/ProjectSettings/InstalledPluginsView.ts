@@ -29,17 +29,30 @@ import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UINotifications } from '../../ui-components/UINotifications'
 import { EventBus } from '../../DEWorkbench/EventBus'
 
+const chokidar = require('chokidar');
+const path = require('path');
+
 export class InstalledPluginsView  extends UIBaseComponent {
 
   private pluginList: UIPluginsList;
   private stackedPage: UIStackedView;
   private lineLoader:UILineLoader;
   private currentProjectRoot:string;
+  private fsWatcher:any;
 
   constructor(){
     super();
 
     this.currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
+
+    // Initialize watcher.
+    this.fsWatcher = chokidar.watch(path.join(this.currentProjectRoot, 'plugins'), {
+      ignored: /(^|[\/\\])\../,
+      persistent: true
+    });
+    this.fsWatcher
+      .on('addDir', (path) => { this.reload()})
+      .on('unlinkDir', (path) => { this.reload()})
 
     this.buildUI();
 
@@ -124,4 +137,10 @@ export class InstalledPluginsView  extends UIBaseComponent {
       this.pluginList.setPlugins(installedPlugins);
     });
   }
+
+  public destroy () {
+    this.fsWatcher.close();
+    super.destroy();
+  }
+
 }
