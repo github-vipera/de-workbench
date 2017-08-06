@@ -26,7 +26,6 @@ import { UIPluginsList } from '../../ui-components/UIPluginsList'
 import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { CommunityPluginsView } from './CommunityPluginsView'
 import { AppInfoView } from './AppInfoView'
 import { InstalledPlatformsView } from './InstalledPlatformsView'
 

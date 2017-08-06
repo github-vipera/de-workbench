@@ -22,12 +22,10 @@
 const _ = require("lodash");
 const $ = require ('JQuery');
 
-import { EventEmitter }  from 'events'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { Logger } from '../../logger/Logger'
 import { UIPluginsList, UIPluginMetaButtons } from '../../ui-components/UIPluginsList'
-import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { CordovaPluginsFinder } from '../../cordova/CordovaPluginsFinder'
@@ -35,7 +33,6 @@ import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-compo
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UINotifications } from '../../ui-components/UINotifications'
 import { EventBus } from '../../DEWorkbench/EventBus'
-import { ConsoleView } from '../ConsoleView'
 
 export class CommunityPluginsView extends UIBaseComponent {
 
@@ -102,19 +99,6 @@ export class CommunityPluginsView extends UIBaseComponent {
         .addChangeListener((buttonConfig:UIButtonConfig)=>{
           this.submitSearch();
         });
-
-    /**
-    let btnManualInstall:HTMLElement = createElement('button',{
-          elements: [
-            createText("Install manually...")
-          ],
-          className: 'btn'
-        })
-      btnManualInstall.addEventListener('click',(evt)=>{
-        console.log('Platforms selected: ', this.btnGroupPlatformChooser.getSelectedButtons());
-        let cv = new ConsoleView();
-        cv.show()
-      });**/
 
     this.queryResultsMessage = createElement('span',{
       elements: [
