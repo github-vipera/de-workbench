@@ -39,6 +39,7 @@ export class ProvidedPluginsView extends UIBaseComponent {
   private lineLoader:UILineLoader;
   private currentProjectRoot:string;
   private pluginsProvider:CordovaPluginsProviderService;
+  private extendedUIContainer: HTMLElement;
 
   constructor(){
     super();
@@ -80,12 +81,14 @@ export class ProvidedPluginsView extends UIBaseComponent {
       }
     });
 
+
+    this.extendedUIContainer = createElement('div',{
+      className:'de-workbench-provided-plugins-extui-container'
+    });
+
     // Main element
     this.mainElement = createElement('div',{
-        elements : [
-          this.pluginList.element(),
-          this.lineLoader.element()
-        ],
+        elements : [  this.extendedUIContainer, this.pluginList.element(), this.lineLoader.element() ],
         className: 'de-workbench-community-plugins-list'
     })
 
@@ -145,6 +148,15 @@ export class ProvidedPluginsView extends UIBaseComponent {
 
   public setPluginsProvider(provider:CordovaPluginsProviderService):ProvidedPluginsView {
     this.pluginsProvider = provider;
+
+    if (this.pluginsProvider.getExtendedUI){
+        let extendedUIElement = this.pluginsProvider.getExtendedUI();
+        if (extendedUIElement){
+          insertElement(this.extendedUIContainer, extendedUIElement)
+        }
+    }
+
+
     return this;
   }
 

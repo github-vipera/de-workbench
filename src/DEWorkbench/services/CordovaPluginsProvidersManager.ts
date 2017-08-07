@@ -9,6 +9,10 @@
 import { Logger } from '../../logger/Logger'
 import { CordovaPlugin } from '../../cordova/Cordova'
 
+export interface CordovaPluginsProviderFactory {
+  createProvider():CordovaPluginsProviderService;
+}
+
 export interface CordovaPluginsProviderService {
   getCordovaPlugins():Array<CordovaPlugin>;
   getProviderName():string;
@@ -18,11 +22,11 @@ export interface CordovaPluginsProviderService {
 export class CordovaPluginsProvidersManager {
 
   private static instance:CordovaPluginsProvidersManager;
-  private providers:Array<CordovaPluginsProviderService>
+  private providerFactories:Array<CordovaPluginsProviderFactory>
 
   private constructor() {
     Logger.getInstance().debug("Creating CordovaPluginsProvidersManager...")
-    this.providers = [];
+    this.providerFactories = [];
   }
 
   static getInstance() {
@@ -32,19 +36,19 @@ export class CordovaPluginsProvidersManager {
       return CordovaPluginsProvidersManager.instance;
   }
 
-  public registerProvider(provider:CordovaPluginsProviderService){
+  public registerProviderFactory(providerFactory:CordovaPluginsProviderFactory){
     try {
-      Logger.getInstance().debug("Registering Cordova Plugins Provider: ", provider.getProviderName())
-      console.log("Registering Cordova Plugins Provider: ", provider.getProviderName())
-      this.providers.push(provider)
+      Logger.getInstance().debug("Registering Cordova Plugins Provider Factory: ",providerFactory)
+      console.log("Registering Cordova Plugins Provider: ", providerFactory)
+      this.providerFactories.push(providerFactory)
     } catch (ex){
       Logger.getInstance().error("Error registering Cordova Plugins Provider: ", ex)
       console.error("Error registering Cordova Plugins Provider: ", ex)
     }
   }
 
-  public getProviders():Array<CordovaPluginsProviderService>{
-    return this.providers;
+  public getProviderFactories():Array<CordovaPluginsProviderFactory>{
+    return this.providerFactories;
   }
 
 }
