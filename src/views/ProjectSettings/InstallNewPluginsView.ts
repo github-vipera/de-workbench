@@ -27,6 +27,8 @@ import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { CommunityPluginsView } from './CommunityPluginsView'
+import { ProvidedPluginsView } from './ProvidedPluginsView'
+import { CordovaPluginsProvidersManager } from '../../DEWorkbench/services/CordovaPluginsProvidersManager'
 
 export class InstallNewPluginsView extends UIBaseComponent {
 
@@ -48,9 +50,17 @@ export class InstallNewPluginsView extends UIBaseComponent {
 
     this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
 
-    this.tabbedView.addView(new UITabbedViewItem('de_plugins',          'Dynamic Engine Plugins',  this.createSimpleEmptyView('Dynamic Engine Plugins List here')).setTitleClass('icon icon-settings'));
-    this.tabbedView.addView(new UITabbedViewItem('featured_plugins',    'Featured Plugins',  this.createSimpleEmptyView('Third Part Featured Plugins List here')).setTitleClass('icon icon-settings'));
+    //this.tabbedView.addView(new UITabbedViewItem('de_plugins',          'Dynamic Engine Plugins',  this.createSimpleEmptyView('Dynamic Engine Plugins List here')).setTitleClass('icon icon-settings'));
+    //this.tabbedView.addView(new UITabbedViewItem('featured_plugins',    'Featured Plugins',  this.createSimpleEmptyView('Third Part Featured Plugins List here')).setTitleClass('icon icon-settings'));
     this.tabbedView.addView(new UITabbedViewItem('community_plugins',   'Community Plugins',  this.communityPluginsView .element()).setTitleClass('icon icon-settings'));
+
+    let externalPluginsProviders = CordovaPluginsProvidersManager.getInstance().getProviders();
+    console.log("externalPluginsProviders ", externalPluginsProviders)
+    for (var i=0;i<externalPluginsProviders.length;i++){
+      let provider = externalPluginsProviders[i];
+      let providedPluginsView = new ProvidedPluginsView().setPluginsProvider(provider).reloadPluginList();
+      this.tabbedView.addView(new UITabbedViewItem('de_provided_plugins_'+provider.getProviderName(), provider.getProviderName(),  providedPluginsView.element()).setTitleClass('icon icon-settings'));
+    }
 
     this.stackedPage = new UIStackedView()
                         .setTitle('Install New Plugins')

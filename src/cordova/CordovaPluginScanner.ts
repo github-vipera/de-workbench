@@ -75,8 +75,7 @@ export class CordovaPluginScanner {
     var parser = new xml2js.Parser();
     fs.readFile(path + "/plugin.xml", function(err, data) {
       if (err) {
-        console.log("Error scanning plugin '" + pluginId + "' in path " + path + ":");
-        console.log(err);
+        console.error("Error scanning plugin '" + pluginId + "' in path " + path + ":", err);
       } else {
         parser.parseString(data, function(err, result) {
           var pluginId = result.plugin.$.id;

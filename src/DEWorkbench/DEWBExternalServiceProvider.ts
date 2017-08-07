@@ -12,7 +12,6 @@ const {allowUnsafeEval, allowUnsafeNewFunction} = require('loophole');
 
 export class InkProvider {
 
-
   private static instance: InkProvider;
 
   private _ink;
@@ -61,6 +60,7 @@ export class InkProvider {
         let evaluated = null;//eval(editor.getText())
         var docTemplate = allowUnsafeEval(() => allowUnsafeNewFunction(() => evaluated = eval(editor.getText())));
         cons.stdout(evaluated);
+        cons.stderr("Errorone!!!")
         return cons.input();
       } catch (error){
         cons.stderr(error);

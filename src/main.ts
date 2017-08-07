@@ -11,8 +11,7 @@ declare function require(moduleName: string): any;
 //import { DEWorkbench } from './DEWorkbench/DEWorkbench'
 import { Logger } from './logger/Logger'
 import { InkProvider } from './DEWorkbench/DEWBExternalServiceProvider'
-
-//const {allowUnsafeEval, allowUnsafeNewFunction} = require('loophole');
+import { CordovaPluginsProvidersManager } from './DEWorkbench/services/CordovaPluginsProvidersManager'
 
 export default {
 
@@ -21,10 +20,13 @@ export default {
   subscriptions: null,
   loggerView: null,
   ink: null,
+  cordovaPluginsProvidersManager:null,
 
   activate (state: any) {
       console.log("DEWB activated.");
-      setTimeout(this.deferredActivation.bind(this),1000);
+      this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();
+      this.deferredActivation();
+      //setTimeout(this.deferredActivation.bind(this),1000);
   },
 
   deferredActivation(){
@@ -82,6 +84,7 @@ export default {
     InkProvider.getInstance().setInk(this.ink);
 
     /**
+    //const {allowUnsafeEval, allowUnsafeNewFunction} = require('loophole');
     let cons = ink.Console.fromId('dewb-language-client')
     cons.setModes([
       {
@@ -112,6 +115,16 @@ export default {
     });
     **/
 
+  },
+
+  consumeCordovaPluginsProvider () {
+    console.log("consumeDEWBCordovaPluginsProvider called")
+    return CordovaPluginsProvidersManager.getInstance();
+  },
+
+  consumeLogger () {
+    console.log("provideLogger called")
+    return Logger.getInstance();
   }
 
 }

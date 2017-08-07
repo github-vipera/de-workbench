@@ -21,6 +21,7 @@ export class Logger {
 
     this.logger = new (winston.Logger)({
       transports: [
+        /**
         new winston.transports.File({
             level: 'verbose',
             filename: '/Users/enrico/Develop/NewDynamicEngine/Atom Plugins/de-workbench/all-logs.log',
@@ -29,7 +30,7 @@ export class Logger {
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false
-        }),
+        }),**/
         new winston.transports.Console({
             level: 'verbose',
             handleExceptions: true,
@@ -51,21 +52,25 @@ export class Logger {
   info(...msg){
     this.fireLogEvent(LogLevel.INFO,msg);
     this.logger.info(msg);
+    console.info(msg);
   }
 
   debug(...msg){
     this.fireLogEvent(LogLevel.DEBUG,msg);
     this.logger.debug(msg);
+    console.debug(msg);
   }
 
   warn(...msg){
     this.fireLogEvent(LogLevel.WARN,msg);
     this.logger.warn(msg);
+    console.warn(msg);
   }
 
   error(...msg){
     this.fireLogEvent(LogLevel.ERROR,msg);
     this.logger.error(msg);
+    console.error(msg);
   }
 
 
