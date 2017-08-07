@@ -13,6 +13,7 @@ import { Logger } from '../logger/Logger'
 
 export class EventBus {
 
+    // Project events
     public static get EVT_PROJECT_CHANGED():string { return "dewb.project.workspace.projectChanged"; }
     public static get EVT_PATH_CHANGED():string { return "dewb.project.workspace.pathChanged"; }
     public static get EVT_PLUGIN_ADDED():string { return "dewb.project.cordova.pluginAdded"; }
@@ -20,12 +21,16 @@ export class EventBus {
     public static get EVT_PLATFORM_ADDED():string { return "dewb.project.cordova.platformRemoved"; }
     public static get EVT_PLATFORM_REMOVED():string { return "dewb.project.cordova.platformRemoved"; }
 
+    // Workbench events
+    public static get EVT_WORKBENCH_PLUGIN_ADDED():string { return "dewb.workbench.plugins.pluginAdded"; }
+
+
     private static instance: EventBus;
     private _eventBus:any;
+    private eventEmitter:EventEmitter;
 
     private constructor() {
-      let EvtBusModule = require('@nsisodiya/eventbus')
-      this._eventBus = new EvtBusModule();
+      this.eventEmitter = new EventEmitter();
     }
 
     static getInstance() {
@@ -36,15 +41,16 @@ export class EventBus {
     }
 
     public subscribe(topic:string, callback:Function){
-      this._eventBus.subscribe(topic, callback)
-    }
-
-    public subscribeAll(callback:Function){
-      this._eventBus.subscribeAll(callback)
+      this.eventEmitter.on(topic,callback);
     }
 
     public publish(topic:string, ...args) {
-      this._eventBus.publish(topic, args)
+      //this._eventBus.publish(topic, args)
+      this.eventEmitter.emit(topic,args);
+    }
+
+    public unsubscribe(topic:string, callback:Function){
+      this.eventEmitter.removeListener(topic, callback)
     }
 
 }
