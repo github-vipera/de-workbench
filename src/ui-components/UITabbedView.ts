@@ -153,6 +153,11 @@ export class UITabbedView extends UIBaseComponent {
     //TODO!!
   }
 
+  public setBottomToolbar(toolbarElement:HTMLElement){
+    this.tabList.addBottomToolbar(toolbarElement);
+    return this;
+  }
+
   public destroy(){
     this.tabList.destroy()
     this.stacked.destroy();
@@ -175,6 +180,8 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
   private tabItemsMap:any = {};
   private eventEmitter = new events.EventEmitter();
   private currentTabTypeClassName: string = UITabbedView.CLSNAME_TAB_TYPE_DEFAULT;
+  private bottomToolbarElement:HTMLElement;
+  private bottomToolbarContainer:HTMLElement;
 
   constructor(){
     super();
@@ -193,9 +200,21 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
     })
   }
 
+  public addBottomToolbar(toolbarEl:HTMLElement):UITabbedViewTabListComponent {
+    this.bottomToolbarElement = toolbarEl;
+    this.bottomToolbarContainer = createElement('div',{
+      elements:[this.bottomToolbarElement],
+      className: 'de-workbench-tabbedview-tablist-bottomtoolbar-container'
+    })
+    insertElement(this.mainElement,this.bottomToolbarContainer);
+    return this;
+  }
+
+    /**
   public element(): HTMLElement {
     return this.mainElement;
   }
+  **/
 
   /**
    * Add a new tab item

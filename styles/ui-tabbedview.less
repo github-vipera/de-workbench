@@ -68,8 +68,16 @@
   -webkit-user-select: none;
   cursor: default;
 }
-
-
+.tab-type-vertical {
+  .de-workbench-tabbedview-tablist-bottomtoolbar-container {
+    width: 100%;
+    bottom: 0px;
+    left: 0px;
+    position: absolute;
+    border-top: solid 1px @base-border-color;
+    padding: 2px;
+  }
+}
 
 /* HORIZONTAL TYPE **/
 .de-workbench-tabbedview.tab-type-horizontal {
@@ -110,4 +118,10 @@
 .tab-type-horizontal.de-workbench-tabbedview-tab-item:hover {
   background-color: @pane-item-background-color;
   border-bottom: solid 1px #808080;
+}
+
+.tab-type-horizontal{
+  .de-workbench-tabbedview-tablist-bottomtoolbar-container {
+    visibility: none; //not supported in Horizontal mode
+  }
 }
