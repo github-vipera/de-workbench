@@ -17,6 +17,7 @@ export interface CordovaPluginsProviderService {
   getCordovaPlugins():Array<CordovaPlugin>;
   getProviderName():string;
   getExtendedUI():HTMLElement;
+  addEventHandler(handler:Function);
 }
 
 export class CordovaPluginsProvidersManager {

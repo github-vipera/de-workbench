@@ -148,6 +148,11 @@ export class ProvidedPluginsView extends UIBaseComponent {
 
   public setPluginsProvider(provider:CordovaPluginsProviderService):ProvidedPluginsView {
     this.pluginsProvider = provider;
+    this.pluginsProvider.addEventHandler((event)=>{
+      if (event && event.type && event.type ==='listChanged'){
+        this.reloadPluginList();
+      }
+    })
 
     if (this.pluginsProvider.getExtendedUI){
         let extendedUIElement = this.pluginsProvider.getExtendedUI();
