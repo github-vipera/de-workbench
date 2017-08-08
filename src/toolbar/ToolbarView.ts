@@ -88,6 +88,7 @@ export class ToolbarView {
     },[
       createIcon('newproj')
     ]);
+    atom["tooltips"].add(this.newProjectButton, {title:'Create a New Project'})
     insertElement(this.toolbarElement, this.newProjectButton)
 
     this.buildButton = createButton({
@@ -98,6 +99,7 @@ export class ToolbarView {
     },[
       createIcon('build')
     ]);
+    atom["tooltips"].add(this.buildButton, {title:'Open Project Settings'})
     insertElement(this.toolbarElement, this.buildButton)
 
     this.createRunComponents();

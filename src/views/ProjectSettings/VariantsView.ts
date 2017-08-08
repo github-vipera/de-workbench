@@ -45,19 +45,21 @@ export class VariantsView  extends UIBaseComponent {
       //elements : [ createText("New...")],
       className: 'btn btn-xs icon icon-gist-new'
     })
+    atom["tooltips"].add(addVariantButton, {title:'Create a new Variant'})
     let removeVariantButton = createElement('button',{
       //elements : [ createText("Delete")],
       className: 'btn btn-xs icon icon-dash'
     })
+    atom["tooltips"].add(removeVariantButton, {title:'Remove selected Variant'})
     let renameVariantButton = createElement('button',{
       //elements : [ createText("Rename")],
       className: 'btn btn-xs icon icon-pencil'
     })
+    atom["tooltips"].add(renameVariantButton, {title:'Rename selected Variant'})
     let duplicateVariantButton = createElement('button',{
-      //elements : [ createText("Duplicate")],
       className: 'btn btn-xs icon icon-clippy'
     })
-
+    atom["tooltips"].add(duplicateVariantButton, {title:'Duplicate selected Variant'})
     let tabbedToolbar = createElement('div',{
       elements: [
         createElement('div', {
@@ -69,8 +71,12 @@ export class VariantsView  extends UIBaseComponent {
     tabbedToolbar.style.float = "right"
     // end tabbed toolbar
 
+
+
     this.tabbedView = new UITabbedView()
             .setBottomToolbar(tabbedToolbar);
+
+
 
 
     let mainContainer = createElement('div',{
