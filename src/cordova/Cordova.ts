@@ -45,6 +45,7 @@ export class CordovaPlugin {
   public sourceType:string = '';
   public lastUpdateTime:string = '';
   public rating:number = 0;
+  public localPath:string = '';
   public platforms:Array<string> = [];
 }
 
@@ -142,7 +143,12 @@ export class Cordova {
     Logger.getInstance().debug("addPlugin called with "+ pluginInfo.name +" for " + projectRoot);
     let executor = new CordovaExecutor(null);
     let projectInfo = await this.getProjectInfo(projectRoot, false);
-    await executor.addPlugin(projectInfo, pluginInfo.id, null);
+    let installOpt = undefined;
+    if (pluginInfo.repository==='local'){
+      installOpt = {};
+      installOpt.searchPath = pluginInfo.localPath;
+    }
+    await executor.addPlugin(projectInfo, pluginInfo.id, installOpt);
     EventBus.getInstance().publish(EventBus.EVT_PLUGIN_ADDED, projectRoot, pluginInfo)
   }
 
