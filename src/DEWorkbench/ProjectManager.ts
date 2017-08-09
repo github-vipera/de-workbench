@@ -108,13 +108,13 @@ export class ProjectManager {
       this.events.emit('didProjectChanged', projectPath);
     }
 
-    public didProjectChanged(callback:Function){
-      this.events.on('didProjectChanged', callback);
+    public didProjectChanged(listener){
+      this.events.on('didProjectChanged', listener);
       EventBus.getInstance().publish(EventBus.EVT_PROJECT_CHANGED, this.currentProjectPath)
     }
 
-    public didPathChanged(callback:Function){
-      this.events.on('didPathChanged', callback);
+    public didPathChanged(listener){
+      this.events.on('didPathChanged', listener);
       EventBus.getInstance().publish(EventBus.EVT_PATH_CHANGED, this.currentProjectPath)
     }
 

@@ -40,8 +40,8 @@ export class EventBus {
         return EventBus.instance;
     }
 
-    public subscribe(topic:string, callback:Function){
-      this.eventEmitter.on(topic,callback);
+    public subscribe(topic:string, listener){
+      this.eventEmitter.on(topic,listener);
     }
 
     public publish(topic:string, ...args) {
@@ -49,8 +49,8 @@ export class EventBus {
       this.eventEmitter.emit(topic,args);
     }
 
-    public unsubscribe(topic:string, callback:Function){
-      this.eventEmitter.removeListener(topic, callback)
+    public unsubscribe(topic:string, listener){
+      this.eventEmitter.removeListener(topic, listener)
     }
 
 }
