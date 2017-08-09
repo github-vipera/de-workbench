@@ -16,14 +16,14 @@ import {
  createIconFromPath,
  attachEventFromObject,
  createTextEditor
-} from '../../element/index';
+} from '../../../element/index';
 
 import { EventEmitter }  from 'events'
-import { Logger } from '../../logger/Logger'
-import { UIStackedView } from '../../ui-components/UIStackedView'
-import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
-import { ProjectManager } from '../../DEWorkbench/ProjectManager'
+import { Logger } from '../../../logger/Logger'
+import { UIStackedView } from '../../../ui-components/UIStackedView'
+import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
+import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
+import { ProjectManager } from '../../../DEWorkbench/ProjectManager'
 
 export class VariantsView  extends UIBaseComponent {
 

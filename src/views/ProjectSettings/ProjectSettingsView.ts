@@ -26,7 +26,7 @@ import { Logger } from '../../logger/Logger'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { InstalledPluginsView } from './InstalledPluginsView'
 import { InstallNewPluginsView } from './InstallNewPluginsView'
-import { VariantsView } from './VariantsView'
+import { VariantsView } from './variants/VariantsView'
 import { AppSignatureView } from './AppSignatureView'
 import { GeneralSettingsView } from './GeneralSettingsView'
 
