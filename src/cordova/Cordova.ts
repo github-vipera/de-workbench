@@ -345,22 +345,15 @@ export class Cordova {
     }
   }
 
-
-
-
-  /**
-  public getProjectInfo(projectRoot:string):Promise<any> {
-    return new Promise((resolve, reject) => {
-      let jsonPath = path.join(projectRoot, "package.json");
-      var obj;
-      fs.readFile(jsonPath, 'utf8', function (err, data) {
-        if (err) throw err;
-        obj = JSON.parse(data);
-        resolve(obj);
-      });
-    })
+  public markInstalledPlugins(pluginList:Array<CordovaPlugin>, installedPlugins:Array<CordovaPlugin>):Array<CordovaPlugin>{
+      for (var i=0;i<installedPlugins.length;i++){
+        let index = _.findIndex(pluginList, { 'name' : installedPlugins[i].name })
+        if (index>-1){
+          pluginList[index].installed = true
+        }
+      }
+      return pluginList;
   }
-  **/
 
   public async getProjectInfo(projectRoot:string,loadPlugins?:boolean):Promise<CordovaProjectInfo>{
     let json = this.getPackageJson(projectRoot);

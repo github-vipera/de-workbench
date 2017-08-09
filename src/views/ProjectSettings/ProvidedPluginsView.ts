@@ -167,8 +167,9 @@ export class ProvidedPluginsView extends UIBaseComponent {
 
   public reloadPluginList():ProvidedPluginsView{
     try {
-      let providedPluginsList:Array<CordovaPlugin> = this.pluginsProvider.getCordovaPlugins();
-      this.pluginList.setPlugins(providedPluginsList);
+      this.pluginsProvider.getCordovaPlugins().then((providedPluginsList)=>{
+        this.pluginList.setPlugins(providedPluginsList);
+      });
       return this;
     } catch(ex){
       Logger.getInstance().error("Error loading plugins list from provider "+ this.pluginsProvider +": " + ex,ex)

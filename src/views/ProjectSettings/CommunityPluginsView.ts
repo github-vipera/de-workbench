@@ -235,7 +235,7 @@ export class CommunityPluginsView extends UIBaseComponent {
 
       ProjectManager.getInstance().cordova.getInstalledPlugins(this.currentProjectRoot).then((installedPlugins:Array<CordovaPlugin>)=>{
         //re-process for already installed plugins
-        let processedResults:Array<CordovaPlugin> = this.markInstalledPlugins(results, installedPlugins);
+        let processedResults:Array<CordovaPlugin> = ProjectManager.getInstance().cordova.markInstalledPlugins(results, installedPlugins);
         this.pluginList.setPlugins(processedResults);
         Logger.getInstance().debug("Plugins found:", processedResults)
         console.log("Plugins found:", processedResults)
@@ -253,16 +253,6 @@ export class CommunityPluginsView extends UIBaseComponent {
       this.showProgress(false);
     });
 
-  }
-
-  private markInstalledPlugins(pluginList:Array<CordovaPlugin>, installedPlugins:Array<CordovaPlugin>):Array<CordovaPlugin>{
-      for (var i=0;i<installedPlugins.length;i++){
-        let index = _.findIndex(pluginList, { 'name' : installedPlugins[i].name })
-        if (index>-1){
-          pluginList[index].installed = true
-        }
-      }
-      return pluginList;
   }
 
   /*
