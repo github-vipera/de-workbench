@@ -53,6 +53,11 @@
       "versions": {
         "0.0.1": "provideProjectManager"
       }
+    },
+    "de-wb-events": {
+      "versions": {
+        "0.0.1": "provideEventBus"
+      }
     }
   },
   "configSchema": {

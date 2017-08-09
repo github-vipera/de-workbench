@@ -13,6 +13,7 @@ import { Logger } from './logger/Logger'
 import { InkProvider } from './DEWorkbench/DEWBExternalServiceProvider'
 import { CordovaPluginsProvidersManager } from './DEWorkbench/services/CordovaPluginsProvidersManager'
 import { ProjectManager } from './DEWorkbench/ProjectManager'
+import { EventBus } from './DEWorkbench/EventBus'
 
 export default {
 
@@ -131,6 +132,11 @@ export default {
   provideProjectManager() {
     console.log("provideProjectManager called")
     return ProjectManager.getInstance();
+  },
+
+  provideEventBus() {
+    console.log("provideEventBus called")
+    return EventBus.getInstance();
   }
 
 }

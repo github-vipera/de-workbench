@@ -45,12 +45,19 @@ export class EventBus {
     }
 
     public publish(topic:string, ...args) {
-      //this._eventBus.publish(topic, args)
       this.eventEmitter.emit(topic,args);
     }
 
     public unsubscribe(topic:string, listener){
       this.eventEmitter.removeListener(topic, listener)
+    }
+
+    public on(topic:string, listener){
+      this.eventEmitter.on(topic,listener);
+    }
+
+    public emit(topic:string, ...args) {
+      this.eventEmitter.emit(topic,args);
     }
 
 }
