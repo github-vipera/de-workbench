@@ -25,7 +25,6 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 
-
 export class VariantsView  extends UIBaseComponent {
 
   private stackedPage: UIStackedView;
@@ -77,6 +76,12 @@ export class VariantsView  extends UIBaseComponent {
             .setBottomToolbar(tabbedToolbar);
 
 
+    this.tabbedView.addView(new UITabbedViewItem('Dev', 'Dev', this.createFooElement() ));
+    this.tabbedView.addView(new UITabbedViewItem('Dev-Local', 'Dev-Local', this.createFooElement() ));
+    this.tabbedView.addView(new UITabbedViewItem('Test', 'Test', this.createFooElement() ));
+    this.tabbedView.addView(new UITabbedViewItem('UAT', 'UAT', this.createFooElement() ));
+    this.tabbedView.addView(new UITabbedViewItem('Production', 'Production', this.createFooElement() ));
+
 
 
     let mainContainer = createElement('div',{
@@ -90,6 +95,10 @@ export class VariantsView  extends UIBaseComponent {
                         .setInnerView(mainContainer);
     this.mainElement = this.stackedPage.element();
 
+  }
+
+  private createFooElement():HTMLElement{
+    return createElement('div',{})
   }
 
 }

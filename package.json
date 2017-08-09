@@ -90,7 +90,7 @@
     "cordova-common": "^2.0.3",
     "cordova-lib": "^7.0.1",
     "express": "^4.15.3",
-    "fs-extra": "^3.0.1",
+    "fs-extra": "^4.0.1",
     "jquery": "^3.2.1",
     "lodash": "^4.17.4",
     "loophole": "^1.1.0",
@@ -106,7 +106,7 @@
   "devDependencies": {
     "@types/atom": "^0.0.38",
     "@types/lodash": "^4.14.62",
-    "@types/node": "^7.0.8",
+    "@types/node": "^8.0.19",
     "typescript": "^2.3.0"
   },
   "de-workbench": [
