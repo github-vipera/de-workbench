@@ -17,22 +17,22 @@
    attachEventFromObject,
    createTextEditor,
    createButtonSpacer
- } from '../../element/index';
+ } from '../../../element/index';
 
 const _ = require("lodash");
 const $ = require ('JQuery');
 
-import { ProjectManager } from '../../DEWorkbench/ProjectManager'
-import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
-import { Logger } from '../../logger/Logger'
-import { UIPluginsList, UIPluginMetaButtons } from '../../ui-components/UIPluginsList'
-import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
-import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { CordovaPluginsFinder } from '../../cordova/CordovaPluginsFinder'
-import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
-import { UILineLoader } from '../../ui-components/UILineLoader'
-import { UINotifications } from '../../ui-components/UINotifications'
-import { EventBus } from '../../DEWorkbench/EventBus'
+import { ProjectManager } from '../../../DEWorkbench/ProjectManager'
+import { Cordova, CordovaPlatform, CordovaPlugin } from '../../../cordova/Cordova'
+import { Logger } from '../../../logger/Logger'
+import { UIPluginsList, UIPluginMetaButtons } from '../../../ui-components/UIPluginsList'
+import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
+import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
+import { CordovaPluginsFinder } from '../../../cordova/CordovaPluginsFinder'
+import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../../ui-components/UIButtonGroup'
+import { UILineLoader } from '../../../ui-components/UILineLoader'
+import { UINotifications } from '../../../ui-components/UINotifications'
+import { EventBus } from '../../../DEWorkbench/EventBus'
 
 export class CommunityPluginsView extends UIBaseComponent {
 

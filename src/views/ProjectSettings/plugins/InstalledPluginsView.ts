@@ -16,18 +16,18 @@
    createIconFromPath,
    attachEventFromObject,
    createTextEditor
- } from '../../element/index';
+ } from '../../../element/index';
 
 import { EventEmitter }  from 'events'
-import { ProjectManager } from '../../DEWorkbench/ProjectManager'
-import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
-import { Logger } from '../../logger/Logger'
-import { UIPluginsList, UIPluginMetaButtons } from '../../ui-components/UIPluginsList'
-import { UIStackedView } from '../../ui-components/UIStackedView'
-import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { UILineLoader } from '../../ui-components/UILineLoader'
-import { UINotifications } from '../../ui-components/UINotifications'
-import { EventBus } from '../../DEWorkbench/EventBus'
+import { ProjectManager } from '../../../DEWorkbench/ProjectManager'
+import { Cordova, CordovaPlatform, CordovaPlugin } from '../../../cordova/Cordova'
+import { Logger } from '../../../logger/Logger'
+import { UIPluginsList, UIPluginMetaButtons } from '../../../ui-components/UIPluginsList'
+import { UIStackedView } from '../../../ui-components/UIStackedView'
+import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
+import { UILineLoader } from '../../../ui-components/UILineLoader'
+import { UINotifications } from '../../../ui-components/UINotifications'
+import { EventBus } from '../../../DEWorkbench/EventBus'
 
 const chokidar = require('chokidar');
 const path = require('path');

@@ -17,21 +17,21 @@
    attachEventFromObject,
    createTextEditor,
    createButtonSpacer
- } from '../../element/index';
+ } from '../../../element/index';
 
 const _ = require("lodash");
 const $ = require ('JQuery');
 
-import { ProjectManager } from '../../DEWorkbench/ProjectManager'
-import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
-import { Logger } from '../../logger/Logger'
-import { UIPluginsList, UIPluginMetaButtons } from '../../ui-components/UIPluginsList'
-import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
-import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { UILineLoader } from '../../ui-components/UILineLoader'
-import { UINotifications } from '../../ui-components/UINotifications'
-import { EventBus } from '../../DEWorkbench/EventBus'
-import { CordovaPluginsProviderService } from '../../DEWorkbench/services/CordovaPluginsProvidersManager'
+import { ProjectManager } from '../../../DEWorkbench/ProjectManager'
+import { Cordova, CordovaPlatform, CordovaPlugin } from '../../../cordova/Cordova'
+import { Logger } from '../../../logger/Logger'
+import { UIPluginsList, UIPluginMetaButtons } from '../../../ui-components/UIPluginsList'
+import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
+import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
+import { UILineLoader } from '../../../ui-components/UILineLoader'
+import { UINotifications } from '../../../ui-components/UINotifications'
+import { EventBus } from '../../../DEWorkbench/EventBus'
+import { CordovaPluginsProviderService } from '../../../DEWorkbench/services/CordovaPluginsProvidersManager'
 
 export class ProvidedPluginsView extends UIBaseComponent {
 

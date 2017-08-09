@@ -24,10 +24,10 @@ import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
 import { Logger } from '../../logger/Logger'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
-import { InstalledPluginsView } from './InstalledPluginsView'
-import { InstallNewPluginsView } from './InstallNewPluginsView'
+import { InstalledPluginsView } from './plugins/InstalledPluginsView'
+import { InstallNewPluginsView } from './plugins/InstallNewPluginsView'
 import { VariantsView } from './variants/VariantsView'
-import { AppSignatureView } from './AppSignatureView'
+import { AppSignatureView } from './signature/AppSignatureView'
 import { GeneralSettingsView } from './GeneralSettingsView'
 
 const crypto = require('crypto');

@@ -16,16 +16,16 @@ import {
  createIconFromPath,
  attachEventFromObject,
  createTextEditor
-} from '../../element/index';
+} from '../../../element/index';
 
 import { EventEmitter }  from 'events'
-import { ProjectManager } from '../../DEWorkbench/ProjectManager'
-import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
-import { Logger } from '../../logger/Logger'
-import { UIPluginsList } from '../../ui-components/UIPluginsList'
-import { UIStackedView } from '../../ui-components/UIStackedView'
-import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
-import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
+import { ProjectManager } from '../../../DEWorkbench/ProjectManager'
+import { Cordova, CordovaPlatform, CordovaPlugin } from '../../../cordova/Cordova'
+import { Logger } from '../../../logger/Logger'
+import { UIPluginsList } from '../../../ui-components/UIPluginsList'
+import { UIStackedView } from '../../../ui-components/UIStackedView'
+import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
+import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 
 export class AppSignatureView extends UIBaseComponent {
 
