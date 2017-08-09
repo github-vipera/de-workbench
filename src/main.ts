@@ -12,6 +12,7 @@ declare function require(moduleName: string): any;
 import { Logger } from './logger/Logger'
 import { InkProvider } from './DEWorkbench/DEWBExternalServiceProvider'
 import { CordovaPluginsProvidersManager } from './DEWorkbench/services/CordovaPluginsProvidersManager'
+import { ProjectManager } from './DEWorkbench/ProjectManager'
 
 export default {
 
@@ -117,14 +118,19 @@ export default {
 
   },
 
-  consumeCordovaPluginsProvider () {
+  provideCordovaPluginsProvider () {
     console.log("consumeDEWBCordovaPluginsProvider called")
     return CordovaPluginsProvidersManager.getInstance();
   },
 
-  consumeLogger () {
-    console.log("provideLogger called")
+  provideLogger () {
+    console.log("consumeLogger called")
     return Logger.getInstance();
+  },
+
+  provideProjectManager() {
+    console.log("provideProjectManager called")
+    return ProjectManager.getInstance();
   }
 
 }

@@ -41,12 +41,17 @@
   "providedServices": {
     "de-wb-plugins-provider": {
       "versions": {
-        "0.0.1": "consumeCordovaPluginsProvider"
+        "0.0.1": "provideCordovaPluginsProvider"
       }
     },
     "de-wb-logger": {
       "versions": {
-        "0.0.1": "consumeLogger"
+        "0.0.1": "provideLogger"
+      }
+    },
+    "de-wb-projectManager": {
+      "versions": {
+        "0.0.1": "provideProjectManager"
       }
     }
   },
