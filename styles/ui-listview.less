@@ -29,6 +29,12 @@
   background-color: fade(@button-background-color-selected, 10%);
 }
 
+.de-workbench-listview-tb td.selected.validation-error {
+  outline: 1px dotted @background-color-error;
+}
+
+
+
 .de-workbench-listview-tb th {
   border-style:solid;
   border-width:1px;
@@ -76,6 +82,7 @@
   overflow: hidden;
   border-radius: 4px 4px 0 0;
   padding:1px;
+  padding-left: 2px;
   font-weight: bold;
 }
 

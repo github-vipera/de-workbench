@@ -281,7 +281,7 @@ export class UIExtendedListView extends UIListView {
 
     $(this.validationErrorOverlay).offset({
       top: (offset.top-19),
-      left: (offset.left-1)
+      left: (offset.left-2)
     });
     this.validationErrorOverlay.style.width = (width-40) + "px"
   }
@@ -327,9 +327,11 @@ export class UIExtendedListView extends UIListView {
   protected showValidationError(errorMessage:string){
     this.validationErrorOverlay.innerText = errorMessage
     this.validationErrorOverlay.style.visibility = "visible"
+    this.selectedCell.classList.add("validation-error")
   }
 
   protected hideValidationError(){
     this.validationErrorOverlay.style.visibility = "hidden"
+    this.selectedCell.classList.remove("validation-error")
   }
 }
