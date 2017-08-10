@@ -151,10 +151,24 @@ export class UIExtendedListView extends UIListView {
 
   protected navigateDown(){
     console.log("Navigate down")
+    if (!this.selectedCell){
+      return;
+    }
+    let c = $(this.selectedCell).closest('tr').next().find('td:eq(' + $(this.selectedCell).index() + ')');
+    if (c && c[0]){
+      this.selectCell(c[0]);
+    }
   }
 
   protected navigateUp(){
     console.log("Navigate up")
+    if (!this.selectedCell){
+      return;
+    }
+    let c = $(this.selectedCell).closest('tr').prev().find('td:eq(' + $(this.selectedCell).index() + ')');
+    if (c && c[0]){
+      this.selectCell(c[0]);
+    }
   }
 
 
@@ -259,6 +273,7 @@ export class UIExtendedListView extends UIListView {
     this.editing = false
 
     this.extendedModel.onValueChanged(row,col,value);
+    this.tableElement.focus()
   }
 
   protected cancelEditing(){
@@ -266,6 +281,7 @@ export class UIExtendedListView extends UIListView {
     this.editorEl.style.visibility = "hidden"
     $(this.editorEl).off('focusout')
     this.editing = false
+    this.tableElement.focus()
   }
 
   public isEditing():boolean {
