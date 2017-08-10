@@ -7,7 +7,7 @@
 @import "variables";
 
 .de-workbench-listview {
-  
+
 }
 
 .de-workbench-listview-tb {
@@ -19,6 +19,52 @@
 .de-workbench-listview-tb td {
   border-style:solid;
   border-width:1px;
-  border-color: @base-border-color;
+  border-color: @inset-panel-background-color;
+  padding: 4px;
 }
+
+.de-workbench-listview-tb td.selected {
+  border-width:1px;
+  outline: 1px dotted @button-background-color-selected;
+  background-color: fade(@button-background-color-selected, 10%);
+}
+
+.de-workbench-listview-tb th {
+  border-style:solid;
+  border-width:1px;
+  border-color: @inset-panel-background-color;
+  padding: 4px;
+  font-weight: lighter;
+}
+
+.de-workbench-listview-tb tr.selected {
+  background-color: fade(@text-color-selected, 3%);
+}
+
+.de-workbench-listview-tb tr {
+  line-height: 1.4em;
+  font-weight: lighter;
+}
+
+.de-workbench-listview-tb-header {
+  background-color: @button-background-color;
+  line-height: 1.4em;
+}
+
+.de-workbench-listview-tb-header tr {
+  background-color: @button-background-color;
+}
+
+.de-workbench-listview-tb-header td {
+  background-color: @button-background-color;
+  padding: 4px;
+}
+
+.de-workbench-listview-tb-editor {
+  border-radius: 0px !important;
+  border: none !important;
+  font-family: 'BlinkMacSystemFont', 'Lucida Grande', 'Segoe UI', Ubuntu, Cantarell, sans-serif  !important;
+  font-size: 12px !important;
+}
+
 //box-shadow: 0 0 0 1px @base-border-color;

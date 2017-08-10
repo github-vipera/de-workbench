@@ -24,12 +24,17 @@ import { UIStackedView } from '../../../ui-components/UIStackedView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
 import { ProjectManager } from '../../../DEWorkbench/ProjectManager'
+import { UIListView, UIListViewModel } from '../../../ui-components/UIListView'
+import { UIExtendedListView, UIExtendedListViewModel, UIExtendedListViewValidationResult } from '../../../ui-components/UIExtendedListView'
 
 export class VariantsView  extends UIBaseComponent {
 
   private stackedPage: UIStackedView;
   private tabbedView: UITabbedView;
   private currentProjectRoot:string;
+
+  private listView:UIListView;
+  private listViewModel:UIListViewModel;
 
   constructor(){
     super();
@@ -70,7 +75,8 @@ export class VariantsView  extends UIBaseComponent {
     tabbedToolbar.style.float = "right"
     // end tabbed toolbar
 
-
+    let htmlTable:any = this.createFooTable();
+    let listView2 = new UIExtendedListView(new EditableListViewModel())
 
     this.tabbedView = new UITabbedView()
             .setBottomToolbar(tabbedToolbar);
@@ -83,11 +89,9 @@ export class VariantsView  extends UIBaseComponent {
     this.tabbedView.addView(new UITabbedViewItem('Production', 'Production', this.createFooElement() ));
 
 
-
     let mainContainer = createElement('div',{
-      elements: [ this.tabbedView.element() ]
+      elements: [ listView2.element() /*this.tabbedView.element()*/ ]
     });
-    //mainContainer.style.border = "solid 1px"
     mainContainer.style.height = "80%"
 
     this.stackedPage = new UIStackedView()
@@ -97,8 +101,181 @@ export class VariantsView  extends UIBaseComponent {
 
   }
 
+  private createFooTable():HTMLElement{
+    let table = createElement('table',{
+      elements: [
+        createElement('thead',{
+          elements: [
+            createElement('tr',{
+              elements: [
+                createElement('th', { elements: [ createText('Column 1') ] }),
+                createElement('th', { elements: [ createText('Column 2') ] })
+              ]
+            })
+          ]
+        }),
+        createElement('tbody',{
+            elements: [
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 1 Data 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              }),
+              createElement('tr',{
+                elements: [
+                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
+                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
+                ]
+              })
+            ]
+        })
+      ],
+      className: 'stripe hover display compact'
+    })
+    return table;
+  }
+
   private createFooElement():HTMLElement{
     return createElement('div',{})
+  }
+
+
+}
+
+class EditableListViewModel implements UIExtendedListViewModel {
+
+  constructor(){}
+
+  hasHeader():boolean{
+    return true
+  }
+
+  getRowCount():number {
+    return 3
+  }
+
+  getColCount():number {
+    return 2
+  }
+
+  getValueAt(row:number, col:number):any {
+    return "" + row +" " + col
+  }
+
+  getClassNameAt(row:number, col:number):string{
+    return ""
+  }
+
+  getColumnName(col:number):string {
+    if (col===0){
+      return "Property"
+    } else if (col===1){
+      return "Value"
+    }
+    return col+"?"
+  }
+
+  getClassName():string {
+    return ""
+  }
+
+  isCellEditable(row:number, col:number):boolean {
+    if (col==1){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  onValueChanged(row:number, col:number, value:any) {
+
+  }
+
+  onEditValidation(row:number, col:number, value:any):UIExtendedListViewValidationResult {
+    return {
+      validationStatus:false,
+      validationErrorMessage:"Only numbers are allowed",
+      showValidationError:true
+    };
   }
 
 }

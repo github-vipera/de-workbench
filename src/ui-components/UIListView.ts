@@ -32,8 +32,8 @@ export interface UIListViewModel {
 
 export class UIListView extends UIBaseComponent {
 
-  private model: UIListViewModel;
-  private tableElement: HTMLElement;
+  protected model: UIListViewModel;
+  protected tableElement: HTMLElement;
 
   constructor(model:UIListViewModel){
     super();
@@ -64,6 +64,11 @@ export class UIListView extends UIBaseComponent {
     })
     this.mainElement.id = this.uiComponentId;
 
+    this.tableReady(this.tableElement)
+  }
+
+  protected tableReady(table:HTMLElement){
+      //overridable
   }
 
   protected createTableElement():HTMLElement {
@@ -73,12 +78,13 @@ export class UIListView extends UIBaseComponent {
 
     // create header if required
     if (this.model.hasHeader()){
-      let tbRow = createElement('tr');
+      let tbRow = createElement('tr', { className: 'de-workbench-listview-tb-header'});
       for (var c=0;c<this.model.getColCount();c++){
         let tbCol = createElement('th', {
           elements: [
             createText(this.model.getColumnName(c))
-          ]
+          ],
+          className: "de-workbench-listview-tb-header-col"
         });
         insertElement(tbRow, tbCol);
       }
@@ -100,8 +106,11 @@ export class UIListView extends UIBaseComponent {
             innerElement
           ]
         });
+        tbCol.setAttribute('row',r)
+        tbCol.setAttribute('col',c)
         insertElement(tbRow, tbCol);
       }
+      tbRow.setAttribute('trow', r)
       insertElement(table, tbRow);
     }
 
@@ -112,6 +121,7 @@ export class UIListView extends UIBaseComponent {
     let oldTable = this.tableElement;
     this.tableElement = this.createTableElement();
     this.mainElement.replaceChild(this.tableElement, oldTable);
+    this.tableReady(this.tableElement)
   }
 
 
