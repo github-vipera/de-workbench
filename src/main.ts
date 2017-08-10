@@ -14,6 +14,7 @@ import { InkProvider } from './DEWorkbench/DEWBExternalServiceProvider'
 import { CordovaPluginsProvidersManager } from './DEWorkbench/services/CordovaPluginsProvidersManager'
 import { ProjectManager } from './DEWorkbench/ProjectManager'
 import { EventBus } from './DEWorkbench/EventBus'
+import { ConsumedServices } from './DEWorkbench/ConsumedServices'
 
 export default {
 
@@ -82,6 +83,7 @@ export default {
   },
 
   consumeInk: function (ink) {
+    ConsumedServices.ink = ink;
     this.ink = ink;
     InkProvider.getInstance().setInk(this.ink);
 
