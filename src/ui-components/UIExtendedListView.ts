@@ -44,6 +44,8 @@ export class UIExtendedListView extends UIListView {
   private editorEl:HTMLElement;
   private editing:boolean;
 
+  private validationErrorOverlay:HTMLElement;
+
   constructor(model:UIExtendedListViewModel){
     super(model);
     this.extendedModel = model;
@@ -52,21 +54,39 @@ export class UIExtendedListView extends UIListView {
   protected buildUI(){
     super.buildUI();
 
-    this.editorEl = createTextEditor({});
-    this.editorEl.style.position = "absolute"
-    this.editorEl.style.visibility = "hidden"
-    this.editorEl.classList.add("de-workbench-listview-tb-editor")
-    this.editorEl.addEventListener('keydown',(evt)=>{
+    this.editorEl = this.createEditor();
+    insertElement(this.mainElement, this.editorEl);
+
+    this.validationErrorOverlay = this.createValidationErrorOverlay();
+    insertElement(this.mainElement, this.validationErrorOverlay);
+  }
+
+  protected createEditor():HTMLElement{
+    let editorEl = createTextEditor({});
+    editorEl.style.position = "absolute"
+    editorEl.style.visibility = "hidden"
+    editorEl.classList.add("de-workbench-listview-tb-editor")
+    editorEl.addEventListener('keydown',(evt)=>{
       if (evt.keyCode===13){ //ENTER
         this.commitEditing();
       }
       if (evt.keyCode===27){ //ESC
         this.cancelEditing();
       }
-      console.log("Keydown ",evt)
     })
-    insertElement(this.mainElement, this.editorEl);
+    return editorEl;
+  }
 
+  protected createValidationErrorOverlay():HTMLElement {
+      let el = createElement('div',{
+        elements: [
+          createText("Validation Error")
+        ],
+        className: 'de-workbench-listview-tb-editor-validation-error'
+      })
+      el.style.position = "absolute"
+      el.style.visibility = "hidden"
+      return el;
   }
 
   protected tableReady(table:HTMLElement){
@@ -79,7 +99,13 @@ export class UIExtendedListView extends UIListView {
     //add event listeners for selection and editing
     $(table).on('click',(evt)=>{
       evt.preventDefault()
-      this.selectCell(evt.target);
+      if (this.isEditing()){
+        if (this.commitEditing()){
+          this.selectCell(evt.target);
+        }
+      } else {
+        this.selectCell(evt.target);
+      }
     })
 
     $(table).on('dblclick',(evt)=>{
@@ -106,25 +132,24 @@ export class UIExtendedListView extends UIListView {
     if (key == 39) {
         // Right Arrow
         this.navigateRight();
-        //c = this.selectedCell.next();
     } else if (key == 37) {
         // Left Arrow
         this.navigateLeft()
-        //c = this.selectedCell.prev();
     } else if (key == 38) {
         // Up Arrow
         this.navigateUp();
-        //c = this.selectedCell.closest('tr').prev().find('td:eq(' + currCell.index() + ')');
     } else if (key == 40) {
         // Down Arrow
         this.navigateDown()
-        //c = this.selectedCell.closest('tr').next().find('td:eq(' + currCell.index() + ')');
-      } else if (key == 13) {
-          // Down Arrow
-          this.manageCellEdit(this.selectedCell);
-          //c = this.selectedCell.closest('tr').next().find('td:eq(' + currCell.index() + ')');
-      }
-
+    } else if (key == 13) {
+        // Enter
+        this.manageCellEdit(this.selectedCell);
+    } else if (key == 27) {
+        // ESC
+        if (this.isEditing()){
+          this.cancelEditing()
+        }
+    }
   }
 
   protected navigateRight(){
@@ -252,9 +277,16 @@ export class UIExtendedListView extends UIListView {
     offset.top += 1
     offset.left += 1
     $(this.editorEl).offset(offset)
+
+
+    $(this.validationErrorOverlay).offset({
+      top: (offset.top-19),
+      left: (offset.left-1)
+    });
+    this.validationErrorOverlay.style.width = (width-40) + "px"
   }
 
-  protected commitEditing(){
+  protected commitEditing():boolean{
     console.log('commit!')
 
     let value = this.editorEl["getModel"]().getText();
@@ -263,9 +295,10 @@ export class UIExtendedListView extends UIListView {
     let validationResult = this.extendedModel.onEditValidation(row, col, value);
     if (!validationResult.validationStatus){
       if (validationResult.showValidationError){
-        //TODO!! display overlay with error
+        //display overlay with error
+        this.showValidationError(validationResult.validationErrorMessage)
       }
-      return;
+      return false;
     }
 
     this.editorEl.style.visibility = "hidden"
@@ -274,10 +307,13 @@ export class UIExtendedListView extends UIListView {
 
     this.extendedModel.onValueChanged(row,col,value);
     this.tableElement.focus()
+
+    return true;
   }
 
   protected cancelEditing(){
     console.log('cancel!')
+    this.hideValidationError();
     this.editorEl.style.visibility = "hidden"
     $(this.editorEl).off('focusout')
     this.editing = false
@@ -288,4 +324,12 @@ export class UIExtendedListView extends UIListView {
     return this.editing
   }
 
+  protected showValidationError(errorMessage:string){
+    this.validationErrorOverlay.innerText = errorMessage
+    this.validationErrorOverlay.style.visibility = "visible"
+  }
+
+  protected hideValidationError(){
+    this.validationErrorOverlay.style.visibility = "hidden"
+  }
 }
