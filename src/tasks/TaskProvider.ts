@@ -1,19 +1,19 @@
 'use babel'
 import {CordovaTaskConfiguration} from '../cordova/CordovaTasks';
 
-export class TaskManager{
+export class TaskProvider{
 
-  private static instance:TaskManager;
+  private static instance:TaskProvider;
   private defaultTasks:Array<CordovaTaskConfiguration>= null;
   private constructor(){
-    console.log("Create TaskManager");
+    console.log("Create TaskProvider");
   }
 
-  public static getInstance():TaskManager{
-    if(!TaskManager.instance){
-      TaskManager.instance = new TaskManager();
+  public static getInstance():TaskProvider{
+    if(!TaskProvider.instance){
+      TaskProvider.instance = new TaskProvider();
     }
-    return TaskManager.instance;
+    return TaskProvider.instance;
   }
 
   public getDefaultTask(){

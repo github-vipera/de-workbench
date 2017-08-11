@@ -14,7 +14,7 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UISelect, UISelectItem, UISelectListener } from '../../ui-components/UISelect'
 import { CordovaPlatform, CordovaProjectInfo } from '../../cordova/Cordova'
 import { CordovaTaskConfiguration, CordovaTask, TaskConstraints } from '../../cordova/CordovaTasks'
-import { TaskManager } from '../../tasks/TaskManager'
+import { TaskProvider } from '../../tasks/TaskProvider'
 import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
 import { find,forEach,map } from 'lodash'
 import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
@@ -335,11 +335,11 @@ export class TaskViewPanel extends UIBaseComponent{
   }
 
   private update(){
-    this.threeViewPanel.buildAndAddTreeView(TaskManager.getInstance().getDefaultTask());
+    this.threeViewPanel.buildAndAddTreeView(TaskProvider.getInstance().getDefaultTask());
   }
 
   private getTaskConfigurationByName(name:string):CordovaTaskConfiguration{
-    let tasks = TaskManager.getInstance().getDefaultTask();
+    let tasks = TaskProvider.getInstance().getDefaultTask();
     return find(tasks,(single:CordovaTaskConfiguration) => {
       return single.name == name;
     });
