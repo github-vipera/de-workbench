@@ -84,15 +84,15 @@ export class VariantsView  extends UIBaseComponent {
             .setBottomToolbar(tabbedToolbar);
 
 
-    this.tabbedView.addView(new UITabbedViewItem('Dev', 'Dev', this.createFooElement() ));
-    this.tabbedView.addView(new UITabbedViewItem('Dev-Local', 'Dev-Local', this.createFooElement() ));
-    this.tabbedView.addView(new UITabbedViewItem('Test', 'Test', this.createFooElement() ));
-    this.tabbedView.addView(new UITabbedViewItem('UAT', 'UAT', this.createFooElement() ));
-    this.tabbedView.addView(new UITabbedViewItem('Production', 'Production', this.createFooElement() ));
+    this.tabbedView.addView(this.createVariantView('Dev'));
+    this.tabbedView.addView(this.createVariantView('Dev-Local'));
+    this.tabbedView.addView(this.createVariantView('Test'));
+    this.tabbedView.addView(this.createVariantView('UAT'));
+    this.tabbedView.addView(this.createVariantView('Production'));
 
 
     let mainContainer = createElement('div',{
-      elements: [ variantsCtrl.element() /*this.tabbedView.element()*/ ]
+      elements: [ this.tabbedView.element() ]
     });
     mainContainer.style.height = "80%"
 
@@ -103,126 +103,17 @@ export class VariantsView  extends UIBaseComponent {
 
   }
 
-  private createFooTable():HTMLElement{
-    let table = createElement('table',{
-      elements: [
-        createElement('thead',{
-          elements: [
-            createElement('tr',{
-              elements: [
-                createElement('th', { elements: [ createText('Column 1') ] }),
-                createElement('th', { elements: [ createText('Column 2') ] })
-              ]
-            })
-          ]
-        }),
-        createElement('tbody',{
-            elements: [
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 1 Data 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              }),
-              createElement('tr',{
-                elements: [
-                  createElement('td', { elements: [ createText('Row 2 Paperino 1') ] }),
-                  createElement('td', { elements: [ createText('Row 2 Data 2') ] })
-                ]
-              })
-            ]
-        })
-      ],
-      className: 'stripe hover display compact'
-    })
-    return table;
-  }
-
-  private createFooElement():HTMLElement{
-    return createElement('div',{})
+  private createVariantView(variantName:string):UITabbedViewItem {
+    let variantsCtrl = new VariantsGridCtrl();
+    variantsCtrl.element().style.width = "100%"
+    let variantView = new UITabbedViewItem(variantName, variantName, variantsCtrl.element())
+    return variantView;
   }
 
 
 }
 
+/**
 class EditableListViewModel implements UIExtendedListViewModel {
 
   constructor(){}
@@ -281,3 +172,4 @@ class EditableListViewModel implements UIExtendedListViewModel {
   }
 
 }
+**/

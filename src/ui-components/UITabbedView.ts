@@ -73,7 +73,7 @@ export class UITabbedView extends UIBaseComponent {
     this.tabList = new UITabbedViewTabListComponent();
 
     // the component that manages the stacked views
-    this.stacked = new UITabbedViewStackedComponent();
+    this.stacked = new UITabbedViewStackedComponent('stack-view-container');
 
     this.mainElement =  createElement('div', {
         elements: [
@@ -320,15 +320,16 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
 class UITabbedViewStackedComponent extends UIBaseComponent {
 
   private selectedView: HTMLElement;
-
-  constructor(){
+  private className:string = ""
+  constructor(className?:string){
     super();
+    this.className = className;
     this.buildUI();
   }
 
   private buildUI(){
     this.mainElement =  createElement('div', {
-        className:'de-workbench-tabbedview-stacked-container'
+        className:'de-workbench-tabbedview-stacked-container ' + this.className
     })
     this.mainElement.style["display"] = "flex";
   }
