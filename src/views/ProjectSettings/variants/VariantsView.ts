@@ -26,6 +26,7 @@ import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui
 import { ProjectManager } from '../../../DEWorkbench/ProjectManager'
 import { UIListView, UIListViewModel } from '../../../ui-components/UIListView'
 import { UIExtendedListView, UIExtendedListViewModel, UIExtendedListViewValidationResult } from '../../../ui-components/UIExtendedListView'
+import { VariantsGridCtrl } from './VariantsGridCtrl'
 
 export class VariantsView  extends UIBaseComponent {
 
@@ -77,6 +78,7 @@ export class VariantsView  extends UIBaseComponent {
 
     let htmlTable:any = this.createFooTable();
     let listView2 = new UIExtendedListView(new EditableListViewModel())
+    let variantsCtrl = new VariantsGridCtrl();
 
     this.tabbedView = new UITabbedView()
             .setBottomToolbar(tabbedToolbar);
@@ -90,7 +92,7 @@ export class VariantsView  extends UIBaseComponent {
 
 
     let mainContainer = createElement('div',{
-      elements: [ listView2.element() /*this.tabbedView.element()*/ ]
+      elements: [ variantsCtrl.element() /*this.tabbedView.element()*/ ]
     });
     mainContainer.style.height = "80%"
 

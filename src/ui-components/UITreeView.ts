@@ -97,14 +97,22 @@ export class UITreeView extends UIBaseComponent {
     if (item.icon){
       iconClass = "icon " + item.icon
     }
-    // create item caption
-    let treeItemCaption = createElement('span',{
-      elements :  [ createText(item.name)],
-      className: iconClass
-    })
+
+    let innerHtml = undefined;
+    if (item.htmlElement){
+      innerHtml = createElement('div',{
+          elements: [ item.htmlElement ]
+      })
+    } else {
+      // create item caption
+      innerHtml = createElement('span',{
+        elements :  [ createText(item.name)],
+        className: iconClass
+      })
+    }
 
     let treeItemHeader = createElement('div',{
-      elements: [ treeItemCaption ],
+      elements: [ innerHtml ],
       className: 'header list-item'
     });
     treeItemHeader.setAttribute("treeitemId", item.id)

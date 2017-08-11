@@ -60,8 +60,7 @@
       }
     }
   },
-  "configSchema": {
-  },
+  "configSchema": {},
   "package-deps": [
     "ink"
   ],
@@ -76,6 +75,7 @@
     "express": "^4.15.3",
     "fs-extra": "^4.0.1",
     "jquery": "^3.2.1",
+    "jsoneditor": "^5.9.3",
     "lodash": "^4.17.4",
     "loophole": "^1.1.0",
     "moment": "^2.18.1",
