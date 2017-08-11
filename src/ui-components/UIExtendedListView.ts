@@ -115,7 +115,7 @@ export class UIExtendedListView extends UIListView {
     })
 
     window.addEventListener('resize', ()=> {
-      if (this.isEditing){
+      if (this.isEditing()){
         this.moveEditor(this.selectedCell);
       }
     });

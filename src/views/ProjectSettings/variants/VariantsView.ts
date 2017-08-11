@@ -76,8 +76,8 @@ export class VariantsView  extends UIBaseComponent {
     tabbedToolbar.style.float = "right"
     // end tabbed toolbar
 
-    let htmlTable:any = this.createFooTable();
-    let listView2 = new UIExtendedListView(new EditableListViewModel())
+    //let htmlTable:any = this.createFooTable();
+    //let listView2 = new UIExtendedListView(new EditableListViewModel())
     let variantsCtrl = new VariantsGridCtrl();
 
     this.tabbedView = new UITabbedView()
