@@ -1,6 +1,12 @@
 'use babel'
-import * as express from "express";
+//import * as express from "express";
 import {Logger} from '../../logger/Logger'
+const {
+    allowUnsafeEval,
+    allowUnsafeNewFunction
+} = require('loophole');
+
+const express = allowUnsafeEval(() => require('express'));
 
 export interface LiveActions{
   type:string
@@ -22,7 +28,7 @@ export interface PlatformServer {
 
 export class PlatformServerImpl implements PlatformServer {
   private static nextSocketId: number = 0;
-  app: express.Application;
+  app: any;
   io:any
   http: any
   sockets = {};
@@ -39,7 +45,10 @@ export class PlatformServerImpl implements PlatformServer {
 
   private initExpressApp(config: PlatformServerConfig): void {
     Logger.getInstance().info("initExpressApp");
-    this.app = express();
+    console.log("initExpressApp");
+    //const express = allowUnsafeEval(() => require('express'));
+    allowUnsafeEval(() => {this.app = express()})
+    //this.app = express();
     this.app.use(express.static(config.platformPath, null));
     this.app.get('/__dedebugger/**', (req, res) => {
         var urlRelative = req.url;
