@@ -126,8 +126,18 @@ class VariantsPropertyRenderer extends UIBaseComponent {
 
   protected initUI() {
     let buttonGroup = new UIButtonGroup(UIButtonGroupMode.Standard);
-    buttonGroup.addButton(new UIButtonConfig().setId('add').setCaption("+"))
-    buttonGroup.addButton(new UIButtonConfig().setId('add').setCaption("-"))
+    buttonGroup.addButton(new UIButtonConfig()
+                            .setId('add')
+                            .setCaption("+")
+                            .setClickListener(()=>{
+                                this.addNewRow()
+                             }))
+    buttonGroup.addButton(new UIButtonConfig()
+                            .setId('add')
+                            .setCaption("-")
+                            .setClickListener(()=>{
+                                this.removeSelectedRow()
+                             }))
     buttonGroup.element().classList.add('btn-group-xs')
     this.toolbar = createElement('div',{
       elements : [
@@ -135,7 +145,9 @@ class VariantsPropertyRenderer extends UIBaseComponent {
       ],
       className: 'de-workbench-variants-ctrl-toolbar'
     })
-    this.model = new VariantsPlatformListViewModel();
+    this.model = new VariantsPlatformListViewModel(()=>{
+      this.listView.modelChanged();
+    });
     this.listView = new UIExtendedListView(this.model)
     this.mainElement = createElement('div', {
       elements: [ this.toolbar, this.listView.element() ],
@@ -143,19 +155,36 @@ class VariantsPropertyRenderer extends UIBaseComponent {
     })
   }
 
+  protected addNewRow(){
+    this.model.addNewProperty();
+    this.listView.modelChanged();
+  }
 
+  protected removeSelectedRow(){
+    let row = this.listView.getSelectedRow();
+    this.model.removePropertyAt(row)
+    this.listView.modelChanged();
+  }
 }
 
 class VariantsPlatformListViewModel implements UIExtendedListViewModel {
 
   protected properties:Array<VariantProperty>
+  protected modelListener:Function;
 
-  constructor(){
+  constructor(modelListener:Function){
     this.properties = [];
+    this.modelListener = modelListener;
   }
 
   public addNewProperty(){
     this.properties.push(new VariantProperty())
+  }
+
+  public removePropertyAt(index:number){
+    if (index>=0){
+      this.properties.splice(index, 1);
+    }
   }
 
   hasHeader():boolean{
@@ -207,6 +236,7 @@ class VariantsPlatformListViewModel implements UIExtendedListViewModel {
     } else if (col===1){
       property.value = value;
     }
+    this.fireModelChanged();
   }
 
   onEditValidation(row:number, col:number, value:any):UIExtendedListViewValidationResult {
@@ -217,21 +247,13 @@ class VariantsPlatformListViewModel implements UIExtendedListViewModel {
     };
   }
 
+  protected fireModelChanged(){
+    this.modelListener()
+  }
+
 }
 
 export class VariantProperty {
-  public name:string;
-  public value:any;
+  public name:string="New Property Name";
+  public value:any="The Property Value";
 }
-/**
-export interface UITreeItem {
-  id:string;
-  name:string;
-  className?:string;
-  icon?:string;
-  expanded?:boolean;
-  htmlElement?:HTMLElement;
-  children?:Array<UITreeItem>;
-  selected?:boolean;
-}
-**/
