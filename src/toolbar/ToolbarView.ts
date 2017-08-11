@@ -46,6 +46,17 @@ export interface ToolbarOptions {
   **/
 }
 
+
+export interface ToolbarStatus {
+  btnRunEnable?:boolean
+  btnStopEnable?:boolean
+  btnReloadEnable?:boolean
+  prjSelectorEnable?:boolean
+  progressStatus?: UIIndicatorStatus
+  progressMsg?: string
+  progressIcon?: string
+}
+
 export class ToolbarView {
 
   private element: HTMLElement;
@@ -280,6 +291,44 @@ export class ToolbarView {
     this.statusIndicator.setStatus(UIIndicatorStatus.Error,msg,iconName || 'status-error');
     this.stopButton.setAttribute('disabled','true');
     this.runButton.removeAttribute('disabled');
+  }
+
+
+  public updateStatus(status:ToolbarStatus){
+    if(status.btnReloadEnable != null){
+      this.updateButtonStatus(this.reloadButton,status.btnReloadEnable);
+    }
+    if(status.btnStopEnable != null){
+      this.updateButtonStatus(this.stopButton,status.btnStopEnable);
+    }
+    if(status.btnRunEnable != null){
+      this.updateButtonStatus(this.runButton,status.btnRunEnable);
+    }
+    if(status.prjSelectorEnable != null){
+      // todo
+    }
+    if(status.progressStatus != null){
+      // todo
+    }
+    if(status.progressIcon != null){
+      // todo
+    }
+    if(status.progressMsg != null){
+
+    }
+
+  }
+
+
+  private updateButtonStatus(element:HTMLElement,enabled:boolean){
+    if(!element){
+      throw new Error("updateButtonStatus fail: element is null");
+    }
+    if(enabled){
+      element.removeAttribute('disabled');
+    }else{
+      element.setAttribute('disabled','true');
+    }
   }
 
 }
