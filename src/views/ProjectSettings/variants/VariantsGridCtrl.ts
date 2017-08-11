@@ -40,12 +40,12 @@ export class VariantsGridCtrl extends UIBaseComponent {
 
   protected createTreeModel():VariantsTreeModel {
 
-    let globalPropertiesNode = new VariantsTreeItem('_global', 'Global Properties', {})
-    let androidPropertiesNode = new VariantsTreeItem('_android', 'Android Properties', {})
-    let iosPropertiesNode = new VariantsTreeItem('_ios', 'iOS Properties', {})
-    let browserPropertiesNode = new VariantsTreeItem('_browser', 'Browser Properties', {})
+    let globalPropertiesNode = new VariantsPlatformTreeItem('global', 'Global Properties', [])
+    let androidPropertiesNode = new VariantsPlatformTreeItem('android', 'Android Properties', [])
+    let iosPropertiesNode = new VariantsPlatformTreeItem('ios', 'iOS Properties', [])
+    let browserPropertiesNode = new VariantsPlatformTreeItem('browser', 'Browser Properties',[])
 
-    let rootNode = new VariantsTreeItem('_root', 'Configuration Properties', false)
+    let rootNode = new VariantsTreeItem('_root', 'Configuration Properties')
                         .setChildren([globalPropertiesNode,androidPropertiesNode,iosPropertiesNode,browserPropertiesNode])
 
     return new VariantsTreeModel().setRoot(rootNode);
@@ -78,23 +78,11 @@ export class VariantsTreeItem implements UITreeItem {
   public id:string;
   public name:string;
   public children:Array<VariantsTreeItem>;
-  private propertyRenderer:VariantsPropertyRenderer;
-  protected properties:undefined;
   public htmlElement:HTMLElement=undefined;
 
-  constructor(id:string, name:string, properties:any){
+  constructor(id:string, name:string){
     this.id = id;
     this.name = name;
-    if (properties){
-      this.createChildrenForProperties(properties);
-    }
-  }
-
-  protected createChildrenForProperties(properties:any){
-    this.propertyRenderer = new VariantsPropertyRenderer();
-    let propertyListChild = new VariantsTreeItem(this.id + "_properties",this.id + "_properties", null);
-    propertyListChild.htmlElement = this.propertyRenderer.element()
-    this.children = [propertyListChild]
   }
 
   public setChildren(children:Array<VariantsTreeItem>):VariantsTreeItem {
@@ -106,13 +94,21 @@ export class VariantsTreeItem implements UITreeItem {
 
 export class VariantsPlatformTreeItem extends VariantsTreeItem {
 
-  //properties: Array<any>;
+  protected properties: Array<any>;
+  private propertyRenderer:VariantsPropertyRenderer;
 
-  constructor(platformName:string, properties:Array<any>){
-    super(platformName,platformName, null);
-    //this.properties = properties;
+  constructor(platformName:string, displayName:string, properties:Array<any>){
+    super(platformName,displayName);
+    this.properties = properties;
+    this.createChildrenForProperties()
   }
 
+  protected createChildrenForProperties(){
+    this.propertyRenderer = new VariantsPropertyRenderer();
+    let propertyListChild = new VariantsTreeItem(this.id + "_properties",this.id + "_properties");
+    propertyListChild.htmlElement = this.propertyRenderer.element()
+    this.children = [propertyListChild]
+  }
 
 }
 
@@ -143,7 +139,7 @@ class EditableListViewModel implements UIExtendedListViewModel {
   }
 
   getRowCount():number {
-    return 3
+    return 7
   }
 
   getColCount():number {
@@ -172,11 +168,7 @@ class EditableListViewModel implements UIExtendedListViewModel {
   }
 
   isCellEditable(row:number, col:number):boolean {
-    if (col==1){
-      return true;
-    } else {
-      return false;
-    }
+    return true;
   }
 
   onValueChanged(row:number, col:number, value:any) {
