@@ -111,9 +111,16 @@ export class UITreeView extends UIBaseComponent {
       })
     }
 
+    let customClassName = ""
+    if (item.className){
+      customClassName = item.className;
+    }
+    if (item.htmlElement){
+      customClassName = customClassName + " custom-renderer";
+    }
     let treeItemHeader = createElement('div',{
       elements: [ innerHtml ],
-      className: 'header list-item'
+      className: 'header list-item ' + customClassName
     });
     treeItemHeader.setAttribute("treeitemId", item.id)
     treeItemHeader.setAttribute("id", "de-woekbench-treeview-treeitem-header-" + item.id)

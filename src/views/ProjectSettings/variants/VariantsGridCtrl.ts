@@ -79,7 +79,7 @@ export class VariantsTreeItem implements UITreeItem {
   public name:string;
   public children:Array<VariantsTreeItem>;
   private propertyRenderer:VariantsPropertyRenderer;
-  private properties:undefined;
+  protected properties:undefined;
   public htmlElement:HTMLElement=undefined;
 
   constructor(id:string, name:string, properties:any){
@@ -101,6 +101,18 @@ export class VariantsTreeItem implements UITreeItem {
     this.children = children;
     return this;
   }
+
+}
+
+export class VariantsPlatformTreeItem extends VariantsTreeItem {
+
+  //properties: Array<any>;
+
+  constructor(platformName:string, properties:Array<any>){
+    super(platformName,platformName, null);
+    //this.properties = properties;
+  }
+
 
 }
 
