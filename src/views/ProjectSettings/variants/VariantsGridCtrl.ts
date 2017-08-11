@@ -116,7 +116,7 @@ export class VariantsPlatformTreeItem extends VariantsTreeItem {
 class VariantsPropertyRenderer extends UIBaseComponent {
 
   protected listView:UIExtendedListView;
-  protected model:EditableListViewModel;
+  protected model:VariantsPlatformListViewModel;
   protected toolbar:HTMLElement;
 
   constructor(){
@@ -135,27 +135,35 @@ class VariantsPropertyRenderer extends UIBaseComponent {
       ],
       className: 'de-workbench-variants-ctrl-toolbar'
     })
-    //this.toolbar.style.floating = "right"
-    this.model = new EditableListViewModel();
+    this.model = new VariantsPlatformListViewModel();
     this.listView = new UIExtendedListView(this.model)
     this.mainElement = createElement('div', {
-      elements: [ this.toolbar, this.listView.element() ]
+      elements: [ this.toolbar, this.listView.element() ],
+      className: 'de-workbench-variants-ctrl-prop-renderer'
     })
   }
 
 
 }
 
-class EditableListViewModel implements UIExtendedListViewModel {
+class VariantsPlatformListViewModel implements UIExtendedListViewModel {
 
-  constructor(){}
+  protected properties:Array<VariantProperty>
+
+  constructor(){
+    this.properties = [];
+  }
+
+  public addNewProperty(){
+    this.properties.push(new VariantProperty())
+  }
 
   hasHeader():boolean{
     return true
   }
 
   getRowCount():number {
-    return 7
+    return this.properties.length
   }
 
   getColCount():number {
@@ -163,7 +171,12 @@ class EditableListViewModel implements UIExtendedListViewModel {
   }
 
   getValueAt(row:number, col:number):any {
-    return "" + row +" " + col
+    let property:VariantProperty =  this.properties[row];
+    if (col===0){
+      return property.name;
+    } else if (col===1){
+      return property.value;
+    }
   }
 
   getClassNameAt(row:number, col:number):string{
@@ -188,19 +201,28 @@ class EditableListViewModel implements UIExtendedListViewModel {
   }
 
   onValueChanged(row:number, col:number, value:any) {
-
+    let property:VariantProperty =  this.properties[row];
+    if (col===0){
+      property.name = value;
+    } else if (col===1){
+      property.value = value;
+    }
   }
 
   onEditValidation(row:number, col:number, value:any):UIExtendedListViewValidationResult {
     return {
-      validationStatus:false,
-      validationErrorMessage:"Only numbers are allowed",
-      showValidationError:true
+      validationStatus:true,
+      validationErrorMessage:"",
+      showValidationError:false
     };
   }
 
 }
 
+export class VariantProperty {
+  public name:string;
+  public value:any;
+}
 /**
 export interface UITreeItem {
   id:string;
