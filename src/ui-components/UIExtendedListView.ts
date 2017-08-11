@@ -125,6 +125,10 @@ export class UIExtendedListView extends UIListView {
       this.navigateTableWithKeyboard(evt.which)
     })
 
+    $(table).focusout(()=>{
+      this.removeCurrentSelection();
+    })
+
   }
 
   protected navigateTableWithKeyboard(key:number){
@@ -196,12 +200,15 @@ export class UIExtendedListView extends UIListView {
     }
   }
 
-
-  protected selectCell(cell:HTMLElement){
+  protected removeCurrentSelection(){
     if (this.selectedCell){
       //remove current selection
       this.selectedCell.classList.remove("selected")
     }
+  }
+
+  protected selectCell(cell:HTMLElement){
+    this.removeCurrentSelection();
     cell.classList.add("selected")
     this.selectedCell = cell;
 
