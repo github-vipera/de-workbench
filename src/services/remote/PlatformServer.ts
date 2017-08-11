@@ -14,9 +14,10 @@ export interface LiveActions{
 }
 
 export interface PlatformServerConfig {
+  serveStaticAssets:boolean
   platformPath: string
-  connectionTimeout?: number
   port: number
+  connectionTimeout?: number
 }
 
 export interface PlatformServer {
@@ -51,7 +52,9 @@ export class PlatformServerImpl implements PlatformServer {
   }
 
   protected initExpressStaticServe(config: PlatformServerConfig):void{
-    this.app.use(express.static(config.platformPath, null));
+    if(config.serveStaticAssets){
+      this.app.use(express.static(config.platformPath, null));
+    }
   }
 
   protected initInjectedFileServe(config: PlatformServerConfig):void{
@@ -86,6 +89,7 @@ export class PlatformServerImpl implements PlatformServer {
   }
 
   private initSocketIO(config: PlatformServerConfig):void {
+    this.io = require('socket.io')(this.http);
     this.io.on('connection', (socket) => {
         var address = socket.handshake.address;
         Logger.getInstance().debug("on debugger session connection for " + address);
@@ -120,6 +124,8 @@ export class PlatformServerImpl implements PlatformServer {
         }
         this.sockets = {}
       }
+      this.io = null;
+      this.app = null;
     });
   }
 

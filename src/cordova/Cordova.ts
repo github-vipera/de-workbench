@@ -227,7 +227,9 @@ export class Cordova {
       return result + "/platforms/android/assets/www";
     } else if (platform === "ios") {
       return result + "/platforms/ios/www";
-    } else {
+    } else if(platform === 'browser'){
+      return result + "/platforms/browser/www";
+    }else {
       console.error("getPlatformPath with unknown platform:" + platform);
       return undefined;
     }

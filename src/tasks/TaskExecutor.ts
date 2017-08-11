@@ -2,8 +2,13 @@
 import { ProjectManager } from '../DEWorkbench/ProjectManager';
 import { Cordova , CordovaProjectInfo} from '../cordova/Cordova';
 import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
+import { PlatformServer, PlatformServerImpl, PlatformServerConfig} from '../services/remote/PlatformServer'
+import {TaskUtils} from './TaskUtils'
+import {Logger} from '../logger/Logger'
+
 export class TaskExecutor{
   private currentTask:CordovaTaskConfiguration;
+  private platformServer:PlatformServer = null;
   private cordova:Cordova
   constructor(){
       this.cordova=ProjectManager.getInstance().cordova;
@@ -52,6 +57,7 @@ export class TaskExecutor{
   }
 
   async executeRun(project:CordovaProjectInfo){
+    this.startPlatformServer(project);
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
     return this.cordova.runProject(project.path, platform ,null,{});
   }
@@ -62,7 +68,36 @@ export class TaskExecutor{
     return this.cordova.prepareProject(project.path,platform);
   }
 
+  private async startPlatformServer(project:CordovaProjectInfo){
+    let platform = this.currentTask.selectedPlatform;
+    if(!platform){
+      Logger.getInstance().warn("No platform detected: server not started");
+      return Promise.resolve();
+    }
+    console.log("startPlatformServer");
+    const srvConf:PlatformServerConfig = TaskUtils.createPlatformServerConfig(this.currentTask,project);
+    if(!srvConf){
+      Logger.getInstance().error("Server configuration build fail");
+      return Promise.resolve();
+    }
+    await this.cordova.prepareProjectWithBrowserPatch(project.path);
+    this.platformServer = PlatformServerImpl.createNew();
+    this.platformServer.start(srvConf);
+  }
+
+  stopServer(){
+    if(this.platformServer){
+      this.platformServer.stop().then(() => {
+          Logger.getInstance().info("Server stop done");
+      },() => {
+        Logger.getInstance().error("Server stop fail");
+      });
+    }
+  }
+
   stop(){
     this.cordova.stopExecutor();
+    this.stopServer();
   }
+
 }

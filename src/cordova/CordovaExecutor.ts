@@ -428,8 +428,8 @@ export class CordovaExecutor extends CommandExecutor {
   private patchExtraBrowserFile(projectRoot:string){
     fse.emptyDirSync(path.join(projectRoot,"/platforms/browser/www/__dedebugger"));
     fse.emptyDirSync(path.join(projectRoot,"/platforms/browser/www/socket.io"));
-    fse.copySync(__dirname + "/injectedfiles/DEDebuggerClient.js",projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
-    fse.copySync(__dirname + "/injectedfiles/socket.io.js",projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
+    fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/DEDebuggerClient.js"),projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
+    fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/socket.io.js"),projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
   }
 
   private applyGlobalCliOptions(cliOptions){
