@@ -59,6 +59,7 @@ export class ToolbarView {
   private buildButton: HTMLElement;
   private runSelector:UIRunSelectorComponent;
   private statusIndicator: UIStatusIndicatorComponent;
+  private reloadButton: HTMLElement;
 
   private toolbarElement: HTMLElement;
   private toolbarAnchor: HTMLElement;
@@ -177,6 +178,16 @@ export class ToolbarView {
 
     this.runSelector = new UIRunSelectorComponent(this.events);
     insertElement(runContainer,this.runSelector.element());
+
+    this.reloadButton = createButton({
+      disabled: true,
+      click: () => {
+        this.events.emit('didReload');
+      }
+    },[
+      createIcon('refresh')
+    ]);
+    insertElement(runContainer, this.reloadButton)
 
     insertElement(this.toolbarElement,runContainer);
   }

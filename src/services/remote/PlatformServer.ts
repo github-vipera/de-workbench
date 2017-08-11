@@ -28,13 +28,13 @@ export interface PlatformServer {
 
 export class PlatformServerImpl implements PlatformServer {
   private static nextSocketId: number = 0;
-  app: any;
-  io:any
-  http: any
-  sockets = {};
-  config: PlatformServerConfig
+  protected app: any;
+  protected io:any
+  protected http: any
+  protected sockets = {};
+  protected config: PlatformServerConfig
   constructor() {
-
+    //NOP
   }
 
   public start(config: PlatformServerConfig) {
@@ -45,20 +45,25 @@ export class PlatformServerImpl implements PlatformServer {
 
   private initExpressApp(config: PlatformServerConfig): void {
     Logger.getInstance().info("initExpressApp");
-    console.log("initExpressApp");
-    //const express = allowUnsafeEval(() => require('express'));
     allowUnsafeEval(() => {this.app = express()})
-    //this.app = express();
+    this.initExpressStaticServe(config);
+    this.initInjectedFileServe(config)
+  }
+
+  protected initExpressStaticServe(config: PlatformServerConfig):void{
     this.app.use(express.static(config.platformPath, null));
+  }
+
+  protected initInjectedFileServe(config: PlatformServerConfig):void{
     this.app.get('/__dedebugger/**', (req, res) => {
         var urlRelative = req.url;
         urlRelative = urlRelative.replace('/__dedebugger/', '/injectedfiles/');
         res.sendFile(__dirname + urlRelative);
     });
-
   }
 
-  private initHttp(config: PlatformServerConfig) {
+
+  private initHttp(config: PlatformServerConfig):void {
     this.http = require('http').Server(this.app);
     this.http.on('connection', (socket) => {
       // Add a newly connected socket
@@ -80,7 +85,7 @@ export class PlatformServerImpl implements PlatformServer {
     });
   }
 
-  private initSocketIO(config: PlatformServerConfig) {
+  private initSocketIO(config: PlatformServerConfig):void {
     this.io.on('connection', (socket) => {
         var address = socket.handshake.address;
         Logger.getInstance().debug("on debugger session connection for " + address);
