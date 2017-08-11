@@ -21,6 +21,7 @@ import {
 import { UIExtendedListView, UIExtendedListViewModel, UIExtendedListViewValidationResult } from '../../../ui-components/UIExtendedListView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 import { UITreeViewModel, UITreeViewSelectListener, UITreeView, UITreeItem } from '../../../ui-components/UITreeView'
+import { UIButtonGroupMode, UIButtonConfig, UIButtonGroup } from '../../../ui-components/UIButtonGroup'
 
 export class VariantsGridCtrl extends UIBaseComponent {
 
@@ -116,6 +117,7 @@ class VariantsPropertyRenderer extends UIBaseComponent {
 
   protected listView:UIExtendedListView;
   protected model:EditableListViewModel;
+  protected toolbar:HTMLElement;
 
   constructor(){
     super();
@@ -123,10 +125,24 @@ class VariantsPropertyRenderer extends UIBaseComponent {
   }
 
   protected initUI() {
+    let buttonGroup = new UIButtonGroup(UIButtonGroupMode.Standard);
+    buttonGroup.addButton(new UIButtonConfig().setId('add').setCaption("+"))
+    buttonGroup.addButton(new UIButtonConfig().setId('add').setCaption("-"))
+    buttonGroup.element().classList.add('btn-group-xs')
+    this.toolbar = createElement('div',{
+      elements : [
+        buttonGroup.element()
+      ],
+      className: 'de-workbench-variants-ctrl-toolbar'
+    })
+    //this.toolbar.style.floating = "right"
     this.model = new EditableListViewModel();
     this.listView = new UIExtendedListView(this.model)
-    this.mainElement = this.listView.element()
+    this.mainElement = createElement('div', {
+      elements: [ this.toolbar, this.listView.element() ]
+    })
   }
+
 
 }
 
