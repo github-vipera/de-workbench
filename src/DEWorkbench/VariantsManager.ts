@@ -185,6 +185,16 @@ export class VariantsModel {
     return newVariant;
   }
 
+  public getVariant(variantName:string):Variant {
+    for (var i=0;i<this.variants.length;i++){
+      if (this.variants[i].name===variantName){
+        return this.variants[i]
+      }
+    }
+    return null;
+  }
+
+
 }
 
 export class Variant {

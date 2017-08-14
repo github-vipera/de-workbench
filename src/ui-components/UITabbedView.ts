@@ -18,16 +18,20 @@ import {
  createTextEditor
 } from '../element/index';
 import { UIComponent, UIBaseComponent } from './UIComponent'
+import { EventEmitter }  from 'events'
+
 const crypto = require('crypto');
 const events = require('events');
 
 export class UITabbedViewItem {
   public id:string;
-  public title:string;
+  private title:string;
   public titleClassName:string = '';
   public view:HTMLElement;
   public readonly elementUID:string;
+  private events:EventEmitter;
   constructor(id:string,title:string,view:HTMLElement){
+    this.events = new EventEmitter();
     this.id = id;
     this.title = title;
     this.view = view;
@@ -36,6 +40,23 @@ export class UITabbedViewItem {
   setTitleClass(className:string):UITabbedViewItem{
     this.titleClassName = className;
     return this;
+  }
+  public setTitle(title:string):UITabbedViewItem{
+    this.title = title;
+    this.fireTitleChanged();
+    return this;
+  }
+  public getTitle():string{
+    return this.title;
+  }
+  protected fireTitleChanged(){
+    this.events.emit('didTitleChanged', this)
+  }
+  public addEventListener(event:string,listener){
+    this.events.addListener(event, listener)
+  }
+  public removeEventListener(event:string,listener){
+    this.events.removeListener(event, listener)
   }
 }
 
@@ -53,6 +74,7 @@ export class UITabbedView extends UIBaseComponent {
   private stacked:UITabbedViewStackedComponent;
   private views:Array<UITabbedViewItem>;
   private tabType:UITabbedViewTabType;
+  private selectedTab:UITabbedViewItem;
 
   public static readonly CLSNAME_TAB_TYPE_VERTICAL:string = "tab-type-vertical";
   public static readonly CLSNAME_TAB_TYPE_HORIZONTAL:string = "tab-type-horizontal";
@@ -89,9 +111,14 @@ export class UITabbedView extends UIBaseComponent {
 
     // listen fo events
     this.tabList.addEventListener(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, (tabItem:UITabbedViewItem, htmlElement:HTMLElement)=>{
+      this.selectedTab = tabItem;
       this.stacked.selectView(tabItem);
     });
 
+  }
+
+  public getSelectedTab():UITabbedViewItem{
+      return this.selectedTab;
   }
 
   public setTabType(tabType:UITabbedViewTabType):UITabbedView{
@@ -147,6 +174,10 @@ export class UITabbedView extends UIBaseComponent {
     this.views.push(tabItem);
     this.tabList.addTab(tabItem);
     this.stacked.addView(tabItem);
+    // if is the first tab then select it
+    if (this.views.length===1){
+      this.selectedTab = tabItem;
+    }
   }
 
   public removeView(tabItem:UITabbedViewItem){
@@ -182,6 +213,7 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
   private selectedElement: HTMLElement;
   private itemsElementsMap:any = {};
   private tabItemsMap:any = {};
+  private tabCaptionsMap:any = {};
   private eventEmitter = new events.EventEmitter();
   private currentTabTypeClassName: string = UITabbedView.CLSNAME_TAB_TYPE_DEFAULT;
   private bottomToolbarElement:HTMLElement;
@@ -214,20 +246,14 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
     return this;
   }
 
-    /**
-  public element(): HTMLElement {
-    return this.mainElement;
-  }
-  **/
-
   /**
    * Add a new tab item
    **/
   public addTab(tabItem:UITabbedViewItem){
-    let elementId = "tabitem_" + tabItem.elementUID;
+    let elementId = this.getItemIdForMaps(tabItem);
     let aElement:HTMLElement = createElement('a',{
       elements: [
-        createText(tabItem.title)
+        createText(tabItem.getTitle())
       ],
       className: tabItem.titleClassName
     });
@@ -247,6 +273,7 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
       this.onTabItemSelected(evt.srcElement);
     });
 
+    this.tabCaptionsMap[elementId] = aElement;
     this.itemsElementsMap[elementId] = liElement;
     this.tabItemsMap[elementId] = tabItem;
 
@@ -256,6 +283,17 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
       this.selectedElement = liElement;
       this.selectedElement.classList.toggle('selected');
     }
+
+    tabItem.addEventListener('didTitleChanged',(tabItem)=>{
+      let el:HTMLElement = this.tabCaptionsMap[this.getItemIdForMaps(tabItem)];
+      if (el){
+        el.innerText = tabItem.getTitle();
+      }
+    })
+  }
+
+  protected getItemIdForMaps(tabItem:UITabbedViewItem):string {
+    return "tabitem_" + tabItem.elementUID;
   }
 
   /**
@@ -271,6 +309,7 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
   public selectTab(tabItem:UITabbedViewItem){
     // TODO!!
   }
+
 
   /**
    * Change selected item and generate the event for listeners

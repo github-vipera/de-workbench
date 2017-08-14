@@ -143,11 +143,24 @@ export class VariantsEditorCtrl extends UIBaseComponent {
     }
 
     public promtpForRenameVariant(){
-      //TODO!!
+      let selectedTab = this.tabbedView.getSelectedTab();
+      if (selectedTab){
+        this.modalPrompt.show(selectedTab.getTitle(), "Rename '"+selectedTab.getTitle()+"' variant", (newVariantName)=>{
+          this.renameVariant(selectedTab.getTitle(), newVariantName)
+          selectedTab.setTitle(newVariantName);
+        },()=>{
+          //cencelled by user
+        });
+      }
     }
 
     public promtpForDuplicateVariant(){
       //TODO!!
+    }
+
+    public renameVariant(variantName:string,newVariantName:string){
+      this.variantsModel.getVariant(variantName).name = newVariantName;
+      this.saveVariantsChanges()
     }
 
     public addNewVariant(variantName:string){
