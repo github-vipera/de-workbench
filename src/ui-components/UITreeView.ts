@@ -35,7 +35,7 @@ export interface UITreeItem {
 export interface UITreeViewModel {
   root:UITreeItem;
   className?:string;
-  getItemById?(id:string,model:UITreeViewModel):UITreeItem; // optional, if provided, listeners receive both id and item of selection
+  getItemById(id:string):UITreeItem; // optional, if provided, listeners receive both id and item of selection
   addEventListener(event:string, listener);
   removeEventListener(event:string, listener);
   destroy();
@@ -197,7 +197,7 @@ export class UITreeView extends UIBaseComponent {
   protected fireSelectionChange(itemId:string){
     let item:UITreeItem=null;
     if(this.model.getItemById){
-      item=this.model.getItemById(itemId,this.model);
+      item=this.model.getItemById(itemId);
     }
     this.events.emit("didItemSelected", itemId, item)
   }
@@ -222,23 +222,38 @@ export class UITreeView extends UIBaseComponent {
   public expandItemById(id:string){
     let el = this.getTreeItemById(id);
     el.classList.remove("collapsed");
+
+    let treeItem = this.model.getItemById(id);
+    treeItem.expanded = true
+
     this.events.emit("didItemExpanded", id)
   }
 
   public collapseItemById(id:string){
     let el = this.getTreeItemById(id);
     el.classList.add("collapsed");
+
+    let treeItem = this.model.getItemById(id);
+    treeItem.expanded = false
+
     this.events.emit("didItemCollapsed", id)
   }
 
   public toggleTreeItemExpansion(id:string){
     let el = this.getTreeItemById(id);
     el.classList.toggle("collapsed");
+
+    let treeItem = this.model.getItemById(id);
+
     if (el.classList.contains("collapsed")){
       this.events.emit("didItemCollapsed", id)
+      treeItem.expanded = false
     } else {
       this.events.emit("didItemExpanded", id)
+      treeItem.expanded = true
     }
+
+
   }
 
   public getTreeItemById(id:string){

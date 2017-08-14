@@ -251,7 +251,7 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
     };
     this.treeModel = {
       root: root,
-      getItemById:findItemInTreeModel,
+      getItemById:(id:string)=>{ return findItemInTreeModel(id, this.treeModel) },
       addEventListener:(event:string,listener)=>{},
       removeEventListener:(event:string,listener)=>{},
       destroy:()=>{}

@@ -20,7 +20,7 @@ import {
 
 import { UIExtendedListView, UIExtendedListViewModel, UIExtendedListViewValidationResult } from '../../../ui-components/UIExtendedListView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
-import { UITreeViewModel, UITreeViewSelectListener, UITreeView, UITreeItem } from '../../../ui-components/UITreeView'
+import { UITreeViewModel, UITreeViewSelectListener, UITreeView, UITreeItem, findItemInTreeModel } from '../../../ui-components/UITreeView'
 import { UIButtonGroupMode, UIButtonConfig, UIButtonGroup } from '../../../ui-components/UIButtonGroup'
 import { EventEmitter }  from 'events'
 
@@ -95,8 +95,8 @@ export class VariantsTreeModel implements UITreeViewModel {
     }
   }
 
-  getItemById?(id:string,model:UITreeViewModel):VariantsTreeItem {
-      return null;
+  getItemById(id:string):VariantsTreeItem {
+    return findItemInTreeModel(id, this)
   } // optional, if provided, listeners receive both id and item of selection
 
   addEventListener(event:string, listener){
@@ -126,6 +126,7 @@ export class VariantsTreeItem implements UITreeItem {
   public name:string;
   public children:Array<VariantsTreeItem>;
   public htmlElement:HTMLElement=undefined;
+  public expanded:boolean=true;
   protected events:EventEmitter;
 
   constructor(id:string, name:string){
@@ -157,6 +158,8 @@ export class VariantsTreeItem implements UITreeItem {
     }
     this.children = undefined;
   }
+
+
 }
 
 export class VariantsPlatformTreeItem extends VariantsTreeItem {
@@ -227,8 +230,7 @@ class VariantsPropertyRenderer extends UIBaseComponent {
       className: 'de-workbench-variants-ctrl-toolbar'
     })
     this.model = new VariantsPlatformListViewModel()
-      .addEventListener('onModelChanged',()=>{
-        this.listView.modelChanged();
+      .addEventListener('didModelChanged',()=>{
         this.fireDataChanged();
       });
     this.listView = new UIExtendedListView(this.model)
