@@ -91,6 +91,7 @@
     "@types/atom": "^0.0.38",
     "@types/lodash": "^4.14.62",
     "@types/node": "^8.0.19",
+    "devtron": "^1.4.0",
     "typescript": "^2.3.0"
   },
   "de-workbench": [

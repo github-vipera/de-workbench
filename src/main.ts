@@ -27,6 +27,9 @@ export default {
 
   activate (state: any) {
       console.log("DEWB activated.");
+
+      //require('devtron').install()
+
       this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();
       this.deferredActivation();
       //setTimeout(this.deferredActivation.bind(this),1000);

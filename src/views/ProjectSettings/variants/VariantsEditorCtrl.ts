@@ -26,17 +26,22 @@ import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent
 import { UITreeViewModel, UITreeViewSelectListener, UITreeView, UITreeItem } from '../../../ui-components/UITreeView'
 import { UIButtonGroupMode, UIButtonConfig, UIButtonGroup } from '../../../ui-components/UIButtonGroup'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
+import { VariantsGridCtrl } from './VariantsGridCtrl'
+import { VariantsManager, VariantsModel, Variant, VariantPlatform, VariantPreference } from '../../../DEWorkbench/VariantsManager'
 
 export class VariantsEditorCtrl extends UIBaseComponent {
 
     private projectRoot:string;
-    private eventEmitter:EventEmitter;
     private tabbedView: UITabbedView;
+    private events:EventEmitter;
+    private variantsManager:VariantsManager;
+    private variantsModel:VariantsModel;
 
     constructor(projectRoot:string){
       super()
-      this.eventEmitter = new EventEmitter()
+      this.events = new EventEmitter()
       this.projectRoot = projectRoot;
+      this.variantsManager = new VariantsManager(this.projectRoot)
       this.initUI();
     }
 
@@ -90,14 +95,35 @@ export class VariantsEditorCtrl extends UIBaseComponent {
 
       this.mainElement = this.tabbedView.element()
 
+      this.reload();
     }
 
-    public on(event:string,listener:any){
-      this.eventEmitter.on(event, listener)
+    public reload(){
+      this.variantsManager.load().then((results)=>{
+        this.variantsModel = results;
+        this.updateUI()
+      },(error)=>{
+        console.log("Failure:", error)
+      });
     }
 
-    public off(event:string, listener:any){
-      this.eventEmitter.removeListener(event, listener)
+    private updateUI(){
+      this.tabbedView.removeAllTabs();
+      if (this.variantsModel && this.variantsModel.variants){
+        for (var i=0;i<this.variantsModel.variants.length;i++){
+          let variant:Variant = this.variantsModel.variants[i]
+            let variantView = this.createVariantView(variant)
+            this.tabbedView.addView(variantView)
+        }
+      }
+    }
+
+    public addEventListener(event:string,listener:any){
+      this.events.addListener(event, listener)
+    }
+
+    public removeEventListener(event:string, listener:any){
+      this.events.removeListener(event, listener)
     }
 
     public promtpForNewVariant(){
@@ -116,5 +142,33 @@ export class VariantsEditorCtrl extends UIBaseComponent {
       //TODO!!
     }
 
+    public addNewVariant(variantName:string){
+    }
+
+    protected createVariantView(variant:Variant):UITabbedViewItem {
+      let variantsCtrl = new VariantsGridCtrl(variant);
+      variantsCtrl.addEventListener('didDataChanged',(variantsGridCtrl)=>{
+        this.saveVariantsChanges();
+        this.fireDataChanged();
+      })
+      variantsCtrl.element().style.width = "100%"
+      let variantView = new UITabbedViewItem(variant.name, variant.name, variantsCtrl.element())
+      return variantView;
+    }
+
+    protected saveVariantsChanges(){
+      this.variantsManager.store(this.variantsModel);
+    }
+
+    protected fireDataChanged(){
+      this.events.emit("didDataChanged", this)
+    }
+
+    public destroy(){
+      this.events.removeAllListeners();
+      this.tabbedView.destroy();
+      super.destroy();
+      this.events = null;
+    }
 
 }

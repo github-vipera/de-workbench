@@ -23,15 +23,18 @@ import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent
 import { UITreeViewModel, UITreeViewSelectListener, UITreeView, UITreeItem, findItemInTreeModel } from '../../../ui-components/UITreeView'
 import { UIButtonGroupMode, UIButtonConfig, UIButtonGroup } from '../../../ui-components/UIButtonGroup'
 import { EventEmitter }  from 'events'
+import { VariantsManager, VariantsModel, Variant, VariantPlatform, VariantPreference } from '../../../DEWorkbench/VariantsManager'
 
 export class VariantsGridCtrl extends UIBaseComponent {
 
-  protected treeModel:VariantsTreeModel;
+  protected treeModel:VariantTreeModel;
   protected treeView:UITreeView;
   protected events:EventEmitter;
+  protected variant:Variant;
 
-  constructor(){
+  constructor(variant:Variant){
     super();
+    this.variant = variant;
     this.events = new EventEmitter()
     this.initUI();
   }
@@ -40,20 +43,35 @@ export class VariantsGridCtrl extends UIBaseComponent {
     this.treeModel = this.createTreeModel();
     this.treeView = new UITreeView(this.treeModel)
     this.mainElement = this.treeView.element()
+
+    this.treeModel.addEventListener('didModelChanged',()=>{
+      this.events.emit('didDataChanged', this)
+      //console.log("Variant data changed! ", this.variant)
+    })
   }
 
-  protected createTreeModel():VariantsTreeModel {
+  protected createTreeModel():VariantTreeModel {
 
-    let globalPropertiesNode = new VariantsPlatformTreeItem('global', 'Global Properties', [])
-    let androidPropertiesNode = new VariantsPlatformTreeItem('android', 'Android Properties', [])
-    let iosPropertiesNode = new VariantsPlatformTreeItem('ios', 'iOS Properties', [])
-    let browserPropertiesNode = new VariantsPlatformTreeItem('browser', 'Browser Properties',[])
+    let globalPropertiesNode = new VariantsPlatformTreeItem('global', 'Global Properties', this.variant)
+    let androidPropertiesNode = new VariantsPlatformTreeItem('android', 'Android Properties', this.variant)
+    let iosPropertiesNode = new VariantsPlatformTreeItem('ios', 'iOS Properties', this.variant)
+    let browserPropertiesNode = new VariantsPlatformTreeItem('browser', 'Browser Properties', this.variant)
 
-    let rootNode = new VariantsTreeItem('_root', 'Configuration Properties')
+    let rootNode = new VariantsTreeItem('_root', 'Configuration Properties', this.variant)
                         .setChildren([globalPropertiesNode,androidPropertiesNode,iosPropertiesNode,browserPropertiesNode])
 
-    let newModel:VariantsTreeModel = new VariantsTreeModel().setRoot(rootNode);
+    let newModel:VariantTreeModel = new VariantTreeModel(this.variant).setRoot(rootNode);
     return newModel;
+  }
+
+  public addEventListener(event:string,listener):VariantsGridCtrl {
+      this.events.addListener(event, listener);
+      return this;
+  }
+
+  public removeEventListener(event:string,listener):VariantsGridCtrl {
+    this.events.removeListener(event, listener);
+    return this;
   }
 
   public destroy(){
@@ -68,16 +86,18 @@ export class VariantsGridCtrl extends UIBaseComponent {
 
 }
 
-export class VariantsTreeModel implements UITreeViewModel {
+export class VariantTreeModel implements UITreeViewModel {
 
   root:VariantsTreeItem;
   events:EventEmitter;
   className?:string;
+  protected variant:Variant;
 
-  constructor(){
+  constructor(variant:Variant){
+    this.variant = variant;
   }
 
-  public setRoot(root:VariantsTreeItem):VariantsTreeModel {
+  public setRoot(root:VariantsTreeItem):VariantTreeModel {
     this.root = root;
     this.subscribeForItemEvents(root);
     this.events = new EventEmitter();
@@ -128,8 +148,10 @@ export class VariantsTreeItem implements UITreeItem {
   public htmlElement:HTMLElement=undefined;
   public expanded:boolean=true;
   protected events:EventEmitter;
+  protected variant:Variant;
 
-  constructor(id:string, name:string){
+  constructor(id:string, name:string, variant:Variant){
+    this.variant = variant;
     this.id = id;
     this.name = name;
     this.events = new EventEmitter();
@@ -164,21 +186,22 @@ export class VariantsTreeItem implements UITreeItem {
 
 export class VariantsPlatformTreeItem extends VariantsTreeItem {
 
-  protected properties: Array<any>;
+  //protected properties: Array<any>;
   private propertyRenderer:VariantsPropertyRenderer;
+  private platformName:string;
 
-  constructor(platformName:string, displayName:string, properties:Array<any>){
-    super(platformName,displayName);
-    this.properties = properties;
+  constructor(platformName:string, displayName:string, variant:Variant){
+    super(platformName,displayName, variant);
+    this.platformName = platformName;
     this.createChildrenForProperties()
   }
 
   protected createChildrenForProperties(){
-    this.propertyRenderer = new VariantsPropertyRenderer();
+    this.propertyRenderer = new VariantsPropertyRenderer(this.platformName, this.variant);
     this.propertyRenderer.addEventListener('didDataChanged',()=>{
       this.fireItemChanged()
     })
-    let propertyListChild = new VariantsTreeItem(this.id + "_properties",this.id + "_properties");
+    let propertyListChild = new VariantsTreeItem(this.id + "_properties", this.id + "_properties", this.variant);
     propertyListChild.htmlElement = this.propertyRenderer.element()
     this.children = [propertyListChild]
   }
@@ -187,7 +210,6 @@ export class VariantsPlatformTreeItem extends VariantsTreeItem {
   public destroy(){
     this.events.removeAllListeners()
     this.propertyRenderer.destroy();
-    this.properties = null;
     this.events = null;
     super.destroy();
   }
@@ -201,9 +223,13 @@ class VariantsPropertyRenderer extends UIBaseComponent {
   protected model:VariantsPlatformListViewModel;
   protected toolbar:HTMLElement;
   protected events:EventEmitter;
+  protected variant:Variant;
+  protected platformName:string;
 
-  constructor(){
+  constructor(platformName:string,variant:Variant){
     super();
+    this.variant = variant;
+    this.platformName = platformName;
     this.events = new EventEmitter();
     this.initUI();
   }
@@ -229,7 +255,7 @@ class VariantsPropertyRenderer extends UIBaseComponent {
       ],
       className: 'de-workbench-variants-ctrl-toolbar'
     })
-    this.model = new VariantsPlatformListViewModel()
+    this.model = new VariantsPlatformListViewModel(this.platformName, this.variant)
       .addEventListener('didModelChanged',()=>{
         this.fireDataChanged();
       });
@@ -277,11 +303,19 @@ class VariantsPropertyRenderer extends UIBaseComponent {
 
 class VariantsPlatformListViewModel implements UIExtendedListViewModel {
 
-  protected properties:Array<VariantProperty>
+  protected properties:Array<VariantPreference>
   protected events:EventEmitter;
+  protected variant:Variant;
+  protected platformName:string;
 
-  constructor(){
-    this.properties = [];
+  constructor(platformName:string,variant:Variant){
+    this.variant = variant;
+    this.platformName = platformName;
+    if (platformName==='global'){
+      this.properties = variant.preferences;
+    } else {
+      this.properties = variant.getOrCreatePlatformByName(this.platformName).preferences;
+    }
     this.events = new EventEmitter();
   }
 
@@ -296,7 +330,7 @@ class VariantsPlatformListViewModel implements UIExtendedListViewModel {
   }
 
   public addNewProperty(){
-    this.properties.push(new VariantProperty())
+    this.properties.push(new VariantPreference("New Property Name", "New Property Value"))
     this.fireModelChanged();
   }
 
@@ -320,7 +354,7 @@ class VariantsPlatformListViewModel implements UIExtendedListViewModel {
   }
 
   getValueAt(row:number, col:number):any {
-    let property:VariantProperty =  this.properties[row];
+    let property:VariantPreference =  this.properties[row];
     if (col===0){
       return property.name;
     } else if (col===1){
@@ -350,7 +384,7 @@ class VariantsPlatformListViewModel implements UIExtendedListViewModel {
   }
 
   onValueChanged(row:number, col:number, value:any) {
-    let property:VariantProperty =  this.properties[row];
+    let property:VariantPreference =  this.properties[row];
     if (col===0){
       property.name = value;
     } else if (col===1){
@@ -376,9 +410,4 @@ class VariantsPlatformListViewModel implements UIExtendedListViewModel {
     this.events = null;
   }
 
-}
-
-export class VariantProperty {
-  public name:string="New Property Name";
-  public value:any="The Property Value";
 }

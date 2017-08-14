@@ -27,15 +27,18 @@ import { ProjectManager } from '../../../DEWorkbench/ProjectManager'
 import { UIListView, UIListViewModel } from '../../../ui-components/UIListView'
 import { UIExtendedListView, UIExtendedListViewModel, UIExtendedListViewValidationResult } from '../../../ui-components/UIExtendedListView'
 import { VariantsGridCtrl } from './VariantsGridCtrl'
+import { VariantsEditorCtrl } from './VariantsEditorCtrl'
 
 export class VariantsView  extends UIBaseComponent {
 
   private stackedPage: UIStackedView;
-  private tabbedView: UITabbedView;
+  //private tabbedView: UITabbedView;
   private currentProjectRoot:string;
 
-  private listView:UIListView;
-  private listViewModel:UIListViewModel;
+  private variantsEditorCtrl:VariantsEditorCtrl;
+
+  //private listView:UIListView;
+  //private listViewModel:UIListViewModel;
 
   constructor(){
     super();
@@ -44,7 +47,7 @@ export class VariantsView  extends UIBaseComponent {
 
   private buildUI(){
     this.currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
-
+    /**
     // tabbed toolbar
     let addVariantButton = createElement('button',{
       //elements : [ createText("New...")],
@@ -89,10 +92,12 @@ export class VariantsView  extends UIBaseComponent {
     this.tabbedView.addView(this.createVariantView('Test'));
     this.tabbedView.addView(this.createVariantView('UAT'));
     this.tabbedView.addView(this.createVariantView('Production'));
+    **/
 
+    this.variantsEditorCtrl = new VariantsEditorCtrl(this.currentProjectRoot);
 
     let mainContainer = createElement('div',{
-      elements: [ this.tabbedView.element() ]
+      elements: [ this.variantsEditorCtrl.element() ]
     });
     mainContainer.style.height = "80%"
 
@@ -103,12 +108,14 @@ export class VariantsView  extends UIBaseComponent {
 
   }
 
+  /**
   private createVariantView(variantName:string):UITabbedViewItem {
     let variantsCtrl = new VariantsGridCtrl();
     variantsCtrl.element().style.width = "100%"
     let variantView = new UITabbedViewItem(variantName, variantName, variantsCtrl.element())
     return variantView;
   }
+  **/
 
 
 }

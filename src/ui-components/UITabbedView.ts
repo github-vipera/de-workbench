@@ -153,6 +153,10 @@ export class UITabbedView extends UIBaseComponent {
     //TODO!!
   }
 
+  public removeAllTabs(){
+    //TODO!!
+  }
+
   public setBottomToolbar(toolbarElement:HTMLElement){
     this.tabList.addBottomToolbar(toolbarElement);
     return this;
