@@ -70,12 +70,12 @@ export class ProvidedPluginsView extends UIBaseComponent {
     this.lineLoader = new UILineLoader()
 
     // Plugins list
-    this.pluginList = new UIPluginsList().setEventListener((pluginInfo, actionType)=>{
+    this.pluginList = new UIPluginsList().addEventListener('didActionRequired',(plugininfo, actionType)=>{
       if (actionType===UIPluginMetaButtons.BTN_TYPE_INSTALL){
-        this.doInstallPlugin(pluginInfo)
+        this.doInstallPlugin(plugininfo)
       }
       else if (actionType===UIPluginMetaButtons.BTN_TYPE_UNINSTALL){
-        this.doUninstallPlugin(pluginInfo)
+        this.doUninstallPlugin(plugininfo)
       } else {
         Logger.getInstance().warn("Action unknwon " + actionType);
       }

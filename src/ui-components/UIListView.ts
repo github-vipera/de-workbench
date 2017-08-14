@@ -28,6 +28,9 @@ export interface UIListViewModel {
     getClassNameAt(row:number, col:number):string;
     getColumnName(col:number):string;
     getClassName():string;
+    addEventListener(event:string, listener);
+    removeEventListener(event:string, listener);
+    destroy();
 }
 
 export class UIListView extends UIBaseComponent {
@@ -45,6 +48,9 @@ export class UIListView extends UIBaseComponent {
   public setModel(model:UIListViewModel){
     this.model = model;
     this.buildUI();
+    this.model.addEventListener('didModelChanged', ()=>{
+      this.modelChanged()
+    })
   }
 
   protected buildUI(){
@@ -122,6 +128,12 @@ export class UIListView extends UIBaseComponent {
     this.tableElement = this.createTableElement();
     this.mainElement.replaceChild(this.tableElement, oldTable);
     this.tableReady(this.tableElement)
+  }
+
+  public destroy(){
+    this.model.destroy()
+    this.tableElement.remove();
+    super.destroy()
   }
 
 

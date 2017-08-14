@@ -130,14 +130,14 @@ export class CommunityPluginsView extends UIBaseComponent {
     });
 
     // Plugins list
-    this.pluginList = new UIPluginsList().setEventListener((pluginInfo, actionType)=>{
+    this.pluginList = new UIPluginsList().addEventListener('didActionRequired',(pluginInfo, actionType)=>{
       if (actionType===UIPluginMetaButtons.BTN_TYPE_INSTALL){
         this.doInstallPlugin(pluginInfo)
       }
       else if (actionType===UIPluginMetaButtons.BTN_TYPE_UNINSTALL){
         this.doUninstallPlugin(pluginInfo)
       } else {
-        Logger.getInstance().warn("Action unknwon " + actionType);
+        Logger.getInstance().warn("Action unknwon " + actionType)
       }
     });
 

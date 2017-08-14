@@ -20,6 +20,8 @@
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UIListView, UIListViewModel  } from './UIListView'
 import { CordovaPlugin } from '../cordova/Cordova'
+import { EventEmitter }  from 'events'
+
 const moment = require('moment')
 const _ = require("lodash");
 
@@ -34,11 +36,13 @@ export interface DisplayConfiguration {
 export class UIPluginsList extends UIListView {
 
     private pluginListModel: PluginsListModel;
-    private callbackFunc:Function;
+    //private callbackFunc:Function;
     private displayConfiguration:DisplayConfiguration;
+    private events:EventEmitter;
 
     constructor(){
         super(null);
+        this.events = new EventEmitter();
 
         this.displayConfiguration = {
           ratingVisible: true,
@@ -51,10 +55,13 @@ export class UIPluginsList extends UIListView {
     }
 
     private initModel(){
-      this.pluginListModel =  new PluginsListModel(this.displayConfiguration).setEventListener((pluginInfo, actionType)=>{
+      this.pluginListModel =  new PluginsListModel(this.displayConfiguration).addEventListener('didActionRequired',(pluginInfo, actionType)=>{
+        this.events.emit('didActionRequired', pluginInfo, actionType)
+        /**
         if (this.callbackFunc){
           this.callbackFunc(pluginInfo, actionType)
         }
+        **/
       });
       this.setModel(this.pluginListModel);
     }
@@ -80,10 +87,12 @@ export class UIPluginsList extends UIListView {
       this.modelChanged();
     }
 
+    /**
     public setEventListener(callbackFunc:Function):UIPluginsList{
       this.callbackFunc = callbackFunc;
       return this;
     }
+    **/
 
     public setPluginInstallPending(pluginInfo:CordovaPlugin,installing:boolean){
       this.pluginListModel.setPluginInstallPending(pluginInfo, installing);
@@ -115,18 +124,36 @@ export class UIPluginsList extends UIListView {
       this.pluginListModel.updateUI(this.displayConfiguration);
     }
 
+    public addEventListener(event:string, listener):UIPluginsList{
+      this.events.addListener(event, listener);
+      return this;
+    }
+
+    public removeEventListener(event:string, listener):UIPluginsList{
+      this.events.removeListener(event, listener);
+      return this;
+    }
+
+    public destroy(){
+      this.events.removeAllListeners();
+      super.destroy();
+      this.events = null;
+    }
+
 }
 
 class PluginsListModel implements UIListViewModel {
 
   private pluginList:Array<UIPluginItem>;
   private pluginsMap:any={};
-  private callbackFunc:Function;
+  //private callbackFunc:Function;
   private displayConfiguration:DisplayConfiguration;
+  private events:EventEmitter;
 
   constructor(displayConfiguration:DisplayConfiguration){
-      this.pluginList = new Array<UIPluginItem>();
-      this.displayConfiguration = displayConfiguration;
+    this.events = new EventEmitter();
+    this.pluginList = new Array<UIPluginItem>();
+    this.displayConfiguration = displayConfiguration;
   }
 
   public addPlugins(plugins:Array<CordovaPlugin>){
@@ -134,23 +161,30 @@ class PluginsListModel implements UIListViewModel {
     for (i=0;i<plugins.length;i++){
       this.addPlugin(plugins[i]);
     }
+    this.fireModelChanged();
   }
 
   public addPlugin(pluginInfo:CordovaPlugin){
     let pluginItem = new UIPluginItem(pluginInfo, this.displayConfiguration);
     pluginItem.setEventListener((pluginInfo, actionType)=>{
+      this.fireActionEvent(pluginInfo, actionType)
+      /**
       if (this.callbackFunc){
         this.callbackFunc(pluginInfo, actionType);
       }
+      **/
     })
     this.pluginList.push(pluginItem)
     this.pluginsMap[pluginInfo.id] = pluginItem;
+    this.fireModelChanged();
   }
 
+  /**
   public setEventListener(callbackFunc:Function):PluginsListModel{
     this.callbackFunc = callbackFunc;
     return this;
   }
+  **/
 
   hasHeader():boolean {
     return false;
@@ -182,6 +216,7 @@ class PluginsListModel implements UIListViewModel {
   public clear(){
     this.pluginList = new Array<UIPluginItem>();
     this.pluginsMap = {};
+    this.fireModelChanged()
   }
 
   public setPluginInstallPending(pluginInfo:CordovaPlugin,installing:boolean){
@@ -203,6 +238,29 @@ class PluginsListModel implements UIListViewModel {
     for (var i=0;i<this.pluginList.length;i++){
       this.pluginList[i].updateUI(displayConfiguration)
     }
+  }
+
+  protected fireActionEvent(pluginInfo:CordovaPlugin, actionType){
+    this.events.emit("didActionRequired", pluginInfo, actionType)
+  }
+
+  protected fireModelChanged(){
+    this.events.emit("didModelChanged", this)
+  }
+
+  addEventListener(event:string, listener):PluginsListModel{
+    this.events.addListener(event, listener)
+    return this;
+  }
+
+  removeEventListener(event:string, listener):PluginsListModel{
+    this.events.removeListener(event, listener)
+    return this;
+  }
+
+  destroy(){
+    this.events.removeAllListeners()
+    this.events = null;
   }
 
 }

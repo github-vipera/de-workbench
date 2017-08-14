@@ -34,9 +34,6 @@ export interface UIExtendedListViewModel extends UIListViewModel {
     isCellEditable(row:number, col:number):boolean;
     onValueChanged(row:number, col:number, value:any);
     onEditValidation(row:number, col:number, value:any):UIExtendedListViewValidationResult;
-    addEventListener(event:string, listener);
-    removeEventListener(event:string, listener);
-    destroy();
 }
 
 export class UIExtendedListView extends UIListView {

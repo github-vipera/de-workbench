@@ -82,7 +82,7 @@ export class InstalledPluginsView  extends UIBaseComponent {
                             .setLastUpdateVisible(false)
                             .setRatingVisible(false)
                             .setPlatformsVisible(false)
-      .setEventListener((pluginInfo, actionType)=>{
+      .addEventListener('didActionRequired',(pluginInfo, actionType)=>{
         if (actionType===UIPluginMetaButtons.BTN_TYPE_INSTALL){
           // not possible to do this in this view !!!
         }

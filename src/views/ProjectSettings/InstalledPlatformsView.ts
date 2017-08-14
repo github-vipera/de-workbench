@@ -155,7 +155,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
     this.lineLoader.setOnLoading(true)
     this.installedPlatformListModel.reload(()=>{
       this.updateAvailableToInstallPlatforms();
-      this.installedPlatformList.modelChanged();
+      //this.installedPlatformList.modelChanged();
       this.lineLoader.setOnLoading(false)
     })
   }
@@ -186,8 +186,10 @@ class InstalledPlatformListModel implements UIListViewModel {
   private platforms:Array<CordovaPlatform>;
   private platformElements:any;
   private actionListener:Function;
+  private events:EventEmitter;
 
   constructor(projectPath:string){
+    this.events = new EventEmitter();
     this.projectPath = projectPath;
   }
 
@@ -252,6 +254,7 @@ class InstalledPlatformListModel implements UIListViewModel {
     ProjectManager.getInstance().cordova.getInstalledPlatforms(this.projectPath).then((ret)=>{
       this.platforms = ret;
       this.platformElements = {};
+      this.fireModelChanged()
       didDone();
     });
   }
@@ -264,6 +267,29 @@ class InstalledPlatformListModel implements UIListViewModel {
     if (this.actionListener){
       this.actionListener(platformInfo, action)
     }
+  }
+
+  protected fireModelChanged(){
+    this.events.emit('didModelChanged')
+  }
+
+  addEventListener(event:string, listener){
+    this.events.addListener(event, listener)
+  }
+
+  removeEventListener(event:string, listener){
+    this.events.removeListener(event, listener)
+  }
+
+  destroy(){
+    this.events.removeAllListeners();
+    Object.keys(this.platformElements).forEach((key) => {
+      let renderer:PlatformRenderer = this.platformElements[key]
+      renderer.destroy();
+    });
+    this.platforms = null;
+    this.platformElements = null;
+    this.events = null;
   }
 
 }
@@ -321,6 +347,10 @@ class PlatformRenderer extends UIBaseComponent {
       }
     )
 
+  }
+
+  public destroy(){
+    super.destroy()
   }
 }
 
