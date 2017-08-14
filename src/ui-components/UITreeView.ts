@@ -19,6 +19,8 @@
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { forEach, remove } from 'lodash'
+import { EventEmitter }  from 'events'
+
 export interface UITreeItem {
   id:string;
   name:string;
@@ -34,6 +36,9 @@ export interface UITreeViewModel {
   root:UITreeItem;
   className?:string;
   getItemById?(id:string,model:UITreeViewModel):UITreeItem; // optional, if provided, listeners receive both id and item of selection
+  addEventListener(event:string, listener);
+  removeEventListener(event:string, listener);
+  destroy();
 }
 
 export interface UITreeViewSelectListener {
@@ -45,10 +50,11 @@ export class UITreeView extends UIBaseComponent {
   private model:UITreeViewModel;
   private treeElement: HTMLElement;
   private currentSelection: string;
-  private listeners: Array<UITreeViewSelectListener> = [];
+  private events:EventEmitter;
 
   constructor(model?:UITreeViewModel){
     super();
+    this.events = new EventEmitter();
     this.initUI();
     if (model){
       this.setModel(model);
@@ -66,10 +72,13 @@ export class UITreeView extends UIBaseComponent {
 
   public setModel(model:UITreeViewModel){
     this.model = model;
-    this.modelChanged()
+    this.onModelChanged()
+    this.model.addEventListener('didModelChanged',()=>{
+      this.onModelChanged();
+    })
   }
 
-  public modelChanged(){
+  protected onModelChanged(){
     let oldTree = this.treeElement;
     this.treeElement = this.rebuildTree();
     if (oldTree){
@@ -77,6 +86,7 @@ export class UITreeView extends UIBaseComponent {
     } else {
       insertElement(this.mainElement, this.treeElement)
     }
+    this.events.emit("didModelChanged", this)
   }
 
   private rebuildTree():HTMLElement {
@@ -161,13 +171,12 @@ export class UITreeView extends UIBaseComponent {
     return treeItem;
   }
 
-  addSelectListener(listener:UITreeViewSelectListener){
-    this.listeners.push(listener);
+  public addEventListener(event:string, listener){
+    this.events.addListener(event, listener)
   }
-  removeSelectListener(listener:UITreeViewSelectListener){
-    remove(this.listeners,function(single){
-      return single == listener;
-    });
+
+  public removeEventListener(event:string, listener){
+    this.events.removeListener(event, listener)
   }
 
   protected onItemClicked(evt){
@@ -186,13 +195,11 @@ export class UITreeView extends UIBaseComponent {
   }
 
   protected fireSelectionChange(itemId:string){
-    forEach(this.listeners,(single:UITreeViewSelectListener) => {
-      let item:UITreeItem=null;
-      if(this.model.getItemById){
-        item=this.model.getItemById(itemId,this.model);
-      }
-      single.onItemSelected(itemId,item);
-    });
+    let item:UITreeItem=null;
+    if(this.model.getItemById){
+      item=this.model.getItemById(itemId,this.model);
+    }
+    this.events.emit("didItemSelected", itemId, item)
   }
 
   public getCurrentSelectedItemId():string{
@@ -215,16 +222,23 @@ export class UITreeView extends UIBaseComponent {
   public expandItemById(id:string){
     let el = this.getTreeItemById(id);
     el.classList.remove("collapsed");
+    this.events.emit("didItemExpanded", id)
   }
 
   public collapseItemById(id:string){
     let el = this.getTreeItemById(id);
     el.classList.add("collapsed");
+    this.events.emit("didItemCollapsed", id)
   }
 
   public toggleTreeItemExpansion(id:string){
     let el = this.getTreeItemById(id);
     el.classList.toggle("collapsed");
+    if (el.classList.contains("collapsed")){
+      this.events.emit("didItemCollapsed", id)
+    } else {
+      this.events.emit("didItemExpanded", id)
+    }
   }
 
   public getTreeItemById(id:string){
@@ -233,11 +247,12 @@ export class UITreeView extends UIBaseComponent {
   }
 
   public destroy(){
+    this.events.removeAllListeners();
     this.model = undefined;
-    this.listeners = null;
     if (this.treeElement){
       this.treeElement.remove()
     }
+    this.events = null;
     super.destroy();
   }
 }

@@ -22,14 +22,17 @@ import { UIExtendedListView, UIExtendedListViewModel, UIExtendedListViewValidati
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 import { UITreeViewModel, UITreeViewSelectListener, UITreeView, UITreeItem } from '../../../ui-components/UITreeView'
 import { UIButtonGroupMode, UIButtonConfig, UIButtonGroup } from '../../../ui-components/UIButtonGroup'
+import { EventEmitter }  from 'events'
 
 export class VariantsGridCtrl extends UIBaseComponent {
 
   protected treeModel:VariantsTreeModel;
   protected treeView:UITreeView;
+  protected events:EventEmitter;
 
   constructor(){
     super();
+    this.events = new EventEmitter()
     this.initUI();
   }
 
@@ -49,7 +52,18 @@ export class VariantsGridCtrl extends UIBaseComponent {
     let rootNode = new VariantsTreeItem('_root', 'Configuration Properties')
                         .setChildren([globalPropertiesNode,androidPropertiesNode,iosPropertiesNode,browserPropertiesNode])
 
-    return new VariantsTreeModel().setRoot(rootNode);
+    let newModel:VariantsTreeModel = new VariantsTreeModel().setRoot(rootNode);
+    return newModel;
+  }
+
+  public destroy(){
+    super.destroy();
+    this.events.removeAllListeners();
+    this.treeView.destroy();
+    this.treeModel.destroy();
+    this.treeView = null;
+    this.treeModel = null;
+    this.events = null;
   }
 
 }
@@ -57,7 +71,7 @@ export class VariantsGridCtrl extends UIBaseComponent {
 export class VariantsTreeModel implements UITreeViewModel {
 
   root:VariantsTreeItem;
-
+  events:EventEmitter;
   className?:string;
 
   constructor(){
@@ -65,12 +79,44 @@ export class VariantsTreeModel implements UITreeViewModel {
 
   public setRoot(root:VariantsTreeItem):VariantsTreeModel {
     this.root = root;
+    this.subscribeForItemEvents(root);
+    this.events = new EventEmitter();
     return this;
+  }
+
+  protected subscribeForItemEvents(treeItem:VariantsTreeItem){
+    treeItem.addEventListener('didItemChanged',()=>{
+      this.fireModelChanged();
+    })
+    if (treeItem.children){
+      for (var i=0;i<treeItem.children.length;i++){
+          this.subscribeForItemEvents(treeItem.children[i])
+      }
+    }
   }
 
   getItemById?(id:string,model:UITreeViewModel):VariantsTreeItem {
       return null;
   } // optional, if provided, listeners receive both id and item of selection
+
+  addEventListener(event:string, listener){
+    this.events.addListener(event, listener)
+  }
+
+  removeEventListener(event:string, listener){
+    this.events.removeListener(event, listener)
+  }
+
+  protected fireModelChanged(){
+    this.events.emit("didModelChanged")
+  }
+
+  destroy(){
+    this.events.removeAllListeners();
+    this.root.destroy();
+    this.root = null;
+    this.events = null;
+  }
 
 }
 
@@ -80,10 +126,12 @@ export class VariantsTreeItem implements UITreeItem {
   public name:string;
   public children:Array<VariantsTreeItem>;
   public htmlElement:HTMLElement=undefined;
+  protected events:EventEmitter;
 
   constructor(id:string, name:string){
     this.id = id;
     this.name = name;
+    this.events = new EventEmitter();
   }
 
   public setChildren(children:Array<VariantsTreeItem>):VariantsTreeItem {
@@ -91,6 +139,24 @@ export class VariantsTreeItem implements UITreeItem {
     return this;
   }
 
+  protected fireItemChanged(){
+    this.events.emit("didItemChanged")
+  }
+
+  public addEventListener(event:string, listener){
+    this.events.addListener(event, listener)
+  }
+
+  public removeEventListener(event:string, listener){
+    this.events.removeListener(event, listener)
+  }
+
+  public destroy(){
+    for (var i=0;i<this.children.length;i++){
+      this.children[i].destroy();
+    }
+    this.children = undefined;
+  }
 }
 
 export class VariantsPlatformTreeItem extends VariantsTreeItem {
@@ -106,10 +172,23 @@ export class VariantsPlatformTreeItem extends VariantsTreeItem {
 
   protected createChildrenForProperties(){
     this.propertyRenderer = new VariantsPropertyRenderer();
+    this.propertyRenderer.addEventListener('didDataChanged',()=>{
+      this.fireItemChanged()
+    })
     let propertyListChild = new VariantsTreeItem(this.id + "_properties",this.id + "_properties");
     propertyListChild.htmlElement = this.propertyRenderer.element()
     this.children = [propertyListChild]
   }
+
+
+  public destroy(){
+    this.events.removeAllListeners()
+    this.propertyRenderer.destroy();
+    this.properties = null;
+    this.events = null;
+    super.destroy();
+  }
+
 
 }
 
@@ -118,9 +197,11 @@ class VariantsPropertyRenderer extends UIBaseComponent {
   protected listView:UIExtendedListView;
   protected model:VariantsPlatformListViewModel;
   protected toolbar:HTMLElement;
+  protected events:EventEmitter;
 
   constructor(){
     super();
+    this.events = new EventEmitter();
     this.initUI();
   }
 
@@ -145,9 +226,11 @@ class VariantsPropertyRenderer extends UIBaseComponent {
       ],
       className: 'de-workbench-variants-ctrl-toolbar'
     })
-    this.model = new VariantsPlatformListViewModel(()=>{
-      this.listView.modelChanged();
-    });
+    this.model = new VariantsPlatformListViewModel()
+      .addEventListener('onModelChanged',()=>{
+        this.listView.modelChanged();
+        this.fireDataChanged();
+      });
     this.listView = new UIExtendedListView(this.model)
     this.mainElement = createElement('div', {
       elements: [ this.toolbar, this.listView.element() ],
@@ -155,35 +238,70 @@ class VariantsPropertyRenderer extends UIBaseComponent {
     })
   }
 
+  public addEventListener(event:string, listener){
+    this.events.addListener(event, listener)
+  }
+
+  public removeEventListener(event:string, listener){
+    this.events.removeListener(event, listener)
+  }
+
   protected addNewRow(){
     this.model.addNewProperty();
-    this.listView.modelChanged();
+    this.events.emit("didPropertyAdded")
   }
 
   protected removeSelectedRow(){
     let row = this.listView.getSelectedRow();
     this.model.removePropertyAt(row)
-    this.listView.modelChanged();
+    this.events.emit("didPropertyRemoved")
   }
+
+  protected fireDataChanged(){
+    this.events.emit("didDataChanged")
+  }
+
+  public destroy(){
+    this.events.removeAllListeners();
+    this.listView.destroy();
+    this.toolbar.remove();
+    this.toolbar = null;
+    this.model.destroy();
+    this.model = null;
+    super.destroy();
+  }
+
 }
 
 class VariantsPlatformListViewModel implements UIExtendedListViewModel {
 
   protected properties:Array<VariantProperty>
-  protected modelListener:Function;
+  protected events:EventEmitter;
 
-  constructor(modelListener:Function){
+  constructor(){
     this.properties = [];
-    this.modelListener = modelListener;
+    this.events = new EventEmitter();
+  }
+
+  public addEventListener(event:string,listener):VariantsPlatformListViewModel {
+      this.events.addListener(event, listener);
+      return this;
+  }
+
+  public removeEventListener(event:string,listener):VariantsPlatformListViewModel {
+      this.events.removeListener(event, listener);
+      return this;
   }
 
   public addNewProperty(){
     this.properties.push(new VariantProperty())
+    this.fireModelChanged();
   }
 
   public removePropertyAt(index:number){
     if (index>=0){
       this.properties.splice(index, 1);
+      this.fireModelChanged();
     }
   }
 
@@ -248,7 +366,12 @@ class VariantsPlatformListViewModel implements UIExtendedListViewModel {
   }
 
   protected fireModelChanged(){
-    this.modelListener()
+    this.events.emit("didModelChanged", this)
+  }
+
+  public destroy(){
+    this.events.removeAllListeners();
+    this.events = null;
   }
 
 }

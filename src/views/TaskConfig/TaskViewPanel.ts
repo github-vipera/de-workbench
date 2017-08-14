@@ -251,7 +251,10 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
     };
     this.treeModel = {
       root: root,
-      getItemById:findItemInTreeModel
+      getItemById:findItemInTreeModel,
+      addEventListener:(event:string,listener)=>{},
+      removeEventListener:(event:string,listener)=>{},
+      destroy:()=>{}
     };
   }
   initUI(){
@@ -262,7 +265,7 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
   buildAndAddTreeView(cvdTask:Array<CordovaTaskConfiguration>){
     this.buildTreeModel(cvdTask);
     this.treeView = new UITreeView(this.treeModel);
-    this.treeView.addSelectListener(this);
+    this.treeView.addEventListener('didItemSelected', (itemId,item)=> { this.onItemSelected(itemId, item) });
     insertElement(this.mainElement,this.treeView.element());
   }
   createCustomTaskNode():UITreeItem{
