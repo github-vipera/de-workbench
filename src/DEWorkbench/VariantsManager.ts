@@ -236,6 +236,24 @@ export class Variant {
     return null;
   }
 
+  public cloneFrom(variantToClone:Variant){
+    this.preferences = [];
+    this.platforms = [];
+    // clone preferences
+    for (var i=0;i<variantToClone.preferences.length;i++){
+      this.addPreference(variantToClone.preferences[i].name, variantToClone.preferences[i].name)
+    }
+    // clone platforms
+    for (var i=0;i<variantToClone.platforms.length;i++){
+      let variantPlatformToClone = variantToClone.platforms[i];
+      let variantPlatform = this.addPlatform(variantPlatformToClone.name);
+      // clone preferences
+      for (var k=0;k<variantPlatformToClone.preferences.length;k++){
+        variantPlatform.addPreference(variantPlatformToClone.preferences[k].name, variantPlatformToClone.preferences[k].name)
+      }
+    }
+  }
+
 }
 
 export class VariantPlatform  {

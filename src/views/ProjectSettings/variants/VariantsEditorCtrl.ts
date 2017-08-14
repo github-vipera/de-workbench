@@ -74,17 +74,17 @@ export class VariantsEditorCtrl extends UIBaseComponent {
       renameVariantButton.addEventListener('click',()=>{
         this.promtpForRenameVariant()
       })
-      let duplicateVariantButton = createElement('button',{
+      let cloneVariantButton = createElement('button',{
         className: 'btn btn-xs icon icon-clippy'
       })
-      atom["tooltips"].add(duplicateVariantButton, {title:'Duplicate selected Variant'})
-      duplicateVariantButton.addEventListener('click',()=>{
-        this.promtpForDuplicateVariant()
+      atom["tooltips"].add(cloneVariantButton, {title:'Clone selected Variant'})
+      cloneVariantButton.addEventListener('click',()=>{
+        this.promtpForCloneVariant()
       })
       let tabbedToolbar = createElement('div',{
         elements: [
           createElement('div', {
-            elements: [addVariantButton, removeVariantButton, renameVariantButton, duplicateVariantButton],
+            elements: [addVariantButton, removeVariantButton, renameVariantButton, cloneVariantButton],
             className: 'btn-group'
           })
         ], className: 'btn-toolbar'
@@ -138,10 +138,6 @@ export class VariantsEditorCtrl extends UIBaseComponent {
       });
     }
 
-    public promtpForRemoveVariant(){
-      //TODO!!
-    }
-
     public promtpForRenameVariant(){
       let selectedTab = this.tabbedView.getSelectedTab();
       if (selectedTab){
@@ -154,8 +150,28 @@ export class VariantsEditorCtrl extends UIBaseComponent {
       }
     }
 
-    public promtpForDuplicateVariant(){
+    public promtpForCloneVariant(){
+      let selectedTab = this.tabbedView.getSelectedTab();
+      if (selectedTab){
+        this.modalPrompt.show(selectedTab.getTitle(), "New clone name for '"+selectedTab.getTitle()+"' variant", (newVariantName)=>{
+          this.cloneVariant(selectedTab.getTitle(), newVariantName)
+        },()=>{
+          //cencelled by user
+        });
+      }
+    }
+
+    public promtpForRemoveVariant(){
       //TODO!!
+    }
+
+    public cloneVariant(variantToCloneName:string,newVariantName:string){
+      let variantToClone:Variant = this.variantsModel.getVariant(variantToCloneName);
+      let newCloneVariant = this.variantsModel.addVariant(newVariantName);
+      newCloneVariant.cloneFrom(variantToClone);
+      let newVariantView = this.createVariantView(newCloneVariant);
+      this.tabbedView.addView(newVariantView)
+      this.saveVariantsChanges()
     }
 
     public renameVariant(variantName:string,newVariantName:string){
