@@ -57,42 +57,26 @@ export class UIPluginsList extends UIListView {
     private initModel(){
       this.pluginListModel =  new PluginsListModel(this.displayConfiguration).addEventListener('didActionRequired',(pluginInfo, actionType)=>{
         this.events.emit('didActionRequired', pluginInfo, actionType)
-        /**
-        if (this.callbackFunc){
-          this.callbackFunc(pluginInfo, actionType)
-        }
-        **/
       });
       this.setModel(this.pluginListModel);
     }
 
     public clearList(){
       this.pluginListModel.clear();
-      this.modelChanged();
     }
 
     public addPlugin(pluginInfo:CordovaPlugin){
       this.pluginListModel.addPlugin(pluginInfo);
-      this.modelChanged();
     }
 
     public addPlugins(plugins:Array<CordovaPlugin>){
       this.pluginListModel.addPlugins(plugins);
-      this.modelChanged();
     }
 
     public setPlugins(plugins:Array<CordovaPlugin>){
       this.clearList();
       this.pluginListModel.addPlugins(plugins);
-      this.modelChanged();
     }
-
-    /**
-    public setEventListener(callbackFunc:Function):UIPluginsList{
-      this.callbackFunc = callbackFunc;
-      return this;
-    }
-    **/
 
     public setPluginInstallPending(pluginInfo:CordovaPlugin,installing:boolean){
       this.pluginListModel.setPluginInstallPending(pluginInfo, installing);
@@ -146,7 +130,6 @@ class PluginsListModel implements UIListViewModel {
 
   private pluginList:Array<UIPluginItem>;
   private pluginsMap:any={};
-  //private callbackFunc:Function;
   private displayConfiguration:DisplayConfiguration;
   private events:EventEmitter;
 
@@ -168,23 +151,11 @@ class PluginsListModel implements UIListViewModel {
     let pluginItem = new UIPluginItem(pluginInfo, this.displayConfiguration);
     pluginItem.setEventListener((pluginInfo, actionType)=>{
       this.fireActionEvent(pluginInfo, actionType)
-      /**
-      if (this.callbackFunc){
-        this.callbackFunc(pluginInfo, actionType);
-      }
-      **/
     })
     this.pluginList.push(pluginItem)
     this.pluginsMap[pluginInfo.id] = pluginItem;
     this.fireModelChanged();
   }
-
-  /**
-  public setEventListener(callbackFunc:Function):PluginsListModel{
-    this.callbackFunc = callbackFunc;
-    return this;
-  }
-  **/
 
   hasHeader():boolean {
     return false;
@@ -260,6 +231,11 @@ class PluginsListModel implements UIListViewModel {
 
   destroy(){
     this.events.removeAllListeners()
+    for(var i = 0;i<this.pluginList.length;i++){
+      this.pluginList[i].destroy()
+    }
+    this.pluginsMap = null;
+    this.pluginList =  null;
     this.events = null;
   }
 
@@ -333,6 +309,9 @@ export class UIPluginItem extends UIBaseComponent {
       this.statsSection.setPluginUInstallPending(unistalling)
     }
 
+    public destroy(){
+      super.destroy();
+    }
 }
 
 export class UIPluginSection extends UIBaseComponent {
@@ -534,7 +513,6 @@ export class UIPluginMetaSection extends UIPluginSection {
                     .setButtonEnabled(UIPluginMetaButtons.BTN_TYPE_INSTALL, true);
        }
       this.metaButtons.setEventListener((buttonClicked)=>{
-        //alert("Clicked " + buttonClicked + " for " + this.pluginInfo.id);
         this.callbackFunc(this.pluginInfo, buttonClicked)
       });
 
@@ -614,7 +592,6 @@ export class UIPluginMetaButtons extends UIPluginSection {
 
   protected buildUI(){
     super.buildUI();
-    //<span class='loading loading-spinner-tiny inline-block'></span>
     this.spinner = createElement('span',{
       className: 'loading loading-spinner-small plugin-install-spinner'
     })

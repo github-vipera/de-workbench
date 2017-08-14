@@ -123,7 +123,7 @@ export class UIListView extends UIBaseComponent {
     return table;
   }
 
-  public modelChanged(){
+  protected modelChanged(){
     let oldTable = this.tableElement;
     this.tableElement = this.createTableElement();
     this.mainElement.replaceChild(this.tableElement, oldTable);
