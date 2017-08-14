@@ -50,6 +50,10 @@ export class VariantsManager {
     let variantsFieName = this.getFilePath();
     return new Promise((resolve, reject)=>{
       var that = this;
+      if (!this.fileExists()){
+        resolve(new VariantsModel());
+        return;
+      }
       fs.readFile(variantsFieName, function(err, data) {
         parser.parseString(data, function (err, result) {
           if (err){
