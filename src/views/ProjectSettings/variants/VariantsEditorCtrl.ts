@@ -28,6 +28,7 @@ import { UIButtonGroupMode, UIButtonConfig, UIButtonGroup } from '../../../ui-co
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
 import { VariantsGridCtrl } from './VariantsGridCtrl'
 import { VariantsManager, VariantsModel, Variant, VariantPlatform, VariantPreference } from '../../../DEWorkbench/VariantsManager'
+import { UIModalPrompt } from '../../../ui-components/UIModalPrompt'
 
 export class VariantsEditorCtrl extends UIBaseComponent {
 
@@ -36,6 +37,7 @@ export class VariantsEditorCtrl extends UIBaseComponent {
     private events:EventEmitter;
     private variantsManager:VariantsManager;
     private variantsModel:VariantsModel;
+    private modalPrompt:UIModalPrompt;
 
     constructor(projectRoot:string){
       super()
@@ -95,6 +97,8 @@ export class VariantsEditorCtrl extends UIBaseComponent {
 
       this.mainElement = this.tabbedView.element()
 
+      this.modalPrompt = new UIModalPrompt()
+
       this.reload();
     }
 
@@ -127,7 +131,11 @@ export class VariantsEditorCtrl extends UIBaseComponent {
     }
 
     public promtpForNewVariant(){
-      //TODO!!
+      this.modalPrompt.show('', 'New variant name', (variantName)=>{
+        this.addNewVariant(variantName)
+      },()=>{
+        //cencelled by user
+      });
     }
 
     public promtpForRemoveVariant(){
@@ -143,6 +151,10 @@ export class VariantsEditorCtrl extends UIBaseComponent {
     }
 
     public addNewVariant(variantName:string){
+      let newVariant = this.variantsModel.addVariant(variantName);
+      let newVariantView = this.createVariantView(newVariant);
+      this.tabbedView.addView(newVariantView)
+      this.saveVariantsChanges()
     }
 
     protected createVariantView(variant:Variant):UITabbedViewItem {
