@@ -14,6 +14,7 @@ import { EventBus } from '../DEWorkbench/EventBus'
 const xml2js = require('xml2js');
 const fs = require('fs');
 const path = require('path')
+const _ = require('lodash')
 
 /*
 export interface VariantPlatform {
@@ -186,14 +187,22 @@ export class VariantsModel {
   }
 
   public getVariant(variantName:string):Variant {
+    return _.find(this.variants, {name:variantName});
+    /**
     for (var i=0;i<this.variants.length;i++){
       if (this.variants[i].name===variantName){
         return this.variants[i]
       }
     }
     return null;
+    **/
   }
 
+  public removeVariant(variantName:string){
+    _.remove(this.variants,function(variant){
+      return (variant.name === variantName)
+    })
+  }
 
 }
 

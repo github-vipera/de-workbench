@@ -22,6 +22,7 @@ import { EventEmitter }  from 'events'
 
 const crypto = require('crypto');
 const events = require('events');
+const _ = require('lodash')
 
 export class UITabbedViewItem {
   public id:string;
@@ -180,8 +181,25 @@ export class UITabbedView extends UIBaseComponent {
     }
   }
 
+  public removeViewByTitle(tabTitle:string){
+    let tabItem = this.getTabItemByTitle(tabTitle);
+    if (tabItem){
+      this.removeView(tabItem);
+    }
+  }
+
+  public getTabItemByTitle(tabTitle:string):UITabbedViewItem{
+    return _.find(this.views, function(tabItem){
+      return tabItem.getTitle()===tabTitle;
+    })
+  }
+
   public removeView(tabItem:UITabbedViewItem){
-    //TODO!!
+    this.tabList.removeTab(tabItem)
+    this.stacked.removeView(tabItem)
+    return _.remove(this.views, function(item){
+      return item.id===tabItem.id;
+    })
   }
 
   public removeAllTabs(){
@@ -300,7 +318,15 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
    * Remmove a tab
    */
   public removeTab(tabItem:UITabbedViewItem){
-    // TODO!!
+    let elementId = this.getItemIdForMaps(tabItem);
+    let aElement = this.tabCaptionsMap[elementId]
+    let liElement = this.itemsElementsMap[elementId]
+    if (liElement){
+      this.olElement.removeChild(liElement)
+    }
+    delete this.tabCaptionsMap[elementId];
+    delete this.itemsElementsMap[elementId];
+    delete this.tabItemsMap[elementId];
   }
 
   /**
@@ -385,6 +411,9 @@ class UITabbedViewStackedComponent extends UIBaseComponent {
     if (!tabItem.view){
       return;
     }
+    // set the attribute to find it when necessary
+    tabItem.view.setAttribute('tabitem-id', tabItem.id)
+    tabItem.view.setAttribute('tabitem-uid', tabItem.elementUID)
     insertElement(this.mainElement, tabItem.view);
     if (this.selectedView==undefined){
       this.selectedView = tabItem.view;
@@ -392,6 +421,24 @@ class UITabbedViewStackedComponent extends UIBaseComponent {
     } else {
         tabItem.view.style.display = "none";
     }
+  }
+
+  public removeView(tabItem:UITabbedViewItem){
+    if (!tabItem.view){
+      return;
+    }
+    let viewEl = this.getViewElement(tabItem);
+    if (viewEl){
+      this.mainElement.removeChild(viewEl)
+    }
+  }
+
+  protected getViewElement(tabItem:UITabbedViewItem):Element {
+      let nodeList = document.querySelectorAll('[tabitem-uid="'+ tabItem.elementUID +'"]')
+      if (nodeList && nodeList.length===1){
+        return nodeList[0];
+      }
+      return null;
   }
 
   public selectView(tabItem:UITabbedViewItem){

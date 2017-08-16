@@ -162,7 +162,18 @@ export class VariantsEditorCtrl extends UIBaseComponent {
     }
 
     public promtpForRemoveVariant(){
-      //TODO!!
+      let selectedTab = this.tabbedView.getSelectedTab();
+      if (selectedTab){
+      }
+
+      const selected = atom.confirm({
+          message: 'Delete Variant',
+          detailedMessage: 'Do you want to confirm the ' + selectedTab.getTitle() +' variant deletion ?',
+          buttons: ['Yes, Delete it', 'Cancel']
+        });
+        if (selected==0){
+          this.removeVariant(selectedTab.getTitle());
+        }
     }
 
     public cloneVariant(variantToCloneName:string,newVariantName:string){
@@ -183,6 +194,12 @@ export class VariantsEditorCtrl extends UIBaseComponent {
       let newVariant = this.variantsModel.addVariant(variantName);
       let newVariantView = this.createVariantView(newVariant);
       this.tabbedView.addView(newVariantView)
+      this.saveVariantsChanges()
+    }
+
+    public removeVariant(variantName:string){
+      this.variantsModel.removeVariant(variantName);
+      this.tabbedView.removeViewByTitle(variantName)
       this.saveVariantsChanges()
     }
 
