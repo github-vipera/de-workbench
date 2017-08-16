@@ -20,6 +20,7 @@ import { TaskConfigView } from '../views/TaskConfig/TastConfigView'
 import {CordovaProjectInfo} from '../cordova/Cordova'
 import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
 import { TaskExecutor} from '../tasks/TaskExecutor'
+import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
 
  import {
    createText,
@@ -205,11 +206,44 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
      }
    }
 
-   private updateToolbarStatus(){
+   private updateToolbarStatus(taskConfiguration:CordovaTaskConfiguration,taskDone?:boolean){
+     let project = this.selectedProjectForTask;
+     let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
      if(this.taskExecutor){
        let busy = this.taskExecutor.isBusy();
        let serverRunning = this.taskExecutor.isPlatformServerRunning();
-
+       if(busy){
+         this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
+         return;
+       }
+       if(serverRunning){
+         if(taskDone){
+           this.toolbarView.updateStatus({
+             prjSelectorEnable:false,
+             btnStopEnable:true,
+             btnRunEnable:false,
+             btnReloadEnable:true,
+             progressStatus: UIIndicatorStatus.Busy,
+             progressMsg : 'Server running'
+           })
+         }else{
+           //Stop server??
+           this.toolbarView.updateStatus({
+             prjSelectorEnable:false,
+             btnRunEnable:false,
+             btnStopEnable:true,
+             btnReloadEnable:false,
+             progressStatus: UIIndicatorStatus.Error,
+             progressMsg : '`${taskConfiguration.displayName} - ${platform} Fail (but Server running)`'
+           });
+         }
+       }else{
+         if(taskDone){
+            this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
+         }else{
+            this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
+         }
+       }
      }
    }
 
