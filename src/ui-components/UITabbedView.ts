@@ -59,6 +59,12 @@ export class UITabbedViewItem {
   public removeEventListener(event:string,listener){
     this.events.removeListener(event, listener)
   }
+  public destroy(){
+    this.events.removeAllListeners();
+    this.view.remove()
+    this.view = null;
+    this.events = null;
+  }
 }
 
 export enum UITabbedViewTabType {
@@ -197,9 +203,10 @@ export class UITabbedView extends UIBaseComponent {
   public removeView(tabItem:UITabbedViewItem){
     this.tabList.removeTab(tabItem)
     this.stacked.removeView(tabItem)
-    return _.remove(this.views, function(item){
+    _.remove(this.views, function(item){
       return item.id===tabItem.id;
     })
+    tabItem.destroy();
   }
 
   public removeAllTabs(){
@@ -377,7 +384,13 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
   }
 
   public destroy(){
-      super.destroy();
+    this.olElement.remove()
+    delete this.itemsElementsMap;
+    delete this.tabItemsMap;
+    delete this.tabCaptionsMap;
+    this.eventEmitter.removeAllListeners();
+    super.destroy();
+    this.eventEmitter = undefined;
   }
 
 }
