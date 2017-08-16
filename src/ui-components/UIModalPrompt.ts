@@ -20,9 +20,11 @@ import {
 } from '../element/index';
 
 import { EventEmitter }  from 'events'
+const { CompositeDisposable } = require('atom');
 
 export class UIModalPrompt {
 
+  container:HTMLElement;
   events:EventEmitter;
   inputEl:HTMLElement;
   placeholder:string;
@@ -30,6 +32,7 @@ export class UIModalPrompt {
   panel:any;
   onConfirmCallback:Function;
   onCancelCallback:Function;
+  subscriptions:any;
 
   constructor(){
     this.events = new EventEmitter();
@@ -60,23 +63,29 @@ export class UIModalPrompt {
   }
 
   public show(value:string, placeholder:string, onConfirmCallback:Function, onCancelCallback:Function){
+    this.subscriptions = new CompositeDisposable();
+    this.subscriptions.add(atom.commands.add('atom-workspace', {
+      'core:cancel': () => this.doCancel()
+    }));
+
     this.onConfirmCallback = onConfirmCallback;
     this.onCancelCallback = onCancelCallback;
     this.placeholder = placeholder;
     this.value = value;
     this.inputEl = this.createEditor(value, placeholder);
     this.inputEl.addEventListener('keydown',(evt)=>{
+      evt.stopPropagation()
       if (evt.keyCode===13){
         this.doConfirm()
       } else if  (evt.keyCode===27){
         this.doCancel()
       }
     })
-    let container = createElement('div',{
+    this.container = createElement('div',{
       elements: [this.inputEl, createText('Press Esc to cancel')]
     })
     this.panel = atom.workspace.addModalPanel({
-      item: container
+      item: this.container
     });
     this.inputEl.focus();
   }
@@ -96,6 +105,10 @@ export class UIModalPrompt {
     this.panel.hide();
     this.panel.destroy();
     this.panel = null;
+    this.container.remove();
+    this.container = null;
+    this.subscriptions.dispose();
   }
+
 
 }
