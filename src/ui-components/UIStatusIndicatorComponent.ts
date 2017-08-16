@@ -63,14 +63,16 @@ export class UIStatusIndicatorComponent extends UIBaseComponent{
   private updateInternalStatus(oldValue:UIIndicatorStatus,newValue:UIIndicatorStatus,message:string,iconName:string){
     this.status = newValue;
     this.setOnLoading(newValue == UIIndicatorStatus.Busy);
-    this.updateTextElementContent(message,iconName);
+    if(message){
+      this.updateTextElementContent(message,iconName);
+    }
   }
 
   private setOnLoading(value:boolean){
     this.loadingElement.classList[value ? 'add' : 'remove']('active')
   }
 
-  public setStatus(status:UIIndicatorStatus, message:string,iconName?:string){
+  public setStatus(status:UIIndicatorStatus, message?:string,iconName?:string){
     this.updateInternalStatus(this.status,status,message,iconName);
   }
 

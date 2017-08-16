@@ -90,4 +90,12 @@ export class UISelect extends UIBaseComponent {
     return this.mainElement['value'];
   }
 
+  setEnable(value:boolean){
+    if(!value){
+      this.mainElement.setAttribute('disabled','true');
+    }else{
+      this.mainElement.removeAttribute('disabled');
+    }
+  }
+
 }

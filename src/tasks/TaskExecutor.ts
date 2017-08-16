@@ -100,4 +100,8 @@ export class TaskExecutor{
     this.stopServer();
   }
 
+  isPlatformServerRunning():boolean{
+    return this.platformServer && this.platformServer.isRunning();
+  }
+
 }

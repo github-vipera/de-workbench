@@ -293,7 +293,11 @@ export class ToolbarView {
     this.runButton.removeAttribute('disabled');
   }
 
-
+  /**
+   * Update the progress indicator
+   * @param  {ToolbarStatus} status [description]
+   * @return {[type]}               [description]
+   */
   public updateStatus(status:ToolbarStatus){
     if(status.btnReloadEnable != null){
       this.updateButtonStatus(this.reloadButton,status.btnReloadEnable);
@@ -305,20 +309,15 @@ export class ToolbarView {
       this.updateButtonStatus(this.runButton,status.btnRunEnable);
     }
     if(status.prjSelectorEnable != null){
-      // todo
+      this.runSelector.setEnable(false);
     }
     if(status.progressStatus != null){
-      // todo
+      this.statusIndicator.setStatus(status.progressStatus);
     }
-    if(status.progressIcon != null){
-      // todo
+    if(status.progressMsg != null ){
+      this.statusIndicator.setText(status.progressMsg,status.progressIcon);
     }
-    if(status.progressMsg != null){
-
-    }
-
   }
-
 
   private updateButtonStatus(element:HTMLElement,enabled:boolean){
     if(!element){

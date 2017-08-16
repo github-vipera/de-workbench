@@ -155,6 +155,10 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     return this.taskInfo;
   }
 
+  setEnable(value:boolean){
+    this.projectSelector.setEnable(value);
+  }
+
   destroy(){
     this.taskSelector.removeEventListener('click',this.onTaskSelectClick.bind(this));
     this.projectSelector.removeSelectListener(this.projectSelectListener);

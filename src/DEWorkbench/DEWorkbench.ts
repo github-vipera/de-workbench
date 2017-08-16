@@ -200,8 +200,16 @@ import { TaskExecutor} from '../tasks/TaskExecutor'
 
    onStopTask(){
      console.log("onStopTask");
-     if(this.taskExecutor && this.taskExecutor.isBusy()){
+     if(this.taskExecutor){
        this.taskExecutor.stop();
+     }
+   }
+
+   private updateToolbarStatus(){
+     if(this.taskExecutor){
+       let busy = this.taskExecutor.isBusy();
+       let serverRunning = this.taskExecutor.isPlatformServerRunning();
+
      }
    }
 

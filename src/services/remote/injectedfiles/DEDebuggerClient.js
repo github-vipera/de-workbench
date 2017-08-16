@@ -42,4 +42,4 @@ document.addEventListener("deviceready",function(){
   }else{
     console.error("DynamicEngine.plugins.DEDebugger not found");
   }
-})
+},false);

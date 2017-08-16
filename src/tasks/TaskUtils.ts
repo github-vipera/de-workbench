@@ -36,7 +36,7 @@ export class TaskUtils {
         return 3001;
       }
       else if(platform === 'browser'){
-        return 3002;
+        return 3000;
       }
   }
 

@@ -25,6 +25,7 @@ export interface PlatformServer {
   stop(): Promise<any>
   clear(): Promise<any>
   executeAction(action:LiveActions):Promise<any>
+  isRunning():boolean
 }
 
 export class PlatformServerImpl implements PlatformServer {
@@ -148,6 +149,10 @@ export class PlatformServerImpl implements PlatformServer {
           ERROR_MESSAGE: 'unknown action type' + action.type,
         })
     }
+  }
+
+  isRunning():boolean{
+    return this.http && this.http.listening
   }
 
   public static createNew():PlatformServer{
