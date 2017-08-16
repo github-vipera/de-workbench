@@ -186,6 +186,8 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
      Logger.getInstance().info("Require execute of task", taskConfiguration.name, this.selectedProjectForTask);
      this.toolbarView.setTaskConfiguration(taskConfiguration);
      let project = this.selectedProjectForTask;
+     let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
+     this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
      this.getTaskExecutor().executeTask(taskConfiguration,project).then(() => {
        //this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
        Logger.getInstance().info(`${taskConfiguration.displayName} Done`);
