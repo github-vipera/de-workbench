@@ -186,16 +186,18 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
      Logger.getInstance().info("Require execute of task", taskConfiguration.name, this.selectedProjectForTask);
      this.toolbarView.setTaskConfiguration(taskConfiguration);
      let project = this.selectedProjectForTask;
-     let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
-     this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
      this.getTaskExecutor().executeTask(taskConfiguration,project).then(() => {
-       this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
+       //this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
+       Logger.getInstance().info(`${taskConfiguration.displayName} Done`);
+       this.updateToolbarStatus(taskConfiguration,true);
      },(reason) => {
-       this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
+        //this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
         Logger.getInstance().error(reason);
+        this.updateToolbarStatus(taskConfiguration,true);
      }).catch((err:Error) => {
-       this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
+       //this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
        Logger.getInstance().error(err.message, err.stack);
+       this.updateToolbarStatus(taskConfiguration,true);
      });
    }
 
@@ -203,6 +205,7 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
      console.log("onStopTask");
      if(this.taskExecutor){
        this.taskExecutor.stop();
+       this.updateToolbarStatus(this.taskConfiguration,false);
      }
    }
 
