@@ -46,10 +46,15 @@ export class UIInputFormElement extends UIBaseComponent {
     })
     this.inputEditor = this.createInputEditor();
 
-    this.mainElement = createElement('div',{
+    this.mainElement = this.createControlContainer(this.label, this.inputEditor)
+
+  }
+
+  protected createControlContainer(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
+    return createElement('div',{
       elements: [
-        this.label,
-        this.inputEditor
+        label,
+        inputEditor
       ],
       className: 'block control-group'
     })
@@ -151,6 +156,66 @@ export class UISelectFormElement extends UIInputFormElement {
 
   public getValue():string{
     return this.selectCtrl.getSelectedItem()
+  }
+
+}
+
+export class UIInputWithButtonFormElement extends UIInputFormElement {
+
+  constructor(password?:boolean){
+    super(password);
+  }
+
+  protected createControlContainer(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
+    inputEditor.style.display = 'inline-block';
+    inputEditor.style.marginRight = "4px"
+
+    let buttonEl = this.createButton("Browse...");
+    buttonEl.classList.add('inline-block')
+    buttonEl.classList.add('highlight')
+    buttonEl.addEventListener('click', (evt)=>{
+      this.fireEvent('didActionClicked')
+    });
+    let divElement = createElement('div',{
+      elements: [
+        inputEditor,buttonEl
+      ],
+        className: ''
+    })
+    divElement.style.display = "flex"
+
+    return createElement('div',{
+      elements: [
+        label,
+        divElement
+      ],
+      className: 'block control-group'
+    })
+  }
+
+  private createButton(caption:string):HTMLElement{
+      let buttonEl = createElement('button',{
+        elements: [
+          createText(caption)
+        ],
+        className : 'btn btn-sm'
+      })
+      return buttonEl;
+  }
+
+  public setCaption(caption:string):UIInputWithButtonFormElement{
+    super.setCaption(caption);
+      return this;
+  }
+
+  public setPlaceholder(placeholder:string):UIInputWithButtonFormElement{
+    super.setPlaceholder(placeholder)
+    return this;
+  }
+
+  public addEventListener(event:string, listener):UIInputWithButtonFormElement{
+    super.addEventListener(event, listener)
+    return this;
   }
 
 }
