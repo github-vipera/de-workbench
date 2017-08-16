@@ -30,6 +30,7 @@ export class TaskProvider{
       isDeviceEnabled:false,
       isMockConfigEnabled:false,
       isEnvVarEnabled:true,
+      isVariantEnabled:true,
       isNodeTaskEnabled:true
     }
     let cdvBuild= new CordovaTaskConfiguration('CordovaBuid','build');
@@ -38,6 +39,7 @@ export class TaskProvider{
       isDeviceEnabled:false,
       isMockConfigEnabled:false,
       isEnvVarEnabled:true,
+      isVariantEnabled:true,
       isNodeTaskEnabled:true
     }
     let cdvRun = new CordovaTaskConfiguration('CordovaRun','run');
@@ -46,6 +48,7 @@ export class TaskProvider{
       isDeviceEnabled:true,
       isMockConfigEnabled:false,
       isEnvVarEnabled:true,
+      isVariantEnabled:true,
       isNodeTaskEnabled:true
     }
     let cdvBuildAndRun = new CordovaTaskConfiguration('CordovaBuidRun','buildRun');
@@ -54,6 +57,7 @@ export class TaskProvider{
       isDeviceEnabled:true,
       isMockConfigEnabled:false,
       isEnvVarEnabled:true,
+      isVariantEnabled:true,
       isNodeTaskEnabled:true
     }
     let tasks:Array<CordovaTaskConfiguration> = [cdvPrepare, cdvBuild, cdvRun, cdvBuildAndRun];

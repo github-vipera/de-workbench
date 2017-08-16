@@ -19,16 +19,23 @@ import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findIt
 import { find,forEach,map } from 'lodash'
 import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
 import { UILineLoader } from '../../ui-components/UILineLoader'
+import { Variant, VariantsModel, VariantsManager } from '../../DEWorkbench/VariantsManager'
+
+
+const NONE_PLACEHOLDER:string = '-- None -- ';
 
 class TaskViewContentPanel extends UIBaseComponent{
   taskConfig:CordovaTaskConfiguration
   projectInfo:CordovaProjectInfo
   private deviceManager:CordovaDeviceManager;
+  private variantManager:VariantsManager;
   private platformSelect:UISelect;
   private platformSelectListener:UISelectListener;
   private deviceSelect:UISelect;
+  private variantSelect:UISelect;
   private npmScriptsSelect:UISelect;
   private deviceLineLoader: UILineLoader;
+  private variantsLineLoader: UILineLoader;
   private isReleaseEl:HTMLElement
 
   constructor(){
@@ -45,9 +52,10 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.mainElement.classList.add('form-container');
     this.createPlatformSelect();
     this.createDeviceSelect();
-    this.createCheckboxSelect();
-    this.createNodeTaskSelector();
-    //this.createMockPanel();
+    this.createReleaseCheckbox();
+    this.createVariantSelect();
+    this.createNodeTaskSelect();
+
   }
 
   private createPlatformSelect(){
@@ -73,7 +81,21 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.platformSelect.setItems(model)
   }
 
-  private createNodeTaskSelector(){
+  private createVariantSelect(){
+    this.variantsLineLoader= new UILineLoader();
+    this.variantSelect = new UISelect();
+    let wrapper=createElement('div',{
+      className:'line-loader-wrapper',
+      elements:[
+        this.variantSelect.element(),
+        this.variantsLineLoader.element()
+      ]
+    });
+    let row=this.createFormRow(createText('Variant'),wrapper,'variants');
+    insertElement(this.mainElement,row);
+  }
+
+  private createNodeTaskSelect(){
     this.npmScriptsSelect = new UISelect();
     let row=this.createFormRow(createText('Npm scripts (before task)'),this.npmScriptsSelect.element(),'npmScript');
     insertElement(this.mainElement,row);
@@ -88,14 +110,10 @@ class TaskViewContentPanel extends UIBaseComponent{
       }
     });
     model.unshift({
-      name:'-- None -- ',
+      name: NONE_PLACEHOLDER,
       value:''
     })
     this.npmScriptsSelect.setItems(model);
-  }
-
-  private createMockPanel(){
-
   }
 
   private createDeviceSelect(){
@@ -128,6 +146,26 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.deviceLineLoader.setOnLoading(false);
   }
 
+  private async updateVariants(){
+    if(!this.variantManager){
+      return Promise.reject('INVALID_VARIANT_MANAGER');
+    }
+    this.variantsLineLoader.setOnLoading(true);
+    let variantModel = await this.variantManager.load();
+    let model:Array<UISelectItem> = map<Variant,UISelectItem>(variantModel.variants,(variant:Variant) => {
+      return {
+        value:variant.name,
+        name:variant.name
+      }
+    });
+    model.unshift({
+      value:'',
+      name: NONE_PLACEHOLDER
+    });
+    this.variantSelect.setItems(model);
+    this.variantsLineLoader.setOnLoading(false);
+  }
+
   private createRowId(elementId:string):string{
     return "row-" + elementId;
   }
@@ -148,6 +186,9 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.projectInfo = projectInfo;
     if(!this.deviceManager){
       this.deviceManager = new CordovaDeviceManager(this.projectInfo.path);
+    }
+    if(!this.variantManager){
+      this.variantManager = new VariantsManager(this.projectInfo.path);
     }
     setTimeout(() => {
       this.contextualizeImpl();
@@ -174,10 +215,17 @@ class TaskViewContentPanel extends UIBaseComponent{
       }
       this.setRowVisible(this.createRowId('devices'),constraints.isDeviceEnabled);
 
+      if(constraints.isVariantEnabled){
+        this.updateVariants();
+      }
+      this.setRowVisible(this.createRowId('variants'),constraints.isVariantEnabled);
+
       if(constraints.isNodeTaskEnabled){
         this.updateNodeScripts();
       }
       this.setRowVisible(this.createRowId('npmScript'),constraints.isNodeTaskEnabled);
+
+
   }
 
   private getSelectedPlatform():CordovaPlatform{
@@ -199,7 +247,12 @@ class TaskViewContentPanel extends UIBaseComponent{
     return null;
   }
 
-  private createCheckboxSelect(){
+  private getSelectedVariantName():string{
+    let value = this.variantSelect.getSelectedItem()
+    return value || null;
+  }
+
+  private createReleaseCheckbox(){
     this.isReleaseEl = createInput({
       type:'checkbox'
     });
@@ -215,9 +268,25 @@ class TaskViewContentPanel extends UIBaseComponent{
   }
 
   getCurrentConfiguration():CordovaTaskConfiguration{
+    console.log("getCurrentConfiguration");
     let platformValue = this.platformSelect.getSelectedItem();
     if(platformValue){
       this.taskConfig.selectedPlatform = {name:platformValue};
+    }
+    let device = this.deviceSelect.getSelectedItem();
+    if(device){
+      this.taskConfig.device = {
+        targetId: device,
+        name:device
+      };
+    }
+    let release = this.isReleaseEl['checked'];
+    if(release){
+      this.taskConfig.isRelease = true
+    }
+    let variant = this.getSelectedVariantName();
+    if(variant){
+      this.taskConfig.variantName = variant;
     }
     return this.taskConfig;
   }

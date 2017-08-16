@@ -13,6 +13,7 @@ export interface TaskConstraints {
   isMockConfigEnabled:boolean,
   mockConfig?:MockConfiguration
   isNodeTaskEnabled:boolean
+  isVariantEnabled:boolean
   isEnvVarEnabled:boolean
 }
 
