@@ -21,6 +21,14 @@
   background-color: @background-color-selected;
 }
 
+/*
 .de-wb-collapsible-pane-item-caption {
   border-bottom: 1px dotted @pane-item-border-color;
+}
+*/
+
+.de-wb-collapsible-pane-item {
+  &.collapsed {
+    border-bottom: 1px dotted fade(@pane-item-border-color, 20%);
+  }
 }

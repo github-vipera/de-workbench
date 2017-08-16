@@ -18,6 +18,7 @@ import {
  createTextEditor
 } from '../element/index';
 import { UIComponent, UIBaseComponent } from '../ui-components/UIComponent'
+import { UISelect, UISelectItem, UISelectListener } from '../ui-components/UISelect'
 
 
 export class UIInputFormElement extends UIBaseComponent {
@@ -37,10 +38,13 @@ export class UIInputFormElement extends UIBaseComponent {
       elements: [
       ]
     })
+    this.inputEditor = this.createInputEditor();
+    /**
     this.inputEditor = createElement('atom-text-editor', {
     })
     this.inputEditor.setAttribute('mini','');
     this.inputEditor.setAttribute('tabindex','-1');
+    **/
 
     this.mainElement = createElement('div',{
       elements: [
@@ -49,6 +53,14 @@ export class UIInputFormElement extends UIBaseComponent {
       ],
       className: 'block control-group'
     })
+  }
+
+  protected createInputEditor():HTMLElement {
+    let inputEditor = createElement('atom-text-editor', {
+    })
+    inputEditor.setAttribute('mini','');
+    inputEditor.setAttribute('tabindex','-1');
+    return inputEditor;
   }
 
   public setCaption(caption:string):UIInputFormElement{
@@ -90,6 +102,39 @@ export class UIInputFormElement extends UIBaseComponent {
     }
     this.listeners.push(listener);
     return this;
+  }
+
+}
+
+export class UISelectFormElement extends UIInputFormElement {
+
+  selectCtrl:UISelect;
+
+  constructor(){
+    super();
+  }
+
+  protected createInputEditor():HTMLElement {
+    this.selectCtrl = new UISelect();
+    this.selectCtrl.element().style.width = "100%"
+    return this.selectCtrl.element();
+  }
+
+  public getSelectCtrl():UISelect {
+    return this.selectCtrl;
+  }
+
+  public setItems(items:Array<UISelectItem>){
+    this.selectCtrl.setItems(items);
+  }
+
+  public setValue(value:string):UIInputFormElement{
+    this.selectCtrl.setSelectedItem(value)
+      return this;
+  }
+
+  public getValue():string{
+    return this.selectCtrl.getSelectedItem()
   }
 
 }

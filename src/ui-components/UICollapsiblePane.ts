@@ -42,7 +42,16 @@ export class UICollapsiblePane extends UIBaseComponent {
       className: 'list-tree has-collapsable-children'
     })
 
-    this.mainElement = this.listTreeEl;
+    let container = createElement('div',{
+        elements: [this.listTreeEl],
+        className: 'panel'
+    })
+    let mainContainer = createElement('div',{
+      elements: [container],
+      className: 'deprecation-cop'
+    })
+
+    this.mainElement = mainContainer;
 
   }
 
@@ -51,6 +60,12 @@ export class UICollapsiblePane extends UIBaseComponent {
     this.items.push(newItem);
     insertElement(this.listTreeEl, newItem.element())
     return this;
+  }
+
+  public destroy(){
+    this.listTreeEl.remove();
+    super.destroy();
+    delete this.items;
   }
 
 }
@@ -102,7 +117,7 @@ class CollapsiblePaneElement extends UIBaseComponent {
         ],
         className: 'de-wb-collapsible-pane-item list-nested-item ' + (this.item.collapsed? 'collapsed' : '')
     })
-    this.liItem.addEventListener('click',(evt)=>{
+    this.listItemEl.addEventListener('click',(evt)=>{
       this.liItem.classList.toggle('collapsed')
       this.item.collapsed = !this.item.collapsed;
     })
