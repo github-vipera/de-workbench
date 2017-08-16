@@ -22,6 +22,14 @@ import { UIComponent, UIBaseComponent } from '../ui-components/UIComponent'
 import { UISelect, UISelectItem, UISelectListener } from '../ui-components/UISelect'
 
 const $ = require('jquery')
+const remote = require('remote');
+const dialog = remote.require('electron').dialog;
+const path = require("path");
+
+export interface UIInputFormElementOptions {
+  password?:boolean;
+  autoSelect?:boolean;
+}
 
 export class UIInputFormElement extends UIBaseComponent {
 
@@ -30,13 +38,25 @@ export class UIInputFormElement extends UIBaseComponent {
   private inputEditor:HTMLElement;
   private listeners:Array<Function>;
   private lastValue:string='';
-  private password:boolean=false;
+  private options:UIInputFormElementOptions;
+  private chainToEl:HTMLElement;
 
-  constructor(password?:boolean){
+  constructor(options?:UIInputFormElementOptions){
     super();
-    this.password = password;
+    if (options){
+      this.options = options;
+    } else {
+      this.options = this.defaultOptions();
+    }
     this.events = new EventEmitter();
     this.buildUI();
+  }
+
+  protected defaultOptions():UIInputFormElementOptions{
+      return {
+        password:false,
+        autoSelect:true
+      }
   }
 
   protected buildUI(){
@@ -45,8 +65,22 @@ export class UIInputFormElement extends UIBaseComponent {
       ]
     })
     this.inputEditor = this.createInputEditor();
+    this.inputEditor.addEventListener('keydown', (evt)=>{
+      var TABKEY = 9;
+      if (this.chainToEl && evt.keyCode == TABKEY){
+        this.chainToEl.focus();
+      }
+    })
+
 
     this.mainElement = this.createControlContainer(this.label, this.inputEditor)
+
+    if (this.options && !this.options.autoSelect){
+    } else {
+      $(this.inputEditor).focus(()=> {
+        this.selectAll()
+      } );
+    }
 
   }
 
@@ -64,7 +98,7 @@ export class UIInputFormElement extends UIBaseComponent {
     let inputEditor = createElement('input', {
       className: 'input-text native-key-bindings mini'
     })
-    if (this.password){
+    if (this.options && this.options.password){
       inputEditor.setAttribute('type','password');
     }
     inputEditor.setAttribute('mini','');
@@ -81,6 +115,14 @@ export class UIInputFormElement extends UIBaseComponent {
     return inputEditor;
   }
 
+  public chainTo(nextElement:HTMLElement):UIInputFormElement {
+    this.chainToEl = nextElement;
+    return this;
+  }
+
+  public toChain():HTMLElement {
+    return this.inputEditor;
+  }
 
   public setCaption(caption:string):UIInputFormElement{
       this.label.innerText = caption;
@@ -113,6 +155,12 @@ export class UIInputFormElement extends UIBaseComponent {
 
   protected fireEvent(event:string){
     this.events.emit(event, this)
+  }
+
+  protected selectAll(){
+    if (this.inputEditor["setSelectionRange"]){
+      this.inputEditor["setSelectionRange"](0, this.getValue().length);
+    }
   }
 
   public destroy(){
@@ -158,9 +206,17 @@ export class UISelectFormElement extends UIInputFormElement {
     return this.selectCtrl.getSelectedItem()
   }
 
+  public chainTo(nextElement:HTMLElement):UIInputFormElement {
+    super.chainTo(nextElement)
+    return this;
+  }
+
+
 }
 
 export class UIInputWithButtonFormElement extends UIInputFormElement {
+
+  protected buttonEl:HTMLElement;
 
   constructor(password?:boolean){
     super(password);
@@ -170,15 +226,15 @@ export class UIInputWithButtonFormElement extends UIInputFormElement {
     inputEditor.style.display = 'inline-block';
     inputEditor.style.marginRight = "4px"
 
-    let buttonEl = this.createButton("Browse...");
-    buttonEl.classList.add('inline-block')
-    buttonEl.classList.add('highlight')
-    buttonEl.addEventListener('click', (evt)=>{
+    this.buttonEl = this.createButton("Browse...");
+    this.buttonEl.classList.add('inline-block')
+    this.buttonEl.classList.add('highlight')
+    this.buttonEl.addEventListener('click', (evt)=>{
       this.fireEvent('didActionClicked')
     });
     let divElement = createElement('div',{
       elements: [
-        inputEditor,buttonEl
+        inputEditor,this.buttonEl
       ],
         className: ''
     })
@@ -203,6 +259,11 @@ export class UIInputWithButtonFormElement extends UIInputFormElement {
       return buttonEl;
   }
 
+  public setButtonCaption(caption:string):UIInputWithButtonFormElement {
+    this.buttonEl.innerText = caption;
+    return this;
+  }
+
   public setCaption(caption:string):UIInputWithButtonFormElement{
     super.setCaption(caption);
       return this;
@@ -215,6 +276,56 @@ export class UIInputWithButtonFormElement extends UIInputFormElement {
 
   public addEventListener(event:string, listener):UIInputWithButtonFormElement{
     super.addEventListener(event, listener)
+    return this;
+  }
+
+  public chainTo(nextElement:HTMLElement):UIInputWithButtonFormElement {
+    super.chainTo(nextElement)
+    return this;
+  }
+
+
+}
+
+export class UIInputBrowseForFolderFormElement extends UIInputWithButtonFormElement {
+
+  constructor(password?:boolean){
+    super(password);
+    this.prepareForEvents();
+  }
+
+  protected prepareForEvents(){
+    this.addEventListener('didActionClicked',(evt)=>{
+      this.chooseFolder();
+    })
+  }
+
+  protected chooseFolder(){
+    var path = dialog.showOpenDialog({
+      properties: ['openDirectory']
+    });
+    if (path && path.length>0){
+      this.setValue(path);
+    }
+  }
+
+  public setCaption(caption:string):UIInputBrowseForFolderFormElement{
+    super.setCaption(caption);
+    return this;
+  }
+
+  public setPlaceholder(placeholder:string):UIInputBrowseForFolderFormElement{
+    super.setPlaceholder(placeholder)
+    return this;
+  }
+
+  public addEventListener(event:string, listener):UIInputBrowseForFolderFormElement{
+    super.addEventListener(event, listener)
+    return this;
+  }
+
+  public chainTo(nextElement:HTMLElement):UIInputBrowseForFolderFormElement {
+    super.chainTo(nextElement)
     return this;
   }
 

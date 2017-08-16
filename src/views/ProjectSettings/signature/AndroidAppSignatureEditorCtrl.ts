@@ -27,13 +27,12 @@ import { UIStackedView } from '../../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 import { UISelect, UISelectItem, UISelectListener } from '../../../ui-components/UISelect'
-import { UIInputFormElement, UISelectFormElement, UIInputWithButtonFormElement } from '../../../ui-components/UIInputFormElement'
+import { UIInputFormElement, UISelectFormElement, UIInputWithButtonFormElement, UIInputBrowseForFolderFormElement } from '../../../ui-components/UIInputFormElement'
 import { AbstractAppSignatureEditorCtrl } from './AbstractAppSignatureEditorCtrl'
 
 export class AndroidAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
 
-  private xx:UIInputWithButtonFormElement;
-  private keystorePath:UIInputWithButtonFormElement;
+  private keystorePath:UIInputBrowseForFolderFormElement;
   private storePasswd:UIInputFormElement;
   private alias:UIInputFormElement;
   private passwd:UIInputFormElement;
@@ -43,15 +42,19 @@ export class AndroidAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtr
   }
 
   protected createControls():Array<HTMLElement> {
-    this.keystorePath = new UIInputWithButtonFormElement().setCaption('Keystore Path').setPlaceholder('Keystore Path').addEventListener('change', (evtCtrl:UIInputFormElement)=>{}).addEventListener('didActionClicked',(evt)=>{
-      alert("Clicked!")
+    this.passwd = new UIInputFormElement({password: true}).setCaption('Password (keypass)').setPlaceholder('Password (keypass)').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
     })
-    this.storePasswd = new UIInputFormElement(true).setCaption('Store Password (storepass)').setPlaceholder('Store Password (storepass)').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
-    })
+
     this.alias = new UIInputFormElement().setCaption('Alias').setPlaceholder('Alias').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
-    })
-    this.passwd = new UIInputFormElement(true).setCaption('Password (keypass)').setPlaceholder('Password (keypass)').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
-    })
+    }).chainTo(this.passwd.toChain())
+
+    this.storePasswd = new UIInputFormElement({password: true}).setCaption('Store Password (storepass)').setPlaceholder('Store Password (storepass)').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
+    }).chainTo(this.alias.toChain());
+
+    this.keystorePath = new UIInputBrowseForFolderFormElement().setCaption('Keystore Path').setPlaceholder('Keystore Path').chainTo(this.storePasswd.toChain());
+
+    this.passwd.chainTo(this.keystorePath.toChain())
+    
     return [this.keystorePath.element(), this.storePasswd.element(), this.alias.element(), this.passwd.element()];
   }
 
