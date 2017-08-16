@@ -27,12 +27,17 @@ import { UIStackedView } from '../../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 import { UICollapsiblePane } from  '../../../ui-components/UICollapsiblePane'
+import { IOSAppSignatureEditorCtrl } from './IOSAppSignatureEditorCtrl'
+import { AndroidAppSignatureEditorCtrl } from './AndroidAppSignatureEditorCtrl'
+
+
 
 export class AppSignatureView extends UIBaseComponent {
 
   private tabbedView: UITabbedView;
   private stackedPage: UIStackedView;
-  private collapsiblePane:UICollapsiblePane;
+  private iosEditor:SignatureEditorCtrl;
+  private androidEditor:SignatureEditorCtrl;
 
   constructor(){
     super();
@@ -40,38 +45,23 @@ export class AppSignatureView extends UIBaseComponent {
   }
 
   private buildUI(){
+    this.iosEditor = new class extends SignatureEditorCtrl {
+      protected createEditorCtrl(appType:string){
+        return new IOSAppSignatureEditorCtrl();
+      }
+    }();
 
-    this.collapsiblePane = new UICollapsiblePane()
+    this.androidEditor = new class extends SignatureEditorCtrl {
+      protected createEditorCtrl(appType:string){
+        return new AndroidAppSignatureEditorCtrl();
+      }
+    }();
 
-    let container = createElement('div',{
-        elements: [this.collapsiblePane.element()],
-        className: 'panel'
-    })
-    let mainContainer = createElement('div',{
-      elements: [container],
-      className: 'deprecation-cop'
-    })
-    this.mainElement = mainContainer;
 
-    this.collapsiblePane.addItem({
-      collapsed:true,
-      id: 'red',
-      caption: "Red Panel",
-      subtle:"(this is the subtle text)",
-      view: this.createSimpleEmptyView('red')
-    })
-    .addItem({
-      collapsed:false,
-      id: 'blue',
-      caption: "Blue Panel",
-      view: this.createSimpleEmptyView('blue')
-    })
-
-    /*
     this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
 
-    this.tabbedView.addView(new UITabbedViewItem('ios',       'iOS',  this.createSimpleEmptyView('iOS App Signing here')).setTitleClass('icon icon-settings'));
-    this.tabbedView.addView(new UITabbedViewItem('android',   'Android',  this.createSimpleEmptyView('Android App Signing here')).setTitleClass('icon icon-settings'));
+    this.tabbedView.addView(new UITabbedViewItem('ios',       'iOS',  this.iosEditor.element()));
+    this.tabbedView.addView(new UITabbedViewItem('android',   'Android',  this.androidEditor.element()));
 
     this.stackedPage = new UIStackedView()
                         .setTitle('App Signature')
@@ -79,20 +69,61 @@ export class AppSignatureView extends UIBaseComponent {
                         .addHeaderClassName('de-workbench-stacked-view-header-section-thin');
 
     this.mainElement = this.stackedPage.element();
-    **/
+
   }
 
+  public destroy(){
+    this.tabbedView.destroy();
+    this.stackedPage.destroy();
+    this.iosEditor.destroy();
+    this.androidEditor.destroy();
+    super.destroy();
+  }
 
-  createSimpleEmptyView(color:string):HTMLElement {
-      let el = createElement('div',{
-        elements : [
-          createText(color)
-        ]
-      });
-      el.style["background-color"] = 'transparent';
-      el.style["width"] = "100%";
-      el.style["heightz"] = "100%";
-      return el;
+}
+
+class SignatureEditorCtrl extends UIBaseComponent {
+
+  private debugEditCtrl:IOSAppSignatureEditorCtrl;
+  private releaseEditCtrl:IOSAppSignatureEditorCtrl;
+  private collapsiblePane:UICollapsiblePane;
+
+  constructor(){
+    super();
+    this.initUI();
+  }
+
+  initUI(){
+    this.debugEditCtrl = this.createEditorCtrl('debug');
+    this.releaseEditCtrl = this.createEditorCtrl('release');
+
+    this.collapsiblePane = new UICollapsiblePane()
+
+    this.collapsiblePane.addItem({
+      collapsed:true,
+      id: 'debug',
+      caption: "Debug",
+      subtle:"(this is the subtle text)",
+      view: this.debugEditCtrl.element()
+    })
+    .addItem({
+      collapsed:false,
+      id: 'release',
+      caption: "Release",
+      view: this.releaseEditCtrl.element()
+    })
+
+    this.mainElement = this.collapsiblePane.element();
+  }
+
+  protected createEditorCtrl(appType:string){
+    return null;
+  }
+
+  public destroy(){
+    this.debugEditCtrl.destroy();
+    this.releaseEditCtrl.destroy();
+    super.destroy();
   }
 
 }
