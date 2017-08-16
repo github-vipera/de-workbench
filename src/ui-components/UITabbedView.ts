@@ -194,9 +194,22 @@ export class UITabbedView extends UIBaseComponent {
     }
   }
 
+  public removeViewById(tabId:string){
+    let tabItem = this.getTabItemById(tabId);
+    if (tabItem){
+      this.removeView(tabItem);
+    }
+  }
+
   public getTabItemByTitle(tabTitle:string):UITabbedViewItem{
     return _.find(this.views, function(tabItem){
       return tabItem.getTitle()===tabTitle;
+    })
+  }
+
+  public getTabItemById(tabId:string):UITabbedViewItem{
+    return _.find(this.views, function(tabItem){
+      return tabItem.id===tabId;
     })
   }
 
@@ -210,7 +223,18 @@ export class UITabbedView extends UIBaseComponent {
   }
 
   public removeAllTabs(){
-    //TODO!!
+    let allTabsIds = this.getAllIds();
+    for (var i=0;i<allTabsIds.length;i++){
+      this.removeViewById(allTabsIds[i])
+    }
+  }
+
+  public getAllIds():Array<string>{
+      let ret = [];
+      for (var i=0;i<this.views.length;i++){
+        ret.push(this.views[i].id)
+      }
+      return ret;
   }
 
   public setBottomToolbar(toolbarElement:HTMLElement){
