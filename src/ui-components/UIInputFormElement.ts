@@ -17,34 +17,34 @@ import {
  attachEventFromObject,
  createTextEditor
 } from '../element/index';
+import { EventEmitter }  from 'events'
 import { UIComponent, UIBaseComponent } from '../ui-components/UIComponent'
 import { UISelect, UISelectItem, UISelectListener } from '../ui-components/UISelect'
 
+const $ = require('jquery')
 
 export class UIInputFormElement extends UIBaseComponent {
 
+  protected events:EventEmitter;
   private label:HTMLElement;
   private inputEditor:HTMLElement;
   private listeners:Array<Function>;
+  private lastValue:string='';
+  private password:boolean=false;
 
-  constructor(){
+  constructor(password?:boolean){
     super();
+    this.password = password;
+    this.events = new EventEmitter();
     this.buildUI();
   }
 
-  private buildUI(){
-
+  protected buildUI(){
     this.label = createElement('label', {
       elements: [
       ]
     })
     this.inputEditor = this.createInputEditor();
-    /**
-    this.inputEditor = createElement('atom-text-editor', {
-    })
-    this.inputEditor.setAttribute('mini','');
-    this.inputEditor.setAttribute('tabindex','-1');
-    **/
 
     this.mainElement = createElement('div',{
       elements: [
@@ -56,12 +56,26 @@ export class UIInputFormElement extends UIBaseComponent {
   }
 
   protected createInputEditor():HTMLElement {
-    let inputEditor = createElement('atom-text-editor', {
+    let inputEditor = createElement('input', {
+      className: 'input-text native-key-bindings mini'
     })
+    if (this.password){
+      inputEditor.setAttribute('type','password');
+    }
     inputEditor.setAttribute('mini','');
     inputEditor.setAttribute('tabindex','-1');
+    inputEditor.addEventListener('keydown',(evt)=>{
+      this.fireEvent('keydown')
+    })
+    inputEditor.addEventListener('keyup',(evt)=>{
+      if (this.lastValue!=this.getValue()){
+        this.fireEvent('change')
+        this.lastValue = this.getValue();
+      }
+    })
     return inputEditor;
   }
+
 
   public setCaption(caption:string):UIInputFormElement{
       this.label.innerText = caption;
@@ -69,12 +83,12 @@ export class UIInputFormElement extends UIBaseComponent {
   }
 
   public setValue(value:string):UIInputFormElement{
-    this.getModel().setText(value)
-      return this;
+    this.inputEditor["value"] = value;
+    return this;
   }
 
   public getValue():string{
-    return this.getModel().getText()
+    return this.inputEditor["value"];
   }
 
   public setWidth(width:string):UIInputFormElement{
@@ -83,25 +97,27 @@ export class UIInputFormElement extends UIBaseComponent {
   }
 
   public setPlaceholder(placeholder:string):UIInputFormElement{
-    this.getModel().setPlaceholderText(placeholder)
+    this.inputEditor.setAttribute('placeholder',placeholder)
     return this;
   }
 
-  private getModel(){
-    return this.inputEditor['getModel']();
+  public addEventListener(event:string, listener):UIInputFormElement{
+    this.events.addListener(event, listener)
+    return this;
   }
 
-  public addChangeListener(listener):UIInputFormElement{
-    if (!this.listeners){
-      this.listeners = new Array()
-      this.getModel().emitter.on('did-change', (evt)=>{
-          for (var i=0;i<this.listeners.length;i++){
-              this.listeners[i](this);
-          }
-      })
-    }
-    this.listeners.push(listener);
-    return this;
+  protected fireEvent(event:string){
+    this.events.emit(event, this)
+  }
+
+  public destroy(){
+    this.events.removeAllListeners();
+    this.events = null;
+    this.label.remove();
+    this.inputEditor.remove();
+    this.label = null;
+    this.inputEditor = null;
+    super.destroy();
   }
 
 }

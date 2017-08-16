@@ -29,6 +29,7 @@ import { Cordova, NewProjectInfo } from '../../cordova/Cordova'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { NewProjectProgressPanel } from './NewProjectProgressPanel'
 import { UINotifications } from '../../ui-components/UINotifications'
+const { CompositeDisposable } = require('atom');
 
 const remote = require('remote');
 const dialog = remote.require('electron').dialog;
@@ -44,6 +45,7 @@ export class NewProjectView {
   private element: HTMLElement
   private events: EventEmitter
   private panel: any
+  private subscriptions:any;
 
   private projectPlatformButtons: UIButtonGroup;
   private actionButtons:UIButtonGroup;
@@ -59,6 +61,10 @@ export class NewProjectView {
 
   constructor () {
     this.events = new EventEmitter()
+    this.subscriptions = new CompositeDisposable();
+    this.subscriptions.add(atom.commands.add('atom-workspace', {
+      'core:cancel': () => this.close()
+    }));
 
     this.modalContainer = createElement('div', {
       className : 'de-workbench-modal-container'
@@ -349,6 +355,7 @@ export class NewProjectView {
     this.panel = undefined;
 
     this.events = undefined;
+    this.subscriptions.dispose();
   }
 
 

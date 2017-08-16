@@ -26,24 +26,39 @@ import { UIPluginsList } from '../../../ui-components/UIPluginsList'
 import { UIStackedView } from '../../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
+import { UISelect, UISelectItem, UISelectListener } from '../../../ui-components/UISelect'
+import { UIInputFormElement, UISelectFormElement } from '../../../ui-components/UIInputFormElement'
+import { AbstractAppSignatureEditorCtrl } from './AbstractAppSignatureEditorCtrl'
 
+export class AndroidAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
 
-export class AndroidAppSignatureEditorCtrl extends UIBaseComponent {
+  private keystorePath:UIInputFormElement;
+  private storePasswd:UIInputFormElement;
+  private alias:UIInputFormElement;
+  private passwd:UIInputFormElement;
 
   constructor(){
     super();
-    this.initUI();
   }
 
-  protected initUI(){
-    let foo = createElement('div',{
-      elements: [ createText('pluto')]
+  protected createControls():Array<HTMLElement> {
+    this.keystorePath = new UIInputFormElement().setCaption('Keystore Path').setPlaceholder('Keystore Path').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
     })
-    this.mainElement = foo;
+    this.storePasswd = new UIInputFormElement(true).setCaption('Store Password (storepass)').setPlaceholder('Store Password (storepass)').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
+    })
+    this.alias = new UIInputFormElement().setCaption('Alias').setPlaceholder('Alias').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
+    })
+    this.passwd = new UIInputFormElement(true).setCaption('Password (keypass)').setPlaceholder('Password (keypass)').addEventListener('change', (evtCtrl:UIInputFormElement)=>{
+    })
+    return [this.keystorePath.element(), this.storePasswd.element(), this.alias.element(), this.passwd.element()];
   }
 
   public destroy(){
-      super.destroy();
+    this.keystorePath.destroy();
+    this.storePasswd.destroy();
+    this.alias.destroy();
+    this.passwd.destroy();
+    super.destroy();
   }
 
 }

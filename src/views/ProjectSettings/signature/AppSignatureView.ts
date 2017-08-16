@@ -27,17 +27,16 @@ import { UIStackedView } from '../../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 import { UICollapsiblePane } from  '../../../ui-components/UICollapsiblePane'
+import { AbstractAppSignatureEditorCtrl } from './AbstractAppSignatureEditorCtrl'
 import { IOSAppSignatureEditorCtrl } from './IOSAppSignatureEditorCtrl'
 import { AndroidAppSignatureEditorCtrl } from './AndroidAppSignatureEditorCtrl'
-
-
 
 export class AppSignatureView extends UIBaseComponent {
 
   private tabbedView: UITabbedView;
   private stackedPage: UIStackedView;
-  private iosEditor:SignatureEditorCtrl;
-  private androidEditor:SignatureEditorCtrl;
+  private iosEditor:SignaturePlatformEditorCtrl;
+  private androidEditor:SignaturePlatformEditorCtrl;
 
   constructor(){
     super();
@@ -45,18 +44,17 @@ export class AppSignatureView extends UIBaseComponent {
   }
 
   private buildUI(){
-    this.iosEditor = new class extends SignatureEditorCtrl {
+    this.iosEditor = new class extends SignaturePlatformEditorCtrl {
       protected createEditorCtrl(appType:string){
         return new IOSAppSignatureEditorCtrl();
       }
     }();
 
-    this.androidEditor = new class extends SignatureEditorCtrl {
+    this.androidEditor = new class extends SignaturePlatformEditorCtrl {
       protected createEditorCtrl(appType:string){
         return new AndroidAppSignatureEditorCtrl();
       }
     }();
-
 
     this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
 
@@ -82,10 +80,10 @@ export class AppSignatureView extends UIBaseComponent {
 
 }
 
-class SignatureEditorCtrl extends UIBaseComponent {
+class SignaturePlatformEditorCtrl extends UIBaseComponent {
 
-  private debugEditCtrl:IOSAppSignatureEditorCtrl;
-  private releaseEditCtrl:IOSAppSignatureEditorCtrl;
+  private debugEditCtrl:AbstractAppSignatureEditorCtrl;
+  private releaseEditCtrl:AbstractAppSignatureEditorCtrl;
   private collapsiblePane:UICollapsiblePane;
 
   constructor(){
@@ -116,7 +114,7 @@ class SignatureEditorCtrl extends UIBaseComponent {
     this.mainElement = this.collapsiblePane.element();
   }
 
-  protected createEditorCtrl(appType:string){
+  protected createEditorCtrl(appType:string):AbstractAppSignatureEditorCtrl{
     return null;
   }
 

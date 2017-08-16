@@ -49,22 +49,22 @@ export class AppInfoView extends UIBaseComponent {
 
     this.currentProjectPath = ProjectManager.getInstance().getCurrentProjectPath();
 
-    this.nameCtrl = new UIInputFormElement().setCaption('Name').setPlaceholder('name (appId)').addChangeListener((evtCtrl:UIInputFormElement)=>{
+    this.nameCtrl = new UIInputFormElement().setCaption('Name').setPlaceholder('name (appId)').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       this.onTextValueChanged(evtCtrl);
     })
-    this.displayName = new UIInputFormElement().setCaption('Display Name').setPlaceholder('display name').addChangeListener((evtCtrl:UIInputFormElement)=>{
+    this.displayName = new UIInputFormElement().setCaption('Display Name').setPlaceholder('display name').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       this.onTextValueChanged(evtCtrl);
     })
-    this.descriptionCtrl = new UIInputFormElement().setCaption('Description').setPlaceholder('description').addChangeListener((evtCtrl:UIInputFormElement)=>{
+    this.descriptionCtrl = new UIInputFormElement().setCaption('Description').setPlaceholder('description').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       this.onTextValueChanged(evtCtrl);
     })
-    this.authorCtrl = new UIInputFormElement().setCaption('Author').setPlaceholder('author').addChangeListener((evtCtrl:UIInputFormElement)=>{
+    this.authorCtrl = new UIInputFormElement().setCaption('Author').setPlaceholder('author').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       this.onTextValueChanged(evtCtrl);
     })
-    this.licenseCtrl = new UIInputFormElement().setCaption('License').setPlaceholder('license').addChangeListener((evtCtrl:UIInputFormElement)=>{
+    this.licenseCtrl = new UIInputFormElement().setCaption('License').setPlaceholder('license').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       this.onTextValueChanged(evtCtrl);
     })
-    this.versionCtrl = new UIInputFormElement().setCaption('Version').setWidth("150px").setPlaceholder('0.0.0').addChangeListener((evtCtrl:UIInputFormElement)=>{
+    this.versionCtrl = new UIInputFormElement().setCaption('Version').setWidth("150px").setPlaceholder('0.0.0').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       this.onTextValueChanged(evtCtrl);
     })
 
