@@ -1,5 +1,4 @@
 'use babel'
-'use babel'
 import {
   createText,
   createElement,

@@ -26,11 +26,13 @@ import { UIPluginsList } from '../../../ui-components/UIPluginsList'
 import { UIStackedView } from '../../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
+import { UICollapsiblePane } from  '../../../ui-components/UICollapsiblePane'
 
 export class AppSignatureView extends UIBaseComponent {
 
   private tabbedView: UITabbedView;
   private stackedPage: UIStackedView;
+  private collapsiblePane:UICollapsiblePane;
 
   constructor(){
     super();
@@ -39,6 +41,33 @@ export class AppSignatureView extends UIBaseComponent {
 
   private buildUI(){
 
+    this.collapsiblePane = new UICollapsiblePane()
+
+    let container = createElement('div',{
+        elements: [this.collapsiblePane.element()],
+        className: 'panel'
+    })
+    let mainContainer = createElement('div',{
+      elements: [container],
+      className: 'deprecation-cop'
+    })
+    this.mainElement = mainContainer;
+
+    this.collapsiblePane.addItem({
+      collapsed:true,
+      id: 'red',
+      caption: "Red Panel",
+      subtle:"(this is the subtle text)",
+      view: this.createSimpleEmptyView('red')
+    })
+    .addItem({
+      collapsed:false,
+      id: 'blue',
+      caption: "Blue Panel",
+      view: this.createSimpleEmptyView('blue')
+    })
+
+    /*
     this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
 
     this.tabbedView.addView(new UITabbedViewItem('ios',       'iOS',  this.createSimpleEmptyView('iOS App Signing here')).setTitleClass('icon icon-settings'));
@@ -50,6 +79,7 @@ export class AppSignatureView extends UIBaseComponent {
                         .addHeaderClassName('de-workbench-stacked-view-header-section-thin');
 
     this.mainElement = this.stackedPage.element();
+    **/
   }
 
 
