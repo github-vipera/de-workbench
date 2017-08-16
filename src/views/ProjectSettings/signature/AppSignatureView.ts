@@ -100,10 +100,10 @@ class SignatureEditorCtrl extends UIBaseComponent {
     this.collapsiblePane = new UICollapsiblePane()
 
     this.collapsiblePane.addItem({
-      collapsed:true,
+      collapsed:false,
       id: 'debug',
       caption: "Debug",
-      subtle:"(this is the subtle text)",
+      subtle:"",
       view: this.debugEditCtrl.element()
     })
     .addItem({
