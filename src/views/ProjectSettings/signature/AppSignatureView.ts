@@ -30,6 +30,7 @@ import { UICollapsiblePane } from  '../../../ui-components/UICollapsiblePane'
 import { AbstractAppSignatureEditorCtrl } from './AbstractAppSignatureEditorCtrl'
 import { IOSAppSignatureEditorCtrl } from './IOSAppSignatureEditorCtrl'
 import { AndroidAppSignatureEditorCtrl } from './AndroidAppSignatureEditorCtrl'
+import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../../ui-components/UICommonsFactory'
 
 export class AppSignatureView extends UIBaseComponent {
 
@@ -111,7 +112,32 @@ class SignaturePlatformEditorCtrl extends UIBaseComponent {
       view: this.releaseEditCtrl.element()
     })
 
-    this.mainElement = this.collapsiblePane.element();
+
+    let actionButtonsOpt:FormActionsOptions = {
+      cancel : {
+        caption : 'Revert Changes'
+      },
+      commit : {
+        caption : 'Save Changes'
+      },
+      actionListener: (actionType:number)=>{
+        if (actionType===FormActionType.Cancel){
+          //TODO!!
+          //this.reload()
+        } else if (actionType===FormActionType.Commit){
+          //TODO!!
+          //this.saveChanges()
+        }
+      }
+    }
+    let actionButtonsContainer = UICommonsFactory.createFormActions(actionButtonsOpt)
+
+    let container = createElement('div',{
+      elements: [this.collapsiblePane.element(), actionButtonsContainer]
+    })
+    container.style.width = "100%"
+    
+    this.mainElement = container;
   }
 
   protected createEditorCtrl(appType:string):AbstractAppSignatureEditorCtrl{

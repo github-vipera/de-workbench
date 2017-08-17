@@ -26,6 +26,7 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 import { UINotifications } from '../../ui-components/UINotifications'
+import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
 
 export class AppInfoView extends UIBaseComponent {
 
@@ -68,27 +69,22 @@ export class AppInfoView extends UIBaseComponent {
       this.onTextValueChanged(evtCtrl);
     })
 
-    //Action buttons
-    this.actionButtons = new UIButtonGroup(UIButtonGroupMode.Standard)
-      .addButton(new UIButtonConfig()
-            .setId('revertChanges')
-            .setCaption('Revert Changes')
-            .setClickListener(()=>{
-                this.reload()
-            }))
-      .addButton(new UIButtonConfig()
-            .setId('saveChanges')
-            .setButtonType('success')
-            .setCaption('Save changes')
-            .setClickListener(()=>{
-              this.saveChanges()
-            }))
-    let actionButtonsContainer = createElement('div',{
-      elements: [
-        this.actionButtons.element()
-      ],
-      className: 'de-workbench-appinfo-form-action-buttons'
-    });
+    let actionButtonsOpt:FormActionsOptions = {
+      cancel : {
+        caption : 'Revert Changes'
+      },
+      commit : {
+        caption : 'Save Changes'
+      },
+      actionListener: (actionType:number)=>{
+        if (actionType===FormActionType.Cancel){
+          this.reload()
+        } else if (actionType===FormActionType.Commit){
+          this.saveChanges()
+        }
+      }
+    }
+    let actionButtonsContainer = UICommonsFactory.createFormActions(actionButtonsOpt)
 
     this.mainFormElement = createElement('form',{
       elements: [
