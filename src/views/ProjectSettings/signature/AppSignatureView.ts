@@ -96,7 +96,9 @@ export class AppSignatureView extends UIBaseComponent {
     this.tabbedView.addView(new UITabbedViewItem('ios',       'iOS',  this.iosEditor.element()));
     this.tabbedView.addView(new UITabbedViewItem('android',   'Android',  this.androidEditor.element()));
 
-    this.stackedPage = new UIStackedView()
+    this.stackedPage = new UIStackedView({
+                          titleIconClass: 'icon-shield'
+                        })
                         .setTitle('App Signature')
                         .setInnerView(this.tabbedView.element())
                         .addHeaderClassName('de-workbench-stacked-view-header-section-thin');

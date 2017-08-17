@@ -78,10 +78,10 @@ export class ProjectSettingsView {
 
     this.tabbedView = new UITabbedView();//.setTabType(UITabbedViewTabType.Horizontal);
     this.tabbedView.addView(new UITabbedViewItem('general',           'General',              this.generalSettingsView.element()).setTitleClass('icon icon-settings'));
-    this.tabbedView.addView(new UITabbedViewItem('installed_plugins', 'Installed Plugins',    this.installedPluginsView.element()).setTitleClass('icon icon-beaker'));
-    this.tabbedView.addView(new UITabbedViewItem('install_plugins',   'Install New Plugins',  this.installNewPluginsView.element()).setTitleClass('icon icon-broadcast'));
-    this.tabbedView.addView(new UITabbedViewItem('variants',          'Build Variants',       this.variantsView.element()).setTitleClass('icon icon-code'));
-    this.tabbedView.addView(new UITabbedViewItem('app_signature',     'App Signature',        this.appSignatureView.element()).setTitleClass('icon icon-circuit-board'));
+    this.tabbedView.addView(new UITabbedViewItem('installed_plugins', 'Installed Plugins',    this.installedPluginsView.element()).setTitleClass('icon icon-plug'));
+    this.tabbedView.addView(new UITabbedViewItem('install_plugins',   'Install New Plugins',  this.installNewPluginsView.element()).setTitleClass('icon icon-puzzle'));
+    this.tabbedView.addView(new UITabbedViewItem('variants',          'Build Variants',       this.variantsView.element()).setTitleClass('icon icon-versions'));
+    this.tabbedView.addView(new UITabbedViewItem('app_signature',     'App Signature',        this.appSignatureView.element()).setTitleClass('icon icon-shield'));
 
     let el = createElement('div', {
         elements: [

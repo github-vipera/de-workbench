@@ -47,52 +47,6 @@ export class VariantsView  extends UIBaseComponent {
 
   private buildUI(){
     this.currentProjectRoot = ProjectManager.getInstance().getCurrentProjectPath();
-    /**
-    // tabbed toolbar
-    let addVariantButton = createElement('button',{
-      //elements : [ createText("New...")],
-      className: 'btn btn-xs icon icon-gist-new'
-    })
-    atom["tooltips"].add(addVariantButton, {title:'Create a new Variant'})
-    let removeVariantButton = createElement('button',{
-      //elements : [ createText("Delete")],
-      className: 'btn btn-xs icon icon-dash'
-    })
-    atom["tooltips"].add(removeVariantButton, {title:'Remove selected Variant'})
-    let renameVariantButton = createElement('button',{
-      //elements : [ createText("Rename")],
-      className: 'btn btn-xs icon icon-pencil'
-    })
-    atom["tooltips"].add(renameVariantButton, {title:'Rename selected Variant'})
-    let duplicateVariantButton = createElement('button',{
-      className: 'btn btn-xs icon icon-clippy'
-    })
-    atom["tooltips"].add(duplicateVariantButton, {title:'Duplicate selected Variant'})
-    let tabbedToolbar = createElement('div',{
-      elements: [
-        createElement('div', {
-          elements: [addVariantButton, removeVariantButton, renameVariantButton, duplicateVariantButton],
-          className: 'btn-group'
-        })
-      ], className: 'btn-toolbar'
-    });
-    tabbedToolbar.style.float = "right"
-    // end tabbed toolbar
-
-    //let htmlTable:any = this.createFooTable();
-    //let listView2 = new UIExtendedListView(new EditableListViewModel())
-    let variantsCtrl = new VariantsGridCtrl();
-
-    this.tabbedView = new UITabbedView()
-            .setBottomToolbar(tabbedToolbar);
-
-
-    this.tabbedView.addView(this.createVariantView('Dev'));
-    this.tabbedView.addView(this.createVariantView('Dev-Local'));
-    this.tabbedView.addView(this.createVariantView('Test'));
-    this.tabbedView.addView(this.createVariantView('UAT'));
-    this.tabbedView.addView(this.createVariantView('Production'));
-    **/
 
     this.variantsEditorCtrl = new VariantsEditorCtrl(this.currentProjectRoot);
 
@@ -101,7 +55,9 @@ export class VariantsView  extends UIBaseComponent {
     });
     mainContainer.style.height = "80%"
 
-    this.stackedPage = new UIStackedView()
+    this.stackedPage = new UIStackedView({
+                          titleIconClass: 'icon-versions'
+                        })
                         .setTitle('Build Variants')
                         .setInnerView(mainContainer);
     this.mainElement = this.stackedPage.element();

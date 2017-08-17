@@ -62,7 +62,9 @@ export class InstallNewPluginsView extends UIBaseComponent {
       this.tabbedView.addView(new UITabbedViewItem('de_provided_plugins_'+provider.getProviderName(), provider.getProviderName(),  providedPluginsView.element()).setTitleClass('icon icon-settings'));
     }
 
-    this.stackedPage = new UIStackedView()
+    this.stackedPage = new UIStackedView({
+                          titleIconClass: 'icon-puzzle'
+                        })
                         .setTitle('Install New Plugins')
                         .setInnerView(this.tabbedView.element())
                         .addHeaderClassName('de-workbench-stacked-view-header-section-thin');

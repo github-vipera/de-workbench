@@ -102,7 +102,9 @@ export class InstalledPluginsView  extends UIBaseComponent {
         ]
     })
 
-    this.stackedPage = new UIStackedView()
+    this.stackedPage = new UIStackedView({
+                          titleIconClass: 'icon-plug'
+                        })
                         .setTitle('Installed Plugins')
                         .setInnerView(listContainer);
 

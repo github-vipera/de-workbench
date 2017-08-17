@@ -51,7 +51,9 @@ export class GeneralSettingsView extends UIBaseComponent {
     this.tabbedView.addView(new UITabbedViewItem('app_info', 'App Info', this.appInfoView.element() ).setTitleClass('icon icon-settings'));
     this.tabbedView.addView(new UITabbedViewItem('installed_platforms',    'Installed Platforms',  this.installedPlatformsView.element() ).setTitleClass('icon icon-settings'));
 
-    this.stackedPage = new UIStackedView()
+    this.stackedPage = new UIStackedView({
+                          titleIconClass: 'icon-settings'
+                        })
                         .setTitle('General Settings')
                         .setInnerView(this.tabbedView.element())
                         .addHeaderClassName('de-workbench-stacked-view-header-section-thin');

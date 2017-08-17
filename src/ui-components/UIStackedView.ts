@@ -20,6 +20,10 @@ import {
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
 
+export interface UIStackedViewOptions {
+    titleIconClass?:string;
+}
+
 export class UIStackedView extends UIBaseComponent {
 
     protected title:string;
@@ -31,8 +35,11 @@ export class UIStackedView extends UIBaseComponent {
     protected titleIcon: HTMLElement;
     protected headerElement: HTMLElement;
 
-    constructor(){
+    protected options:UIStackedViewOptions;
+
+    constructor(options?:UIStackedViewOptions){
       super();
+      this.options = options;
       this.buildUI();
     }
 
@@ -40,8 +47,12 @@ export class UIStackedView extends UIBaseComponent {
       // create the header
       this.titleElement = createText('');
 
+      let titleIconClassName = 'icon ';
+      if (this.options && this.options.titleIconClass){
+        titleIconClassName = titleIconClassName +" " + this.options.titleIconClass
+      }
       this.titleIcon = createElement('a',{
-        className : 'icon icon-plus'
+        className : titleIconClassName
       })
 
       this.headerElement = createElement('div',{
