@@ -19,9 +19,9 @@ export class TaskExecutor{
     if(this.isBusy()){
       throw new Error("TaskExecutor is busy");
     }
+    await this.scheduleNodeScripts(taskConfig,project);
     this.currentTask = taskConfig;
     Logger.getInstance().debug('schedule node tasks');
-    await this.scheduleNodeScripts(taskConfig,project);
     try{
       switch(this.currentTask.taskType){
         case "prepare":

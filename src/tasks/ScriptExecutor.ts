@@ -29,7 +29,7 @@ export class ScriptExecutor extends CommandExecutor{
     Logger.getInstance().info("runScriptImpl...");
     //var cmd = "cordova";
     var options = {
-      cwd: this.basePath,
+      cwd: basePath,
       detached: false
     };
     let cmd = this.prepareCommand("npm");

@@ -164,13 +164,15 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
        return this.toolbarView.getElement();
    }
 
-   showCordovaTaskModal(){
+   async showCordovaTaskModal(){
      console.log("showCordovaTaskModal");
      if(this.selectedProjectForTask == null){
        Logger.getInstance().warn("select project before run task");
        return;
      }
      let taskConfigView:TaskConfigView = new TaskConfigView("Task Configuration",this.events);
+     // RELOAD PROJECT INFO
+     this.selectedProjectForTask = await this.projectManager.cordova.getProjectInfo(this.selectedProjectForTask.path,false);
      taskConfigView.setProject(this.selectedProjectForTask);
      taskConfigView.show();
    }

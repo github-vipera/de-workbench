@@ -255,6 +255,11 @@ class TaskViewContentPanel extends UIBaseComponent{
     return value || null;
   }
 
+  private getSelectedNpmScript():string {
+    let value = this.npmScriptsSelect.getSelectedItem();
+    return value || null;
+  }
+
   private createReleaseCheckbox(){
     this.isReleaseEl = createInput({
       type:'checkbox'
@@ -291,7 +296,13 @@ class TaskViewContentPanel extends UIBaseComponent{
     if(variant){
       this.taskConfig.variantName = variant;
     }
+    let nodeScript = this.getSelectedNpmScript();
+    if(nodeScript){
+      this.taskConfig.nodeTasks = [nodeScript];
+    }
     return this.taskConfig;
+
+
   }
 }
 
