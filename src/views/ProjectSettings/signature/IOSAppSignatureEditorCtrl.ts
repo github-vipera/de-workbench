@@ -90,9 +90,27 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
   }
 
   public reloadProvisioningProfiles(provisioningProfiles:any){
+    // save the current value
+    let currentProvisioningSelected = this.provisioningProfileSelect.getValue();
+
     this.provisioningProfiles = provisioningProfiles;
     let items = this.createItems(provisioningProfiles)
     this.provisioningProfileSelect.setItems(items);
+
+    // after the new values probably the selection is changed
+    this.refreshProvisioningSelected(currentProvisioningSelected)
+  }
+
+  protected refreshProvisioningSelected(toSelect:string){
+    if (toSelect){
+      this.provisioningProfileSelect.setValue(toSelect)
+    } else {
+      // get saved
+      let json = this.getBuildJsonsection();
+      if (json){
+        this.provisioningProfileSelect.setValue(json.provisioningProfile)
+      }
+    }
   }
 
   protected createItems(provisioningProfiles:any):Array<UISelectItem> {
