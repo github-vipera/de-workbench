@@ -26,10 +26,17 @@ const remote = require('remote');
 const dialog = remote.require('electron').dialog;
 const path = require("path");
 
+export enum FormType {
+    Standard = 1,
+    FlexForm
+}
+
 export interface UIInputFormElementOptions {
   password?:boolean;
   autoSelect?:boolean;
   caption?:string;
+  formType?:FormType;
+  placeholder?:string;
 }
 
 export class UIInputFormElement extends UIBaseComponent {
@@ -88,6 +95,9 @@ export class UIInputFormElement extends UIBaseComponent {
       } );
     }
 
+    if (this.options && this.options.placeholder){
+      this.setPlaceholder(this.options.placeholder)
+    }
   }
 
   public getLabel():HTMLElement {
@@ -95,12 +105,30 @@ export class UIInputFormElement extends UIBaseComponent {
   }
 
   protected createControlContainer(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
+    if (this.options && this.options.formType && this.options.formType===FormType.FlexForm){
+      return this.createControlContainerFlex(label, inputEditor);
+    } else {
+      return this.createControlContainerStd(label, inputEditor);
+    }
+  }
+
+  protected createControlContainerStd(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
     return createElement('div',{
       elements: [
         label,
         inputEditor
       ],
       className: 'block control-group'
+    })
+  }
+
+  protected createControlContainerFlex(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
+    return createElement('li',{
+      elements: [
+        label,
+        inputEditor
+      ],
+      className: ''
     })
   }
 
@@ -185,18 +213,6 @@ export class UIInputFormElement extends UIBaseComponent {
 
 }
 
-export class UIInputFlexFormElement extends UIInputFormElement {
-  protected createControlContainer(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
-    return createElement('li',{
-      elements: [
-        label,
-        inputEditor
-      ],
-      className: ''
-    })
-  }
-}
-
 export class UISelectFormElement extends UIInputFormElement {
 
   selectCtrl:UISelect;
@@ -249,7 +265,38 @@ export class UIInputWithButtonFormElement extends UIInputFormElement {
     super(options);
   }
 
+  /*
   protected createControlContainer(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
+    return this.createControlContainerStd(label, inputEditor);
+  }
+  */
+
+  protected createControlContainerFlex(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
+    this.buttonEl = this.createButton("Browse...");
+    this.buttonEl.classList.add('inline-block')
+    this.buttonEl.classList.add('highlight')
+    this.buttonEl.style.marginLeft = "4px"
+    this.buttonEl.addEventListener('click', (evt)=>{
+      this.fireEvent('didActionClicked')
+    });
+    let divElement = createElement('div',{
+      elements: [
+        inputEditor,this.buttonEl
+      ],
+        className: ''
+    })
+    divElement.style.display = "flex"
+
+    return createElement('li',{
+      elements: [
+        label,
+        divElement
+      ],
+      className: ''
+    })
+  }
+
+  protected createControlContainerStd(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
     inputEditor.style.display = 'inline-block';
     inputEditor.style.marginRight = "4px"
 

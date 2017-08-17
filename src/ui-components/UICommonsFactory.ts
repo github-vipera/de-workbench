@@ -71,5 +71,22 @@ export class UICommonsFactory {
     return mainContainer;
   }
 
+  public static createFormSeparator():HTMLElement {
+    //<hr class="form-divider" width="100%" size="1" style="border-top: 1px solid #606060;">
+    let divider = createElement('hr',{
+      className: 'form-divider de-workbench-ui-form-divider'
+    })
+    return divider;
+  }
+
+  public static createFormSectionTitle(title:string):HTMLElement {
+    let divider = createElement('h2',{
+      elements: [
+        createText(title)
+      ],
+      className: 'de-workbench-ui-form-section-title'
+    })
+    return divider;
+  }
 
 }

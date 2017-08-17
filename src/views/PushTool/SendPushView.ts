@@ -30,7 +30,7 @@ import { UIButtonMenu } from '../../ui-components/UIButtonMenu'
 import { UINotifications } from '../../ui-components/UINotifications'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIStackedView } from '../../ui-components/UIStackedView'
-import { UIInputFormElement,UIInputFlexFormElement } from '../../ui-components/UIInputFormElement'
+import { UIInputFormElement, FormType } from '../../ui-components/UIInputFormElement'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
 import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 
@@ -93,7 +93,6 @@ export class SendPushView extends UIBaseComponent {
       insertElement(actionButtonsContainer, this.createTargetPlatformSelector())
 
 
-
       let formElements = this.createFormElements();
       let ulEl = createElement('ul',{
         elements: [ formElements, actionButtonsContainer ],
@@ -109,15 +108,15 @@ export class SendPushView extends UIBaseComponent {
     }
 
     protected createFormElements():Array<HTMLElement>{
-      let recipentsCrtl = new UIInputFlexFormElement({ caption: 'Recipients' });
-      let alertCrtl = new UIInputFlexFormElement({ caption: 'Alert' });
-      let topicCrtl = new UIInputFlexFormElement({ caption: 'Topic' });
-      let titleCrtl = new UIInputFlexFormElement({ caption: 'Title' });
-      let bodyCrtl = new UIInputFlexFormElement({ caption: 'Body' });
-      let soundCrtl = new UIInputFlexFormElement({ caption: 'Sound' });
-      let badgeCrtl = new UIInputFlexFormElement({ caption: 'Badge' });
-      let categoryCrtl = new UIInputFlexFormElement({ caption: 'Category' });
-      let jsonPayloadCrtl = new UIInputFlexFormElement({ caption: 'JSON Payload' });
+      let recipentsCrtl = new UIInputFormElement({ caption: 'Recipients', formType:FormType.FlexForm });
+      let alertCrtl = new UIInputFormElement({ caption: 'Alert', formType:FormType.FlexForm  });
+      let topicCrtl = new UIInputFormElement({ caption: 'Topic', formType:FormType.FlexForm  });
+      let titleCrtl = new UIInputFormElement({ caption: 'Title', formType:FormType.FlexForm  });
+      let bodyCrtl = new UIInputFormElement({ caption: 'Body', formType:FormType.FlexForm  });
+      let soundCrtl = new UIInputFormElement({ caption: 'Sound', formType:FormType.FlexForm  });
+      let badgeCrtl = new UIInputFormElement({ caption: 'Badge', formType:FormType.FlexForm  });
+      let categoryCrtl = new UIInputFormElement({ caption: 'Category', formType:FormType.FlexForm  });
+      let jsonPayloadCrtl = new UIInputFormElement({ caption: 'JSON Payload', formType:FormType.FlexForm  });
 
       return [ recipentsCrtl.element(),
                alertCrtl.element(),
