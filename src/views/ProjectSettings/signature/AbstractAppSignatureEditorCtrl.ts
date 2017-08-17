@@ -30,6 +30,7 @@ export enum AppType {
 export class AbstractAppSignatureEditorCtrl extends UIBaseComponent {
 
   protected appType:AppType;
+  protected buildJson:any;
 
   constructor(appType:AppType){
     super();
@@ -84,6 +85,16 @@ export class AbstractAppSignatureEditorCtrl extends UIBaseComponent {
   }
 
   public saveChanges(){
+    // this method must be implemented into the subclass
+    throw 'Not implemented'
+  }
+
+  public setBuildJson(buildJson:any){
+    this.buildJson = buildJson;
+    this.updateUI(buildJson)
+  }
+
+  public updateUI(buildJson:any){
     // this method must be implemented into the subclass
     throw 'Not implemented'
   }

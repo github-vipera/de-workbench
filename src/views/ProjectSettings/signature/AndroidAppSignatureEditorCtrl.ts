@@ -66,4 +66,13 @@ export class AndroidAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtr
     super.destroy();
   }
 
+  public updateUI(buildJson:any){
+    //TODO!!
+  }
+
+  public saveChanges(){
+    // this method must be implemented into the subclass
+  }
+
+
 }

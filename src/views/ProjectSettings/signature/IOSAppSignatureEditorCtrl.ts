@@ -33,6 +33,7 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
   private packageTypeSelect:UISelectFormElement;
   private devTeamInput:UIInputFormElement;
   private codeSignIdentityInput:UIInputFormElement;
+  private provisioningProfiles:any;
 
   constructor(appType:AppType){
     super(appType);
@@ -89,6 +90,7 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
   }
 
   public reloadProvisioningProfiles(provisioningProfiles:any){
+    this.provisioningProfiles = provisioningProfiles;
     let items = this.createItems(provisioningProfiles)
     this.provisioningProfileSelect.setItems(items);
   }
@@ -101,5 +103,44 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
         }
     })
   }
+
+  public updateUI(buildJson:any){
+    let json = this.getBuildJsonsection();
+    if (json){
+      this.provisioningProfileSelect.setValue(json.provisioningProfile)
+      this.codeSignIdentityInput.setValue(json.codeSignIdentity)
+      this.devTeamInput.setValue(json.developmentTeam)
+      this.packageTypeSelect.setValue(json.packageType)
+    }
+  }
+
+  protected getBuildJsonsection(){
+    let json = null;
+    if (this.appType===AppType.Debug){
+      if (this.buildJson.ios && this.buildJson.ios.debug){
+        json = this.buildJson.ios.debug;
+      }
+    } else if (this.appType===AppType.Release){
+      if (this.buildJson.ios && this.buildJson.ios.release){
+        json = this.buildJson.ios.release;
+      }
+    }
+    return json;
+  }
+
+  public saveChanges(){
+    let json = this.getBuildJsonsection();
+    if (json){
+      json.provisioningProfile = this.provisioningProfileSelect.getValue()
+      json.codeSignIdentity = this.codeSignIdentityInput.getValue()
+      json.developmentTeam = this.devTeamInput.getValue()
+      json.packageType = this.packageTypeSelect.getValue()
+    }
+  }
+
+  public async reload(){
+    this.updateUI(this.buildJson);
+  }
+
 
 }

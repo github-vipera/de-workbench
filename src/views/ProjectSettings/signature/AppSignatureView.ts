@@ -33,12 +33,17 @@ import { AndroidAppSignatureEditorCtrl } from './AndroidAppSignatureEditorCtrl'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../../ui-components/UICommonsFactory'
 import { IOSUtilities } from '../../../cordova/IOSUtilities'
 
+const path = require('path');
+const fs = require("fs")
+
 export class AppSignatureView extends UIBaseComponent {
 
   private tabbedView: UITabbedView;
   private stackedPage: UIStackedView;
   private iosEditor:SignaturePlatformEditorCtrl;
   private androidEditor:SignaturePlatformEditorCtrl;
+  private currentProjectPath:string;
+  private buildJson:Object;
 
   constructor(){
     super();
@@ -46,6 +51,9 @@ export class AppSignatureView extends UIBaseComponent {
   }
 
   private buildUI(){
+
+    this.currentProjectPath = ProjectManager.getInstance().getCurrentProjectPath();
+
     this.iosEditor = new class extends SignaturePlatformEditorCtrl {
       protected createEditorCtrl(appType:AppType){
         return new IOSAppSignatureEditorCtrl(appType);
@@ -71,13 +79,17 @@ export class AppSignatureView extends UIBaseComponent {
         super.prepareForEdit();
         this.reloadProvisioningProfiles();
       }
-    }();
+    }().addEventListener('didChanged',(editorCtrl:SignaturePlatformEditorCtrl)=>{
+      this.writeBuildJson(editorCtrl.getBuildJson())
+    });
 
     this.androidEditor = new class extends SignaturePlatformEditorCtrl {
       protected createEditorCtrl(appType:AppType){
         return new AndroidAppSignatureEditorCtrl(appType);
       }
-    }();
+    }().addEventListener('didChanged',(editorCtrl:SignaturePlatformEditorCtrl)=>{
+      this.writeBuildJson(editorCtrl.getBuildJson())
+    });
 
     this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
 
@@ -91,7 +103,60 @@ export class AppSignatureView extends UIBaseComponent {
 
     this.mainElement = this.stackedPage.element();
 
+    this.reload();
+
   }
+
+  protected updateUI(buildJson:any){
+    this.iosEditor.updateUI(buildJson)
+    this.androidEditor.updateUI(buildJson)
+  }
+
+  protected reload(){
+    this.buildJson = this.reloadBuildJson();
+    this.updateUI(this.buildJson);
+  }
+
+  protected getBuildJsonPath():string {
+    return path.join(this.currentProjectPath, "build.json")
+  }
+
+  protected defaultBuildJson(){
+      return {
+        "ios" : {
+          "debug" : {},
+          "release" : {}
+        },
+        "android" : {
+          "debug" : {},
+          "release" : {}
+        }
+      };
+  }
+
+  protected reloadBuildJson(){
+    let buildJsonPath = this.getBuildJsonPath()
+    var exists = fs.existsSync(buildJsonPath);
+    if (!exists){
+      let buildJson = this.defaultBuildJson();
+      this.writeBuildJson(buildJson);
+      return buildJson;
+    } else {
+      return JSON.parse(fs.readFileSync(buildJsonPath, 'utf8'));
+    }
+  }
+
+
+  protected writeBuildJson(buildJson:any){
+    if (!buildJson){
+      buildJson = this.buildJson;
+    }
+    var string = JSON.stringify(buildJson,null,'\t');
+    fs.writeFile(this.getBuildJsonPath(),string,function(err) {
+      if(err) return console.error(err);
+        console.log('done');
+    })
+}
 
   public destroy(){
     this.tabbedView.destroy();
@@ -108,9 +173,12 @@ class SignaturePlatformEditorCtrl extends UIBaseComponent {
   protected debugEditCtrl:AbstractAppSignatureEditorCtrl;
   protected releaseEditCtrl:AbstractAppSignatureEditorCtrl;
   protected collapsiblePane:UICollapsiblePane;
+  protected buildJson:any;
+  protected events:EventEmitter;
 
   constructor(){
     super();
+    this.events = new EventEmitter();
     this.initUI();
     this.prepareForEdit();
   }
@@ -180,6 +248,8 @@ class SignaturePlatformEditorCtrl extends UIBaseComponent {
   public saveChanges(){
     this.debugEditCtrl.saveChanges();
     this.releaseEditCtrl.saveChanges();
+    //console.log("Build JSON:", this.buildJson)
+    this.events.emit('didChanged', this);
   }
 
   protected createEditorCtrl(appType:AppType):AbstractAppSignatureEditorCtrl{
@@ -187,9 +257,26 @@ class SignaturePlatformEditorCtrl extends UIBaseComponent {
   }
 
   public destroy(){
+    this.events.removeAllListeners();
     this.debugEditCtrl.destroy();
     this.releaseEditCtrl.destroy();
+    this.events = null;
     super.destroy();
+  }
+
+  public updateUI(buildJson:any){
+    this.buildJson = buildJson;
+    this.debugEditCtrl.setBuildJson(buildJson)
+    this.releaseEditCtrl.setBuildJson(buildJson)
+  }
+
+  public addEventListener(event:string,listener):SignaturePlatformEditorCtrl{
+    this.events.addListener(event, listener);
+    return this;
+  }
+
+  public getBuildJson(){
+    return this.buildJson;
   }
 
 }
