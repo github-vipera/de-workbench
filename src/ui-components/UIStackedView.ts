@@ -22,6 +22,7 @@ import { UIComponent, UIBaseComponent } from './UIComponent'
 
 export interface UIStackedViewOptions {
     titleIconClass?:string;
+    subtle?:string;
 }
 
 export class UIStackedView extends UIBaseComponent {
@@ -63,7 +64,15 @@ export class UIStackedView extends UIBaseComponent {
         className : "de-workbench-stacked-view-header-section section-heading"
       });
 
-
+      if (this.options && this.options.subtle){
+        let subtleEl = createElement('div',{
+          elements: [
+            createText(this.options.subtle)
+          ],
+          className: "de-workbench-stacked-view-header-section section-heading-subtle text-subtle text-smaller"
+        })
+        insertElement(this.headerElement, subtleEl)
+      }
 
       // the main element
       this.mainElement = createElement('div',{

@@ -56,6 +56,7 @@ export default {
     let commands = atom.commands.add('atom-workspace', {
         'dewb-menu-view-:toolbar-toggle': () => this.toggleToolbar(),
         'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector(),
+        'dewb-menu-view-:pushtool-show': () => this.showPushTool(),
         'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger()
       });
     this.subscriptions = new CompositeDisposable();
@@ -70,6 +71,9 @@ export default {
       }
   },
 
+  showPushTool(){
+    this.deWorkbench.openPushTool();
+  },
 
   toggleProjectInspector(){
     this.deWorkbench.openProjectInspector();

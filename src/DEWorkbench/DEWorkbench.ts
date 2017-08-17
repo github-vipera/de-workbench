@@ -15,6 +15,7 @@ import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Logger } from '../logger/Logger'
 import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsView'
+import { PushToolView } from '../views/PushTool/PushToolView'
 import { LoggerView } from '../views/LoggerView'
 import { TaskConfigView } from '../views/TaskConfig/TastConfigView'
 import { CordovaProjectInfo } from '../cordova/Cordova'
@@ -38,7 +39,7 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
    didToggleDebugArea?:Function,
    didProjectSettings?:Function,
    didToggleConsole?:Function
-}
+ }
 
 
  export class DEWorkbench {
@@ -141,6 +142,15 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
      if (currentprojectPath){
        let projectSettingsView = new ProjectSettingsView(currentprojectPath);
        projectSettingsView.open();
+     }
+   }
+
+   openPushTool(){
+     Logger.getInstance().debug("DEWorkbench showPushTool called");
+     let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
+     if (currentprojectPath){
+       let pushToolView = new PushToolView(currentprojectPath);
+       pushToolView.open();
      }
    }
 
