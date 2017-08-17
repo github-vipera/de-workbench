@@ -15,6 +15,7 @@ export interface TaskConstraints {
   isNodeTaskEnabled:boolean
   isVariantEnabled:boolean
   isEnvVarEnabled:boolean
+  isCustom?:boolean
 }
 
 
