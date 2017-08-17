@@ -341,10 +341,12 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
   private treeModel:UITreeViewModel;
   private treeView:UITreeView;
   private taskSelectionListener:(itemId:string) => void
+  
   constructor(){
     super();
     this.initUI();
   }
+
   buildTreeModel(cvdTask:Array<CordovaTaskConfiguration>):void{
     let customTaskNode = this.createCustomTaskNode();
     let cvdTaskNode = this.createCdvTaskNode(cvdTask);
@@ -365,17 +367,56 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
       destroy:()=>{}
     };
   }
+
   initUI(){
     this.mainElement = createElement('atom-panel',{
       className:'de-workbench-taskpanel-tree-area',
     });
+    this.createButtonToolbar();
   }
+
+  private createButtonToolbar(){
+    let addTaskButton = createElement('button',{
+      //elements : [ createText("New...")],
+      className: 'btn btn-xs icon icon-gist-new'
+    })
+    atom["tooltips"].add(addTaskButton, {title:'Add task'})
+    addTaskButton.addEventListener('click', (evt)=>{
+      console.log("Add task");
+    })
+    let removeTaskButton = createElement('button',{
+      //elements : [ createText("Delete")],
+      className: 'btn btn-xs icon icon-dash'
+    })
+    atom["tooltips"].add(removeTaskButton, {title:'Remove selected task'})
+    removeTaskButton.addEventListener('click',()=>{
+      console.log("remove task");
+    })
+    let cloneTaskButton = createElement('button',{
+      className: 'btn btn-xs icon icon-clippy'
+    })
+    atom["tooltips"].add(cloneTaskButton, {title:'Clone selected Variant'})
+    cloneTaskButton.addEventListener('click',()=>{
+
+    })
+    let toolbar = createElement('div',{
+      elements: [
+        createElement('div', {
+          elements: [addTaskButton, removeTaskButton, cloneTaskButton],
+          className: 'btn-group'
+        })
+      ], className: 'btn-toolbar'
+    });
+    insertElement(this.mainElement,toolbar);
+  }
+
   buildAndAddTreeView(cvdTask:Array<CordovaTaskConfiguration>){
     this.buildTreeModel(cvdTask);
     this.treeView = new UITreeView(this.treeModel);
     this.treeView.addEventListener('didItemSelected', (itemId,item)=> { this.onItemSelected(itemId, item) });
     insertElement(this.mainElement,this.treeView.element());
   }
+
   createCustomTaskNode():UITreeItem{
     //TODO load from project file
     return { id: 'custom', name: 'Custom', icon: 'test-ts-icon'};
