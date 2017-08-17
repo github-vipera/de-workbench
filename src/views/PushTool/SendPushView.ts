@@ -87,7 +87,12 @@ export class SendPushView extends UIBaseComponent {
       let titleCrtl = new UIInputFlexFormElement({ caption: 'Title' });
       let bodyCrtl = new UIInputFlexFormElement({ caption: 'Body' });
 
-      return [ recipentsCrtl.element() ]
+      return [ recipentsCrtl.element(),
+               alertCrtl.element(),
+               topicCrtl.element(),
+               titleCrtl.element(),
+               bodyCrtl.element()
+             ]
     }
 
 }
