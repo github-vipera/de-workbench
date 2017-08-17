@@ -2,9 +2,9 @@
 import { ProjectManager } from '../DEWorkbench/ProjectManager';
 import { Cordova , CordovaProjectInfo} from '../cordova/Cordova';
 import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
-import { PlatformServer, PlatformServerImpl, PlatformServerConfig} from '../services/remote/PlatformServer'
-import {TaskUtils} from './TaskUtils'
-import {Logger} from '../logger/Logger'
+import { PlatformServer, PlatformServerImpl, PlatformServerConfig } from '../services/remote/PlatformServer'
+import { TaskUtils } from './TaskUtils'
+import { Logger }  from '../logger/Logger'
 import { ScriptExecutor } from './ScriptExecutor'
 
 export class TaskExecutor{

@@ -9,7 +9,7 @@
 import { ToolbarView } from '../toolbar/ToolbarView'
 import { NewProjectView } from '../views/NewProject/NewProjectView'
 import { EventEmitter }  from 'events';
-const { CompositeDisposable } = require('atom');
+const  { CompositeDisposable } = require('atom');
 import { DebugAreaView }from '../views/DebugAreaView'
 import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
@@ -235,7 +235,6 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
              progressMsg : 'Server running'
            })
          }else{
-           //Stop server??
            this.toolbarView.updateStatus({
              prjSelectorEnable:false,
              btnRunEnable:true,
