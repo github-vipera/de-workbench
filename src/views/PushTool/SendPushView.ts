@@ -29,6 +29,7 @@ import { UINotifications } from '../../ui-components/UINotifications'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UIInputFormElement,UIInputFlexFormElement } from '../../ui-components/UIInputFormElement'
+import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
 
 export class SendPushView extends UIBaseComponent {
 
@@ -49,6 +50,7 @@ export class SendPushView extends UIBaseComponent {
         elements: [ form ],
         className: 'section-container'
       })
+
       let innerPage = createElement('div',{
         elements: [ sectionContainer ],
         className: 'section'
@@ -67,9 +69,26 @@ export class SendPushView extends UIBaseComponent {
     }
 
     protected createForm(){
+      let actionButtonsOpt:FormActionsOptions = {
+        cancel : {
+          caption : 'Clear Data'
+        },
+        commit : {
+          caption : 'Send Push'
+        },
+        actionListener: (actionType:number)=>{
+          if (actionType===FormActionType.Cancel){
+            this.clearData()
+          } else if (actionType===FormActionType.Commit){
+            this.sendPush()
+          }
+        }
+      }
+      let actionButtonsContainer = UICommonsFactory.createFormActions(actionButtonsOpt)
+
       let formElements = this.createFormElements();
       let ulEl = createElement('ul',{
-        elements: [ formElements ],
+        elements: [ formElements, actionButtonsContainer ],
         className: 'flex-outer'
       })
 
@@ -86,13 +105,29 @@ export class SendPushView extends UIBaseComponent {
       let topicCrtl = new UIInputFlexFormElement({ caption: 'Topic' });
       let titleCrtl = new UIInputFlexFormElement({ caption: 'Title' });
       let bodyCrtl = new UIInputFlexFormElement({ caption: 'Body' });
+      let soundCrtl = new UIInputFlexFormElement({ caption: 'Sound' });
+      let badgeCrtl = new UIInputFlexFormElement({ caption: 'Badge' });
+      let categoryCrtl = new UIInputFlexFormElement({ caption: 'Category' });
+      let jsonPayloadCrtl = new UIInputFlexFormElement({ caption: 'JSON Payload' });
 
       return [ recipentsCrtl.element(),
                alertCrtl.element(),
                topicCrtl.element(),
                titleCrtl.element(),
-               bodyCrtl.element()
+               bodyCrtl.element(),
+               soundCrtl.element(),
+               badgeCrtl.element(),
+               categoryCrtl.element(),
+               jsonPayloadCrtl.element()
              ]
+    }
+
+    protected clearData(){
+
+    }
+
+    protected sendPush(){
+
     }
 
 }
