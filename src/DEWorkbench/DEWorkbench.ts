@@ -195,11 +195,11 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
      },(reason) => {
         //this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
         Logger.getInstance().error(reason);
-        this.updateToolbarStatus(taskConfiguration,true);
+        this.updateToolbarStatus(taskConfiguration,false);
      }).catch((err:Error) => {
        //this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
        Logger.getInstance().error(err.message, err.stack);
-       this.updateToolbarStatus(taskConfiguration,true);
+       this.updateToolbarStatus(taskConfiguration,false);
      });
    }
 
@@ -239,7 +239,7 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
              btnStopEnable:true,
              btnReloadEnable:false,
              progressStatus: UIIndicatorStatus.Error,
-             progressMsg : '`${taskConfiguration.displayName} - ${platform} Fail (but Server running)`'
+             progressMsg : `${taskConfiguration.displayName} - ${platform} Fail (but Server running)`
            });
          }
        }else{
