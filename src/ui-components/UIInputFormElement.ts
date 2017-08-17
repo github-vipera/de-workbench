@@ -29,6 +29,7 @@ const path = require("path");
 export interface UIInputFormElementOptions {
   password?:boolean;
   autoSelect?:boolean;
+  caption?:string;
 }
 
 export class UIInputFormElement extends UIBaseComponent {
@@ -60,8 +61,13 @@ export class UIInputFormElement extends UIBaseComponent {
   }
 
   protected buildUI(){
+    let caption = ''
+    if (this.options && this.options.caption){
+      caption = this.options.caption
+    }
     this.label = createElement('label', {
       elements: [
+        createText(caption)
       ]
     })
     this.inputEditor = this.createInputEditor();
@@ -82,6 +88,10 @@ export class UIInputFormElement extends UIBaseComponent {
       } );
     }
 
+  }
+
+  public getLabel():HTMLElement {
+    return this.label;
   }
 
   protected createControlContainer(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
@@ -173,6 +183,18 @@ export class UIInputFormElement extends UIBaseComponent {
     super.destroy();
   }
 
+}
+
+export class UIInputFlexFormElement extends UIInputFormElement {
+  protected createControlContainer(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
+    return createElement('li',{
+      elements: [
+        label,
+        inputEditor
+      ],
+      className: ''
+    })
+  }
 }
 
 export class UISelectFormElement extends UIInputFormElement {
