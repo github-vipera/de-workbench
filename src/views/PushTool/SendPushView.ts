@@ -28,6 +28,7 @@ import { UIButtonMenu } from '../../ui-components/UIButtonMenu'
 import { UINotifications } from '../../ui-components/UINotifications'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIStackedView } from '../../ui-components/UIStackedView'
+import { UIInputFormElement,UIInputFlexFormElement } from '../../ui-components/UIInputFormElement'
 
 export class SendPushView extends UIBaseComponent {
 
@@ -42,8 +43,15 @@ export class SendPushView extends UIBaseComponent {
 
     protected initUI(){
 
+      let form = this.createForm();
+
+      let sectionContainer = createElement('div',{
+        elements: [ form ],
+        className: 'section-container'
+      })
       let innerPage = createElement('div',{
-        elements: [ createText('TODO!!')]
+        elements: [ sectionContainer ],
+        className: 'section'
       })
 
       this.stackedPage = new UIStackedView({
@@ -56,6 +64,30 @@ export class SendPushView extends UIBaseComponent {
 
       this.mainElement = this.stackedPage.element();
 
+    }
+
+    protected createForm(){
+      let formElements = this.createFormElements();
+      let ulEl = createElement('ul',{
+        elements: [ formElements ],
+        className: 'flex-outer'
+      })
+
+      let formEl = createElement('form',{
+        elements: [ ulEl ]
+      })
+
+      return formEl;
+    }
+
+    protected createFormElements():Array<HTMLElement>{
+      let recipentsCrtl = new UIInputFlexFormElement({ caption: 'Recipients' });
+      let alertCrtl = new UIInputFlexFormElement({ caption: 'Alert' });
+      let topicCrtl = new UIInputFlexFormElement({ caption: 'Topic' });
+      let titleCrtl = new UIInputFlexFormElement({ caption: 'Title' });
+      let bodyCrtl = new UIInputFlexFormElement({ caption: 'Body' });
+
+      return [ recipentsCrtl.element() ]
     }
 
 }
