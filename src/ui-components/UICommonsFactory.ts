@@ -41,6 +41,7 @@ export class UICommonsFactory {
 
   public static createFormActions(options:FormActionsOptions):HTMLElement {
     //Action buttons
+
     let actionButtons = new UIButtonGroup(UIButtonGroupMode.Standard)
       .addButton(new UIButtonConfig()
             .setId('cancel')
@@ -61,7 +62,13 @@ export class UICommonsFactory {
       ],
       className: 'de-workbench-ui-form-action-buttons'
     });
-    return actionButtonsContainer;
+
+    let mainContainer = createElement('div',{
+      elements: [actionButtonsContainer],
+      className: 'de-workbench-ui-form-action-buttons-container'
+    })
+
+    return mainContainer;
   }
 
 

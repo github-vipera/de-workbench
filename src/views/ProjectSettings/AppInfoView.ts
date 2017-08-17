@@ -85,7 +85,7 @@ export class AppInfoView extends UIBaseComponent {
       }
     }
     let actionButtonsContainer = UICommonsFactory.createFormActions(actionButtonsOpt)
-
+    
     this.mainFormElement = createElement('form',{
       elements: [
         this.nameCtrl.element(),

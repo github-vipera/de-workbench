@@ -189,6 +189,11 @@ export class UISelectFormElement extends UIInputFormElement {
     return this.selectCtrl.element();
   }
 
+  public setCaption(caption:string):UISelectFormElement{
+    super.setCaption(caption);
+    return this;
+  }
+
   public getSelectCtrl():UISelect {
     return this.selectCtrl;
   }

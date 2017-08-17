@@ -27,10 +27,11 @@ import { UIStackedView } from '../../../ui-components/UIStackedView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui-components/UITabbedView'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 import { UICollapsiblePane } from  '../../../ui-components/UICollapsiblePane'
-import { AbstractAppSignatureEditorCtrl } from './AbstractAppSignatureEditorCtrl'
+import { AbstractAppSignatureEditorCtrl, AppType } from './AbstractAppSignatureEditorCtrl'
 import { IOSAppSignatureEditorCtrl } from './IOSAppSignatureEditorCtrl'
 import { AndroidAppSignatureEditorCtrl } from './AndroidAppSignatureEditorCtrl'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../../ui-components/UICommonsFactory'
+import { IOSUtilities } from '../../../cordova/IOSUtilities'
 
 export class AppSignatureView extends UIBaseComponent {
 
@@ -46,14 +47,35 @@ export class AppSignatureView extends UIBaseComponent {
 
   private buildUI(){
     this.iosEditor = new class extends SignaturePlatformEditorCtrl {
-      protected createEditorCtrl(appType:string){
-        return new IOSAppSignatureEditorCtrl();
+      protected createEditorCtrl(appType:AppType){
+        return new IOSAppSignatureEditorCtrl(appType);
+      }
+      protected createExtendedActions():HTMLElement {
+        let reloadButton = createElement('button',{
+          elements: [ createText('Reload Provisioning Profiles') ],
+          className: 'btn icon icon-repo-sync'
+        });
+        reloadButton.addEventListener('click',()=>{
+          this.reloadProvisioningProfiles();
+        })
+        return reloadButton;
+      }
+      protected async reloadProvisioningProfiles(){
+        let provFiles = await IOSUtilities.loadProvisioningProfiles();
+        let ctrl:any = this.debugEditCtrl;
+        ctrl.reloadProvisioningProfiles(provFiles);
+        ctrl = this.releaseEditCtrl;
+        ctrl.reloadProvisioningProfiles(provFiles);
+      }
+      protected prepareForEdit(){
+        super.prepareForEdit();
+        this.reloadProvisioningProfiles();
       }
     }();
 
     this.androidEditor = new class extends SignaturePlatformEditorCtrl {
-      protected createEditorCtrl(appType:string){
-        return new AndroidAppSignatureEditorCtrl();
+      protected createEditorCtrl(appType:AppType){
+        return new AndroidAppSignatureEditorCtrl(appType);
       }
     }();
 
@@ -83,18 +105,19 @@ export class AppSignatureView extends UIBaseComponent {
 
 class SignaturePlatformEditorCtrl extends UIBaseComponent {
 
-  private debugEditCtrl:AbstractAppSignatureEditorCtrl;
-  private releaseEditCtrl:AbstractAppSignatureEditorCtrl;
-  private collapsiblePane:UICollapsiblePane;
+  protected debugEditCtrl:AbstractAppSignatureEditorCtrl;
+  protected releaseEditCtrl:AbstractAppSignatureEditorCtrl;
+  protected collapsiblePane:UICollapsiblePane;
 
   constructor(){
     super();
     this.initUI();
+    this.prepareForEdit();
   }
 
   initUI(){
-    this.debugEditCtrl = this.createEditorCtrl('debug');
-    this.releaseEditCtrl = this.createEditorCtrl('release');
+    this.debugEditCtrl = this.createEditorCtrl(AppType.Debug);
+    this.releaseEditCtrl = this.createEditorCtrl(AppType.Release);
 
     this.collapsiblePane = new UICollapsiblePane()
 
@@ -122,25 +145,44 @@ class SignaturePlatformEditorCtrl extends UIBaseComponent {
       },
       actionListener: (actionType:number)=>{
         if (actionType===FormActionType.Cancel){
-          //TODO!!
-          //this.reload()
+          this.reload()
         } else if (actionType===FormActionType.Commit){
-          //TODO!!
-          //this.saveChanges()
+          this.saveChanges()
         }
       }
     }
     let actionButtonsContainer = UICommonsFactory.createFormActions(actionButtonsOpt)
 
+    let extendedActions = this.createExtendedActions();
+    if (extendedActions){
+        insertElement(actionButtonsContainer, extendedActions)
+    }
+
     let container = createElement('div',{
-      elements: [this.collapsiblePane.element(), actionButtonsContainer]
+      elements: [this.collapsiblePane.element(), actionButtonsContainer],
+      className: 'de-workbench-appsignature-control-container'
     })
-    container.style.width = "100%"
-    
+
     this.mainElement = container;
   }
 
-  protected createEditorCtrl(appType:string):AbstractAppSignatureEditorCtrl{
+  protected prepareForEdit(){}
+
+  protected createExtendedActions():HTMLElement {
+    return null;
+  }
+
+  public reload(){
+    this.debugEditCtrl.reload();
+    this.releaseEditCtrl.reload();
+  }
+
+  public saveChanges(){
+    this.debugEditCtrl.saveChanges();
+    this.releaseEditCtrl.saveChanges();
+  }
+
+  protected createEditorCtrl(appType:AppType):AbstractAppSignatureEditorCtrl{
     return null;
   }
 

@@ -28,7 +28,7 @@ import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../../ui
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 import { UISelect, UISelectItem, UISelectListener } from '../../../ui-components/UISelect'
 import { UIInputFormElement, UISelectFormElement, UIInputWithButtonFormElement, UIInputBrowseForFolderFormElement } from '../../../ui-components/UIInputFormElement'
-import { AbstractAppSignatureEditorCtrl } from './AbstractAppSignatureEditorCtrl'
+import { AbstractAppSignatureEditorCtrl, AppType } from './AbstractAppSignatureEditorCtrl'
 
 export class AndroidAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
 
@@ -37,8 +37,8 @@ export class AndroidAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtr
   private alias:UIInputFormElement;
   private passwd:UIInputFormElement;
 
-  constructor(){
-    super();
+  constructor(appType:AppType){
+    super(appType);
   }
 
   protected createControls():Array<HTMLElement> {
@@ -54,7 +54,7 @@ export class AndroidAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtr
     this.keystorePath = new UIInputBrowseForFolderFormElement().setCaption('Keystore Path').setPlaceholder('Keystore Path').chainTo(this.storePasswd.toChain());
 
     this.passwd.chainTo(this.keystorePath.toChain())
-    
+
     return [this.keystorePath.element(), this.storePasswd.element(), this.alias.element(), this.passwd.element()];
   }
 

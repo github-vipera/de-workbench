@@ -22,10 +22,18 @@ import { EventEmitter }  from 'events'
 import { Logger } from '../../../logger/Logger'
 import { UIComponent, UIBaseComponent } from '../../../ui-components/UIComponent'
 
+export enum AppType {
+  Debug = 1,
+  Release = 2
+}
+
 export class AbstractAppSignatureEditorCtrl extends UIBaseComponent {
 
-  constructor(){
+  protected appType:AppType;
+
+  constructor(appType:AppType){
     super();
+    this.appType = appType;
     this.initUI();
   }
 
@@ -43,6 +51,10 @@ export class AbstractAppSignatureEditorCtrl extends UIBaseComponent {
     })
 
     this.mainElement = mainSection;
+  }
+
+  public getApptype():AppType {
+    return this.appType;
   }
 
   protected createBlock(title:string, element:HTMLElement):HTMLElement {
@@ -64,6 +76,16 @@ export class AbstractAppSignatureEditorCtrl extends UIBaseComponent {
 
   protected createControls():Array<HTMLElement> {
     return []
+  }
+
+  public reload(){
+    // this method must be implemented into the subclass
+    throw 'Not implemented'
+  }
+
+  public saveChanges(){
+    // this method must be implemented into the subclass
+    throw 'Not implemented'
   }
 
 }
