@@ -58,7 +58,8 @@ export class TaskProvider{
       isMockConfigEnabled:false,
       isEnvVarEnabled:true,
       isVariantEnabled:true,
-      isNodeTaskEnabled:true
+      isNodeTaskEnabled:true,
+      isCustom:true
     }
     let tasks:Array<CordovaTaskConfiguration> = [cdvPrepare, cdvBuild, cdvRun, cdvBuildAndRun];
     return tasks;

@@ -19,14 +19,15 @@ import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findIt
 import { find, forEach, map, clone} from 'lodash'
 import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
 import { UILineLoader } from '../../ui-components/UILineLoader'
+import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
 import { Variant, VariantsModel, VariantsManager } from '../../DEWorkbench/VariantsManager'
-
 
 const NONE_PLACEHOLDER:string = '-- None -- ';
 
 class TaskViewContentPanel extends UIBaseComponent{
   taskConfig:CordovaTaskConfiguration
   projectInfo:CordovaProjectInfo
+  private taskNameEl:UIInputFormElement;
   private deviceManager:CordovaDeviceManager;
   private variantManager:VariantsManager;
   private platformSelect:UISelect;
@@ -50,12 +51,26 @@ class TaskViewContentPanel extends UIBaseComponent{
       ]
     });
     this.mainElement.classList.add('form-container');
+    this.createTaskNameEl();
     this.createPlatformSelect();
     this.createDeviceSelect();
     this.createReleaseCheckbox();
     this.createVariantSelect();
     this.createNodeTaskSelect();
+  }
 
+
+  private createTaskNameEl(){
+    this.taskNameEl = new UIInputFormElement().setCaption('Task name').setPlaceholder('Your task name').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
+      if(this.taskConfig){
+        this.taskConfig.name = this.taskNameEl.getValue();
+      }
+    });
+    insertElement(this.mainElement,this.taskNameEl.element());
+  }
+
+  private updateTaskName(){
+    this.taskNameEl.setValue(this.taskConfig.name);
   }
 
   private createPlatformSelect(){
@@ -204,6 +219,11 @@ class TaskViewContentPanel extends UIBaseComponent{
       el.style.display = visible? 'block' : 'none';
     }
   }
+  private setElementVisible(el:HTMLElement,visible:boolean){
+    if(el && el.style){
+      el.style.display = visible? 'block' : 'none';
+    }
+  }
 
   private contextualizeImpl(){
     if(!this.getSelectedPlatform()){
@@ -228,8 +248,13 @@ class TaskViewContentPanel extends UIBaseComponent{
       }
       this.setRowVisible(this.createRowId('npmScript'),constraints.isNodeTaskEnabled);
 
-
+      if(constraints.isCustom){
+        this.updateTaskName();
+      }
+      this.setElementVisible(this.taskNameEl.element(),constraints.isCustom);
   }
+
+
 
   private getSelectedPlatform():CordovaPlatform{
     let platformValue = this.platformSelect.getSelectedItem();
