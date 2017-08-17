@@ -5,10 +5,12 @@ import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
 import { PlatformServer, PlatformServerImpl, PlatformServerConfig} from '../services/remote/PlatformServer'
 import {TaskUtils} from './TaskUtils'
 import {Logger} from '../logger/Logger'
+import { ScriptExecutor } from './ScriptExecutor'
 
 export class TaskExecutor{
   private currentTask:CordovaTaskConfiguration;
   private platformServer:PlatformServer = null;
+  private scriptExecutor:ScriptExecutor = null;
   private cordova:Cordova
   constructor(){
       this.cordova=ProjectManager.getInstance().cordova;
@@ -18,6 +20,8 @@ export class TaskExecutor{
       throw new Error("TaskExecutor is busy");
     }
     this.currentTask = taskConfig;
+    Logger.getInstance().debug('schedule node tasks');
+    await this.scheduleNodeScripts(taskConfig,project);
     try{
       switch(this.currentTask.taskType){
         case "prepare":
@@ -64,7 +68,6 @@ export class TaskExecutor{
 
   async executePrepare(project:CordovaProjectInfo){
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
-    //return this.cordova.prepareProjectWithBrowserPatch(project.path);
     return this.cordova.prepareProject(project.path,platform);
   }
 
@@ -96,12 +99,28 @@ export class TaskExecutor{
   }
 
   stop(){
+    if(this.scriptExecutor){
+      this.scriptExecutor.stop();
+    }
     this.cordova.stopExecutor();
     this.stopServer();
   }
 
   isPlatformServerRunning():boolean{
     return this.platformServer && this.platformServer.isRunning();
+  }
+
+
+  private async scheduleNodeScripts(taskConfig:CordovaTaskConfiguration,project:CordovaProjectInfo){
+    if(!taskConfig.nodeTasks || !(taskConfig.nodeTasks.length > 0)){
+      Logger.getInstance().debug('No script defined');
+      return Promise.resolve();
+    }
+    Logger.getInstance().debug('Begin npm script run');
+    this.scriptExecutor = new ScriptExecutor();
+    let res= await this.scriptExecutor.runNpmScripts(taskConfig.nodeTasks,project.path);
+    Logger.getInstance().debug('End npm script run');
+    return res;
   }
 
 }

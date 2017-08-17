@@ -25,7 +25,7 @@ export class CordovaTaskConfiguration {
   private _selectedPlatform: CordovaPlatform
   private _variantName:string
   private _isRelease:boolean
-  private _nodeTasks:Array<String>
+  private _nodeTasks:Array<string>
   private _device:CordovaDevice
   private _envVariables: Array<{name:string, value:string}>
   private _constraints: TaskConstraints
@@ -83,11 +83,11 @@ export class CordovaTaskConfiguration {
     this._isRelease = value;
   }
 
-  get nodeTasks():Array<String>{
+  get nodeTasks():Array<string>{
     return this._nodeTasks
   }
 
-  set nodeTasks(value:Array<String>){
+  set nodeTasks(value:Array<string>){
     this._nodeTasks = value;
   }
 
