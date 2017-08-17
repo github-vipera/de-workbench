@@ -15,8 +15,10 @@ import {
  createIcon,
  createIconFromPath,
  attachEventFromObject,
- createTextEditor
+ createTextEditor,
+ createControlBlock
 } from '../../element/index';
+
 import { EventEmitter }  from 'events'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
@@ -30,11 +32,14 @@ import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UIInputFormElement,UIInputFlexFormElement } from '../../ui-components/UIInputFormElement'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
+import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 
 export class SendPushView extends UIBaseComponent {
 
+
     projectRoot:string;
     private stackedPage: UIStackedView;
+    private targetrPlatformSelector:UIButtonGroup;
 
     constructor(projectRoot:string){
       super();
@@ -85,12 +90,16 @@ export class SendPushView extends UIBaseComponent {
         }
       }
       let actionButtonsContainer = UICommonsFactory.createFormActions(actionButtonsOpt)
+      insertElement(actionButtonsContainer, this.createTargetPlatformSelector())
+
+
 
       let formElements = this.createFormElements();
       let ulEl = createElement('ul',{
         elements: [ formElements, actionButtonsContainer ],
         className: 'flex-outer'
       })
+
 
       let formEl = createElement('form',{
         elements: [ ulEl ]
@@ -128,6 +137,22 @@ export class SendPushView extends UIBaseComponent {
 
     protected sendPush(){
 
+    }
+
+    protected createTargetPlatformSelector():HTMLElement{
+      // Project Type Radio
+      this.targetrPlatformSelector = new UIButtonGroup(UIButtonGroupMode.Radio);
+      //let selectorBlock = createControlBlock('project-type','Target Platform',this.targetrPlatformSelector.element());
+
+        this.targetrPlatformSelector.addButton(new UIButtonConfig().setId('android')
+                                          .setCaption('Android')
+                                          .setSelected(true));
+
+        this.targetrPlatformSelector.addButton(new UIButtonConfig().setId('ios')
+                                          .setCaption('iOS')
+                                          .setSelected(false));
+
+        return this.targetrPlatformSelector.element();
     }
 
 }
