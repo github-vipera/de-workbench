@@ -218,8 +218,8 @@ export class UIInputWithButtonFormElement extends UIInputFormElement {
 
   protected buttonEl:HTMLElement;
 
-  constructor(password?:boolean){
-    super(password);
+  constructor(options?:UIInputFormElementOptions){
+    super(options);
   }
 
   protected createControlContainer(label:HTMLElement, inputEditor:HTMLElement):HTMLElement {
@@ -289,8 +289,8 @@ export class UIInputWithButtonFormElement extends UIInputFormElement {
 
 export class UIInputBrowseForFolderFormElement extends UIInputWithButtonFormElement {
 
-  constructor(password?:boolean){
-    super(password);
+  constructor(options?:UIInputFormElementOptions){
+    super(options);
     this.prepareForEvents();
   }
 
