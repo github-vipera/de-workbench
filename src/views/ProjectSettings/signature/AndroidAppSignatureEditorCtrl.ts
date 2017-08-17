@@ -67,12 +67,30 @@ export class AndroidAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtr
   }
 
   public updateUI(buildJson:any){
-    //TODO!!
+    let json = this.getBuildJsonsection('android');
+    if (json){
+      this.keystorePath.setValue(json.keystore)
+      this.storePasswd.setValue(json.storePassword)
+      this.alias.setValue(json.alias)
+      this.passwd.setValue(json.password)
+    }
   }
 
   public saveChanges(){
-    // this method must be implemented into the subclass
+    let json = this.getBuildJsonsection('android');
+    if (json){
+      json.keystore = this.keystorePath.getValue()
+      json.storePassword = this.storePasswd.getValue()
+      json.alias = this.alias.getValue()
+      json.password = this.passwd.getValue()
+      json.keystoreType = ""
+    }
   }
+
+  public async reload(){
+    this.updateUI(this.buildJson);
+  }
+
 
 
 }

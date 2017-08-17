@@ -99,4 +99,18 @@ export class AbstractAppSignatureEditorCtrl extends UIBaseComponent {
     throw 'Not implemented'
   }
 
+  protected getBuildJsonsection(platform:string){
+    let json = null;
+    if (this.appType===AppType.Debug){
+      if (this.buildJson[platform] && this.buildJson[platform].debug){
+        json = this.buildJson[platform].debug;
+      }
+    } else if (this.appType===AppType.Release){
+      if (this.buildJson[platform] && this.buildJson[platform].release){
+        json = this.buildJson[platform].release;
+      }
+    }
+    return json;
+  }
+
 }

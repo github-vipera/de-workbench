@@ -68,19 +68,6 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
     ]
   }
 
-  /**
-  public async reload(){
-    // this method must be implemented into the subclass
-    let provFiles = await IOSUtilities.loadProvisioningProfiles();
-    console.log("Obtained Provisioning profiles: ", provFiles)
-  }
-
-  public saveChanges(){
-    // this method must be implemented into the subclass
-    throw 'Not implemented'
-  }
-  **/
-
   public destroy(){
     this.provisioningProfileSelect.destroy();
     this.packageTypeSelect.destroy();
@@ -106,7 +93,7 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
       this.provisioningProfileSelect.setValue(toSelect)
     } else {
       // get saved
-      let json = this.getBuildJsonsection();
+      let json = this.getBuildJsonsection('ios');
       if (json){
         this.provisioningProfileSelect.setValue(json.provisioningProfile)
       }
@@ -123,7 +110,7 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
   }
 
   public updateUI(buildJson:any){
-    let json = this.getBuildJsonsection();
+    let json = this.getBuildJsonsection('ios');
     if (json){
       this.provisioningProfileSelect.setValue(json.provisioningProfile)
       this.codeSignIdentityInput.setValue(json.codeSignIdentity)
@@ -132,22 +119,8 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
     }
   }
 
-  protected getBuildJsonsection(){
-    let json = null;
-    if (this.appType===AppType.Debug){
-      if (this.buildJson.ios && this.buildJson.ios.debug){
-        json = this.buildJson.ios.debug;
-      }
-    } else if (this.appType===AppType.Release){
-      if (this.buildJson.ios && this.buildJson.ios.release){
-        json = this.buildJson.ios.release;
-      }
-    }
-    return json;
-  }
-
   public saveChanges(){
-    let json = this.getBuildJsonsection();
+    let json = this.getBuildJsonsection('ios');
     if (json){
       json.provisioningProfile = this.provisioningProfileSelect.getValue()
       json.codeSignIdentity = this.codeSignIdentityInput.getValue()
