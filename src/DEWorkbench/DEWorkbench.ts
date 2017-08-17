@@ -228,20 +228,22 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
            this.toolbarView.updateStatus({
              prjSelectorEnable:false,
              btnStopEnable:true,
-             btnRunEnable:false,
+             btnRunEnable:true,
              btnReloadEnable:true,
              progressStatus: UIIndicatorStatus.Busy,
+             progressIcon: 'status-success',
              progressMsg : 'Server running'
            })
          }else{
            //Stop server??
            this.toolbarView.updateStatus({
              prjSelectorEnable:false,
-             btnRunEnable:false,
+             btnRunEnable:true,
              btnStopEnable:true,
              btnReloadEnable:false,
+             progressIcon: 'status-error',
              progressStatus: UIIndicatorStatus.Error,
-             progressMsg : `${taskConfiguration.displayName} - ${platform} Fail (but Server running)`
+             progressMsg : `${taskConfiguration.displayName} - ${platform} Fail (Server running)`
            });
          }
        }else{

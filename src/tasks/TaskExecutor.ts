@@ -77,7 +77,11 @@ export class TaskExecutor{
       Logger.getInstance().warn("No platform detected: server not started");
       return Promise.resolve();
     }
-    console.log("startPlatformServer");
+    if(this.isPlatformServerRunning()){
+      Logger.getInstance().warn("Platform server already started");
+      return Promise.resolve();
+    }
+    Logger.getInstance().info(`Platform Server for ${platform} starting`);
     const srvConf:PlatformServerConfig = TaskUtils.createPlatformServerConfig(this.currentTask,project);
     if(!srvConf){
       Logger.getInstance().error("Server configuration build fail");
