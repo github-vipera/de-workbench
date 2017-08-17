@@ -182,6 +182,9 @@ class TaskViewContentPanel extends UIBaseComponent{
   }
 
   contextualize(taskConfig:CordovaTaskConfiguration,projectInfo:CordovaProjectInfo){
+    if(!taskConfig){
+      return;
+    }
     this.taskConfig = taskConfig;
     this.projectInfo = projectInfo;
     if(!this.deviceManager){
