@@ -17,13 +17,13 @@ export class GCMService implements PushSender {
   private projectRoot: string;
   private configuration:any;
   private ready:boolean=false;
-  private options:{};
 
   constructor(){
   }
 
   public initialize(configuration:any){
     this.ready = true;
+    this.configuration = configuration;
   }
 
   public sendPushMessage(message:PushMessage):Promise<any>{
@@ -39,7 +39,7 @@ export class GCMService implements PushSender {
 
         Logger.getInstance().debug("GCM message: " + JSON.stringify(message));
 
-        var sender = new gcm.Sender(this.configuration.gcm.apikey);
+        var sender = new gcm.Sender(this.configuration.apikey);
 
         // Send the message
         // ... trying only once
