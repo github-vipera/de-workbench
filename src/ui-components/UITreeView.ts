@@ -167,6 +167,9 @@ export class UITreeView extends UIBaseComponent {
       className : 'de-woekbench-treeview-treeitem entry ' + listClassName ,
       elements : [ treeItemHeader, treeItemChildren ]
     })
+    if (item.selected){
+        treeItem.classList.add("selected")
+    }
     treeItem.setAttribute("treeitemId", item.id)
     treeItem.setAttribute("id", this.buildItemElementId(item.id))
     return treeItem;
@@ -210,9 +213,12 @@ export class UITreeView extends UIBaseComponent {
   public selectItemById(id:string,select:boolean){
     let el = this.mainElement.querySelector('#de-woekbench-treeview-treeitem-header-' + id)
     if (select){
+
       el.classList.add("selected");
+      el.parentElement.classList.add("selected");
     } else {
       el.classList.remove("selected");
+      el.parentElement.classList.remove("selected");
     }
   }
 
