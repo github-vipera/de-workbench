@@ -71,7 +71,7 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.taskNameEl = new UIInputFormElement().setCaption('Task name').setPlaceholder('Your task name').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       if(this.taskConfig){
         this.taskConfig.name = this.taskNameEl.getValue();
-        this.evtEmitter.emit('didChangeName');
+        this.evtEmitter.emit('didChangeName',this.taskConfig.name);
       }
     });
     insertElement(this.mainElement,this.taskNameEl.element());
@@ -262,6 +262,13 @@ class TaskViewContentPanel extends UIBaseComponent{
       this.setElementVisible(this.taskNameEl.element(),constraints.isCustom);
   }
 
+  public resetContext():void{
+    this.taskNameEl.setValue('');
+    this.platformSelect.setItems([]);
+    this.deviceSelect.setItems([]);
+    this.variantSelect.setItems([]);
+    this.npmScriptsSelect.setItems([]);
+  }
 
 
   private getSelectedPlatform():CordovaPlatform{
@@ -463,6 +470,10 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
     }
   }
 
+  setSelected(itemId:string,value:boolean):void{
+    this.treeView.selectItemById(itemId,value);
+  }
+
   setOnTaskChangeListener(callback: (itemId:string) => void):void{
     this.taskSelectionListener = callback;
   }
@@ -502,6 +513,7 @@ export class TaskViewPanel extends UIBaseComponent{
     this.evtEmitter.addListener('didAddTask',() => {
       console.log("Add task");
     });
+
     this.evtEmitter.addListener('didRemoveTask',() => {
       console.log("Remove task");
       let target= this.lastSelected;
@@ -510,16 +522,18 @@ export class TaskViewPanel extends UIBaseComponent{
       }
       setTimeout(() => {
           this.update();
+          this.taskContentPanel.resetContext();
       });
     });
     let timer=null;
-    this.evtEmitter.addListener('didChangeName',() => {
+    this.evtEmitter.addListener('didChangeName',(nodeId:string) => {
       if(timer){
         clearTimeout(timer);
       }
       timer = setTimeout(() => {
         timer = null;
         this.update();
+        this.threeViewPanel.setSelected(nodeId,true);
       },RELOAD_DELAY);
     })
 
