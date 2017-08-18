@@ -43,14 +43,20 @@ export class GCMService implements PushSender {
 
         // Send the message
         // ... trying only once
-        sender.sendNoRetry(message, { registrationTokens: recipients }, function(err, response) {
-          if (err) {
-            Logger.getInstance().error("Error sending GCM notification: " + err);
-            reject(err);
-          } else {
-            resolve("GCM message sent: " + response);
-          }
-        });
+        try {
+
+          sender.sendNoRetry(message, { registrationTokens: recipients }, function(err, response) {
+            if (err) {
+              Logger.getInstance().error("Error sending GCM notification: " + err);
+              reject(err);
+            } else {
+              resolve("GCM message sent: " + response);
+            }
+          });
+
+        } catch(ex){
+          reject(ex);
+        }
     })
 
   }

@@ -43,13 +43,13 @@ export class PushService {
       this.platforms["gcm"] = gcm;
   }
 
-  public sendPushMessage(message:PushMessage, platform:PushPlatform, options:PushServiceOptions){
+  public async sendPushMessage(message:PushMessage, platform:PushPlatform, options:PushServiceOptions):Promise<any>{
     let pushSender = this.getSenderService(platform);
     let platformConfig = this.getConfigForPlatform(options, platform);
     if (pushSender){
       try{
         pushSender.initialize(platformConfig);
-        pushSender.sendPushMessage(message)
+        await pushSender.sendPushMessage(message)
       } catch(ex){
         throw('Error sending message: '+ ex)
       }

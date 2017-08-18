@@ -17,20 +17,16 @@ import {
  attachEventFromObject,
  createTextEditor
 } from '../../element/index';
+
 import { EventEmitter }  from 'events'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
-import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { Logger } from '../../logger/Logger'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
 import * as _ from 'lodash'
-import { UIButtonMenu } from '../../ui-components/UIButtonMenu'
 import { UINotifications } from '../../ui-components/UINotifications'
-import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UIInputFormElement, UIInputWithButtonFormElement, UIInputBrowseForFolderFormElement, FormType } from '../../ui-components/UIInputFormElement'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
-import { UIButtonGroup, UIButtonConfig, UIButtonGroupMode } from '../../ui-components/UIButtonGroup'
 
 export class PushSettingsView extends UIBaseComponent {
 
@@ -165,6 +161,7 @@ export class PushSettingsView extends UIBaseComponent {
       }
     }
     projectSettings.save('push_tool', pushConfig)
+    UINotifications.showInfo("Push configuration saved successfully.")
   }
 
 

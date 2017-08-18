@@ -19,15 +19,10 @@ import {
  createControlBlock
 } from '../../element/index';
 
-import { EventEmitter }  from 'events'
 import { ProjectManager } from '../../DEWorkbench/ProjectManager'
-import { Cordova, CordovaPlatform, CordovaPlugin } from '../../cordova/Cordova'
 import { Logger } from '../../logger/Logger'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
-import { UIButtonMenu } from '../../ui-components/UIButtonMenu'
 import { UINotifications } from '../../ui-components/UINotifications'
-import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIStackedView } from '../../ui-components/UIStackedView'
 import { UIInputFormElement, FormType } from '../../ui-components/UIInputFormElement'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
@@ -150,25 +145,34 @@ export class SendPushView extends UIBaseComponent {
     }
 
     protected clearData(){
-
+      this.recipentsCrtl.setValue("")
+      this.alertCrtl.setValue("")
+      this.topicCrtl.setValue("")
+      this.titleCrtl.setValue("")
+      this.bodyCrtl.setValue("")
+      this.soundCrtl.setValue("")
+      this.badgeCrtl.setValue("")
+      this.categoryCrtl.setValue("")
+      this.jsonPayloadCrtl.setValue("")
+      this.iconCrtl.setValue("")
     }
 
-    protected sendPush(){
-      ProjectManager.getInstance().getProjectSettings(this.projectRoot).then((projectSettings)=>{
-        let pushConfig = projectSettings.get('push_tool')
-        if (!pushConfig){
-          //TODO!! alert the user
-          return; //invalid configuration
-        }
-        let platform = this.getSelectedPlatform();
-        let pushMessage:PushMessage= this.createPushMessage();
-        try {
-          this.pushService.sendPushMessage(pushMessage, platform, pushConfig)
-        } catch (ex){
-          UINotifications.showError(ex)
-        }
-        this.storeLastMessageSent(pushMessage);
-      });
+    protected async sendPush(){
+      let projectSettings = await ProjectManager.getInstance().getProjectSettings(this.projectRoot);
+      let pushConfig = projectSettings.get('push_tool')
+      if (!pushConfig){
+        UINotifications.showError("Invalid push configuration")
+        return; //invalid configuration
+      }
+      let platform = this.getSelectedPlatform();
+      let pushMessage:PushMessage= this.createPushMessage();
+      try {
+        await this.pushService.sendPushMessage(pushMessage, platform, pushConfig)
+        UINotifications.showInfo("Push notification send successfully")
+      } catch (ex){
+        UINotifications.showError(ex)
+      }
+      this.storeLastMessageSent(pushMessage);
     }
 
     protected createPushMessage():PushMessage {
@@ -204,12 +208,12 @@ export class SendPushView extends UIBaseComponent {
       // Project Type Radio
       this.targetrPlatformSelector = new UIButtonGroup(UIButtonGroupMode.Radio);
 
-        this.targetrPlatformSelector.addButton(new UIButtonConfig().setId('android')
-                                          .setCaption('Android')
+        this.targetrPlatformSelector.addButton(new UIButtonConfig().setId('apn')
+                                          .setCaption('Apple APN')
                                           .setSelected(true));
 
-        this.targetrPlatformSelector.addButton(new UIButtonConfig().setId('ios')
-                                          .setCaption('iOS')
+        this.targetrPlatformSelector.addButton(new UIButtonConfig().setId('gcm')
+                                          .setCaption('Google GCM')
                                           .setSelected(false));
 
         return this.targetrPlatformSelector.element();
