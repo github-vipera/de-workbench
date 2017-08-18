@@ -408,3 +408,20 @@ export class UIInputBrowseForFolderFormElement extends UIInputWithButtonFormElem
   }
 
 }
+
+export class UIInputBrowseForFileFormElement extends UIInputBrowseForFolderFormElement {
+
+  constructor(options?:UIInputFormElementOptions){
+    super(options);
+  }
+
+  protected chooseFolder(){
+    var path = dialog.showOpenDialog({
+      properties: ['openFile']
+    });
+    if (path && path.length>0){
+      this.setValue(path);
+    }
+  }
+
+}

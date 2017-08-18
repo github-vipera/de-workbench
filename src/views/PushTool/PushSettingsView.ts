@@ -25,7 +25,7 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import * as _ from 'lodash'
 import { UINotifications } from '../../ui-components/UINotifications'
 import { UIStackedView } from '../../ui-components/UIStackedView'
-import { UIInputFormElement, UIInputWithButtonFormElement, UIInputBrowseForFolderFormElement, FormType } from '../../ui-components/UIInputFormElement'
+import { UIInputFormElement, UIInputWithButtonFormElement, UIInputBrowseForFileFormElement, FormType } from '../../ui-components/UIInputFormElement'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
 
 export class PushSettingsView extends UIBaseComponent {
@@ -33,8 +33,8 @@ export class PushSettingsView extends UIBaseComponent {
   projectRoot:string;
   private stackedPage: UIStackedView;
 
-  iosPemCertPathCrtl:UIInputBrowseForFolderFormElement;
-  iosPemKeyPathCrtl:UIInputBrowseForFolderFormElement;
+  iosPemCertPathCrtl:UIInputBrowseForFileFormElement;
+  iosPemKeyPathCrtl:UIInputBrowseForFileFormElement;
   iosPassphraseCrtl:UIInputFormElement;
   gcmApiKeyCrtl:UIInputFormElement;
 
@@ -105,8 +105,8 @@ export class PushSettingsView extends UIBaseComponent {
 
   protected createFormElements():Array<HTMLElement>{
     let apnSectionTitle = UICommonsFactory.createFormSectionTitle('Apple APN')
-    this.iosPemCertPathCrtl = new UIInputBrowseForFolderFormElement({ caption: 'PEM Cert. Path', placeholder: 'Enter .pem certificate path here', formType:FormType.FlexForm });
-    this.iosPemKeyPathCrtl = new UIInputBrowseForFolderFormElement({ caption: 'PEM Key. Path', placeholder: 'Enter .pem key path here', formType:FormType.FlexForm });
+    this.iosPemCertPathCrtl = new UIInputBrowseForFileFormElement({ caption: 'PEM Cert. Path', placeholder: 'Enter .pem certificate path here', formType:FormType.FlexForm });
+    this.iosPemKeyPathCrtl = new UIInputBrowseForFileFormElement({ caption: 'PEM Key. Path', placeholder: 'Enter .pem key path here', formType:FormType.FlexForm });
     this.iosPassphraseCrtl = new UIInputFormElement({ caption: 'Passphrase', placeholder: 'Enter passphrase here', password:true, formType:FormType.FlexForm });
     let divider = UICommonsFactory.createFormSeparator();
     let gcmSectionTitle = UICommonsFactory.createFormSectionTitle('Google GCM')

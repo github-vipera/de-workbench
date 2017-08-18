@@ -60,8 +60,9 @@ export class APNService implements PushSender {
           this.apnProvider.send(note, recipients[i]).then( (result) => {
               if (result.failed.length>0){
                 var details = "Error results: " + JSON.stringify(result.failed);
-                Logger.getInstance().error("Error sending push message: "+ result.failed[0].response.reason +" ", details)
-                reject({ message: result.failed[0].response.reason, severity:"error", details: details});
+                Logger.getInstance().error("Error sending push message: "+ result.failed[0].error +" ", details)
+                reject(result.failed[0].error.message)
+                //reject({ message: result.failed[0].error.message, severity:"error", details: result.failed[0].error.stack});
               } else {
                 resolve("APN Message sent.");
               }
