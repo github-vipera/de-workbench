@@ -40,9 +40,11 @@ class TaskViewContentPanel extends UIBaseComponent{
   private deviceLineLoader: UILineLoader;
   private variantsLineLoader: UILineLoader;
   private isReleaseEl:HTMLElement
+  private evtEmitter:EventEmitter
 
-  constructor(){
+  constructor(evtEmitter:EventEmitter){
     super();
+    this.evtEmitter = evtEmitter;
     this.initUI();
   }
 
@@ -66,6 +68,7 @@ class TaskViewContentPanel extends UIBaseComponent{
     this.taskNameEl = new UIInputFormElement().setCaption('Task name').setPlaceholder('Your task name').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       if(this.taskConfig){
         this.taskConfig.name = this.taskNameEl.getValue();
+        this.evtEmitter.emit('didChangeName');
       }
     });
     insertElement(this.mainElement,this.taskNameEl.element());
@@ -486,6 +489,7 @@ export class TaskViewPanel extends UIBaseComponent{
     this.threeViewPanel = this.createTreeViewPanel();
     this.threeViewPanel.setOnTaskChangeListener((itemId:string) => {
       let config= this.getTaskConfigurationByName(itemId);
+      console.log("getTaskConfigurationByName return",config,"For name",itemId);
       if(config){
         this.lastSelected = config;
       }
@@ -505,6 +509,18 @@ export class TaskViewPanel extends UIBaseComponent{
           this.update();
       });
     });
+    let timer=null;
+    this.evtEmitter.addListener('didChangeName',() => {
+      if(timer){
+        clearTimeout(timer);
+      }
+      timer = setTimeout(() => {
+        timer = null;
+        this.update();
+      },500);
+
+    })
+
     this.evtEmitter.addListener('didCloneTask',() => {
       console.log("Duplicate task");
       if(this.lastSelected){
@@ -520,7 +536,7 @@ export class TaskViewPanel extends UIBaseComponent{
   }
 
   private createContentPanel():TaskViewContentPanel{
-    let taskContentPanel = new TaskViewContentPanel();
+    let taskContentPanel = new TaskViewContentPanel(this.evtEmitter);
     return taskContentPanel;
   }
 

@@ -86,6 +86,7 @@ export class UITreeView extends UIBaseComponent {
     } else {
       insertElement(this.mainElement, this.treeElement)
     }
+    this.currentSelection = null;
     this.events.emit("didModelChanged", this)
   }
 
