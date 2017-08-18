@@ -37,6 +37,12 @@ export class PushSettingsView extends UIBaseComponent {
   projectRoot:string;
   private stackedPage: UIStackedView;
 
+  iosPemCertPathCrtl:UIInputBrowseForFolderFormElement;
+  iosPemKeyPathCrtl:UIInputBrowseForFolderFormElement;
+  iosPassphraseCrtl:UIInputFormElement;
+  gcmApiKeyCrtl:UIInputFormElement;
+
+
   constructor(projectRoot:string){
     super();
     this.projectRoot = projectRoot;
@@ -70,11 +76,28 @@ export class PushSettingsView extends UIBaseComponent {
 
   protected createForm(){
 
+    let actionButtonsOpt:FormActionsOptions = {
+      cancel : {
+        caption : 'Revert Changes'
+      },
+      commit : {
+        caption : 'Save Changes'
+      },
+      actionListener: (actionType:number)=>{
+        if (actionType===FormActionType.Cancel){
+          this.revertConfig()
+        } else if (actionType===FormActionType.Commit){
+          this.saveConfig()
+        }
+      }
+    }
+    let actionButtonsContainer = UICommonsFactory.createFormActions(actionButtonsOpt)
     let formElements = this.createFormElements();
     let ulEl = createElement('ul',{
-      elements: [ formElements ],
+      elements: [ formElements,actionButtonsContainer ],
       className: 'flex-outer'
     })
+
 
     let formEl = createElement('form',{
       elements: [ ulEl ]
@@ -85,21 +108,30 @@ export class PushSettingsView extends UIBaseComponent {
 
   protected createFormElements():Array<HTMLElement>{
     let apnSectionTitle = UICommonsFactory.createFormSectionTitle('Apple APN')
-    let iosPemCertPathCrtl = new UIInputBrowseForFolderFormElement({ caption: 'PEM Cert. Path', placeholder: 'Enter .pem certificate path here', formType:FormType.FlexForm });
-    let iosPemKeyPathCrtl = new UIInputBrowseForFolderFormElement({ caption: 'PEM Key. Path', placeholder: 'Enter .pem key path here', formType:FormType.FlexForm });
-    let iosPassphraseCrtl = new UIInputFormElement({ caption: 'Passphrase', placeholder: 'Enter passphrase here', password:true, formType:FormType.FlexForm });
+    this.iosPemCertPathCrtl = new UIInputBrowseForFolderFormElement({ caption: 'PEM Cert. Path', placeholder: 'Enter .pem certificate path here', formType:FormType.FlexForm });
+    this.iosPemKeyPathCrtl = new UIInputBrowseForFolderFormElement({ caption: 'PEM Key. Path', placeholder: 'Enter .pem key path here', formType:FormType.FlexForm });
+    this.iosPassphraseCrtl = new UIInputFormElement({ caption: 'Passphrase', placeholder: 'Enter passphrase here', password:true, formType:FormType.FlexForm });
     let divider = UICommonsFactory.createFormSeparator();
     let gcmSectionTitle = UICommonsFactory.createFormSectionTitle('Google GCM')
-    let gcmApiKeyCrtl = new UIInputFormElement({ caption: 'API Key', placeholder: 'Enter GCM API key here', formType:FormType.FlexForm });
+    this.gcmApiKeyCrtl = new UIInputFormElement({ caption: 'API Key', placeholder: 'Enter GCM API key here', formType:FormType.FlexForm });
 
     return [ apnSectionTitle,
-            iosPemCertPathCrtl.element(),
-            iosPemKeyPathCrtl.element(),
-            iosPassphraseCrtl.element(),
+            this.iosPemCertPathCrtl.element(),
+            this.iosPemKeyPathCrtl.element(),
+            this.iosPassphraseCrtl.element(),
             divider,
             gcmSectionTitle,
-            gcmApiKeyCrtl.element()
+            this.gcmApiKeyCrtl.element()
            ]
+  }
+
+  protected revertConfig(){
+
+  }
+
+  protected saveConfig(){
+    let projectSettings = ProjectManager.getInstance().getProjectSettings(this.projectRoot);
+    //projectSettings.save('push_tool', { "pluto":"è un cane"})
   }
 
 }

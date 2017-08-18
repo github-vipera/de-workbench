@@ -10,6 +10,7 @@ import { EventEmitter }  from 'events'
 import { Cordova } from '../cordova/Cordova'
 import { Logger } from '../logger/Logger'
 import { EventBus } from '../DEWorkbench/EventBus'
+import { ProjectSettings } from './ProjectSettings'
 
 
 export class ProjectManager {
@@ -18,10 +19,12 @@ export class ProjectManager {
     private currentProjectPath: string;
     private events: EventEmitter;
     public cordova: Cordova;
+    private projectSettings:{};
 
     private constructor() {
       Logger.getInstance().debug("ProjectManager initializing...");
       this.events = new EventEmitter();
+      this.projectSettings = {};
 
       // create Cordova utilities
       this.cordova = new Cordova();
@@ -118,8 +121,19 @@ export class ProjectManager {
       EventBus.getInstance().publish(EventBus.EVT_PATH_CHANGED, this.currentProjectPath)
     }
 
-    getCurrentProjectPath(): string {
+    public getCurrentProjectPath(): string {
       return this.currentProjectPath;
     }
+
+    public getProjectSettings(projectPath:string):ProjectSettings {
+      let ret:ProjectSettings = this.projectSettings[projectPath];
+      if (!ret){
+        ret = new ProjectSettings(projectPath)
+        this.projectSettings[projectPath] = ret;
+      }
+      return ret;
+    }
+
+
 
 }
