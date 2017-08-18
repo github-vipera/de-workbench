@@ -438,7 +438,7 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
 
   createCustomTaskNode(cvdCustomTasks:Array<CordovaTaskConfiguration>):UITreeItem{
     let children = map<CordovaTaskConfiguration,UITreeItem>(cvdCustomTasks,(item:CordovaTaskConfiguration) => {
-      return  { id: item.name, name: item.displayName};
+      return  { id: item.name, name: item.name};
     });
     return { id: 'custom', name: 'Custom', icon: null,
       expanded:true,
