@@ -53,7 +53,12 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     }
     this.taskSelectListener = {
       onItemSelected:(selection:string) => {
-
+        if(!selection){
+          this.onCustomTaskSelectClick();
+          setTimeout(() => {
+            this.taskSelectButton.resetSelection();
+          },20);
+        }
       }
     };
     this.initUI();
@@ -161,8 +166,8 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     return options;
   }
 
-  onTaskSelectClick(){
-    console.log("onTaskSelectClick");
+  onCustomTaskSelectClick(){
+    console.log("onCustomTaskSelectClick");
     this.events.emit('didSelectTaskClick');
   }
 
@@ -182,7 +187,6 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   }
 
   private updateTaskText(taskInfo:CordovaTaskConfiguration){
-    //this.taskSelectorText.textContent = taskInfo == null ? '...' : taskInfo.name;
     if(!taskInfo){
       this.taskSelectButton.resetSelection();
     }else{
