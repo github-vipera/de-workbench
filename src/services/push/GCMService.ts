@@ -28,12 +28,12 @@ export class GCMService implements PushSender {
 
   public sendPushMessage(message:PushMessage):Promise<any>{
     return new Promise((resolve,reject)=>{
-      Logger.getInstance().debug("Sending to APN...Data: " + JSON.stringify(message));
+      Logger.getInstance().debug("Sending to GCM...Data: " + JSON.stringify(message));
         if(!this.ready){
-          Logger.getInstance().warn("sendPush fail: apnProvider is undefined");
+          Logger.getInstance().warn("sendPush fail: gcm Provider is undefined");
           return;
         }
-        var note = this.toGCMNotification(message);
+        var gcmMessage = this.toGCMNotification(message);
 
         var recipients = message.recipients;
 
@@ -45,7 +45,7 @@ export class GCMService implements PushSender {
         // ... trying only once
         try {
 
-          sender.sendNoRetry(message, { registrationTokens: recipients }, function(err, response) {
+          sender.sendNoRetry(gcmMessage, { registrationTokens: recipients }, function(err, response) {
             if (err) {
               Logger.getInstance().error("Error sending GCM notification: " + err);
               reject(err);

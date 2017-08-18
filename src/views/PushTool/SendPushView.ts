@@ -145,6 +145,7 @@ export class SendPushView extends UIBaseComponent {
     }
 
     protected clearData(){
+      Logger.getInstance().debug("Cleaning push tool form")
       this.recipentsCrtl.setValue("")
       this.alertCrtl.setValue("")
       this.topicCrtl.setValue("")
@@ -158,6 +159,7 @@ export class SendPushView extends UIBaseComponent {
     }
 
     protected async sendPush(){
+      Logger.getInstance().debug("Sending push notification...")
       let projectSettings = await ProjectManager.getInstance().getProjectSettings(this.projectRoot);
       let pushConfig = projectSettings.get('push_tool')
       if (!pushConfig){
@@ -166,11 +168,14 @@ export class SendPushView extends UIBaseComponent {
       }
       let platform = this.getSelectedPlatform();
       let pushMessage:PushMessage= this.createPushMessage();
+      Logger.getInstance().debug("Sending Push notification to "+ platform +"...", JSON.stringify(pushMessage))
       try {
         await this.pushService.sendPushMessage(pushMessage, platform, pushConfig)
         UINotifications.showInfo("Push notification send successfully")
+        Logger.getInstance().info("Push notification send successfully")
       } catch (ex){
-        UINotifications.showError(ex)
+        Logger.getInstance().error("Unable to send Push notification: ", ex)
+        UINotifications.showError("Unable to send Push notification: " + ex)
       }
       this.storeLastMessageSent(pushMessage);
     }

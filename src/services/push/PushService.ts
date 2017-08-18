@@ -26,6 +26,8 @@ export enum PushPlatform {
 
 export class PushService {
 
+  public static get EVT_PUSH_NOTIFICATION_SENT():string { return "dewb.pushtool.messageSent"; }
+
   private platforms:any;
   private options:PushServiceOptions;
 
@@ -50,6 +52,7 @@ export class PushService {
       try{
         pushSender.initialize(platformConfig);
         await pushSender.sendPushMessage(message)
+        EventBus.getInstance().publish(PushService.EVT_PUSH_NOTIFICATION_SENT, message)
       } catch(ex){
         throw('Error sending message: '+ ex)
       }
