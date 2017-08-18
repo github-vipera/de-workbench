@@ -40,28 +40,35 @@ export class TaskConfigView extends UIModalView {
         .setId('apply')
         .setCaption('Apply')
         .setClickListener(() => {
-          this.apply();
+          this.handleApply();
         }))
       .addButton(new UIButtonConfig()
         .setId('run')
         .setButtonType('success')
         .setCaption('Run')
         .setClickListener(() => {
-          let taskConfig = this.taskPanel.getConfiguration();
-          this.events.emit("didRunTask", taskConfig);
-          this.close();
+          this.handleRun();
         }))
     let modalActionButtons = createModalActionButtons(actionButtons.element());
     insertElement(this.modalContainer, modalActionButtons);
   }
 
+
+  private handleApply(){
+    this.taskPanel.saveAllConfiguration();
+    this.events.emit('didStoreTasks');
+    this.close();
+  }
+
+  private handleRun(){
+    let taskConfig = this.taskPanel.getConfiguration();
+    this.events.emit("didRunTask", taskConfig);
+    this.close();
+  }
+
   close() {
     super.hide();
     this.destroy();
-  }
-
-  apply(){
-    this.close();
   }
 
   addContent(): void {

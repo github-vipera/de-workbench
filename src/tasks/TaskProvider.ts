@@ -1,8 +1,11 @@
 'use babel'
 import {CordovaTaskConfiguration} from '../cordova/CordovaTasks';
+import {cloneDeep,forEach} from 'lodash'
+import {ProjectManager} from '../DEWorkbench/ProjectManager'
+import {ProjectSettings} from '../DEWorkbench/ProjectSettings'
+const CORDOVA_TASK_LIST_KEY:string = 'cdvTaskList';
 
 export class TaskProvider{
-
   private static instance:TaskProvider;
   private defaultTasks:Array<CordovaTaskConfiguration>= null;
   private constructor(){
@@ -62,5 +65,33 @@ export class TaskProvider{
     }
     let tasks:Array<CordovaTaskConfiguration> = [cdvPrepare, cdvBuild, cdvRun, cdvBuildAndRun];
     return tasks;
+  }
+
+  public loadTasksForProject(projectPath:string):Array<CordovaTaskConfiguration>{
+    console.log('loadTasksForProject');
+    let defaultTasks = this.getDefaultTask();
+    if(!projectPath){
+      return defaultTasks;
+    }
+    let setting:ProjectSettings = ProjectManager.getInstance().getProjectSettings(projectPath);
+    if(!setting){
+      return defaultTasks;
+    }
+    let savedTasks = setting.get('cdvTaskList');
+    console.log("savedTasks",savedTasks);
+    if(!savedTasks){
+      return defaultTasks;
+    }
+    let parsedResult:Array<CordovaTaskConfiguration> = [];
+    forEach(savedTasks,(item) => {
+      parsedResult.push(CordovaTaskConfiguration.fromJSON(item));
+    });
+    console.log("parsedResult:",savedTasks);
+    return parsedResult;
+  }
+
+  public storeTasks(cdvTaskList:Array<CordovaTaskConfiguration>,projectPath:string):void{
+    let setting:ProjectSettings = ProjectManager.getInstance().getProjectSettings(projectPath);
+    setting.save(CORDOVA_TASK_LIST_KEY,cdvTaskList);
   }
 }

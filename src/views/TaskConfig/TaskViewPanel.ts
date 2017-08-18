@@ -25,6 +25,8 @@ import { Variant, VariantsModel, VariantsManager } from '../../DEWorkbench/Varia
 import { EventEmitter }  from 'events'
 
 const NONE_PLACEHOLDER:string = '-- None -- ';
+const RELOAD_DELAY:number = 500;
+
 
 class TaskViewContentPanel extends UIBaseComponent{
   taskConfig:CordovaTaskConfiguration
@@ -517,8 +519,7 @@ export class TaskViewPanel extends UIBaseComponent{
       timer = setTimeout(() => {
         timer = null;
         this.update();
-      },500);
-
+      },RELOAD_DELAY);
     })
 
     this.evtEmitter.addListener('didCloneTask',() => {
@@ -552,10 +553,7 @@ export class TaskViewPanel extends UIBaseComponent{
   }
 
   loadTasks(){
-    this.tasks = []
-    forEach(TaskProvider.getInstance().getDefaultTask(),(item) => {
-      this.tasks.push(cloneDeep(item));
-    });
+    this.tasks = TaskProvider.getInstance().loadTasksForProject(this.project.path);
   }
 
   private update(){
@@ -581,7 +579,13 @@ export class TaskViewPanel extends UIBaseComponent{
     });
   }
 
-  getConfiguration():CordovaTaskConfiguration{
+  public getConfiguration():CordovaTaskConfiguration{
     return this.taskContentPanel.getCurrentConfiguration();
+  }
+
+  public saveAllConfiguration(){
+    if(this.project){
+      TaskProvider.getInstance().storeTasks(this.tasks,this.project.path);
+    }
   }
 }
