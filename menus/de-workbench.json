@@ -15,6 +15,9 @@
           "label": "Push Tool",
           "command": "dewb-menu-view-:pushtool-show"
           },{
+            "label": "Servers",
+            "command" : "dewb-menu-view-:servers-show"
+          },{
           "label": "Log Inspector",
           "command": "dewb-menu-view-:loggerview-toggle"
           }

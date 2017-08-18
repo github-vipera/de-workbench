@@ -22,6 +22,7 @@ import { CordovaProjectInfo } from '../cordova/Cordova'
 import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
 import { TaskExecutor} from '../tasks/TaskExecutor'
 import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
+import { ServersView }from '../views/Servers/ServersView'
 
  import {
    createText,
@@ -52,6 +53,8 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
    public selectedProjectForTask: CordovaProjectInfo;
    private taskExecutor:TaskExecutor;
    private taskConfiguration:CordovaTaskConfiguration;
+   public serversView: ServersView
+
    constructor(options:WorkbenchOptions){
      Logger.getInstance().info("Initializing DEWorkbench...");
 
@@ -142,6 +145,15 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
      if (currentprojectPath){
        let projectSettingsView = new ProjectSettingsView(currentprojectPath);
        projectSettingsView.open();
+     }
+   }
+
+   openServersView(){
+     Logger.getInstance().debug("DEWorkbench showPushTool called");
+     let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
+     if (currentprojectPath){
+       let serversView = new ServersView(currentprojectPath);
+       serversView.open();
      }
    }
 

@@ -27,8 +27,6 @@ import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-co
 import { SendPushView } from './SendPushView'
 import { PushSettingsView } from './PushSettingsView'
 
-const crypto = require('crypto');
-
 export class PushToolView extends UIPane {
 
   private tabbedView: UITabbedView;
