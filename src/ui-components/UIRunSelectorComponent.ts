@@ -28,14 +28,21 @@ export interface UITaskInfo {
   name:string;
 }
 
+const OPEN_TASK_CONF:UISelectItem = {
+  name:'Custom...',
+  value:''
+};
+
 export class UIRunSelectorComponent extends UIBaseComponent {
-  projectSelector:UISelect = null;
-  selectButton:UISelectButton;
-  taskSelector:HTMLElement = null;
-  taskSelectorText:Text = null;
-  taskInfo:CordovaTaskConfiguration;
-  events:EventEmitter
-  projectSelectListener:UISelectListener;
+  private projectSelector:UISelect = null;
+  private selectButton:UISelectButton;
+  private taskSelect:UISelect = null;
+  private taskSelectButton:UISelectButton;
+  private taskInfo:CordovaTaskConfiguration;
+  private events:EventEmitter
+  private projectSelectListener:UISelectListener;
+  private taskSelectListener:UISelectListener;
+  private taskHistory:Array<CordovaTaskConfiguration> = [];
   constructor(events:EventEmitter){
     super();
     this.events = events;
@@ -44,6 +51,11 @@ export class UIRunSelectorComponent extends UIBaseComponent {
         this.onSelectProject(selection);
       }
     }
+    this.taskSelectListener = {
+      onItemSelected:(selection:string) => {
+
+      }
+    };
     this.initUI();
     this.subscribeEvents();
   }
@@ -52,17 +64,21 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     this.mainElement = createElement('div',{
       className: "de-workbench-uiruncomponent-container"
     });
+    this.addProjectSelector();
+    //this.addTaskSelectorButton();
+    this.addTaskSelector();
+  }
+
+  addProjectSelector(){
     let projects:Array<string> = this.getAllAvailableProjects();
     this.projectSelector=this.createProjectSelector(projects);
     this.projectSelector.addSelectListener(this.projectSelectListener);
+    this.projectSelector.resetSelection();
     this.selectButton = new UISelectButton(this.projectSelector,"Select Project",{ withArrow: true, rightIcon:'arrow-down'});
     insertElement(this.mainElement,this.selectButton.element());
-    this.addTaskSelectorButton();
-    //this.addStatusIndicator();
-    this.taskSelector.addEventListener('click',this.onTaskSelectClick.bind(this));
   }
 
-  addTaskSelectorButton(){
+  /*addTaskSelectorButton(){
     let tasks:Array<any> = []; //TODO
     this.taskSelectorText = createText("...");
     this.taskSelector = createButton({
@@ -71,11 +87,17 @@ export class UIRunSelectorComponent extends UIBaseComponent {
       this.taskSelectorText
     ]);
     insertElement(this.mainElement,this.taskSelector);
-  }
-  /*addStatusIndicator():void {
-    let statusContainer = new UIStatusIndicatorComponent("No task in progress");
-    insertElement(this.mainElement,statusContainer.element());
+    this.taskSelector.addEventListener('click',this.onTaskSelectClick.bind(this));
   }*/
+
+
+  addTaskSelector(){
+    this.taskSelect = this.createTaskSelect();
+    this.taskSelect.resetSelection();
+    this.taskSelect.addSelectListener(this.taskSelectListener);
+    this.taskSelectButton = new UISelectButton(this.taskSelect,"...",{ withArrow: false, rightIcon:'arrow-down'});
+    insertElement(this.mainElement,this.taskSelectButton.element());
+  }
 
   subscribeEvents(){
     ProjectManager.getInstance().didPathChanged(this.reloadProjectList.bind(this));
@@ -122,6 +144,23 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     return options;
   }
 
+  createTaskSelect(){
+    let options:Array<UISelectItem> = this.createTaskSelectOptions(this.taskHistory);
+    return new UISelect(options);
+  }
+
+  createTaskSelectOptions(tasks:Array<CordovaTaskConfiguration>):Array<UISelectItem>{
+    let options:Array<UISelectItem> = [];
+    _.forEach(tasks,(item) => {
+      options.push({
+        name: item.displayName,
+        value: item.name
+      })
+    })
+    options.push(OPEN_TASK_CONF);
+    return options;
+  }
+
   onTaskSelectClick(){
     console.log("onTaskSelectClick");
     this.events.emit('didSelectTaskClick');
@@ -143,14 +182,32 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   }
 
   private updateTaskText(taskInfo:CordovaTaskConfiguration){
-    this.taskSelectorText.textContent = taskInfo == null ? '...' : taskInfo.name;
+    //this.taskSelectorText.textContent = taskInfo == null ? '...' : taskInfo.name;
+    if(!taskInfo){
+      this.taskSelectButton.resetSelection();
+    }else{
+      this.taskSelectButton.setSelectedItem(taskInfo.name);
+    }
   }
 
   setTaskConfiguration(taskInfo:CordovaTaskConfiguration):void{
     this.taskInfo = taskInfo;
+    this.addTaskToHistory(taskInfo)
     this.updateTaskText(taskInfo);
-
   }
+
+  clearHistory(){
+    this.taskHistory = [];
+  }
+
+  private addTaskToHistory(taskInfo:CordovaTaskConfiguration){
+    if(!taskInfo){
+      return;
+    }
+    this.taskHistory.unshift(taskInfo);
+    this.taskHistory = this.taskHistory.slice(0,5);
+  }
+
   getTaskConfiguration():CordovaTaskConfiguration {
     return this.taskInfo;
   }
@@ -160,7 +217,8 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   }
 
   destroy(){
-    this.taskSelector.removeEventListener('click',this.onTaskSelectClick.bind(this));
+    //this.taskSelector.removeEventListener('click',this.onTaskSelectClick.bind(this));
+    this.taskSelect.removeSelectListener(this.taskSelectListener);
     this.projectSelector.removeSelectListener(this.projectSelectListener);
     this.selectButton.destroy();
     this.element().remove();

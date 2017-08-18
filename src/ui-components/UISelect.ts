@@ -90,6 +90,10 @@ export class UISelect extends UIBaseComponent {
     return this.mainElement['value'];
   }
 
+  resetSelection(){
+    this.mainElement['selectedIndex'] = -1;
+  }
+
   setEnable(value:boolean){
     if(!value){
       this.mainElement.setAttribute('disabled','true');

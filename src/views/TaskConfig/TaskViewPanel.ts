@@ -25,7 +25,7 @@ import { Variant, VariantsModel, VariantsManager } from '../../DEWorkbench/Varia
 import { EventEmitter }  from 'events'
 import {Logger} from  '../../logger/Logger'
 
-const NONE_PLACEHOLDER:string = '-- None -- ';
+const NONE_PLACEHOLDER:string = '-- None --';
 const RELOAD_DELAY:number = 500;
 
 

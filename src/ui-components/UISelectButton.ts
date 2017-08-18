@@ -69,6 +69,11 @@ export class UISelectButton extends UIBaseComponent implements UISelectListener 
     this.select.setSelectedItem(this.selectedItem.value);
   }
 
+  resetSelection(){
+    this.select.resetSelection();
+    this.txtSelected.textContent = this.emptyText;
+  }
+
   onItemSelected(value:string){
     //this.txtSelected.textContent = value;
     this.selectedItem = find(this.select.getItems(),(item:UISelectItem) => {
