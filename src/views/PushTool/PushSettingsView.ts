@@ -126,47 +126,45 @@ export class PushSettingsView extends UIBaseComponent {
            ]
   }
 
-  protected reloadConfig(){
-    ProjectManager.getInstance().getProjectSettings(this.projectRoot).then((projectSettings)=>{
-      console.log("reloadConfig ", projectSettings)
-      let pushConfig = projectSettings.get('push_tool')
-      if (!pushConfig){
-        return;
-      }
-      if (pushConfig.apn && pushConfig.apn.cert){
-        this.iosPemCertPathCrtl.setValue(pushConfig.apn.cert)
-      }
-      if (pushConfig.apn && pushConfig.apn.key){
-        this.iosPemKeyPathCrtl.setValue(pushConfig.apn.key)
-      }
-      if (pushConfig.apn && pushConfig.apn.passphrase){
-          this.iosPassphraseCrtl.setValue(pushConfig.apn.passphrase)
-      }
-      if (pushConfig.gcm && pushConfig.gcm.apikey){
-          this.gcmApiKeyCrtl.setValue(pushConfig.gcm.apikey)
-      }
-    });
+  protected async reloadConfig(){
+    let projectSettings = await ProjectManager.getInstance().getProjectSettings(this.projectRoot);
+    console.log("reloadConfig ", projectSettings)
+    let pushConfig = projectSettings.get('push_tool')
+    if (!pushConfig){
+      return;
+    }
+    if (pushConfig.apn && pushConfig.apn.cert){
+      this.iosPemCertPathCrtl.setValue(pushConfig.apn.cert)
+    }
+    if (pushConfig.apn && pushConfig.apn.key){
+      this.iosPemKeyPathCrtl.setValue(pushConfig.apn.key)
+    }
+    if (pushConfig.apn && pushConfig.apn.passphrase){
+        this.iosPassphraseCrtl.setValue(pushConfig.apn.passphrase)
+    }
+    if (pushConfig.gcm && pushConfig.gcm.apikey){
+        this.gcmApiKeyCrtl.setValue(pushConfig.gcm.apikey)
+    }
   }
 
   protected revertConfig(){
     this.reloadConfig();
   }
 
-  protected saveConfig(){
-    ProjectManager.getInstance().getProjectSettings(this.projectRoot).then((projectSettings)=>{
-      let pushConfig = {
-        'apn': {
-          'cert': this.iosPemCertPathCrtl.getValue(),
-          'key' : this.iosPemKeyPathCrtl.getValue(),
-          'passphrase' : this.iosPassphraseCrtl.getValue(),
-          'production' : false
-        },
-        'gcm': {
-          'apikey' : this.gcmApiKeyCrtl.getValue()
-        }
+  protected async saveConfig(){
+    let projectSettings = await ProjectManager.getInstance().getProjectSettings(this.projectRoot);
+    let pushConfig = {
+      'apn': {
+        'cert': this.iosPemCertPathCrtl.getValue(),
+        'key' : this.iosPemKeyPathCrtl.getValue(),
+        'passphrase' : this.iosPassphraseCrtl.getValue(),
+        'production' : false
+      },
+      'gcm': {
+        'apikey' : this.gcmApiKeyCrtl.getValue()
       }
-      projectSettings.save('push_tool', pushConfig)
-    });
+    }
+    projectSettings.save('push_tool', pushConfig)
   }
 
 

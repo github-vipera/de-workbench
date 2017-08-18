@@ -203,7 +203,6 @@ export class SendPushView extends UIBaseComponent {
     protected createTargetPlatformSelector():HTMLElement{
       // Project Type Radio
       this.targetrPlatformSelector = new UIButtonGroup(UIButtonGroupMode.Radio);
-      //let selectorBlock = createControlBlock('project-type','Target Platform',this.targetrPlatformSelector.element());
 
         this.targetrPlatformSelector.addButton(new UIButtonConfig().setId('android')
                                           .setCaption('Android')
@@ -216,10 +215,9 @@ export class SendPushView extends UIBaseComponent {
         return this.targetrPlatformSelector.element();
     }
 
-    protected storeLastMessageSent(message:PushMessage) {
-      ProjectManager.getInstance().getProjectSettings(this.projectRoot).then((projectSettings)=>{
-        projectSettings.save('push_tool_lastmsg', message)
-      });
+    protected async storeLastMessageSent(message:PushMessage) {
+      let projectSettings = await ProjectManager.getInstance().getProjectSettings(this.projectRoot);
+      projectSettings.save('push_tool_lastmsg', message)
     }
 
     protected async getLastMessageSent():Promise<PushMessage>{
@@ -228,24 +226,26 @@ export class SendPushView extends UIBaseComponent {
       return ret;
     }
 
-    protected loadLastMessageSent(){
-      this.getLastMessageSent().then((message)=>{
-        if (!message){
-          return;
-        }
-        this.recipentsCrtl.setValue(_.join(message.recipients, ','))
-        this.alertCrtl.setValue(message.alert)
-        this.topicCrtl.setValue(message.topic)
-        this.titleCrtl.setValue(message.title)
-        this.bodyCrtl.setValue(message.body)
-        this.soundCrtl.setValue(message.sound)
-        this.badgeCrtl.setValue(message.badge)
-        this.categoryCrtl.setValue(message.category)
-        this.jsonPayloadCrtl.setValue(message.payload)
-        this.iconCrtl.setValue(message.icon)
-      })
+    protected async loadLastMessageSent():Promise<any>{
+      let message = await this.getLastMessageSent();
+      if (!message){
+        return null;
+      } else {
+        this.updateUI(message);
+      }
     }
 
-
+    protected updateUI(message:PushMessage){
+      this.recipentsCrtl.setValue(_.join(message.recipients, ','))
+      this.alertCrtl.setValue(message.alert)
+      this.topicCrtl.setValue(message.topic)
+      this.titleCrtl.setValue(message.title)
+      this.bodyCrtl.setValue(message.body)
+      this.soundCrtl.setValue(message.sound)
+      this.badgeCrtl.setValue(message.badge)
+      this.categoryCrtl.setValue(message.category)
+      this.jsonPayloadCrtl.setValue(message.payload)
+      this.iconCrtl.setValue(message.icon)
+    }
 
 }
