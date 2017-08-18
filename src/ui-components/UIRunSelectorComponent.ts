@@ -43,6 +43,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   private projectSelectListener:UISelectListener;
   private taskSelectListener:UISelectListener;
   private taskHistory:Array<CordovaTaskConfiguration> = [];
+
   constructor(events:EventEmitter){
     super();
     this.events = events;
@@ -58,6 +59,12 @@ export class UIRunSelectorComponent extends UIBaseComponent {
           setTimeout(() => {
             this.taskSelectButton.resetSelection();
           },20);
+        }else{
+          let task:CordovaTaskConfiguration = _.find(this.taskHistory,(item) => {
+            return item.name == selection;
+          });
+          console.log('emit event for',task);
+          this.events.emit("didRunTask", task);
         }
       }
     };
@@ -70,7 +77,6 @@ export class UIRunSelectorComponent extends UIBaseComponent {
       className: "de-workbench-uiruncomponent-container"
     });
     this.addProjectSelector();
-    //this.addTaskSelectorButton();
     this.addTaskSelector();
   }
 
@@ -82,19 +88,6 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     this.selectButton = new UISelectButton(this.projectSelector,"Select Project",{ withArrow: true, rightIcon:'arrow-down'});
     insertElement(this.mainElement,this.selectButton.element());
   }
-
-  /*addTaskSelectorButton(){
-    let tasks:Array<any> = []; //TODO
-    this.taskSelectorText = createText("...");
-    this.taskSelector = createButton({
-      className:"task-btn"
-    },[
-      this.taskSelectorText
-    ]);
-    insertElement(this.mainElement,this.taskSelector);
-    this.taskSelector.addEventListener('click',this.onTaskSelectClick.bind(this));
-  }*/
-
 
   addTaskSelector(){
     this.taskSelect = this.createTaskSelect();
@@ -162,7 +155,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     let options:Array<UISelectItem> = [];
     _.forEach(tasks,(item) => {
       options.push({
-        name: item.displayName,
+        name: item.constraints.isCustom ? item.name : item.displayName,
         value: item.name
       })
     })
@@ -213,6 +206,12 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     if(!taskInfo){
       return;
     }
+    let index:number = _.findIndex(this.taskHistory,(item) => {
+      return item === taskInfo // check instance, not name
+    });
+    if(index >= 0){
+      return;
+    }
     this.taskHistory.unshift(taskInfo);
     this.taskHistory = this.taskHistory.slice(0,5);
   }
@@ -226,7 +225,6 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   }
 
   destroy(){
-    //this.taskSelector.removeEventListener('click',this.onTaskSelectClick.bind(this));
     this.taskSelect.removeSelectListener(this.taskSelectListener);
     this.projectSelector.removeSelectListener(this.projectSelectListener);
     this.selectButton.destroy();
