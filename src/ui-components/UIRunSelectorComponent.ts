@@ -154,6 +154,10 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     return new UISelect(options);
   }
 
+  reloadTaskList(){
+    this.taskSelect.setItems(this.createTaskSelectOptions(this.taskHistory))
+  }
+
   createTaskSelectOptions(tasks:Array<CordovaTaskConfiguration>):Array<UISelectItem>{
     let options:Array<UISelectItem> = [];
     _.forEach(tasks,(item) => {
@@ -197,6 +201,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   setTaskConfiguration(taskInfo:CordovaTaskConfiguration):void{
     this.taskInfo = taskInfo;
     this.addTaskToHistory(taskInfo)
+    this.reloadTaskList();
     this.updateTaskText(taskInfo);
   }
 
