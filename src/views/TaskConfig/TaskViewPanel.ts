@@ -17,7 +17,7 @@ import { CordovaTaskConfiguration, CordovaTask, TaskConstraints } from '../../co
 import { TaskProvider } from '../../tasks/TaskProvider'
 import { TaskUtils } from '../../tasks/TaskUtils'
 import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
-import { find, forEach, map, cloneDeep, filter, reject} from 'lodash'
+import { find, forEach, map, cloneDeep, filter, reject, remove} from 'lodash'
 import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
@@ -384,14 +384,14 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
   }
 
   private createButtonToolbar(){
-    let addTaskButton = createElement('button',{
+    /*let addTaskButton = createElement('button',{
       //elements : [ createText("New...")],
       className: 'btn btn-xs icon icon-gist-new'
     })
     atom["tooltips"].add(addTaskButton, {title:'Add task'})
     addTaskButton.addEventListener('click', (evt)=>{
       this.evtEmitter.emit('didAddTask');
-    })
+    })*/
     let removeTaskButton = createElement('button',{
       //elements : [ createText("Delete")],
       className: 'btn btn-xs icon icon-dash'
@@ -410,7 +410,7 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
     let toolbar = createElement('div',{
       elements: [
         createElement('div', {
-          elements: [addTaskButton, removeTaskButton, cloneTaskButton],
+          elements: [removeTaskButton, cloneTaskButton],
           className: 'btn-group'
         })
       ], className: 'btn-toolbar'
@@ -497,6 +497,10 @@ export class TaskViewPanel extends UIBaseComponent{
     });
     this.evtEmitter.addListener('didRemoveTask',() => {
       console.log("Remove task");
+      let target= this.lastSelected;
+      if(target.constraints.isCustom){
+        this.removeTask(target);
+      }
     });
     this.evtEmitter.addListener('didCloneTask',() => {
       console.log("Duplicate task");
@@ -548,6 +552,12 @@ export class TaskViewPanel extends UIBaseComponent{
     newTask.name = TaskUtils.createUniqueTaskName(this.tasks,lastSelected.name);
     newTask.constraints.isCustom = true;
     this.tasks.push(newTask);
+  }
+
+  private removeTask(task:CordovaTaskConfiguration){
+    remove(this.tasks,(item:CordovaTaskConfiguration) => {
+      return item.name == task.name;
+    });
   }
 
   getConfiguration():CordovaTaskConfiguration{
