@@ -5,6 +5,7 @@ import {PlatformServerConfig} from '../services/remote/PlatformServer'
 import {CordovaTaskConfiguration} from '../cordova/CordovaTasks';
 import {CordovaUtils} from '../cordova/CordovaUtils';
 import {Logger} from '../logger/Logger';
+import {findIndex} from 'lodash'
 
 export class TaskUtils {
   private constructor(){}
@@ -29,6 +30,7 @@ export class TaskUtils {
   }
 
   public static getPlatformServerPort(platform:string):number{
+      //TODO read from config
       if(platform === 'android'){
         return 3000;
       }
@@ -36,8 +38,24 @@ export class TaskUtils {
         return 3001;
       }
       else if(platform === 'browser'){
-        return 3000;
+        return 3002;
       }
   }
+
+  public static createUniqueTaskName(tasks:Array<CordovaTaskConfiguration>,baseName?:string):string {
+    let prefix:string = baseName ? baseName + "_Clone":"Clone";
+    let cname:string;
+    let suffix:number = 0;
+    do{
+      suffix++;
+      cname = `${prefix}_${suffix}`;
+    }while(findIndex(tasks,(item) => {
+          return item.name == cname;
+        }) > 0);
+
+    return cname;
+  }
+
+
 
 }

@@ -15,12 +15,14 @@ import { UISelect, UISelectItem, UISelectListener } from '../../ui-components/UI
 import { CordovaPlatform, CordovaProjectInfo } from '../../cordova/Cordova'
 import { CordovaTaskConfiguration, CordovaTask, TaskConstraints } from '../../cordova/CordovaTasks'
 import { TaskProvider } from '../../tasks/TaskProvider'
+import { TaskUtils } from '../../tasks/TaskUtils'
 import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
-import { find, forEach, map, clone} from 'lodash'
+import { find, forEach, map, cloneDeep, filter, reject} from 'lodash'
 import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
 import { Variant, VariantsModel, VariantsManager } from '../../DEWorkbench/VariantsManager'
+import { EventEmitter }  from 'events'
 
 const NONE_PLACEHOLDER:string = '-- None -- ';
 
@@ -341,15 +343,21 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
   private treeModel:UITreeViewModel;
   private treeView:UITreeView;
   private taskSelectionListener:(itemId:string) => void
-  
-  constructor(){
+  private cdvTasks:Array<CordovaTaskConfiguration>
+  private evtEmitter:EventEmitter;
+  constructor(evtEmitter:EventEmitter){
     super();
+    this.evtEmitter=evtEmitter;
     this.initUI();
   }
 
-  buildTreeModel(cvdTask:Array<CordovaTaskConfiguration>):void{
-    let customTaskNode = this.createCustomTaskNode();
-    let cvdTaskNode = this.createCdvTaskNode(cvdTask);
+  buildTreeModel(cvdTasks:Array<CordovaTaskConfiguration>):void{
+    let customTaskNode = this.createCustomTaskNode(filter(cvdTasks,(item) => {
+      return item.constraints.isCustom;
+    }));
+    let cvdTaskNode = this.createCdvTaskNode(reject(cvdTasks,(item) => {
+      return item.constraints.isCustom;
+    }));
     let root:UITreeItem = {
       id : 'root',
       name: 'task',
@@ -382,7 +390,7 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
     })
     atom["tooltips"].add(addTaskButton, {title:'Add task'})
     addTaskButton.addEventListener('click', (evt)=>{
-      console.log("Add task");
+      this.evtEmitter.emit('didAddTask');
     })
     let removeTaskButton = createElement('button',{
       //elements : [ createText("Delete")],
@@ -390,14 +398,14 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
     })
     atom["tooltips"].add(removeTaskButton, {title:'Remove selected task'})
     removeTaskButton.addEventListener('click',()=>{
-      console.log("remove task");
+      this.evtEmitter.emit('didRemoveTask');
     })
     let cloneTaskButton = createElement('button',{
       className: 'btn btn-xs icon icon-clippy'
     })
     atom["tooltips"].add(cloneTaskButton, {title:'Clone selected Variant'})
     cloneTaskButton.addEventListener('click',()=>{
-
+      this.evtEmitter.emit('didCloneTask');
     })
     let toolbar = createElement('div',{
       elements: [
@@ -410,16 +418,26 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
     insertElement(this.mainElement,toolbar);
   }
 
-  buildAndAddTreeView(cvdTask:Array<CordovaTaskConfiguration>){
-    this.buildTreeModel(cvdTask);
-    this.treeView = new UITreeView(this.treeModel);
-    this.treeView.addEventListener('didItemSelected', (itemId,item)=> { this.onItemSelected(itemId, item) });
-    insertElement(this.mainElement,this.treeView.element());
+  buildAndAddTreeView(cdvTasks:Array<CordovaTaskConfiguration>){
+    this.cdvTasks=cdvTasks;
+    this.buildTreeModel(cdvTasks);
+    if(!this.treeView){
+      this.treeView = new UITreeView(this.treeModel);
+      this.treeView.addEventListener('didItemSelected', this.onItemSelected.bind(this));
+      insertElement(this.mainElement,this.treeView.element());
+    }else{
+      this.treeView.setModel(this.treeModel);
+    }
   }
 
-  createCustomTaskNode():UITreeItem{
-    //TODO load from project file
-    return { id: 'custom', name: 'Custom', icon: 'test-ts-icon'};
+  createCustomTaskNode(cvdCustomTasks:Array<CordovaTaskConfiguration>):UITreeItem{
+    let children = map<CordovaTaskConfiguration,UITreeItem>(cvdCustomTasks,(item:CordovaTaskConfiguration) => {
+      return  { id: item.name, name: item.displayName};
+    });
+    return { id: 'custom', name: 'Custom', icon: null,
+      expanded:false,
+      children:children
+    };
   }
 
   createCdvTaskNode(cvdTask:Array<CordovaTaskConfiguration>):UITreeItem{
@@ -453,8 +471,12 @@ export class TaskViewPanel extends UIBaseComponent{
   private threeViewPanel: TaskViewSelectorPanel;
   private taskContentPanel : TaskViewContentPanel;
   private project:CordovaProjectInfo;
+  private evtEmitter:EventEmitter;
+  private lastSelected:CordovaTaskConfiguration;
+  private tasks:Array<CordovaTaskConfiguration> = [];
   constructor(){
     super();
+    this.evtEmitter = new EventEmitter();
     this.initUI();
   }
   initUI():void{
@@ -464,7 +486,26 @@ export class TaskViewPanel extends UIBaseComponent{
     this.threeViewPanel = this.createTreeViewPanel();
     this.threeViewPanel.setOnTaskChangeListener((itemId:string) => {
       let config= this.getTaskConfigurationByName(itemId);
+      if(config){
+        this.lastSelected = config;
+      }
       this.taskContentPanel.contextualize(config,this.project);
+    });
+
+    this.evtEmitter.addListener('didAddTask',() => {
+      console.log("Add task");
+    });
+    this.evtEmitter.addListener('didRemoveTask',() => {
+      console.log("Remove task");
+    });
+    this.evtEmitter.addListener('didCloneTask',() => {
+      console.log("Duplicate task");
+      if(this.lastSelected){
+        this.cloneAndAddNewTasks(this.lastSelected);
+        setTimeout(() => {
+            this.update();
+        });
+      }
     });
     this.taskContentPanel = this.createContentPanel();
     insertElement(this.mainElement,this.threeViewPanel.element());
@@ -477,17 +518,22 @@ export class TaskViewPanel extends UIBaseComponent{
   }
 
   private createTreeViewPanel():TaskViewSelectorPanel{
-    let taskThreeViewContainer = new TaskViewSelectorPanel();
+    let taskThreeViewContainer = new TaskViewSelectorPanel(this.evtEmitter);
     return taskThreeViewContainer;
   }
 
   setProject(project:CordovaProjectInfo):void{
     this.project= project;
+    this.loadTasks();
     this.update();
   }
 
+  loadTasks(){
+    this.tasks = TaskProvider.getInstance().getDefaultTask();
+  }
+
   private update(){
-    this.threeViewPanel.buildAndAddTreeView(TaskProvider.getInstance().getDefaultTask());
+    this.threeViewPanel.buildAndAddTreeView(this.tasks);
   }
 
   private getTaskConfigurationByName(name:string):CordovaTaskConfiguration{
@@ -497,6 +543,12 @@ export class TaskViewPanel extends UIBaseComponent{
     });
   }
 
+  private cloneAndAddNewTasks(lastSelected:CordovaTaskConfiguration){
+    let newTask = cloneDeep(lastSelected);
+    newTask.name = TaskUtils.createUniqueTaskName(this.tasks,lastSelected.name);
+    newTask.constraints.isCustom = true;
+    this.tasks.push(newTask);
+  }
 
   getConfiguration():CordovaTaskConfiguration{
     return this.taskContentPanel.getCurrentConfiguration();
