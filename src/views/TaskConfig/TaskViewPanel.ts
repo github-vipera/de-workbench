@@ -17,7 +17,7 @@ import { CordovaTaskConfiguration, CordovaTask, TaskConstraints } from '../../co
 import { TaskProvider } from '../../tasks/TaskProvider'
 import { TaskUtils } from '../../tasks/TaskUtils'
 import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
-import { find, forEach, map, cloneDeep, filter, reject, remove} from 'lodash'
+import { find, forEach, map,clone, cloneDeep, filter, reject, remove} from 'lodash'
 import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
@@ -435,7 +435,7 @@ class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectL
       return  { id: item.name, name: item.displayName};
     });
     return { id: 'custom', name: 'Custom', icon: null,
-      expanded:false,
+      expanded:true,
       children:children
     };
   }
@@ -501,6 +501,9 @@ export class TaskViewPanel extends UIBaseComponent{
       if(target.constraints.isCustom){
         this.removeTask(target);
       }
+      setTimeout(() => {
+          this.update();
+      });
     });
     this.evtEmitter.addListener('didCloneTask',() => {
       console.log("Duplicate task");
@@ -533,7 +536,10 @@ export class TaskViewPanel extends UIBaseComponent{
   }
 
   loadTasks(){
-    this.tasks = TaskProvider.getInstance().getDefaultTask();
+    this.tasks = []
+    forEach(TaskProvider.getInstance().getDefaultTask(),(item) => {
+      this.tasks.push(cloneDeep(item));
+    });
   }
 
   private update(){
@@ -541,8 +547,7 @@ export class TaskViewPanel extends UIBaseComponent{
   }
 
   private getTaskConfigurationByName(name:string):CordovaTaskConfiguration{
-    let tasks = TaskProvider.getInstance().getDefaultTask();
-    return find(tasks,(single:CordovaTaskConfiguration) => {
+    return find(this.tasks,(single:CordovaTaskConfiguration) => {
       return single.name == name;
     });
   }
