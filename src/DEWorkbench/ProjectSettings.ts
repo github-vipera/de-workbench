@@ -29,8 +29,12 @@ export class ProjectSettings  {
       return path.join(projectPath,'.deworkbench')
   }
 
-  public load(){
-    return this.db.reload();
+  public load():Promise<ProjectSettings>{
+    return new Promise((resolve,reject)=>{
+      this.db.reload().then(()=>{
+        resolve(this);
+      });
+    })
   }
 
   public get(key:string){

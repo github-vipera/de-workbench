@@ -26,15 +26,15 @@ export class APNService implements PushSender {
   public initialize(configuration:any){
     this.configuration = configuration;
 
-    if(!this.configuration.certPath || this.configuration.keyPath || this.configuration.passphrase){
+    if(!this.configuration.cert || !this.configuration.key || !this.configuration.passphrase){
       this.configuration=undefined;
       Logger.getInstance().warn("Invalid apn configuration.");
       return;
     }
 
     this.options = {
-        cert: this.configuration.certPath,
-        key: this.configuration.keyPath,
+        cert: this.configuration.cert,
+        key: this.configuration.key,
         passphrase: this.configuration.passphrase,
         production: this.configuration.production
     };

@@ -168,7 +168,11 @@ export class UIInputFormElement extends UIBaseComponent {
   }
 
   public setValue(value:string):UIInputFormElement{
-    this.inputEditor["value"] = value;
+    if (!value){
+      this.inputEditor["value"] = "";
+    } else {
+      this.inputEditor["value"] = value;
+    }
     return this;
   }
 

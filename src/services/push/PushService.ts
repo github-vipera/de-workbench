@@ -15,48 +15,58 @@ const {
 const express = allowUnsafeEval(() => require('express'));
 
 export interface PushServiceOptions {
-  projectRoot: string;
-  apnConfig:any;
-  gcmConfig:any;
+  apn:any;
+  gcm:any;
 }
 
-export enum PushPlatorm {
+export enum PushPlatform {
   APN = 'apn',
   GCM = 'gcm'
 }
 
 export class PushService {
 
-  private projectRoot: string;
-  private platforms:{}
+  private platforms:any;
   private options:PushServiceOptions;
 
-  constructor(options:PushServiceOptions){
-    this.options = options;
-    this.projectRoot = options.projectRoot;
+  constructor(){
     this.initPlatformServices();
   }
 
   protected initPlatformServices(){
+    this.platforms = {};
+
       let apn = new APNService();
-      apn.initialize(this.options.apnConfig)
       this.platforms["apn"] = apn;
 
       let gcm = new GCMService();
-      gcm.initialize(this.options.gcmConfig)
       this.platforms["gcm"] = gcm;
   }
 
-  public async sendPushMessage(message:PushMessage, platform:PushPlatorm):Promise<any>{
+  public sendPushMessage(message:PushMessage, platform:PushPlatform, options:PushServiceOptions){
     let pushSender = this.getSenderService(platform);
+    let platformConfig = this.getConfigForPlatform(options, platform);
     if (pushSender){
-      pushSender.sendPushMessage(message)
+      try{
+        pushSender.initialize(platformConfig);
+        pushSender.sendPushMessage(message)
+      } catch(ex){
+        throw('Error sending message: '+ ex)
+      }
     } else {
       throw('No sender found for '+ platform +'')
     }
   }
 
-  protected getSenderService(platform:PushPlatorm):PushSender {
+  protected getConfigForPlatform(options:PushServiceOptions, platform:PushPlatform){
+    if (platform===PushPlatform.APN){
+      return options.apn;
+    } else if (platform===PushPlatform.GCM){
+      return options.gcm;
+    }
+  }
+
+  protected getSenderService(platform:PushPlatform):PushSender {
       return this.platforms[platform.toString()]
   }
 

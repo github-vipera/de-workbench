@@ -125,13 +125,20 @@ export class ProjectManager {
       return this.currentProjectPath;
     }
 
-    public getProjectSettings(projectPath:string):ProjectSettings {
-      let ret:ProjectSettings = this.projectSettings[projectPath];
-      if (!ret){
-        ret = new ProjectSettings(projectPath)
-        this.projectSettings[projectPath] = ret;
-      }
-      return ret;
+    public getProjectSettings(projectPath:string):Promise<ProjectSettings> {
+      return new Promise((resolve,reject)=>{
+        let ret:ProjectSettings = this.projectSettings[projectPath];
+        if (!ret){
+          ret = new ProjectSettings(projectPath)
+          ret.load().then((settings)=>{
+            console.log("getProjectSettings load done!")
+            this.projectSettings[projectPath] = ret;
+            resolve(settings);
+          });
+        } else {
+          resolve(ret);
+        }
+      });
     }
 
 
