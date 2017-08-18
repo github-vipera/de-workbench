@@ -67,13 +67,13 @@ export class TaskProvider{
     return tasks;
   }
 
-  public loadTasksForProject(projectPath:string):Array<CordovaTaskConfiguration>{
+  public async loadTasksForProject(projectPath:string):Promise<Array<CordovaTaskConfiguration>>{
     console.log('loadTasksForProject');
     let defaultTasks = this.getDefaultTask();
     if(!projectPath){
       return defaultTasks;
     }
-    let setting:ProjectSettings = ProjectManager.getInstance().getProjectSettings(projectPath);
+    let setting:ProjectSettings = await ProjectManager.getInstance().getProjectSettings(projectPath);
     if(!setting){
       return defaultTasks;
     }
@@ -90,8 +90,8 @@ export class TaskProvider{
     return parsedResult;
   }
 
-  public storeTasks(cdvTaskList:Array<CordovaTaskConfiguration>,projectPath:string):void{
-    let setting:ProjectSettings = ProjectManager.getInstance().getProjectSettings(projectPath);
+  public async storeTasks(cdvTaskList:Array<CordovaTaskConfiguration>,projectPath:string){
+    let setting:ProjectSettings = await ProjectManager.getInstance().getProjectSettings(projectPath);
     setting.save(CORDOVA_TASK_LIST_KEY,cdvTaskList);
   }
 }

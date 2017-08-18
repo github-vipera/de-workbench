@@ -23,6 +23,7 @@ import { UILineLoader } from '../../ui-components/UILineLoader'
 import { UIInputFormElement } from '../../ui-components/UIInputFormElement'
 import { Variant, VariantsModel, VariantsManager } from '../../DEWorkbench/VariantsManager'
 import { EventEmitter }  from 'events'
+import {Logger} from  '../../logger/Logger'
 
 const NONE_PLACEHOLDER:string = '-- None -- ';
 const RELOAD_DELAY:number = 500;
@@ -549,11 +550,16 @@ export class TaskViewPanel extends UIBaseComponent{
   setProject(project:CordovaProjectInfo):void{
     this.project= project;
     this.loadTasks();
-    this.update();
   }
 
   loadTasks(){
-    this.tasks = TaskProvider.getInstance().loadTasksForProject(this.project.path);
+    TaskProvider.getInstance().loadTasksForProject(this.project.path).then((tasks) => {
+      Logger.getInstance().debug("Task loading done");
+      this.tasks = tasks;
+      this.update();
+    },(err) => {
+      Logger.getInstance().error(err)
+    });
   }
 
   private update(){
