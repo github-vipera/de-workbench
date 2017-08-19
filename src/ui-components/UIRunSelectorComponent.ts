@@ -58,6 +58,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
           this.onCustomTaskSelectClick();
           setTimeout(() => {
             this.taskSelectButton.resetSelection();
+            this.events.emit("didTaskSelected", null);
           },20);
         }else{
           let task:CordovaTaskConfiguration = _.find(this.taskHistory,(item) => {
