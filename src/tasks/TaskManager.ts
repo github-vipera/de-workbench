@@ -2,7 +2,7 @@
 import { ProjectManager } from '../DEWorkbench/ProjectManager';
 import { Cordova , CordovaProjectInfo} from '../cordova/Cordova';
 import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
-import { PlatformServer, PlatformServerImpl, PlatformServerConfig } from '../services/remote/PlatformServer'
+import { PlatformServer, PlatformServerImpl, PlatformServerConfig, LiveActions} from '../services/remote/PlatformServer'
 import { TaskUtils } from './TaskUtils'
 import { Logger }  from '../logger/Logger'
 import { ScriptExecutor } from './ScriptExecutor'
@@ -112,6 +112,18 @@ export class TaskManager{
 
   isPlatformServerRunning():boolean{
     return this.platformServer && this.platformServer.isRunning();
+  }
+
+  /**
+   * Async action execution
+   * @param  {LiveActions} action runtime action to execute
+   */
+  public async sendAction(action:LiveActions) {
+    if(this.isPlatformServerRunning()){
+      await this.platformServer.executeAction(action);
+      return Promise.resolve();
+    }
+    return Promise.resolve();
   }
 
 
