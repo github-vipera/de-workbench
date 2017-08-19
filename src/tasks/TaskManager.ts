@@ -1,11 +1,12 @@
 'use babel'
 import { ProjectManager } from '../DEWorkbench/ProjectManager';
 import { Cordova , CordovaProjectInfo} from '../cordova/Cordova';
-import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
+import { CordovaTaskConfiguration} from '../cordova/CordovaTasks'
 import { PlatformServer, PlatformServerImpl, PlatformServerConfig, LiveActions} from '../services/remote/PlatformServer'
 import { TaskUtils } from './TaskUtils'
 import { Logger }  from '../logger/Logger'
 import { ScriptExecutor } from './ScriptExecutor'
+import { CordovaDevice } from '../cordova/CordovaDeviceManager'
 
 export class TaskManager{
   private currentTask:CordovaTaskConfiguration;
@@ -63,7 +64,8 @@ export class TaskManager{
   async executeRun(project:CordovaProjectInfo){
     this.startPlatformServer(project);
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
-    return this.cordova.runProject(project.path, platform ,null,{});
+    let target:string =  this.currentTask.device ? this.currentTask.device.targetId : null;
+    return this.cordova.runProject(project.path, platform ,target,{});
   }
 
   async executePrepare(project:CordovaProjectInfo){
