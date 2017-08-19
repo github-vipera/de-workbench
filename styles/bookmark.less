@@ -6,14 +6,13 @@
 
 @import "variables";
 
-/**
 .bugs-break-line {
   background-color: fadeOut(@background-color-info, 75%)!important;
   box-shadow: 0 .05rem 0 0 fadeOut(@background-color-info, 30%) inset,
               0 .05rem 0 0 fadeOut(@background-color-info, 30%);
 }
 
-.bugs-breakpoint-edit {
+.bugs-bookmark-edit {
   padding: 2px;
   width: auto;
   min-width: 340px;
@@ -40,7 +39,7 @@
       width: 8px;
     }
   }
-  bugs-breakpoint-edit-arrow {
+  bugs-bookmark-edit-arrow {
     position: absolute;
     left: -10px;
     top: 50%;
@@ -65,18 +64,18 @@
 }
 
 // Breakpoint
-.bugs-breakpoint {
+.dewb-bookmark {
   z-index: 1;
   &.cursor-line {
-    color: lighten(@background-color-info, 25%)!important;
+    color: lighten(@background-color-warning, 25%)!important;
   }
   &:after {
     content: '';
-    background-color: @background-color-info;
+    background-color: @background-color-warning;
     background-repeat: no-repeat;
     background-position: center left;
     background-size: 100% auto;
-    -webkit-mask-image: url(atom://de-workbench/icons/breakpoint.svg);
+    -webkit-mask-image: url(atom://de-workbench/icons/bookmark.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: top right;
     -webkit-mask-size: cover;
@@ -88,4 +87,3 @@
     z-index: -1;
   }
 }
-**/

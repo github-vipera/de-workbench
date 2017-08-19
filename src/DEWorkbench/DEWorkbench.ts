@@ -23,6 +23,8 @@ import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
 import { TaskManager} from '../tasks/TaskManager'
 import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
 import { ServersView }from '../views/Servers/ServersView'
+import { BookmarkManager } from './BookmarkManager'
+import { BookmarksView } from '../views/Bookmarks/BookmarksView'
 
  import {
    createText,
@@ -56,12 +58,15 @@ import { ServersView }from '../views/Servers/ServersView'
    public serversView: ServersView
    private updateToolbarTimeout:any;
 
+
    constructor(options:WorkbenchOptions){
      Logger.getInstance().info("Initializing DEWorkbench...");
 
      //let cu = new CordovaUtils();
 
      this.projectManager = ProjectManager.getInstance();
+
+     BookmarkManager.getInstance();
 
      this.events = new EventEmitter();
 
@@ -107,6 +112,20 @@ import { ServersView }from '../views/Servers/ServersView'
       }
      });
 
+     /**
+     atom.workspace['observeActivePaneItem']((editor) => {
+      if (editor) {
+        let range = [[1, 0], [1, 0]]
+        let marker = editor.markBufferRange(range)
+        let decorator = editor.decorateMarker(marker, {
+          type: 'line-number',
+          class: 'bugs-breakpoint'
+        })
+        //this.editorManager.addFeatures(editor)
+      }
+    })
+    **/
+
      // Create the Logger inspector
      //this.loggerView = new LoggerView();
 
@@ -136,6 +155,15 @@ import { ServersView }from '../views/Servers/ServersView'
    openProjectInspector(){
    }
 
+   openBookmarksView(){
+     Logger.getInstance().debug("DEWorkbench openBookmarksView called");
+     let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
+     if (currentprojectPath){
+       let bookmarksView = new BookmarksView(currentprojectPath);
+       bookmarksView.open();
+     }
+   }
+
    openDebugArea(){
      if (!this.debugAreaView){
        this.debugAreaView = new DebugAreaView();
@@ -160,7 +188,7 @@ import { ServersView }from '../views/Servers/ServersView'
    }
 
    openServersView(){
-     Logger.getInstance().debug("DEWorkbench showPushTool called");
+     Logger.getInstance().debug("DEWorkbench openServersView called");
      let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
      if (currentprojectPath){
        let serversView = new ServersView(currentprojectPath);

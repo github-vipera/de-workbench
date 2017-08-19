@@ -18,6 +18,7 @@
  } from '../element/index';
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
+const { CompositeDisposable } = require('atom');
 
 export interface UIListViewModel {
     hasHeader():boolean;
@@ -31,15 +32,18 @@ export interface UIListViewModel {
     addEventListener(event:string, listener);
     removeEventListener(event:string, listener);
     destroy();
+    getTitleAt?(row:number, col:number):any;
 }
 
 export class UIListView extends UIBaseComponent {
 
   protected model: UIListViewModel;
   protected tableElement: HTMLElement;
+  protected subscriptions: any;
 
   constructor(model:UIListViewModel){
     super();
+    this.subscriptions = new CompositeDisposable();
     if (model){
       this.setModel(model);
     }
@@ -114,6 +118,15 @@ export class UIListView extends UIBaseComponent {
         });
         tbCol.setAttribute('row',r)
         tbCol.setAttribute('col',c)
+        if (this.model.getTitleAt){
+          let title = this.model.getTitleAt(r,c);
+          if (title && title.length>0){
+            this.subscriptions.add(atom["tooltips"].add(
+              tbCol, {
+              title:  title
+            }));
+          }
+        }
         insertElement(tbRow, tbCol);
       }
       tbRow.setAttribute('trow', r)
@@ -133,6 +146,7 @@ export class UIListView extends UIBaseComponent {
   public destroy(){
     this.model.destroy()
     this.tableElement.remove();
+    this.subscriptions.dispose();
     super.destroy()
   }
 

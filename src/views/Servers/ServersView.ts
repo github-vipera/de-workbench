@@ -35,18 +35,18 @@ export class ServersView extends UIPane {
       location : 'right'
     })
 
-    Logger.getInstance().debug("PushToolView creating for ",this.projectRoot, this.projectId);
+    Logger.getInstance().debug("ServersView creating for ",this.projectRoot, this.projectId);
 
   }
 
   protected createUI():HTMLElement {
-
     let el = createElement('div', {
         elements: [
           createText("Servers View")
         ],
         className: 'de-workbench-servers-view'
     });
+
     return el;
   }
 

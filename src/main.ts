@@ -58,6 +58,7 @@ export default {
         'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector(),
         'dewb-menu-view-:pushtool-show': () => this.showPushTool(),
         'dewb-menu-view-:servers-show':()=>this.showServers(),
+        'dewb-menu-view-:bookmarks-toggle':()=>this.toggleBookmarks(),
         'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger()
       });
     this.subscriptions = new CompositeDisposable();
@@ -78,6 +79,10 @@ export default {
 
   showServers(){
     this.deWorkbench.openServersView();
+  },
+
+  toggleBookmarks(){
+    this.deWorkbench.openBookmarksView();
   },
 
   toggleProjectInspector(){

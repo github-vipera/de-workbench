@@ -18,6 +18,9 @@
             "label": "Servers",
             "command" : "dewb-menu-view-:servers-show"
           },{
+            "label": "Bookmarks",
+            "command" : "dewb-menu-view-:bookmarks-toggle"
+          },{
           "label": "Log Inspector",
           "command": "dewb-menu-view-:loggerview-toggle"
           }
