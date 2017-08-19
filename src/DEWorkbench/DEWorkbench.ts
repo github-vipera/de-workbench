@@ -54,6 +54,7 @@ import { ServersView }from '../views/Servers/ServersView'
    private taskManager:TaskManager;
    private taskConfiguration:CordovaTaskConfiguration;
    public serversView: ServersView
+   private updateToolbarTimeout:any;
 
    constructor(options:WorkbenchOptions){
      Logger.getInstance().info("Initializing DEWorkbench...");
@@ -234,25 +235,35 @@ import { ServersView }from '../views/Servers/ServersView'
      let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
      this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
      this.getTaskManager().executeTask(taskConfiguration,project).then(() => {
-       //this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
+       this.cancelUpdateTimer();
        Logger.getInstance().info(`${taskConfiguration.displayName} Done`);
        this.updateToolbarStatus(taskConfiguration,true);
      },(reason) => {
-        //this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
+        this.cancelUpdateTimer();
         Logger.getInstance().error(reason);
         this.updateToolbarStatus(taskConfiguration,false);
      }).catch((err:Error) => {
-       //this.toolbarView.setErrorStatus(`${taskConfiguration.displayName} - ${platform} Fail`);
+       this.cancelUpdateTimer();
        Logger.getInstance().error(err.message, err.stack);
        this.updateToolbarStatus(taskConfiguration,false);
      });
      // schedule update for task start
-     setTimeout(() => {
+     this.setUpdateTimer(taskConfiguration);
+   }
+
+   private setUpdateTimer(taskConfiguration:CordovaTaskConfiguration){
+     this.updateToolbarTimeout=setTimeout(() => {
        console.warn("updateToolbarStatus");
        this.updateToolbarStatus(taskConfiguration,false);
+       this.updateToolbarTimeout = null;
      },4000);
-
    }
+
+   private cancelUpdateTimer(){
+     clearTimeout(this.updateToolbarTimeout);
+     this.updateToolbarTimeout = null;
+   }
+
 
    onStopTask(){
      console.log("onStopTask");

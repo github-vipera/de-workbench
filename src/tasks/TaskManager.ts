@@ -27,20 +27,19 @@ export class TaskManager{
     try{
       switch(this.currentTask.taskType){
         case "prepare":
-            await this.executePrepare(project);
+            await this.executePrepare(project,cliOptions);
             this.currentTask = null;
         break;
         case "build":
-            await this.executeBuild(project);
+            await this.executeBuild(project,cliOptions);
             this.currentTask = null
         break;
         case "run":
-            await this.executeRun(project);
+            await this.executeRun(project,cliOptions);
             this.currentTask = null
         case "buildRun":
-            await this.executeBuild(project);
-            // TODO publish progress
-            await this.executeRun(project)
+            await this.executeBuild(project,cliOptions);
+            await this.executeRun(project,cliOptions)
             this.currentTask = null
         break;
       }
@@ -57,19 +56,19 @@ export class TaskManager{
   isBusy():boolean{
     return this.currentTask != null;
   }
-  async executeBuild(project:CordovaProjectInfo){
+  async executeBuild(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
     let platform= this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
     return this.cordova.buildProject(project.path, platform ,{});
   }
 
-  async executeRun(project:CordovaProjectInfo){
+  async executeRun(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
     this.startPlatformServer(project);
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
     let target:string =  this.currentTask.device ? this.currentTask.device.targetId : null;
     return this.cordova.runProject(project.path, platform ,target,{});
   }
 
-  async executePrepare(project:CordovaProjectInfo){
+  async executePrepare(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
     return this.cordova.prepareProject(project.path,platform);
   }

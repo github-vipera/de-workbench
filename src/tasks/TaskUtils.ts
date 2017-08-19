@@ -5,7 +5,7 @@ import {PlatformServerConfig} from '../services/remote/PlatformServer'
 import {CordovaTaskConfiguration, CordovaCliOptions} from '../cordova/CordovaTasks';
 import {CordovaUtils} from '../cordova/CordovaUtils';
 import {Logger} from '../logger/Logger';
-import {findIndex} from 'lodash'
+import {findIndex, forEach} from 'lodash'
 
 export class TaskUtils {
   private constructor(){}
@@ -57,7 +57,22 @@ export class TaskUtils {
   }
 
   public static createCliOptions(taskConfig:CordovaTaskConfiguration):CordovaCliOptions{
-    return null;
+    if(!taskConfig){
+      return null;
+    }
+    let cliParamsList:Array<string> = taskConfig.cliParams || [];
+    let envVariables:Array<{name:string,value:string}> = taskConfig.envVariables || [];
+    let cliOptions:CordovaCliOptions = {
+      flags:[],
+      envVariables:[]
+    }
+    forEach(cliParamsList, (single) => {
+      cliOptions.flags.push(single);
+    });
+    forEach(envVariables,(single:{name:string,value:string}) => {
+      cliOptions.envVariables.push(single);
+    });
+    return cliOptions;
   }
 
 
