@@ -64,7 +64,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
             return item.name == selection;
           });
           console.log('emit event for',task);
-          this.events.emit("didRunTask", task);
+          this.events.emit("didTaskSelected", task);
         }
       }
     };

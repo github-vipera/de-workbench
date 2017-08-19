@@ -35,7 +35,8 @@ export interface ToolbarOptions {
   didToggleDebugArea?: Function
   didSelectProjectForRun?: Function,
   didToggleConsole?: Function,
-  didSelectTaskClick?:Function
+  didSelectTaskClick?:Function,
+  didTaskSelected?:Function,
   /**
   didOpenScheme?: Function,
   didRun?: Function,
@@ -133,6 +134,7 @@ export class ToolbarView {
       'didProjectSettings',
       'didSelectProjectForRun',
       'didSelectTaskClick',
+      'didTaskSelected',
       'didToggleConsole'
     ], options);
 

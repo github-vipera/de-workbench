@@ -89,6 +89,9 @@ import { ServersView }from '../views/Servers/ServersView'
         console.log("didSelectTaskClick");
         this.showCordovaTaskModal();
       },
+      didTaskSelected:(task:CordovaTaskConfiguration) => {
+        this.onTaskSelected(task);
+      },
       didStop:() => {
         this.onStopTask();
       },
@@ -109,6 +112,7 @@ import { ServersView }from '../views/Servers/ServersView'
      ProjectManager.getInstance().didProjectChanged((projectPath)=>this.onProjectChanged(projectPath));
      //this.events.on('didStop',this.onStopTask.bind(this));
      this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
+     this.events.on('didTaskSelected',this.onTaskSelected.bind(this));
      Logger.getInstance().info("DEWorkbench initialized successfully.");
    }
 
@@ -197,6 +201,17 @@ import { ServersView }from '../views/Servers/ServersView'
      this.selectedProjectForTask = await this.projectManager.cordova.getProjectInfo(this.selectedProjectForTask.path,false);
      taskConfigView.setProject(this.selectedProjectForTask);
      taskConfigView.show();
+   }
+
+   onTaskSelected(taskConfiguration:CordovaTaskConfiguration){
+     console.log("onTaskSelected",taskConfiguration);
+     this.taskConfiguration = taskConfiguration;
+     if(!taskConfiguration){
+       Logger.getInstance().warn("Null task selected");
+       this.toolbarView.setTaskConfiguration(null);
+       return;
+     }
+
    }
 
    onTaskRunRequired(taskConfiguration:CordovaTaskConfiguration){
