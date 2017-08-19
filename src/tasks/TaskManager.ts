@@ -7,7 +7,7 @@ import { TaskUtils } from './TaskUtils'
 import { Logger }  from '../logger/Logger'
 import { ScriptExecutor } from './ScriptExecutor'
 
-export class TaskExecutor{
+export class TaskManager{
   private currentTask:CordovaTaskConfiguration;
   private platformServer:PlatformServer = null;
   private scriptExecutor:ScriptExecutor = null;
@@ -17,7 +17,7 @@ export class TaskExecutor{
   }
   public async executeTask(taskConfig:CordovaTaskConfiguration,project:CordovaProjectInfo):Promise<any>{
     if(this.isBusy()){
-      throw new Error("TaskExecutor is busy");
+      throw new Error("TaskManager is busy");
     }
     await this.scheduleNodeScripts(taskConfig,project);
     this.currentTask = taskConfig;

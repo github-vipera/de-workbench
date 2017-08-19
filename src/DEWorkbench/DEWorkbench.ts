@@ -20,7 +20,7 @@ import { LoggerView } from '../views/LoggerView'
 import { TaskConfigView } from '../views/TaskConfig/TastConfigView'
 import { CordovaProjectInfo } from '../cordova/Cordova'
 import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
-import { TaskExecutor} from '../tasks/TaskExecutor'
+import { TaskManager} from '../tasks/TaskManager'
 import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
 import { ServersView }from '../views/Servers/ServersView'
 
@@ -51,7 +51,7 @@ import { ServersView }from '../views/Servers/ServersView'
    private events: EventEmitter;
    public projectManager: ProjectManager;
    public selectedProjectForTask: CordovaProjectInfo;
-   private taskExecutor:TaskExecutor;
+   private TaskManager:TaskManager;
    private taskConfiguration:CordovaTaskConfiguration;
    public serversView: ServersView
 
@@ -227,7 +227,7 @@ import { ServersView }from '../views/Servers/ServersView'
      let project = this.selectedProjectForTask;
      let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
      this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
-     this.getTaskExecutor().executeTask(taskConfiguration,project).then(() => {
+     this.getTaskManager().executeTask(taskConfiguration,project).then(() => {
        //this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
        Logger.getInstance().info(`${taskConfiguration.displayName} Done`);
        this.updateToolbarStatus(taskConfiguration,true);
@@ -244,8 +244,8 @@ import { ServersView }from '../views/Servers/ServersView'
 
    onStopTask(){
      console.log("onStopTask");
-     if(this.taskExecutor){
-       this.taskExecutor.stop();
+     if(this.TaskManager){
+       this.TaskManager.stop();
        this.updateToolbarStatus(this.taskConfiguration,false);
      }
    }
@@ -253,9 +253,9 @@ import { ServersView }from '../views/Servers/ServersView'
    private updateToolbarStatus(taskConfiguration:CordovaTaskConfiguration,taskDone?:boolean){
      let project = this.selectedProjectForTask;
      let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
-     if(this.taskExecutor){
-       let busy = this.taskExecutor.isBusy();
-       let serverRunning = this.taskExecutor.isPlatformServerRunning();
+     if(this.TaskManager){
+       let busy = this.TaskManager.isBusy();
+       let serverRunning = this.TaskManager.isPlatformServerRunning();
        if(busy){
          this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
          return;
@@ -293,11 +293,11 @@ import { ServersView }from '../views/Servers/ServersView'
    }
 
 
-   getTaskExecutor():TaskExecutor{
-     if(!this.taskExecutor){
-       this.taskExecutor = new TaskExecutor();
+   getTaskManager():TaskManager{
+     if(!this.TaskManager){
+       this.TaskManager = new TaskManager();
      }
-     return this.taskExecutor;
+     return this.TaskManager;
    }
 
    destroy () {
