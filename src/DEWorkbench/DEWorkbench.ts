@@ -97,6 +97,12 @@ import { ServersView }from '../views/Servers/ServersView'
       },
       didRun : () => {
         this.onTaskRunRequired(this.taskConfiguration);
+      },
+      didReload : () => {
+        console.log('Reload');
+        this.getTaskManager().sendAction({
+          type: 'doLiveReload'
+        });
       }
      });
 
@@ -240,6 +246,12 @@ import { ServersView }from '../views/Servers/ServersView'
        Logger.getInstance().error(err.message, err.stack);
        this.updateToolbarStatus(taskConfiguration,false);
      });
+     // schedule update for task start
+     setTimeout(() => {
+       console.warn("updateToolbarStatus");
+       this.updateToolbarStatus(taskConfiguration,false);
+     },4000);
+
    }
 
    onStopTask(){
@@ -258,6 +270,11 @@ import { ServersView }from '../views/Servers/ServersView'
        let serverRunning = this.TaskManager.isPlatformServerRunning();
        if(busy){
          this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
+         if(serverRunning){
+           this.toolbarView.updateStatus({
+             btnReloadEnable:true,
+           });
+         }
          return;
        }
        if(serverRunning){

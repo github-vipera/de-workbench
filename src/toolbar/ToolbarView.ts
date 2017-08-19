@@ -30,6 +30,7 @@ export interface ToolbarOptions {
   didRun?: Function,
   didStop?: Function,
   didBuild?: Function,
+  didReload?:Function,
   didProjectSettings?: Function,
   didToggleToolbar?: Function,
   didToggleDebugArea?: Function
@@ -127,6 +128,7 @@ export class ToolbarView {
     attachEventFromObject(this.events, [
       'didRun',
       'didStop',
+      'didReload',
       'didNewProject',
       'didBuild',
       'didToggleToolbar',
