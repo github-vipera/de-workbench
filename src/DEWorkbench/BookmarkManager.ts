@@ -115,7 +115,7 @@ export class BookmarkManager {
     let marker = editor.markBufferRange(range)
     let decorator = editor.decorateMarker(marker, {
       type: 'line-number',
-      class: 'bookmarked' // dewb-bookmark'
+      class: 'bookmarked dewb-bookmark' // dewb-bookmark'
     })
     return marker
   }
