@@ -2,7 +2,7 @@
 import {ProjectManager} from '../DEWorkbench/ProjectManager'
 import {Cordova, CordovaPlatform, CordovaProjectInfo} from '../cordova/Cordova'
 import {PlatformServerConfig} from '../services/remote/PlatformServer'
-import {CordovaTaskConfiguration} from '../cordova/CordovaTasks';
+import {CordovaTaskConfiguration, CordovaCliOptions} from '../cordova/CordovaTasks';
 import {CordovaUtils} from '../cordova/CordovaUtils';
 import {Logger} from '../logger/Logger';
 import {findIndex} from 'lodash'
@@ -54,6 +54,10 @@ export class TaskUtils {
         }) > 0);
 
     return cname;
+  }
+
+  public static createCliOptions(taskConfig:CordovaTaskConfiguration):CordovaCliOptions{
+    return null;
   }
 
 

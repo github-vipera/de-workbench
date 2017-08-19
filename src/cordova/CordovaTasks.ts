@@ -2,20 +2,19 @@
 import {Cordova, CordovaPlatform} from './Cordova'
 import { CordovaDevice } from './CordovaDeviceManager'
 
-export interface MockConfiguration {
-  mockFilePath:string
-  jsLibraryLoaderPath?:string
-}
-
 export type CordovaTaskType = "prepare" | "compile" | "build" | "run" | "buildRun";
 export interface TaskConstraints {
   isDeviceEnabled:boolean,
   isMockConfigEnabled:boolean,
-  mockConfig?:MockConfiguration
   isNodeTaskEnabled:boolean
   isVariantEnabled:boolean
   isEnvVarEnabled:boolean
   isCustom?:boolean
+}
+
+export interface CordovaCliOptions {
+  flags:Array<string>
+  envVariables:Array<{name:string, value:string}>
 }
 
 
@@ -29,6 +28,7 @@ export class CordovaTaskConfiguration {
   private _nodeTasks:Array<string>
   private _device:CordovaDevice
   private _envVariables: Array<{name:string, value:string}>
+  private _cliParams: Array<string>
   private _constraints: TaskConstraints
 
   constructor(name?:string,taskType?:CordovaTaskType){
@@ -116,6 +116,14 @@ export class CordovaTaskConfiguration {
     this._envVariables=value;
   }
 
+  get cliParams():Array<string> {
+    return this._cliParams;
+  }
+
+  set cliParams(value:Array<string>) {
+    this._cliParams=value;
+  }
+
   static fromJSON(json:Object):CordovaTaskConfiguration {
     let result=new CordovaTaskConfiguration();
     Object.assign(result,json);
@@ -126,21 +134,6 @@ export class CordovaTaskConfiguration {
     return JSON.stringify(taskConfig);
   }
 
-}
-
-export class CordovaRunConfiguration extends CordovaTaskConfiguration{
-    private _mockConfig:MockConfiguration;
-    constructor(){
-      super();
-    }
-
-    get mockConfig():MockConfiguration{
-      return this._mockConfig
-    }
-
-    set mockConfig(value:MockConfiguration){
-      this._mockConfig = value;
-    }
 }
 
 export abstract class CordovaTask {

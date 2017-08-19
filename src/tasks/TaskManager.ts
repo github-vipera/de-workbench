@@ -1,7 +1,7 @@
 'use babel'
 import { ProjectManager } from '../DEWorkbench/ProjectManager';
 import { Cordova , CordovaProjectInfo} from '../cordova/Cordova';
-import { CordovaTaskConfiguration} from '../cordova/CordovaTasks'
+import { CordovaTaskConfiguration, CordovaCliOptions} from '../cordova/CordovaTasks'
 import { PlatformServer, PlatformServerImpl, PlatformServerConfig, LiveActions} from '../services/remote/PlatformServer'
 import { TaskUtils } from './TaskUtils'
 import { Logger }  from '../logger/Logger'
@@ -20,6 +20,7 @@ export class TaskManager{
     if(this.isBusy()){
       throw new Error("TaskManager is busy");
     }
+    let cliOptions: CordovaCliOptions = TaskUtils.createCliOptions(taskConfig);
     await this.scheduleNodeScripts(taskConfig,project);
     this.currentTask = taskConfig;
     Logger.getInstance().debug('schedule node tasks');
@@ -140,5 +141,6 @@ export class TaskManager{
     Logger.getInstance().debug('End npm script run');
     return res;
   }
+
 
 }
