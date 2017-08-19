@@ -51,7 +51,7 @@ import { ServersView }from '../views/Servers/ServersView'
    private events: EventEmitter;
    public projectManager: ProjectManager;
    public selectedProjectForTask: CordovaProjectInfo;
-   private TaskManager:TaskManager;
+   private taskManager:TaskManager;
    private taskConfiguration:CordovaTaskConfiguration;
    public serversView: ServersView
 
@@ -256,8 +256,8 @@ import { ServersView }from '../views/Servers/ServersView'
 
    onStopTask(){
      console.log("onStopTask");
-     if(this.TaskManager){
-       this.TaskManager.stop();
+     if(this.taskManager){
+       this.taskManager.stop();
        this.updateToolbarStatus(this.taskConfiguration,false);
      }
    }
@@ -265,9 +265,10 @@ import { ServersView }from '../views/Servers/ServersView'
    private updateToolbarStatus(taskConfiguration:CordovaTaskConfiguration,taskDone?:boolean){
      let project = this.selectedProjectForTask;
      let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
-     if(this.TaskManager){
-       let busy = this.TaskManager.isBusy();
-       let serverRunning = this.TaskManager.isPlatformServerRunning();
+     if(this.taskManager){
+       let busy = this.taskManager.isBusy();
+       let serverRunning = this.taskManager.isPlatformServerRunning();
+       console.log(`updateToolbarStatus busy ${busy} -  serverRunning ${serverRunning}`);
        if(busy){
          this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
          if(serverRunning){
@@ -300,6 +301,9 @@ import { ServersView }from '../views/Servers/ServersView'
            });
          }
        }else{
+         this.toolbarView.updateStatus({
+           btnReloadEnable:false
+         });
          if(taskDone){
             this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);
          }else{
@@ -311,10 +315,10 @@ import { ServersView }from '../views/Servers/ServersView'
 
 
    getTaskManager():TaskManager{
-     if(!this.TaskManager){
-       this.TaskManager = new TaskManager();
+     if(!this.taskManager){
+       this.taskManager = new TaskManager();
      }
-     return this.TaskManager;
+     return this.taskManager;
    }
 
    destroy () {
