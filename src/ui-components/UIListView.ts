@@ -26,7 +26,7 @@ export interface UIListViewModel {
     getColCount():number;
     getElementAt?(row:number, col:number):HTMLElement;
     getValueAt(row:number, col:number):any;
-    getClassNameAt(row:number, col:number):string;
+    getClassNameAt?(row:number, col:number):string;
     getColumnName(col:number):string;
     getClassName():string;
     addEventListener(event:string, listener);
@@ -111,10 +111,18 @@ export class UIListView extends UIBaseComponent {
         } else {
           innerElement = createText(this.model.getValueAt(r,c))
         }
+        let tdClassName = ''
+        if (this.model.getClassNameAt){
+          let v = this.model.getClassNameAt(r,c)
+          if (v){
+            tdClassName = v;
+          }
+        }
         let tbCol = createElement('td', {
           elements: [
             innerElement
-          ]
+          ],
+          className:tdClassName
         });
         tbCol.setAttribute('row',r)
         tbCol.setAttribute('col',c)

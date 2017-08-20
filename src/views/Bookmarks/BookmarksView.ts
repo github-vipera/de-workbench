@@ -87,6 +87,10 @@ export interface Bookmark {
 
 class BookmarksModel implements UIExtendedListViewModel {
 
+  public static get COL_ACTION():number { return 0; }
+  public static get COL_RESOURCE():number { return 1; }
+  public static get COL_LINENO():number { return 2; }
+
   bookmarks:Array<Bookmark>
   events:EventEmitter;
 
@@ -122,7 +126,7 @@ class BookmarksModel implements UIExtendedListViewModel {
   }
 
   getColCount():number {
-    return 2;
+    return 3;
   }
 
   isCellEditable(row:number, col:number):boolean {
@@ -139,7 +143,7 @@ class BookmarksModel implements UIExtendedListViewModel {
 
   getElementAt(row:number, col:number):HTMLElement {
     let bookmark:Bookmark = this.bookmarks[row];
-    if (col===0){
+    if (col===BookmarksModel.COL_RESOURCE){
       let el = createElement('a',{
         elements: [ createText(cliTruncate(bookmark.filePath, 50, {position: 'start'}))]
       })
@@ -149,9 +153,15 @@ class BookmarksModel implements UIExtendedListViewModel {
         this.onBookmarkClicked(evt.target.getAttribute('bookmark_id'));
       })
       return el;
-    } else if (col===1) {
+    } else if (col===BookmarksModel.COL_LINENO) {
       let el = createElement('a',{
         elements: [ createText(""+bookmark.lineNumber) ]
+      })
+      return el;
+    } else if (col===BookmarksModel.COL_ACTION) {
+      let el = createElement('span',{
+        elements: [ ],
+        className: 'icon icon-remove-close'
       })
       return el;
     }
@@ -170,10 +180,12 @@ class BookmarksModel implements UIExtendedListViewModel {
 
   getValueAt(row:number, col:number):any {
     let bookmark:Bookmark = this.bookmarks[row];
-    if (col===0){
+    if (col===BookmarksModel.COL_RESOURCE){
       return cliTruncate(bookmark.filePath, 20, {position: 'start'});
-    } else if (col===1){
+    } else if (col===BookmarksModel.COL_LINENO){
       return bookmark.lineNumber
+    } else if (col===BookmarksModel.COL_ACTION){
+      return "-"
     } else {
       return "Unknown column"
     }
@@ -181,24 +193,34 @@ class BookmarksModel implements UIExtendedListViewModel {
 
   getTitleAt(row:number, col:number):any {
     let bookmark:Bookmark = this.bookmarks[row];
-    if (col===0){
+    if (col===BookmarksModel.COL_RESOURCE){
       return bookmark.filePath;
-    } else if (col===1){
+    } else if (col===BookmarksModel.COL_LINENO){
       return bookmark.lineNumber
+    } else if (col===BookmarksModel.COL_ACTION){
+      return null
     } else {
       return "Unknown column"
     }
   }
 
   getClassNameAt(row:number, col:number):string{
-    return "";
+    if (col===BookmarksModel.COL_LINENO){
+      return "de-workbench-bookmark-list-lineno"
+    }
+    else if (col===BookmarksModel.COL_ACTION){
+      return "de-workbench-bookmark-list-action"
+    }
+    return null;
   }
 
   getColumnName(col:number):string {
-      if (col===0){
+      if (col===BookmarksModel.COL_RESOURCE){
         return "Resource"
-      } else if (col===1){
+      } else if (col===BookmarksModel.COL_LINENO){
         return "Line no."
+      } else if (col===BookmarksModel.COL_ACTION){
+        return ""
       }
   }
 
