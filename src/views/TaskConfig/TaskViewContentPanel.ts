@@ -19,12 +19,13 @@ import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDevice
 import { UISelect, UISelectItem, UISelectListener } from '../../ui-components/UISelect'
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { map } from 'lodash'
+import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 
 const NONE_PLACEHOLDER:string = '-- None --';
 
 export class TaskViewContentPanel extends UIBaseComponent{
-  taskConfig:CordovaTaskConfiguration
-  projectInfo:CordovaProjectInfo
+  private taskConfig:CordovaTaskConfiguration
+  private projectInfo:CordovaProjectInfo
   private taskNameEl:UIInputFormElement;
   private deviceManager:CordovaDeviceManager;
   private variantManager:VariantsManager;
@@ -37,7 +38,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
   private variantsLineLoader: UILineLoader;
   private isReleaseEl:HTMLElement
   private evtEmitter:EventEmitter
-
+  private tabbedView:UITabbedView
   constructor(evtEmitter:EventEmitter){
     super();
     this.evtEmitter = evtEmitter;
@@ -50,31 +51,52 @@ export class TaskViewContentPanel extends UIBaseComponent{
       elements:[
       ]
     });
-    this.mainElement.classList.add('form-container');
-    this.createTaskNameEl();
-    this.createPlatformSelect();
-    this.createDeviceSelect();
-    this.createReleaseCheckbox();
-    this.createVariantSelect();
-    this.createNodeTaskSelect();
+    this.initTabView();
+    this.initGeneralTabUI();
+    this.initEnvironmentTabUI();
   }
 
+  private initTabView(){
+    this.tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
+    insertElement(this.mainElement,this.tabbedView.element());
+  }
 
-  private createTaskNameEl(){
+  private initGeneralTabUI(){
+    let panelContainer:HTMLElement = createElement('div',{
+      className:'de-workbench-taskpanel-content-container',
+      elements:[
+      ]
+    });
+    panelContainer.classList.add('form-container');
+    this.createTaskNameEl(panelContainer);
+    this.createPlatformSelect(panelContainer);
+    this.createDeviceSelect(panelContainer);
+    this.createReleaseCheckbox(panelContainer);
+    this.createVariantSelect(panelContainer);
+    this.createNodeTaskSelect(panelContainer);
+    this.tabbedView.addView(new UITabbedViewItem('GeneralPanel',"General",panelContainer));
+  }
+
+  private initEnvironmentTabUI(){
+    let panelContainer:HTMLElement = createElement('div',{
+      className:'de-workbench-taskpanel-content-container',
+      elements:[
+      ]
+    });
+    this.tabbedView.addView(new UITabbedViewItem('EnvironmentPanel',"Environment",panelContainer));
+  }
+
+  private createTaskNameEl(panelContainer:HTMLElement){
     this.taskNameEl = new UIInputFormElement().setCaption('Task name').setPlaceholder('Your task name').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
       if(this.taskConfig){
         this.taskConfig.name = this.taskNameEl.getValue();
         this.evtEmitter.emit('didChangeName',this.taskConfig.name);
       }
     });
-    insertElement(this.mainElement,this.taskNameEl.element());
+    insertElement(panelContainer,this.taskNameEl.element());
   }
 
-  private updateTaskName(){
-    this.taskNameEl.setValue(this.taskConfig.name);
-  }
-
-  private createPlatformSelect(){
+  private createPlatformSelect(panelContainer:HTMLElement){
     this.platformSelect = new UISelect();
     this.platformSelectListener = {
       onItemSelected:() => {
@@ -83,7 +105,60 @@ export class TaskViewContentPanel extends UIBaseComponent{
     };
     this.platformSelect.addSelectListener(this.platformSelectListener);
     let row=this.createFormRow(createText('Platform'),this.platformSelect.element(),'platforms');
-    insertElement(this.mainElement,row);
+    insertElement(panelContainer,row);
+  }
+
+  private createVariantSelect(panelContainer:HTMLElement){
+    this.variantsLineLoader= new UILineLoader();
+    this.variantSelect = new UISelect();
+    let wrapper=createElement('div',{
+      className:'line-loader-wrapper',
+      elements:[
+        this.variantSelect.element(),
+        this.variantsLineLoader.element()
+      ]
+    });
+    let row=this.createFormRow(createText('Variant'),wrapper,'variants');
+    insertElement(panelContainer,row);
+  }
+
+  private createNodeTaskSelect(panelContainer:HTMLElement){
+    this.npmScriptsSelect = new UISelect();
+    let row=this.createFormRow(createText('Npm scripts (before task)'),this.npmScriptsSelect.element(),'npmScript');
+    insertElement(panelContainer,row);
+  }
+
+  private createDeviceSelect(panelContainer:HTMLElement){
+    this.deviceSelect = new UISelect();
+    this.deviceLineLoader= new UILineLoader();
+    let wrapper=createElement('div',{
+      className:'line-loader-wrapper',
+      elements:[
+        this.deviceSelect.element(),
+        this.deviceLineLoader.element()
+      ]
+    });
+    let row=this.createFormRow(createText('Device / Emulator'),wrapper,'devices');
+    insertElement(panelContainer,row);
+  }
+
+  private createReleaseCheckbox(panelContainer:HTMLElement){
+    this.isReleaseEl = createInput({
+      type:'checkbox'
+    });
+    this.isReleaseEl.classList.remove('form-control');
+    this.isReleaseEl.setAttribute('name','release');
+    let label:HTMLElement= createElement('label',{
+      className:"label-for"
+    });
+    label.innerText = 'Release'
+    label.setAttribute('for','release');
+    let row= this.createFormRow(label,this.isReleaseEl,'isRelease')
+    insertElement(panelContainer,row);
+  }
+
+  private updateTaskName(){
+    this.taskNameEl.setValue(this.taskConfig.name);
   }
 
   private updatePlatforms(){
@@ -95,26 +170,6 @@ export class TaskViewContentPanel extends UIBaseComponent{
       };
     });
     this.platformSelect.setItems(model)
-  }
-
-  private createVariantSelect(){
-    this.variantsLineLoader= new UILineLoader();
-    this.variantSelect = new UISelect();
-    let wrapper=createElement('div',{
-      className:'line-loader-wrapper',
-      elements:[
-        this.variantSelect.element(),
-        this.variantsLineLoader.element()
-      ]
-    });
-    let row=this.createFormRow(createText('Variant'),wrapper,'variants');
-    insertElement(this.mainElement,row);
-  }
-
-  private createNodeTaskSelect(){
-    this.npmScriptsSelect = new UISelect();
-    let row=this.createFormRow(createText('Npm scripts (before task)'),this.npmScriptsSelect.element(),'npmScript');
-    insertElement(this.mainElement,row);
   }
 
   private updateNodeScripts(){
@@ -130,20 +185,6 @@ export class TaskViewContentPanel extends UIBaseComponent{
       value:''
     })
     this.npmScriptsSelect.setItems(model);
-  }
-
-  private createDeviceSelect(){
-    this.deviceSelect = new UISelect();
-    this.deviceLineLoader= new UILineLoader();
-    let wrapper=createElement('div',{
-      className:'line-loader-wrapper',
-      elements:[
-        this.deviceSelect.element(),
-        this.deviceLineLoader.element()
-      ]
-    });
-    let row=this.createFormRow(createText('Device / Emulator'),wrapper,'devices');
-    insertElement(this.mainElement,row);
   }
 
   private async updateDevices(platform:CordovaPlatform){
@@ -291,21 +332,6 @@ export class TaskViewContentPanel extends UIBaseComponent{
   private getSelectedNpmScript():string {
     let value = this.npmScriptsSelect.getSelectedItem();
     return value || null;
-  }
-
-  private createReleaseCheckbox(){
-    this.isReleaseEl = createInput({
-      type:'checkbox'
-    });
-    this.isReleaseEl.classList.remove('form-control');
-    this.isReleaseEl.setAttribute('name','release');
-    let label:HTMLElement= createElement('label',{
-      className:"label-for"
-    });
-    label.innerText = 'Release'
-    label.setAttribute('for','release');
-    let row= this.createFormRow(label,this.isReleaseEl,'isRelease')
-    insertElement(this.mainElement,row);
   }
 
   getCurrentConfiguration():CordovaTaskConfiguration{
