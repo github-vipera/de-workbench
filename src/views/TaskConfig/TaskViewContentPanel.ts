@@ -162,7 +162,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
     this.taskNameEl.setValue(this.taskConfig.name);
   }
 
-  private updatePlatforms(){
+  private updatePlatforms(selected?:CordovaPlatform){
     let platforms:Array<CordovaPlatform> = this.projectInfo? this.projectInfo.platforms: [];
     let model:Array<UISelectItem> = map <CordovaPlatform,UISelectItem> (platforms, (single:CordovaPlatform) => {
       return {
@@ -170,10 +170,13 @@ export class TaskViewContentPanel extends UIBaseComponent{
         name:single.name
       };
     });
-    this.platformSelect.setItems(model)
+    this.platformSelect.setItems(model);
+    if(selected){
+      this.platformSelect.setSelectedItem(selected.name);
+    }
   }
 
-  private updateNodeScripts(){
+  private updateNodeScripts(def?:string){
     let npmScripts:Array<string> = this.projectInfo ? this.projectInfo.npmScripts : [];
     let model:Array<UISelectItem> = map<any,UISelectItem>(npmScripts,(value:string ,key:string) => {
       return {
@@ -186,9 +189,12 @@ export class TaskViewContentPanel extends UIBaseComponent{
       value:''
     })
     this.npmScriptsSelect.setItems(model);
+    if(def){
+      this.npmScriptsSelect.setSelectedItem(def);
+    }
   }
 
-  private async updateDevices(platform:CordovaPlatform){
+  private async updateDevices(platform:CordovaPlatform,def?:CordovaDevice){
     if(!this.deviceManager || !platform){
       return Promise.resolve([]);
     }
@@ -200,11 +206,14 @@ export class TaskViewContentPanel extends UIBaseComponent{
         name:single.name
       }
     });
-    this.deviceSelect.setItems(model)
+    this.deviceSelect.setItems(model);
+    if(def){
+      this.deviceSelect.setSelectedItem(def.targetId);
+    }
     this.deviceLineLoader.setOnLoading(false);
   }
 
-  private async updateVariants(){
+  private async updateVariants(def?:string){
     if(!this.variantManager){
       return Promise.reject('INVALID_VARIANT_MANAGER');
     }
@@ -221,6 +230,9 @@ export class TaskViewContentPanel extends UIBaseComponent{
       name: NONE_PLACEHOLDER
     });
     this.variantSelect.setItems(model);
+    if(def){
+      this.variantSelect.setSelectedItem(def);
+    }
     this.variantsLineLoader.setOnLoading(false);
   }
 
@@ -280,25 +292,28 @@ export class TaskViewContentPanel extends UIBaseComponent{
   }
 
   private contextualizeImpl(){
-    if(!this.getSelectedPlatform()){
+    /*if(!this.getSelectedPlatform()){
       this.updatePlatforms();
-    }
+    }*/
+    this.updatePlatforms(this.taskConfig.selectedPlatform);
+
     this.applyConstraintsToView(this.taskConfig.constraints);
+
   }
 
   private applyConstraintsToView(constraints:TaskConstraints){
       if(constraints.isDeviceEnabled){
-        this.updateDevices(this.getSelectedPlatform());
+        this.updateDevices(this.getSelectedPlatform(),this.taskConfig.device);
       }
       this.setRowVisible(this.createRowId('devices'),constraints.isDeviceEnabled);
 
       if(constraints.isVariantEnabled){
-        this.updateVariants();
+        this.updateVariants(this.taskConfig.variantName);
       }
       this.setRowVisible(this.createRowId('variants'),constraints.isVariantEnabled);
 
       if(constraints.isNodeTaskEnabled){
-        this.updateNodeScripts();
+        this.updateNodeScripts(this.taskConfig.nodeTasks ? this.taskConfig.nodeTasks[0] : null);
       }
       this.setRowVisible(this.createRowId('npmScript'),constraints.isNodeTaskEnabled);
 
