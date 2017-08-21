@@ -12,6 +12,7 @@ declare function require(moduleName: string): any;
 import { Logger } from './logger/Logger'
 import { InkProvider } from './DEWorkbench/DEWBExternalServiceProvider'
 import { CordovaPluginsProvidersManager } from './DEWorkbench/services/CordovaPluginsProvidersManager'
+import { ServerManager } from '././DEWorkbench/services/ServerManager'
 import { ProjectManager } from './DEWorkbench/ProjectManager'
 import { EventBus } from './DEWorkbench/EventBus'
 import { ConsumedServices } from './DEWorkbench/ConsumedServices'
@@ -156,6 +157,12 @@ export default {
   provideEventBus() {
     console.log("provideEventBus called")
     return EventBus.getInstance();
+  },
+
+  provideServerManager(){
+    console.log("provideServerManager called")
+    return ServerManager.getInstance();
+
   }
 
 }

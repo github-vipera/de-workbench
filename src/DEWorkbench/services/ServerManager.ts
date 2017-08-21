@@ -8,6 +8,8 @@
 
 import { Logger } from '../../logger/Logger'
 import { CordovaPlugin } from '../../cordova/Cordova'
+import { EventBus } from '../EventBus'
+
 const GUID = require('guid');
 
 
@@ -29,10 +31,17 @@ export interface ServerInstance {
 
 export interface ServerProvider {
   createInstance(configuration:any):ServerInstance;
+  destroyInstance(instance:ServerInstance);
   getProviderName():string;
 }
 
 export class ServerManager {
+
+  public static get EVT_PROVIDER_REGISTERED():string { return "dewb.serverManager.provider.registered"; }
+  public static get EVT_SERVER_INSTANCE_CREATED():string { return "dewb.serverManager.serverInstance.created"; }
+  public static get EVT_SERVER_INSTANCE_REMOVED():string { return "dewb.serverManager.serverInstance.removed"; }
+  public static get EVT_SERVER_INSTANCE_STARTED():string { return "dewb.serverManager.serverInstance.started"; }
+  public static get EVT_SERVER_INSTANCE_STOPPED():string { return "dewb.serverManager.serverInstance.stopped"; }
 
   private static instance:ServerManager;
   private providers:Array<ServerProvider>
@@ -56,6 +65,7 @@ export class ServerManager {
       Logger.getInstance().debug("Registering Server Provider: ",provider)
       console.log("Registering Server Provider: ", provider)
       this.providers.push(provider)
+      EventBus.getInstance().publish(ServerManager.EVT_PROVIDER_REGISTERED, provider);
     } catch (ex){
       Logger.getInstance().error("Error registering Server Provider: ", ex)
       console.error("Error registering Server Provider: ", ex)
@@ -79,7 +89,9 @@ export class ServerManager {
     let serverProvider:ServerProvider = this.getProviderByName(providerName);
     if (serverProvider){
       let instance = serverProvider.createInstance(configuration);
-      return this.registerInstance(instance)
+      let wrapper =  this.registerInstance(instance)
+      EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_CREATED, wrapper);
+      return wrapper;
     } else {
       throw ("Server Provider not found for '"+ providerName +"'.")
     }
@@ -92,7 +104,8 @@ export class ServerManager {
   }
 
   private unregisterInstance(instanceWrapped:ServerInstanceWrapper){
-      instanceWrapped.destroy();
+    EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_REMOVED, instanceWrapped);
+    instanceWrapped.destroy();
   }
 
   public getInstances():Array<ServerInstanceWrapper>{
@@ -102,7 +115,7 @@ export class ServerManager {
 }
 
 
-export class ServerInstanceWrapper {
+export class ServerInstanceWrapper implements ServerInstance {
 
   _serverInstance: ServerInstance;
   _instanceId: string;
@@ -128,5 +141,30 @@ export class ServerInstanceWrapper {
   public destroy(){
     this._serverInstance.removeEventListener('onDidStatusChange', this.onDidStatusChange)
   }
+
+  public start(){
+    this._serverInstance.start();
+  }
+
+  public stop(){
+    this._serverInstance.stop();
+  }
+
+  public configure(){
+    this._serverInstance.configure();
+  }
+
+  addEventListener(event:string, listener) {
+    this._serverInstance.addEventListener(event, listener);
+  }
+
+  removeEventListener(event:string, listener){
+    this._serverInstance.removeEventListener(event, listener);
+  }
+
+  public get status():ServerStatus{
+      return this._serverInstance.status;
+  }
+
 
 }
