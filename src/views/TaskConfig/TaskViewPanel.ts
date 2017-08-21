@@ -58,6 +58,7 @@ export class TaskViewPanel extends UIBaseComponent{
       let target= this.lastSelected;
       if(target.constraints.isCustom){
         this.removeTask(target);
+        this.lastSelected = null;
       }
       setTimeout(() => {
           this.update();
@@ -149,6 +150,9 @@ export class TaskViewPanel extends UIBaseComponent{
   }
 
   public saveAllConfiguration(){
+    if(this.lastSelected){
+      this.applyConfigToModel(this.lastSelected);
+    }
     if(this.project){
       TaskProvider.getInstance().storeTasks(this.tasks,this.project.path);
     }

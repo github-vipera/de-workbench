@@ -208,6 +208,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
     });
     this.deviceSelect.setItems(model);
     if(def){
+      this.deviceSelect.resetSelection();
       this.deviceSelect.setSelectedItem(def.targetId);
     }
     this.deviceLineLoader.setOnLoading(false);
