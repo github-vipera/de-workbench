@@ -56,7 +56,7 @@ export class TaskConfigView extends UIModalView {
 
   private handleApply(){
     this.taskPanel.saveAllConfiguration();
-    this.events.emit('didStoreTasks');
+    this.events.emit('didStoreTasks',this.taskPanel.getConfiguration());
     this.close();
   }
 

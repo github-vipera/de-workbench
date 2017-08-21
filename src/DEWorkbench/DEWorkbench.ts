@@ -139,6 +139,7 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
      //this.events.on('didStop',this.onStopTask.bind(this));
      this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
      this.events.on('didTaskSelected',this.onTaskSelected.bind(this));
+     this.events.on('didStoreTasks',this.onStoreTasks.bind(this));
      Logger.getInstance().info("DEWorkbench initialized successfully.");
    }
 
@@ -238,7 +239,13 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
      taskConfigView.show();
    }
 
-   onTaskSelected(taskConfiguration:CordovaTaskConfiguration){
+   onStoreTasks(taskConfiguration:CordovaTaskConfiguration){
+     if(taskConfiguration){
+       this.onTaskSelected(taskConfiguration,true);
+     }
+   }
+
+   onTaskSelected(taskConfiguration:CordovaTaskConfiguration,forceUpdate?:boolean){
      console.log("onTaskSelected",taskConfiguration);
      this.taskConfiguration = taskConfiguration;
      if(!taskConfiguration){
@@ -246,7 +253,9 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
        this.toolbarView.setTaskConfiguration(null);
        return;
      }
-
+     if(forceUpdate){
+       this.toolbarView.setTaskConfiguration(taskConfiguration);
+     }
    }
 
    onTaskRunRequired(taskConfiguration:CordovaTaskConfiguration){
