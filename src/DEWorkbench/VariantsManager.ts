@@ -250,7 +250,7 @@ export class Variant {
     this.platforms = [];
     // clone preferences
     for (var i=0;i<variantToClone.preferences.length;i++){
-      this.addPreference(variantToClone.preferences[i].name, variantToClone.preferences[i].name)
+      this.addPreference(variantToClone.preferences[i].name, variantToClone.preferences[i].value)
     }
     // clone platforms
     for (var i=0;i<variantToClone.platforms.length;i++){
@@ -258,7 +258,7 @@ export class Variant {
       let variantPlatform = this.addPlatform(variantPlatformToClone.name);
       // clone preferences
       for (var k=0;k<variantPlatformToClone.preferences.length;k++){
-        variantPlatform.addPreference(variantPlatformToClone.preferences[k].name, variantPlatformToClone.preferences[k].name)
+        variantPlatform.addPreference(variantPlatformToClone.preferences[k].name, variantPlatformToClone.preferences[k].value)
       }
     }
   }
