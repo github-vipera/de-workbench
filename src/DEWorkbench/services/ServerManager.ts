@@ -121,6 +121,10 @@ export class ServerInstanceWrapper {
     return this._serverInstance
   }
 
+  public get instanceId():string{
+    return this._instanceId;
+  }
+
   public destroy(){
     this._serverInstance.removeEventListener('onDidStatusChange', this.onDidStatusChange)
   }
