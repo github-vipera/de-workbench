@@ -50,7 +50,7 @@ export class ProjectSettings  {
   }
 
   private getCompleteIntarnalPath(){
-    return path.resolve(this.getProjectInfoFilePath(this.projectRoot),'project_settings');
+    return path.join(this.getProjectInfoFilePath(this.projectRoot),'project_settings.json');
   }
 
 }
