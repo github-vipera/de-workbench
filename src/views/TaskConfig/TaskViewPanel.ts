@@ -15,7 +15,7 @@ import { CordovaProjectInfo } from '../../cordova/Cordova'
 import { CordovaTaskConfiguration, CordovaTask } from '../../cordova/CordovaTasks'
 import { TaskProvider } from '../../tasks/TaskProvider'
 import { TaskUtils } from '../../tasks/TaskUtils'
-import { find, clone, cloneDeep, remove } from 'lodash'
+import { find, clone, cloneDeep, remove, findIndex } from 'lodash'
 import { EventEmitter }  from 'events'
 import { Logger } from  '../../logger/Logger'
 import { TaskViewContentPanel } from './TaskViewContentPanel'
@@ -40,6 +40,7 @@ export class TaskViewPanel extends UIBaseComponent{
     });
     this.threeViewPanel = this.createTreeViewPanel();
     this.threeViewPanel.setOnTaskChangeListener((itemId:string) => {
+      this.applyConfigToModel(this.lastSelected);
       let config= this.getTaskConfigurationByName(itemId);
       console.log("getTaskConfigurationByName return",config,"For name",itemId);
       if(config){
@@ -141,6 +142,10 @@ export class TaskViewPanel extends UIBaseComponent{
 
   public getConfiguration():CordovaTaskConfiguration{
     return this.taskContentPanel.getCurrentConfiguration();
+  }
+
+  private applyConfigToModel(config:CordovaTaskConfiguration){
+    this.taskContentPanel.getCurrentConfiguration();
   }
 
   public saveAllConfiguration(){

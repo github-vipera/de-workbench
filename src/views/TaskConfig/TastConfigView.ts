@@ -68,6 +68,9 @@ export class TaskConfigView extends UIModalView {
 
   close() {
     super.hide();
+    this.events.removeAllListeners('didAddTask');
+    this.events.removeAllListeners('didRemoveTask');
+    this.events.removeAllListeners('didChangeName');
     this.destroy();
   }
 

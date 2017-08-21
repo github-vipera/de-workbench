@@ -31,6 +31,10 @@ export class ProjectSettings  {
 
   public load():Promise<ProjectSettings>{
     return new Promise((resolve,reject)=>{
+      if(!fs.existsSync(this.getCompleteIntarnalPath())){
+        resolve(this);
+        return;
+      }
       this.db.reload().then(()=>{
         resolve(this);
       },reject);
@@ -43,6 +47,10 @@ export class ProjectSettings  {
 
   public save(key:string, value:any){
     return this.db.save(key, value);
+  }
+
+  private getCompleteIntarnalPath(){
+    return path.resolve(this.getProjectInfoFilePath(this.projectRoot),'project_settings');
   }
 
 }
