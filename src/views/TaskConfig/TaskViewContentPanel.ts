@@ -18,7 +18,7 @@ import { EventEmitter }  from 'events'
 import { CordovaDeviceManager, CordovaDevice } from '../../cordova/CordovaDeviceManager'
 import { UISelect, UISelectItem, UISelectListener } from '../../ui-components/UISelect'
 import { UILineLoader } from '../../ui-components/UILineLoader'
-import { map } from 'lodash'
+import { map, forEach } from 'lodash'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 
 const NONE_PLACEHOLDER:string = '-- None --';
@@ -54,6 +54,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
     this.initTabView();
     this.initGeneralTabUI();
     this.initEnvironmentTabUI();
+    this.setAllTabsVisibility(false);
   }
 
   private initTabView(){
@@ -251,7 +252,18 @@ export class TaskViewContentPanel extends UIBaseComponent{
       this.variantManager = new VariantsManager(this.projectInfo.path);
     }
     setTimeout(() => {
+      this.setAllTabsVisibility(true);
       this.contextualizeImpl();
+    });
+  }
+
+  private setAllTabsVisibility(visible:boolean){
+    let ids:string[] = this.tabbedView.getAllIds();
+    forEach(ids,(singleId) => {
+      let tab = this.tabbedView.getTabItemById(singleId);
+      if(tab){
+        tab.view.style.visibility = visible? 'visible':'hidden'
+      }
     });
   }
 
@@ -302,6 +314,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
     this.deviceSelect.setItems([]);
     this.variantSelect.setItems([]);
     this.npmScriptsSelect.setItems([]);
+    this.setAllTabsVisibility(false);
   }
 
 
