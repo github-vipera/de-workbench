@@ -21,6 +21,11 @@ import { UIComponent, UIBaseComponent } from './UIComponent'
 import { forEach, remove } from 'lodash'
 import { EventEmitter }  from 'events'
 
+export interface UITreeItemAttribute {
+  name:string;
+  value:string;
+}
+
 export interface UITreeItem {
   id:string;
   name:string;
@@ -30,6 +35,7 @@ export interface UITreeItem {
   htmlElement?:HTMLElement;
   children?:Array<UITreeItem>;
   selected?:boolean;
+  attributes?:Array<UITreeItemAttribute>
 }
 
 export interface UITreeViewModel {
@@ -172,6 +178,14 @@ export class UITreeView extends UIBaseComponent {
     }
     treeItem.setAttribute("treeitemId", item.id)
     treeItem.setAttribute("id", this.buildItemElementId(item.id))
+
+    if (item.attributes){
+      let attributes = item.attributes;
+      for (var attr=0;attr<attributes.length;attr++){
+        treeItem.setAttribute(attributes[attr].name, attributes[attr].value)
+      }
+    }
+
     return treeItem;
   }
 
