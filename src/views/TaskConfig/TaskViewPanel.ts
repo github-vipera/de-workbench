@@ -111,6 +111,8 @@ export class TaskViewPanel extends UIBaseComponent{
       this.update();
     },(err) => {
       Logger.getInstance().error(err)
+    }).catch((ex) => {
+      Logger.getInstance().error(ex);
     });
   }
 

@@ -134,6 +134,10 @@ export class ProjectManager {
             console.log("getProjectSettings load done!")
             this.projectSettings[projectPath] = ret;
             resolve(settings);
+          },(err) => {
+            reject(err);
+          }).catch((ex) => {
+            reject(ex);
           });
         } else {
           resolve(ret);

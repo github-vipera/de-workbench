@@ -73,7 +73,12 @@ export class TaskProvider{
     if(!projectPath){
       return defaultTasks;
     }
-    let setting:ProjectSettings = await ProjectManager.getInstance().getProjectSettings(projectPath);
+    let setting:ProjectSettings = undefined
+    try{
+      setting = await ProjectManager.getInstance().getProjectSettings(projectPath);
+    }catch(ex){
+      console.error(ex);
+    }
     if(!setting){
       return defaultTasks;
     }
@@ -94,4 +99,29 @@ export class TaskProvider{
     let setting:ProjectSettings = await ProjectManager.getInstance().getProjectSettings(projectPath);
     setting.save(CORDOVA_TASK_LIST_KEY,cdvTaskList);
   }
+
+
+  /*public getTasksPromise(projectPath:string):Promise<Array<CordovaTaskConfiguration>>{
+    return new Promise<Array<CordovaTaskConfiguration>>((resolve,reject) => {
+      let defaultTasks = this.getDefaultTask();
+      ProjectManager.getInstance().getProjectSettings(projectPath).then((setting) => {
+        let savedTasks = setting.get('cdvTaskList');
+        console.log("savedTasks",savedTasks);
+        if(!savedTasks){
+          return defaultTasks;
+        }
+        let parsedResult:Array<CordovaTaskConfiguration> = [];
+        forEach(savedTasks,(item) => {
+          parsedResult.push(CordovaTaskConfiguration.fromJSON(item));
+        });
+        console.log("parsedResult:",savedTasks);
+        return parsedResult;
+      },(err) => {
+        resolve(defaultTasks);
+      }).catch((ex) => {
+        resolve(defaultTasks);
+      });
+    });
+
+  }*/
 }

@@ -33,7 +33,7 @@ export class ProjectSettings  {
     return new Promise((resolve,reject)=>{
       this.db.reload().then(()=>{
         resolve(this);
-      });
+      },reject);
     })
   }
 
