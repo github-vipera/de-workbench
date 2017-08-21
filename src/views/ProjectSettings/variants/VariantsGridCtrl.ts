@@ -43,6 +43,7 @@ export class VariantsGridCtrl extends UIBaseComponent {
     this.treeModel = this.createTreeModel();
     this.treeView = new UITreeView(this.treeModel)
     this.mainElement = this.treeView.element()
+    this.mainElement.classList.add("de-workbench-variants-treeview")
 
     this.treeModel.addEventListener('didModelChanged',()=>{
       this.events.emit('didDataChanged', this)
