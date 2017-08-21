@@ -14,6 +14,19 @@
 
 .de-workbench-bookmark-list-action {
   max-width: 18px;
+}
 
-
+.de-workbench-bookmarks-view {
+  .de-workbench-listview-tb {
+    td {
+      border-style: dotted;
+      border-top: none;
+      border-right: none;
+      border-left: none;
+    }
+    tr:hover {
+      background-color: fade(@background-color-info, 10%);
+      color:@text-color-highlight;
+    }
+  }
 }
