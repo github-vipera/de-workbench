@@ -172,5 +172,12 @@ export class BookmarkManager {
     return this.bookmarks[index]
   }
 
+  public deleteBookmarkById(bookmarkId:string):boolean{
+    let beforeLen = this.bookmarks.length;
+    let bookmark = this.getBookmarkById(bookmarkId);
+    this.removeBookmark(bookmark)
+    let afterLen = this.bookmarks.length;
+    return (beforeLen>afterLen)
+  }
 
 }

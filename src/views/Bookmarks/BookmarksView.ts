@@ -76,15 +76,6 @@ export class BookmarksView extends UIPane {
 
 }
 
-/*
-export interface Bookmark {
-  lineNumber: number,
-  filePath: string,
-  marker: any,
-  id:string
-}
-**/
-
 class BookmarksModel implements UIExtendedListViewModel {
 
   public static get COL_ACTION():number { return 0; }
@@ -155,7 +146,7 @@ class BookmarksModel implements UIExtendedListViewModel {
       return el;
     } else if (col===BookmarksModel.COL_LINENO) {
       let el = createElement('a',{
-        elements: [ createText(""+bookmark.lineNumber) ]
+        elements: [ createText(""+(bookmark.lineNumber+1)) ]
       })
       return el;
     } else if (col===BookmarksModel.COL_ACTION) {
@@ -163,7 +154,19 @@ class BookmarksModel implements UIExtendedListViewModel {
         elements: [ ],
         className: 'icon icon-remove-close'
       })
+      el.setAttribute('bookmark_id',bookmark.id)
+      el.addEventListener('click',(evt)=>{
+        this.onBookmarkDeleteClicked(evt.target.getAttribute('bookmark_id'));
+      })
       return el;
+    }
+  }
+
+  protected onBookmarkDeleteClicked(bookmarkId:string){
+    this.events.emit("onDidBookmarkDeleteClick", bookmarkId)
+    let deleted = BookmarkManager.getInstance().deleteBookmarkById(bookmarkId);
+    if (deleted){
+      this.events.emit('didModelChanged', this)
     }
   }
 
@@ -183,7 +186,7 @@ class BookmarksModel implements UIExtendedListViewModel {
     if (col===BookmarksModel.COL_RESOURCE){
       return cliTruncate(bookmark.filePath, 20, {position: 'start'});
     } else if (col===BookmarksModel.COL_LINENO){
-      return bookmark.lineNumber
+      return (bookmark.lineNumber+1)
     } else if (col===BookmarksModel.COL_ACTION){
       return "-"
     } else {
@@ -196,7 +199,7 @@ class BookmarksModel implements UIExtendedListViewModel {
     if (col===BookmarksModel.COL_RESOURCE){
       return bookmark.filePath;
     } else if (col===BookmarksModel.COL_LINENO){
-      return bookmark.lineNumber
+      return (bookmark.lineNumber+1)
     } else if (col===BookmarksModel.COL_ACTION){
       return null
     } else {
