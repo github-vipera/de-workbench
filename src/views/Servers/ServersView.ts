@@ -54,6 +54,7 @@ export class ServersView extends UIPane {
     this.treeView.addEventListener('didItemSelected',(nodeId, nodeItem)=>{
       let nodeType = _.find(nodeItem.attributes, { 'name':'srvNodeType' })
       console.log("Node clicked: ", nodeType)
+      this.updateToolbar(nodeType.value)
     })
 
     this.toolbar = new ServersToolbar();
@@ -70,6 +71,16 @@ export class ServersView extends UIPane {
     });
 
     return el;
+  }
+
+  protected updateToolbar(nodeType:string){
+      if (nodeType==="root"){
+        this.toolbar.enableActions([]);
+      } else if (nodeType==="serverProvider"){
+        this.toolbar.enableActions([ServersToolbar.ActionNewServerInstance]);
+      } else if (nodeType==="serverInstance"){
+        this.toolbar.enableActions([ServersToolbar.ActionStartServerInstance, ServersToolbar.ActionStopServerInstance, ServersToolbar.ActionRemoveServerInstance ]);
+      }
   }
 
   protected doToolbarAction(action:string){

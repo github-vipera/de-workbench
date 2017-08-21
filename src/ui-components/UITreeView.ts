@@ -20,6 +20,7 @@
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { forEach, remove } from 'lodash'
 import { EventEmitter }  from 'events'
+const $ = require("jquery")
 
 export interface UITreeItemAttribute {
   name:string;
@@ -71,7 +72,7 @@ export class UITreeView extends UIBaseComponent {
     this.mainElement =  createElement('div', {
         elements: [
               ],
-        className:'de-workbench-treeview'
+        className:'de-workbench-treeview tree-view'
     })
 
   }
@@ -146,6 +147,7 @@ export class UITreeView extends UIBaseComponent {
     }
 
     treeItemHeader.addEventListener('click',(evt)=>{
+      evt.stopPropagation();
       this.onItemClicked(evt);
     })
 
