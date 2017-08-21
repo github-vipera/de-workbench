@@ -11,7 +11,7 @@ export interface Bookmark {
 import { get } from 'lodash'
 import { EventEmitter }  from 'events'
 import { EventBus } from './EventBus'
-const crypto = require('crypto');
+const GUID = require('guid');
 const _ = require('lodash');
 
 export type Bookmarks = Array<Bookmark>
@@ -105,9 +105,7 @@ export class BookmarkManager {
   }
 
   protected createBookmarkId(lineNumber: number, filePath: string){
-    let base = "" + filePath +"_" + lineNumber;
-    let hash = crypto.createHash('md5').update(base).digest("hex");
-    return hash;
+    return GUID.raw();
   }
 
   private createBookmarkMarkerForEditor (editor: any, lineNumber: any) {

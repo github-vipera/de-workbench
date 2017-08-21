@@ -76,6 +76,7 @@
     "cordova-lib": "^7.0.1",
     "express": "^4.15.3",
     "fs-extra": "^4.0.1",
+    "guid": "0.0.12",
     "jquery": "^3.2.1",
     "jsoneditor": "^5.9.3",
     "lodash": "^4.17.4",
