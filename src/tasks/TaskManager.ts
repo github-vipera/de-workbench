@@ -8,13 +8,23 @@ import { Logger }  from '../logger/Logger'
 import { ScriptExecutor } from './ScriptExecutor'
 import { CordovaDevice } from '../cordova/CordovaDeviceManager'
 
+export interface LiveReloadContext {
+  runTask?:CordovaTaskConfiguration;
+  project?:CordovaProjectInfo
+  cliOptions?: CordovaCliOptions
+}
+
+
+
 export class TaskManager{
   private currentTask:CordovaTaskConfiguration;
   private project:CordovaProjectInfo
-  private cliOptions: CordovaCliOptions
+  //private cliOptions: CordovaCliOptions
   private platformServer:PlatformServer = null;
   private scriptExecutor:ScriptExecutor = null;
   private cordova:Cordova
+
+  private reloadContext:LiveReloadContext = {}
   constructor(){
       this.cordova=ProjectManager.getInstance().cordova;
   }
@@ -22,28 +32,29 @@ export class TaskManager{
     if(this.isBusy()){
       throw new Error("TaskManager is busy");
     }
-    this.cliOptions = TaskUtils.createCliOptions(taskConfig);
-    Logger.getInstance().info("cliOptions:",JSON.stringify(this.cliOptions));
-    await this.scheduleNodeScripts(taskConfig,project,this.cliOptions);
+    let cliOptions = TaskUtils.createCliOptions(taskConfig);
+    Logger.getInstance().info("cliOptions:",JSON.stringify(cliOptions));
+    await this.scheduleNodeScripts(taskConfig,project,cliOptions);
     this.currentTask = taskConfig;
     this.project = project;
     Logger.getInstance().debug('schedule node tasks');
     try{
       switch(this.currentTask.taskType){
         case "prepare":
-            await this.executePrepare(project,this.cliOptions);
+            await this.executePrepare(project,cliOptions);
             this.currentTask = null;
         break;
         case "build":
-            await this.executeBuild(project,this.cliOptions);
+            await this.executeBuild(project,cliOptions);
             this.currentTask = null
         break;
         case "run":
-            await this.executeRun(project,this.cliOptions);
+            await this.executeRun(project,cliOptions);
             this.currentTask = null
+        break;
         case "buildRun":
-            await this.executeBuild(project,this.cliOptions);
-            await this.executeRun(project,this.cliOptions)
+            await this.executeBuild(project,cliOptions);
+            await this.executeRun(project,cliOptions)
             this.currentTask = null
         break;
       }
@@ -67,6 +78,11 @@ export class TaskManager{
 
   async executeRun(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
     await this.startPlatformServer(project);
+
+    this.reloadContext.cliOptions = cliOptions;
+    this.reloadContext.project = project;
+    this.reloadContext.runTask = this.currentTask;
+
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
     if(platform === 'browser'){
       cliOptions.flags ? cliOptions.flags.push('--noprepare'): ['--noprepare'];
@@ -105,6 +121,7 @@ export class TaskManager{
     if(this.platformServer){
       this.platformServer.stop().then(() => {
           Logger.getInstance().info("Server stop done");
+          this.reloadContext = {};
       },() => {
         Logger.getInstance().error("Server stop fail");
       });
@@ -138,10 +155,10 @@ export class TaskManager{
   }
 
   private async execActionTask(action:LiveActions){
-    await this.scheduleNodeScripts(this.currentTask,this.project,this.cliOptions);
+    await this.scheduleNodeScripts(this.reloadContext.runTask,this.reloadContext.project,this.reloadContext.cliOptions);
     if(action.type == "doLiveReload"){
-      let platform = this.currentTask.selectedPlatform ? this.currentTask.selectedPlatform.name : null;
-      await this.cordova.prepareProjectWithBrowserPatch(this.project.path,platform,this.cliOptions);
+      let platform = this.reloadContext.runTask.selectedPlatform ? this.reloadContext.runTask.selectedPlatform.name : null;
+      await this.cordova.prepareProjectWithBrowserPatch(this.reloadContext.project.path,platform,this.reloadContext.cliOptions);
     }
     return Promise.resolve();
   }
