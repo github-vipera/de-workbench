@@ -151,6 +151,11 @@ export class UITreeView extends UIBaseComponent {
       this.onItemClicked(evt);
     })
 
+    treeItemHeader.addEventListener('dblclick',(evt)=>{
+      evt.stopPropagation();
+      this.onItemDblClicked(evt);
+    })
+
     // create children
     let childCount = 0;
     let treeItemChildren = createElement('ol',{
@@ -197,6 +202,15 @@ export class UITreeView extends UIBaseComponent {
 
   public removeEventListener(event:string, listener){
     this.events.removeListener(event, listener)
+  }
+
+  protected onItemDblClicked(evt){
+    let itemId = evt.currentTarget.attributes["treeitemId"].value;
+    let item:UITreeItem=null;
+    if(this.model.getItemById){
+      item=this.model.getItemById(itemId);
+    }
+    this.events.emit("didItemDblClick", itemId, item)
   }
 
   protected onItemClicked(evt){

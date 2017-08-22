@@ -27,6 +27,7 @@ export interface PaneViewOptions {
   paneName:string;
   title:string;
   location?:string;
+  userData?:any;
 }
 
 export class UIPane {

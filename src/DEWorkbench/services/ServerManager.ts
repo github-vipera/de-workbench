@@ -10,6 +10,7 @@ import { Logger } from '../../logger/Logger'
 import { CordovaPlugin } from '../../cordova/Cordova'
 import { EventBus } from '../EventBus'
 
+const _ = require('lodash');
 const GUID = require('guid');
 
 
@@ -24,9 +25,17 @@ export interface ServerInstance {
   start();
   stop();
   status:ServerStatus;
-  configure();
+  configure(configuration:any);
   addEventListener(event:string, listener);
   removeEventListener(event:string, listener);
+  getConfigurator(configuration:any):ServerInstanceConfigurator;
+}
+
+export interface ServerInstanceConfigurator {
+    getConfiguration():any;
+    addEventListener(event:string, listener);
+    removeEventListener(event:string, listener);
+    getConfigurationPane(configuration:any):HTMLElement;
 }
 
 export interface ServerProvider {
@@ -85,11 +94,11 @@ export class ServerManager {
       return null;
   }
 
-  public createServerInstance(providerName:string, configuration:any):ServerInstanceWrapper{
+  public createServerInstance(providerName:string, instanceName:string, configuration:any):ServerInstanceWrapper{
     let serverProvider:ServerProvider = this.getProviderByName(providerName);
     if (serverProvider){
       let instance = serverProvider.createInstance(configuration);
-      let wrapper =  this.registerInstance(instance)
+      let wrapper =  this.registerInstance(providerName, instanceName, instance, configuration)
       EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_CREATED, wrapper);
       return wrapper;
     } else {
@@ -97,8 +106,8 @@ export class ServerManager {
     }
   }
 
-  private registerInstance(serverInstance:ServerInstance):ServerInstanceWrapper {
-    let wrapper = new ServerInstanceWrapper(serverInstance)
+  private registerInstance(providerName:string, instanceName:string, serverInstance:ServerInstance, configuration:any):ServerInstanceWrapper {
+    let wrapper = new ServerInstanceWrapper(providerName, instanceName, serverInstance, configuration)
     this.instances.push(wrapper)
     return wrapper;
   }
@@ -112,6 +121,10 @@ export class ServerManager {
       return this.instances;
   }
 
+  public getInstancesForProvider(providerName:string):Array<ServerInstanceWrapper>{
+      return _.filter(this.instances, { provider : providerName});
+  }
+
 }
 
 
@@ -119,15 +132,33 @@ export class ServerInstanceWrapper implements ServerInstance {
 
   _serverInstance: ServerInstance;
   _instanceId: string;
+  _configuration:any;
+  _providerName: any;
+  _name:string;
 
-  constructor(serverInstance: ServerInstance){
+  constructor(providerName:string, instanceName:string, serverInstance: ServerInstance, configuration:any){
     this._instanceId = GUID.raw();
+    this._providerName = providerName;
+    this._name = instanceName;
+    this._configuration = configuration;
     this._serverInstance = serverInstance;
     this._serverInstance.addEventListener('onDidStatusChange',this.onDidStatusChange)
   }
 
+  public get name():string{
+    return this._name;
+  }
+
+  public get provider():string{
+    return this._providerName;
+  }
+
   protected onDidStatusChange(evt){
     //TODO!!
+  }
+
+  public get configuration():any {
+    return this._configuration;
   }
 
   public get serverInstance():ServerInstance {
@@ -150,8 +181,8 @@ export class ServerInstanceWrapper implements ServerInstance {
     this._serverInstance.stop();
   }
 
-  public configure(){
-    this._serverInstance.configure();
+  public configure(configuration:any){
+    this._serverInstance.configure(configuration);
   }
 
   addEventListener(event:string, listener) {
@@ -165,6 +196,11 @@ export class ServerInstanceWrapper implements ServerInstance {
   public get status():ServerStatus{
       return this._serverInstance.status;
   }
+
+  getConfigurator(configuration:any):ServerInstanceConfigurator {
+    return this._serverInstance.getConfigurator(configuration);
+  }
+
 
 
 }

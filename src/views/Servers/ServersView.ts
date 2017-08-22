@@ -22,10 +22,10 @@ import { EventEmitter }  from 'events'
 import { UIPane } from '../../ui-components/UIPane'
 import { ServerManager, ServerProvider, ServerInstanceWrapper, ServerInstance } from  '../../DEWorkbench/services/ServerManager'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
-//import { UIListView, UIListViewModel } from '../../ui-components/UIListView'
 import { Logger } from '../../logger/Logger'
-//import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, findItemInTreeModel } from '../../ui-components/UITreeView'
+import { ServerInstanceConfigurationView } from './ServerInstanceConfigurationView'
+
 const StringHash = require('string-hash')
 const _ = require('lodash')
 
@@ -56,6 +56,15 @@ export class ServersView extends UIPane {
       console.log("Node clicked: ", nodeType)
       this.updateToolbar(nodeType.value)
     })
+    this.treeView.addEventListener('didItemDblClick',(nodeId, nodeItem)=>{
+      let nodeType = _.find(nodeItem.attributes, { 'name':'srvNodeType' })
+      console.log("Node dbl clicked: ", nodeType)
+      if (nodeType.value==="serverInstance"){
+        let nodeId = this.treeView.getCurrentSelectedItemId();
+        let nodeItem = <ServerInstanceItem>this.treeModel.getItemById(nodeId);
+        this.doConfigureInstance(nodeItem.serverInstance);
+      }
+    })
 
     this.toolbar = new ServersToolbar();
     this.toolbar.addEventListener('didActionClick', (action)=>{
@@ -84,16 +93,66 @@ export class ServersView extends UIPane {
   }
 
   protected doToolbarAction(action:string){
-    //TODO!!
-    alert(action)
+    let nodeId = this.treeView.getCurrentSelectedItemId();
+    let nodeItem = this.treeModel.getItemById(nodeId);
+    this.doToolbarActionForNode(action, nodeItem);
   }
 
+  protected doToolbarActionForNode(action:string, nodeItem:UITreeItem){
+    if (action===ServersToolbar.ActionNewServerInstance){
+      this.createNewServerInstanceForNode(<ServerProviderItem>nodeItem);
+    }
+    else if (action===ServersToolbar.ActionRemoveServerInstance){
+      this.removeServerInstanceForNode(<ServerInstanceItem>nodeItem);
+    }
+    else if (action===ServersToolbar.ActionStartServerInstance){
+      this.startServerInstanceForNode(<ServerInstanceItem>nodeItem);
+    }
+    else if (action===ServersToolbar.ActionStopServerInstance){
+      this.stopServerInstanceForNode(<ServerInstanceItem>nodeItem);
+    }
+    else if (action===ServersToolbar.ActionConfigureServerInstance){
+      this.configureServerInstanceForNode(<ServerInstanceItem>nodeItem);
+    }
+  }
 
   public destroy(){
     this.toolbar.destroy();
     this.treeView.destroy();
     this.treeModel.destroy()
     super.destroy();
+  }
+
+  protected createNewServerInstanceForNode(nodeItem:ServerProviderItem){
+    this.createNewServerProviderFor(nodeItem.serverProvider);
+  }
+
+  protected removeServerInstanceForNode(nodeItem:ServerInstanceItem){
+    //TODO!
+  }
+
+  protected startServerInstanceForNode(nodeItem:ServerInstanceItem){
+    //TODO!
+  }
+
+  protected stopServerInstanceForNode(nodeItem:ServerInstanceItem){
+    //TODO!
+  }
+
+  protected configureServerInstanceForNode(nodeItem:ServerInstanceItem){
+    this.doConfigureInstance(nodeItem.serverInstance);
+  }
+
+  protected createNewServerProviderFor(serverProvider:ServerProvider){
+    let newInstanceName = "New Server";
+    let instance = ServerManager.getInstance().createServerInstance(serverProvider.getProviderName(), newInstanceName, {});
+    this.treeModel.reload();
+    this.doConfigureInstance(instance);
+  }
+
+  protected doConfigureInstance(serverInstance:ServerInstanceWrapper){
+    let configPane = new ServerInstanceConfigurationView(serverInstance);
+    configPane.open()
   }
 
 }
@@ -104,12 +163,14 @@ class ServersToolbar extends UIBaseComponent {
   public static get ActionRemoveServerInstance():string { return 'removeInstance '}
   public static get ActionStartServerInstance():string { return 'start '}
   public static get ActionStopServerInstance():string { return 'stop '}
+  public static get ActionConfigureServerInstance():string { return 'configure '}
 
   protected events:EventEmitter;
   protected addInstanceButton:HTMLElement;
   protected removeInstanceButton:HTMLElement;
   protected startInstanceButton:HTMLElement;
   protected stopInstanceButton:HTMLElement;
+  protected configureInstanceButton:HTMLElement;
 
   constructor(){
     super();
@@ -126,6 +187,7 @@ class ServersToolbar extends UIBaseComponent {
     this.addInstanceButton.addEventListener('click', (evt)=>{
       this.events.emit('didActionClick', ServersToolbar.ActionNewServerInstance)
     })
+
     this.removeInstanceButton = createElement('button',{
       //elements : [ createText("Delete")],
       className: 'btn btn-xs icon icon-dash'
@@ -134,6 +196,7 @@ class ServersToolbar extends UIBaseComponent {
     this.removeInstanceButton.addEventListener('click',()=>{
       this.events.emit('didActionClick', ServersToolbar.ActionRemoveServerInstance)
     })
+
     this.startInstanceButton = createElement('button',{
       //elements : [ createText("Rename")],
       className: 'btn btn-xs icon icon-playback-play'
@@ -142,6 +205,7 @@ class ServersToolbar extends UIBaseComponent {
     this.startInstanceButton.addEventListener('click',()=>{
       this.events.emit('didActionClick', ServersToolbar.ActionStartServerInstance)
     })
+
     this.stopInstanceButton = createElement('button',{
       className: 'btn btn-xs icon icon-primitive-square'
     })
@@ -149,10 +213,19 @@ class ServersToolbar extends UIBaseComponent {
     this.stopInstanceButton.addEventListener('click',()=>{
       this.events.emit('didActionClick', ServersToolbar.ActionStopServerInstance)
     })
+
+    this.configureInstanceButton = createElement('button',{
+      className: 'btn btn-xs icon icon-gear'
+    })
+    atom["tooltips"].add(this.configureInstanceButton, {title:'Configure selected Server instance'})
+    this.configureInstanceButton.addEventListener('click',()=>{
+      this.events.emit('didActionClick', ServersToolbar.ActionConfigureServerInstance)
+    })
+
     let tabbedToolbar = createElement('div',{
       elements: [
         createElement('div', {
-          elements: [this.addInstanceButton, this.removeInstanceButton, this.startInstanceButton, this.stopInstanceButton],
+          elements: [this.addInstanceButton, this.removeInstanceButton, this.startInstanceButton, this.stopInstanceButton, this.configureInstanceButton],
           className: 'btn-group'
         })
       ], className: 'btn-toolbar'
@@ -229,7 +302,7 @@ class ServersTreeModel implements UITreeViewModel {
       this.reload();
   }
 
-  protected reload(){
+  public reload(){
     let providers = ServerManager.getInstance().getProviders();
     let providerItems = new Array<ServerProviderItem>();
     for (var i=0;i<providers.length;i++){
@@ -240,6 +313,7 @@ class ServersTreeModel implements UITreeViewModel {
     this.root = new ServerRootItem();
     this.root.children = providerItems
 
+    this.events.emit("didModelChanged");
   }
 
   root:UITreeItem;
@@ -306,7 +380,12 @@ class ServerProviderItem implements UITreeItem {
       this.name = this.serverProvider.getProviderName();
       this.id = this.toIdFromName(this.name);
       this.expanded = true;
-      this.children = [ new ServerInstanceItem(null) ]
+      this.children = [];
+      let instances = ServerManager.getInstance().getInstancesForProvider(this.serverProvider.getProviderName())
+      for (var i=0;i<instances.length;i++){
+        this.children.push( new ServerInstanceItem(instances[i]) )
+      }
+      console.log(this.children.length)
   }
 
   protected toIdFromName(name:string):string{
@@ -316,7 +395,6 @@ class ServerProviderItem implements UITreeItem {
 
 }
 
-
 class ServerInstanceItem implements UITreeItem {
 
   serverInstance:ServerInstanceWrapper;
@@ -325,6 +403,7 @@ class ServerInstanceItem implements UITreeItem {
   className:string="de-workbench-servers-treeview-instance-item";
   icon:string="icon-rocket";
   expanded:boolean=true;
+
   //htmlElement?:HTMLElement;
   //children?:Array<UITreeItem>;
   //selected?:boolean;
@@ -336,8 +415,8 @@ class ServerInstanceItem implements UITreeItem {
 
   constructor(serverInstance:ServerInstanceWrapper){
       this.serverInstance = serverInstance;
-      this.name = "Fake test (Running)";
-      this.id = this.toIdFromName("fakeTest");
+      this.name = this.serverInstance.name;
+      this.id = serverInstance.instanceId;
       this.expanded = true;
   }
 

@@ -1,0 +1,65 @@
+/*!
+ * DE Workbench
+ * Copyright(c) 2017 Williams Medina <williams.medinaa@gmail.com>
+ * MIT Licensed
+ */
+
+@import "variables";
+
+.de-workbench-server-config-pane {
+  height: 100%;
+}
+
+.de-workbench-server-config-maincontainer {
+  padding: 10px;
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+
+  .de-workbench-server-config-header-cont {
+    background-color: @inset-panel-background-color;
+    padding: 10px;
+    border-radius: 4px;
+
+    .de-workbench-server-config-header-toolbar {
+      padding-top: 8px;
+    }
+
+    .de-workbench-server-config-header-instanceName {
+
+    }
+
+    .de-workbench-server-config-header-subcont {
+      display: flex;
+
+
+      .de-workbench-server-config-header-providerName  {
+          flex-grow: 1;
+      }
+
+    }
+
+  }
+
+
+  .de-workbench-server-config-tabbedview {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    flex: 1 1 auto;
+  }
+
+}
+
+.de-workbench-server-config-logger-cont {
+  width: 100%;
+}
+
+.de-workbench-server-config-confelm-cont {
+  width: 100%;
+  height: 100%;
+}
+
+.de-workbench-server-config-confelm-cont {
+  overflow: scroll;
+}
