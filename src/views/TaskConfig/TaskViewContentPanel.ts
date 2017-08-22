@@ -20,7 +20,7 @@ import { UISelect, UISelectItem, UISelectListener } from '../../ui-components/UI
 import { UILineLoader } from '../../ui-components/UILineLoader'
 import { map, forEach } from 'lodash'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
-
+import { TaskViewEnvironmentTab } from './TaskViewEnvironmentTab'
 const NONE_PLACEHOLDER:string = '-- None --';
 
 export class TaskViewContentPanel extends UIBaseComponent{
@@ -79,11 +79,16 @@ export class TaskViewContentPanel extends UIBaseComponent{
   }
 
   private initEnvironmentTabUI(){
+    let taskViewEnvironmentTab = new TaskViewEnvironmentTab();
     let panelContainer:HTMLElement = createElement('div',{
       className:'de-workbench-taskpanel-content-container',
       elements:[
+
       ]
     });
+    let elem:HTMLElement = taskViewEnvironmentTab.element();
+    console.log("elem",elem);
+    insertElement(panelContainer,elem);
     this.tabbedView.addView(new UITabbedViewItem('EnvironmentPanel',"Environment",panelContainer));
   }
 
