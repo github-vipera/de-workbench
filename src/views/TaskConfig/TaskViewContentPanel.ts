@@ -40,6 +40,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
   private evtEmitter:EventEmitter
   private tabbedView:UITabbedView
   private taskViewEnvironmentTab:TaskViewEnvironmentTab
+  private deviceRequestId:number = 0;
   constructor(evtEmitter:EventEmitter){
     super();
     this.evtEmitter = evtEmitter;
@@ -197,10 +198,18 @@ export class TaskViewContentPanel extends UIBaseComponent{
     }
   }
 
+  private generateNewDeviceRid():number{
+     return (this.deviceRequestId = this.deviceRequestId + 1);
+  }
+  private isOldDeviceRequest(rid:number){
+    return rid < this.deviceRequestId;
+  }
+
   private async updateDevices(platform:CordovaPlatform,def?:CordovaDevice){
     if(!this.deviceManager || !platform){
       return Promise.resolve([]);
     }
+    let rid = this.generateNewDeviceRid();
     this.deviceLineLoader.setOnLoading(true);
     let devices= await this.deviceManager.getDeviceList(platform.name);
     let model:Array<UISelectItem> = map<CordovaDevice,UISelectItem>(devices,(single:CordovaDevice) => {
@@ -209,6 +218,9 @@ export class TaskViewContentPanel extends UIBaseComponent{
         name:single.name
       }
     });
+    if(this.isOldDeviceRequest(rid)){
+      return;
+    }
     this.deviceSelect.setItems(model);
     if(def){
       this.deviceSelect.resetSelection();
@@ -385,13 +397,16 @@ export class TaskViewContentPanel extends UIBaseComponent{
       this.taskConfig.isRelease = true
     }
     let variant = this.getSelectedVariantName();
+
     if(variant){
       this.taskConfig.variantName = variant;
     }
+
     let nodeScript = this.getSelectedNpmScript();
     if(nodeScript){
       this.taskConfig.nodeTasks = [nodeScript];
     }
+
     return this.taskConfig;
 
 
