@@ -35,7 +35,9 @@ export interface ServerInstanceConfigurator {
     getConfiguration():any;
     addEventListener(event:string, listener);
     removeEventListener(event:string, listener);
-    getConfigurationPane(configuration:any):HTMLElement;
+    getConfigurationPane():HTMLElement;
+    revertChanges();
+    applyConfiguration(configuration:any);
 }
 
 export interface ServerProvider {

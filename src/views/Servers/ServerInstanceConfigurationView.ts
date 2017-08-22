@@ -21,13 +21,14 @@
 import { EventEmitter }  from 'events'
 import { UIPane } from '../../ui-components/UIPane'
 import { ServerManager, ServerProvider, ServerInstanceWrapper, ServerInstance,ServerInstanceConfigurator } from  '../../DEWorkbench/services/ServerManager'
-import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
+import { UIComponent, UIBaseComponent, UIExtComponent } from '../../ui-components/UIComponent'
 import { Logger } from '../../logger/Logger'
 import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, findItemInTreeModel } from '../../ui-components/UITreeView'
-const StringHash = require('string-hash')
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { UILoggerComponent,LogLine,IFilterableModel } from '../../ui-components/UILoggerComponent'
+import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
 
+const StringHash = require('string-hash')
 const _ = require('lodash')
 
 export class ServerInstanceConfigurationView extends UIPane {
@@ -65,37 +66,7 @@ export class ServerInstanceConfigurationView extends UIPane {
 }
 
 
-class UIExtComponent extends UIBaseComponent {
-
-  private _events:EventEmitter;
-
-  constructor(){
-    super();
-    this._events = new EventEmitter()
-  }
-
-  protected fireEvent(event, ...params){
-    this._events.emit(event, params)
-  }
-
-  public addEventListener(event:string, listener){
-      this._events.addListener(event,listener)
-  }
-
-  public removeEventListener(event:string, listener){
-      this._events.removeListener(event,listener)
-  }
-
-  public destroy(){
-    this._events.removeAllListeners();
-    this._events = null;
-    super.destroy()
-  }
-
-}
-
-
-class ServerInstanceConfigurationCtrl extends UIBaseComponent {
+class ServerInstanceConfigurationCtrl extends UIExtComponent {
 
   _serverInstance:ServerInstanceWrapper;
   _headerCtrl:HeaderCtrl;
@@ -120,6 +91,12 @@ class ServerInstanceConfigurationCtrl extends UIBaseComponent {
     this._confCtrl.addEventListener('didConfigurationChange',(evt)=>{
       console.log("TODO enable Save button and Revert Changes!")
     })
+    this._confCtrl.addEventListener('didSaveChange',(evt)=>{
+      console.log("TODO Save Changes!")
+    })
+    this._confCtrl.addEventListener('didRevertChange',(evt)=>{
+      console.log("TODO Revert Changes!")
+    })
 
     this._tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
     this._tabbedView.element().classList.add('de-workbench-server-config-tabbedview')
@@ -141,6 +118,78 @@ class ServerInstanceConfigurationCtrl extends UIBaseComponent {
   public destroy(){
     super.destroy();
   }
+}
+
+class ConfigContainerControl extends UIExtComponent {
+
+  _serverInstance:ServerInstanceWrapper;
+  _configPanelElement:HTMLElement;
+  _configurator:ServerInstanceConfigurator;
+
+  constructor(serverInstance:ServerInstanceWrapper){
+    super();
+    this._serverInstance = serverInstance;
+    this.initUI();
+  }
+
+  protected initUI(){
+    // get the configurator instance
+    this._configurator = this._serverInstance.getConfigurator(this._serverInstance.configuration);
+    // set the current configuration
+    this._configurator.applyConfiguration(this._serverInstance.configuration)
+    // then get the configurator UI
+    this._configPanelElement = this._configurator.getConfigurationPane();
+
+    let actionButtonsOpt:FormActionsOptions = {
+      cancel : {
+        caption : 'Revert Changes'
+      },
+      commit : {
+        caption : 'Save Changes'
+      },
+      actionListener: (actionType:number)=>{
+        if (actionType===FormActionType.Cancel){
+          this.revertChanges()
+        } else if (actionType===FormActionType.Commit){
+          this.saveChanges()
+        }
+      }
+    }
+    let actionButtonsContainer = UICommonsFactory.createFormActions(actionButtonsOpt)
+
+    this.mainElement = createElement('div',{
+      elements: [ this._configPanelElement, actionButtonsContainer ],
+      className: 'de-workbench-server-config-confelm-cont'
+    })
+
+    //listen for changes
+    this._configurator.addEventListener('didConfigurationChange',(evt)=>{
+      this.fireConfigChanged()
+    })
+
+  }
+
+  protected revertChanges(){
+    this._configurator.revertChanges();
+    this.fireEvent("didRevertChange", this)
+  }
+
+  protected saveChanges(){
+    let newConfig = this._configurator.getConfiguration()
+    //TODO!! store new config
+    // then apply new config to the instance
+    this._serverInstance.configure(newConfig);
+    // store on configurator
+    this._configurator.applyConfiguration(newConfig)
+    // fire the event
+    this.fireEvent("didSaveChange", this)
+  }
+
+  protected fireConfigChanged(){
+    this.fireEvent("didConfigurationChange", this)
+  }
+
+
 }
 
 class HeaderCtrl extends UIExtComponent {
@@ -220,40 +269,6 @@ class HeaderCtrl extends UIExtComponent {
   public destroy(){
     super.destroy();
   }
-
-}
-
-class ConfigContainerControl extends UIExtComponent {
-
-  _serverInstance:ServerInstanceWrapper;
-  _configPanelElement:HTMLElement;
-  _configurator:ServerInstanceConfigurator;
-
-  constructor(serverInstance:ServerInstanceWrapper){
-    super();
-    this._serverInstance = serverInstance;
-    this.initUI();
-  }
-
-  protected initUI(){
-    this._configurator = this._serverInstance.getConfigurator(this._serverInstance.configuration);
-    this._configPanelElement = this._configurator.getConfigurationPane(this._serverInstance.configuration);
-    this.mainElement = createElement('div',{
-      elements: [ this._configPanelElement ],
-      className: 'de-workbench-server-config-confelm-cont'
-    })
-
-    //listen for changes
-    this._configurator.addEventListener('didConfigurationChange',(evt)=>{
-      this.fireConfigChanged()
-    })
-
-  }
-
-  protected fireConfigChanged(){
-    this.fireEvent("didConfigurationChange", this)
-  }
-
 
 }
 

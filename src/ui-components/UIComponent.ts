@@ -5,6 +5,7 @@
  * Copyright(c) 2017 Dynamic Engine Team @ Vipera Plc
  * MIT Licensed
  */
+ import { EventEmitter }  from 'events'
 
 export interface UIComponent {
   element():HTMLElement
@@ -37,5 +38,34 @@ export class UIBaseComponent implements UIComponent {
     this.mainElement = undefined;
   }
 
+
+}
+
+export class UIExtComponent extends UIBaseComponent {
+
+  private _events:EventEmitter;
+
+  constructor(){
+    super();
+    this._events = new EventEmitter()
+  }
+
+  protected fireEvent(event, ...params){
+    this._events.emit(event, params)
+  }
+
+  public addEventListener(event:string, listener){
+      this._events.addListener(event,listener)
+  }
+
+  public removeEventListener(event:string, listener){
+      this._events.removeListener(event,listener)
+  }
+
+  public destroy(){
+    this._events.removeAllListeners();
+    this._events = null;
+    super.destroy()
+  }
 
 }
