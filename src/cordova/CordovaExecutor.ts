@@ -323,13 +323,14 @@ export class CordovaExecutor extends CommandExecutor {
 
   public runBuild(projectRoot:string,platform:string,cliOptions:any){
     Logger.getInstance().info("Executing build for ",projectRoot, platform,cliOptions);
-    this.applyGlobalCliOptions(cliOptions);
+    //this.applyGlobalCliOptions(cliOptions);
+    var env = this.getGlobalEnvCloneWithOptions(cliOptions)
     var cmd="cordova"
     var args = ["build",platform];
     _.forEach(cliOptions.flags,(single) => {
       args[args.length] = single;
     });
-    var options=this.getCmdOptions(projectRoot);
+    var options=this.getCmdOptions(projectRoot,env);
     cmd = this.prepareCommand(cmd);
     this.spawnRef = spawn(cmd, args, options);
     return new Promise((resolve,reject) => {
@@ -395,11 +396,11 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
-  public runPrepare(projectRoot:string, platform?:string){
+  public runPrepare(projectRoot:string, platform?:string, cliOptions?:any){
     Logger.getInstance().info("Executing prepare for ", projectRoot, platform);
     return new Promise((resolve,reject) => {
       var cmd = this.createPrepare(platform);
-      var options=this.getCmdOptions(projectRoot);
+      var options=this.getCmdOptions(projectRoot,cliOptions);
       exec(cmd,options,(error, stdout, stderr) => {
         if(error){
           console.error(error.toString());
@@ -443,7 +444,7 @@ export class CordovaExecutor extends CommandExecutor {
 
   private getGlobalEnvCloneWithOptions(cliOptions){
     let cloneEnv = _.clone(process.env);
-    if(cliOptions.envVariables){
+    if(cliOptions && cliOptions.envVariables){
       _.forEach(cliOptions.envVariables,(single) => {
         Logger.getInstance().debug("Set Env variable:",single.name, " " , single.value);
         cloneEnv[single.name] = single.value;
@@ -464,7 +465,8 @@ export class CordovaExecutor extends CommandExecutor {
   runProject(projectRoot:string,platform:string,target:string,cliOptions:any){
     Logger.getInstance().info("Running project for ", projectRoot, platform,target);
     console.log("Execute run with spawn for " + platform,"and cliOptions",cliOptions);
-    this.applyGlobalCliOptions(cliOptions);
+    //this.applyGlobalCliOptions(cliOptions);
+    var env = this.getGlobalEnvCloneWithOptions(cliOptions);
     var cmd="cordova"
     var args = ["run",platform];
     if(target && target !== DEVICE_AUTO_DEF ){
@@ -475,7 +477,8 @@ export class CordovaExecutor extends CommandExecutor {
     });
     var options={
         cwd: projectRoot,
-        detached:false
+        detached:false,
+        env:env
     };
     cmd = this.prepareCommand(cmd);
     this.spawnRef = spawn(cmd, args, options);
