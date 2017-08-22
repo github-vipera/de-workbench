@@ -400,7 +400,8 @@ export class CordovaExecutor extends CommandExecutor {
     Logger.getInstance().info("Executing prepare for ", projectRoot, platform);
     return new Promise((resolve,reject) => {
       var cmd = this.createPrepare(platform);
-      var options=this.getCmdOptions(projectRoot,cliOptions);
+      var env = this.getGlobalEnvCloneWithOptions(cliOptions)
+      var options=this.getCmdOptions(projectRoot,env);
       exec(cmd,options,(error, stdout, stderr) => {
         if(error){
           console.error(error.toString());
@@ -449,7 +450,6 @@ export class CordovaExecutor extends CommandExecutor {
         Logger.getInstance().debug("Set Env variable:",single.name, " " , single.value);
         cloneEnv[single.name] = single.value;
       });
-      return;
     }
     return cloneEnv;
   }

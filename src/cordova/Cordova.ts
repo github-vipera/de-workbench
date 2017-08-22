@@ -310,13 +310,13 @@ export class Cordova {
   /**
    * Prepare the given Cordova project
    */
-  public prepareProject(projectRoot: string, platform:string): Promise<any> {
+  public prepareProject(projectRoot: string, platform:string,cliOptions?:any): Promise<any> {
     Logger.getInstance().debug("prepareProject: ", projectRoot)
     if(this.isBusy()){
       return this.rejectForBusySharedExecutor();
     }
     this.sharedExecutor = new CordovaExecutor(null);
-    return this.sharedExecutor.runPrepare(projectRoot, platform);
+    return this.sharedExecutor.runPrepare(projectRoot, platform,cliOptions);
   }
 
   public prepareProjectWithBrowserPatch(projectRoot: string, platform?:string,cliOptions?:any): Promise<any> {

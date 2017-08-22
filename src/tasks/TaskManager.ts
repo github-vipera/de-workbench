@@ -23,6 +23,7 @@ export class TaskManager{
       throw new Error("TaskManager is busy");
     }
     this.cliOptions = TaskUtils.createCliOptions(taskConfig);
+    Logger.getInstance().info("cliOptions:",JSON.stringify(this.cliOptions));
     await this.scheduleNodeScripts(taskConfig,project,this.cliOptions);
     this.currentTask = taskConfig;
     this.project = project;
@@ -76,7 +77,7 @@ export class TaskManager{
 
   async executePrepare(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
-    return this.cordova.prepareProject(project.path,platform);
+    return this.cordova.prepareProject(project.path,platform,cliOptions);
   }
 
   private async startPlatformServer(project:CordovaProjectInfo){

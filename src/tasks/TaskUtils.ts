@@ -6,6 +6,7 @@ import {CordovaTaskConfiguration, CordovaCliOptions} from '../cordova/CordovaTas
 import {CordovaUtils} from '../cordova/CordovaUtils';
 import {Logger} from '../logger/Logger';
 import {findIndex, forEach} from 'lodash'
+const CORDOVA_BUILD_VARIANT:string = 'CORDOVA_BUILD_VARIANT';
 
 export class TaskUtils {
   private constructor(){}
@@ -72,6 +73,9 @@ export class TaskUtils {
     forEach(envVariables,(single:{name:string,value:string}) => {
       cliOptions.envVariables.push(single);
     });
+    if(taskConfig.variantName){
+      cliOptions.envVariables.push({name:CORDOVA_BUILD_VARIANT, value:taskConfig.variantName})
+    }
     return cliOptions;
   }
 
