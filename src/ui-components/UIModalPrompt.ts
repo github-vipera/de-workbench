@@ -39,15 +39,6 @@ export class UIModalPrompt {
   }
 
   protected createEditor(value, placeholder){
-    /*
-    let inputEl = createTextEditor({
-      value: value,
-      placeholder: placeholder,
-      change: (value) => {
-        this.events.emit('didChanged')
-      }
-    })
-    */
     let inputEl = createElement('input',{
       className : 'input-text'
     })
