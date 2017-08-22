@@ -154,7 +154,7 @@ class HeaderCtrl extends UIExtComponent {
 
   constructor(serverInstance:ServerInstanceWrapper){
     super();
-    this._events = new EventEmitter()
+    //this._events = new EventEmitter()
     this._serverInstance = serverInstance;
     this.initUI();
   }
