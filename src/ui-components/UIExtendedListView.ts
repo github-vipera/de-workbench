@@ -69,7 +69,9 @@ export class UIExtendedListView extends UIListView {
     editorEl.style.position = "absolute"
     editorEl.style.visibility = "hidden"
     editorEl.classList.add("de-workbench-listview-tb-editor")
+    editorEl.classList.add("nativenative-key-bindings")
     editorEl.addEventListener('keydown',(evt)=>{
+      evt.stopPropagation();
       if (evt.keyCode===13){ //ENTER
         this.commitEditing();
       }
