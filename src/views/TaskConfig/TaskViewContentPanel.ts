@@ -194,6 +194,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
     })
     this.npmScriptsSelect.setItems(model);
     if(def){
+      this.npmScriptsSelect.resetSelection();
       this.npmScriptsSelect.setSelectedItem(def);
     }
   }
@@ -376,6 +377,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
 
   private getSelectedNpmScript():string {
     let value = this.npmScriptsSelect.getSelectedItem();
+    console.log('selectedItem:',value);
     return value || null;
   }
 
@@ -400,11 +402,15 @@ export class TaskViewContentPanel extends UIBaseComponent{
 
     if(variant){
       this.taskConfig.variantName = variant;
+    }else{
+      this.taskConfig ? this.taskConfig.variantName = null : null;
     }
 
     let nodeScript = this.getSelectedNpmScript();
     if(nodeScript){
       this.taskConfig.nodeTasks = [nodeScript];
+    }else{
+      this.taskConfig ? this.taskConfig.nodeTasks = null : null;
     }
 
     return this.taskConfig;
