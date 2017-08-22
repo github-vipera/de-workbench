@@ -13,9 +13,10 @@ import {
 import { UIBaseComponent } from '../../ui-components/UIComponent'
 import { CordovaTaskConfiguration, CordovaTask } from '../../cordova/CordovaTasks'
 import { UITreeViewModel, UITreeItem, UITreeView,UITreeViewSelectListener,findItemInTreeModel } from '../../ui-components/UITreeView'
-import { map, filter, reject } from 'lodash'
+import { map, filter, reject, find } from 'lodash'
 import { EventEmitter }  from 'events'
 import { Logger } from  '../../logger/Logger'
+const StringHash = require('string-hash')
 
 export class TaskViewSelectorPanel extends UIBaseComponent implements UITreeViewSelectListener{
   private treeModel:UITreeViewModel;
@@ -110,7 +111,7 @@ export class TaskViewSelectorPanel extends UIBaseComponent implements UITreeView
 
   createCustomTaskNode(cvdCustomTasks:Array<CordovaTaskConfiguration>):UITreeItem{
     let children = map<CordovaTaskConfiguration,UITreeItem>(cvdCustomTasks,(item:CordovaTaskConfiguration) => {
-      return  { id: item.name, name: item.name};
+      return  { id: StringHash(item.name), name: item.name};
     });
     return { id: 'custom', name: 'Custom', icon: null,
       expanded:true,
@@ -120,7 +121,7 @@ export class TaskViewSelectorPanel extends UIBaseComponent implements UITreeView
 
   createCdvTaskNode(cvdTask:Array<CordovaTaskConfiguration>):UITreeItem{
     let children = map<CordovaTaskConfiguration,UITreeItem>(cvdTask,(item:CordovaTaskConfiguration) => {
-      return  { id: item.name, name: item.displayName};
+      return  { id: StringHash(item.name), name: item.displayName};
     });
     return { id: 'default', name: 'Cordova', icon: null,
       expanded : true,
@@ -131,16 +132,26 @@ export class TaskViewSelectorPanel extends UIBaseComponent implements UITreeView
   onItemSelected(itemId:string,item:UITreeItem){
     console.log("selected: ",itemId,item);
     if(this.taskSelectionListener){
-      this.taskSelectionListener(itemId);
+      this.taskSelectionListener(this.translateItemIdToTaskId(itemId));
     }
   }
 
   setSelected(itemId:string,value:boolean):void{
-    this.treeView.selectItemById(itemId,value);
+    this.treeView.selectItemById(StringHash(itemId),value);
   }
 
   setOnTaskChangeListener(callback: (itemId:string) => void):void{
     this.taskSelectionListener = callback;
+  }
+
+  translateItemIdToTaskId(itemId:string):string {
+    let task:CordovaTaskConfiguration = find(this.cdvTasks,(item) => {
+      return itemId == StringHash(item.name);
+    });
+    if(task){
+      return task.name;
+    }
+    return itemId;
   }
 
 }
