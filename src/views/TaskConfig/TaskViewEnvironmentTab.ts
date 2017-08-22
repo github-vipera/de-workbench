@@ -46,8 +46,10 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
   private listView:UIExtendedListView;
   private model:EnvironmentVarListViewModel;
   private toolbar:HTMLElement
+  private events:EventEmitter;
   constructor(){
     super();
+    this.events = new EventEmitter();
     this.initUI()
   }
   private initUI(){
@@ -65,13 +67,13 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
                             .setId('add')
                             .setCaption("+")
                             .setClickListener(()=>{
-                               console.log('add click');
+                              this.model.addNewProperty();
                              }))
     buttonGroup.addButton(new UIButtonConfig()
                             .setId('add')
                             .setCaption("-")
                             .setClickListener(()=>{
-                                console.log('remove click');
+                                this.removeSelectedRow();
                              }))
     buttonGroup.element().classList.add('btn-group-xs')
     this.toolbar = createElement('div',{
@@ -88,6 +90,12 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
         //this.fireDataChanged();
       });
     this.listView = new UIExtendedListView(this.model);
+  }
+
+  protected removeSelectedRow(){
+    let row = this.listView.getSelectedRow();
+    this.model.removePropertyAt(row)
+    this.events.emit("didPropertyRemoved")
   }
 
   updateUI(values:Array<EnvironmentVariable>){
