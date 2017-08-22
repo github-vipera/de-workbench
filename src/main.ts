@@ -103,7 +103,7 @@ export default {
   consumeInk: function (ink) {
     ConsumedServices.ink = ink;
     this.ink = ink;
-    InkProvider.getInstance().setInk(this.ink);
+    //InkProvider.getInstance().setInk(this.ink);
 
     /**
     //const {allowUnsafeEval, allowUnsafeNewFunction} = require('loophole');
