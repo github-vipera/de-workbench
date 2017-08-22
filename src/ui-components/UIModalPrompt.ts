@@ -82,11 +82,17 @@ export class UIModalPrompt {
       }
     })
     this.container = createElement('div',{
-      elements: [this.inputEl, createText('Press Esc to cancel')]
+      elements: [this.inputEl, createText('Press Esc to cancel')],
     })
-    this.panel = atom.workspace.addModalPanel({
+    this.container.style.padding = "10px"
+
+    let modalConfig = {
       item: this.container
-    });
+    }
+    modalConfig['className'] = 'de-workbench-modal'
+
+
+    this.panel = atom.workspace.addModalPanel(modalConfig);
     this.inputEl.focus();
   }
 
