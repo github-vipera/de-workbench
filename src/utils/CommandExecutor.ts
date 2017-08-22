@@ -31,11 +31,15 @@ export class CommandExecutor {
     return cmd;
   }
 
-  getCmdOptions(path?:string):any{
-    return{
+  getCmdOptions(path?:string,env?:any):any{
+    let cmdOptions:any = {
         cwd: path || this.basePath,
         detached:false
     };
+    if(env){
+      cmdOptions.env = env;
+    }
+    return cmdOptions;
   }
 
   isBusy(): boolean {

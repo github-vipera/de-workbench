@@ -433,12 +433,24 @@ export class CordovaExecutor extends CommandExecutor {
   }
 
   private applyGlobalCliOptions(cliOptions){
-    if(cliOptions.envVars){
-      _.forEach(cliOptions.envVars,(single) => {
-        Logger.getInstance().debug("Set Env variable:",single);
+    if(cliOptions.envVariables){
+      _.forEach(cliOptions.envVariables,(single) => {
+        Logger.getInstance().debug("Set Env variable:",single.name, " " , single.value);
         process.env[single.name] = single.value;
       });
     }
+  }
+
+  private getGlobalEnvCloneWithOptions(cliOptions){
+    let cloneEnv = _.clone(process.env);
+    if(cliOptions.envVariables){
+      _.forEach(cliOptions.envVariables,(single) => {
+        Logger.getInstance().debug("Set Env variable:",single.name, " " , single.value);
+        cloneEnv[single.name] = single.value;
+      });
+      return;
+    }
+    return cloneEnv;
   }
 
   private createPrepare(platform:string):string{

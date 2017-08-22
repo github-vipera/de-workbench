@@ -283,7 +283,7 @@ export class Cordova {
    * Runs build command fot the given Cordova project
    */
   public buildProject(projectRoot: string, platform:string, options:any): Promise<any> {
-    Logger.getInstance().debug("buildProject: ", projectRoot);
+    Logger.getInstance().debug("buildProject: ", projectRoot, JSON.stringify(options));
     if(this.isBusy()){
       return this.rejectForBusySharedExecutor();
     }
