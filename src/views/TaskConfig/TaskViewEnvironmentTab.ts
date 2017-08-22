@@ -36,8 +36,10 @@ export class TaskViewEnvironmentTab extends UIBaseComponent {
     });
   }
   contextualize(task:CordovaTaskConfiguration,project: CordovaProjectInfo){
-    let envVars=task.envVariables;
-    this.environmentVarRenderer.updateUI(envVars);
+    if(!task.envVariables){
+      task.envVariables = [];
+    }
+    this.environmentVarRenderer.updateUI(task.envVariables);
   }
 }
 
@@ -87,7 +89,7 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
   private initListView(){
     this.model = this.buildModel([])
       .addEventListener('didModelChanged',()=>{
-        //this.fireDataChanged();
+        this.fireDataChanged();
       });
     this.listView = new UIExtendedListView(this.model);
   }
@@ -99,14 +101,19 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
   }
 
   updateUI(values:Array<EnvironmentVariable>){
-    if(this.model){
+    console.log('update ui');
+    /*if(this.model){
       this.model.destroy();
-    }
-    this.model = this.buildModel(values);
-    this.listView.setModel(this.model);
+    }*/
+    this.model.forceProperties(values);
   }
   private buildModel(values:Array<EnvironmentVariable>):EnvironmentVarListViewModel{
     return new EnvironmentVarListViewModel(values);
+  }
+
+  private fireDataChanged(){
+    console.log('fireDataChanged');
+    //this.events.emit('didEnvironmenVarDataChanged');
   }
 
 }
@@ -214,6 +221,16 @@ class EnvironmentVarListViewModel implements UIExtendedListViewModel {
 
   protected fireModelChanged(){
     this.events.emit("didModelChanged", this)
+  }
+
+  /*public getProperties():Array<EnvironmentVariable>{
+    return this.properties;
+  }*/
+
+
+  forceProperties(values:Array<EnvironmentVariable>){
+    this.properties = values;
+    this.fireModelChanged();
   }
 
   public destroy(){

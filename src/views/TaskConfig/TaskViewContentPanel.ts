@@ -39,6 +39,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
   private isReleaseEl:HTMLElement
   private evtEmitter:EventEmitter
   private tabbedView:UITabbedView
+  private taskViewEnvironmentTab:TaskViewEnvironmentTab
   constructor(evtEmitter:EventEmitter){
     super();
     this.evtEmitter = evtEmitter;
@@ -79,16 +80,13 @@ export class TaskViewContentPanel extends UIBaseComponent{
   }
 
   private initEnvironmentTabUI(){
-    let taskViewEnvironmentTab = new TaskViewEnvironmentTab();
+    this.taskViewEnvironmentTab = new TaskViewEnvironmentTab();
     let panelContainer:HTMLElement = createElement('div',{
       className:'de-workbench-taskpanel-content-container',
       elements:[
-
+        this.taskViewEnvironmentTab.element()
       ]
     });
-    let elem:HTMLElement = taskViewEnvironmentTab.element();
-    console.log("elem",elem);
-    insertElement(panelContainer,elem);
     this.tabbedView.addView(new UITabbedViewItem('EnvironmentPanel',"Environment",panelContainer));
   }
 
@@ -304,6 +302,7 @@ export class TaskViewContentPanel extends UIBaseComponent{
     this.updatePlatforms(this.taskConfig.selectedPlatform);
 
     this.applyConstraintsToView(this.taskConfig.constraints);
+    this.taskViewEnvironmentTab.contextualize(this.taskConfig,this.projectInfo);
 
   }
 

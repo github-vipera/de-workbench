@@ -136,12 +136,12 @@ export class TaskManager{
   }
 
   private async execActionTask(action:LiveActions){
+    await this.scheduleNodeScripts(this.currentTask,this.project);
     if(action.type == "doLiveReload"){
-      let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
+      let platform = this.currentTask.selectedPlatform ? this.currentTask.selectedPlatform.name : null;
       await this.cordova.prepareProjectWithBrowserPatch(this.project.path,platform);
     }
     return Promise.resolve();
-
   }
 
 
