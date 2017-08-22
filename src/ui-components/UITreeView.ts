@@ -72,7 +72,7 @@ export class UITreeView extends UIBaseComponent {
     this.mainElement =  createElement('div', {
         elements: [
               ],
-        className:'de-workbench-treeview tree-view'
+        className:'de-workbench-treeview' // do not use this class in order to avoid key bindings problems: 'tree-view'
     })
 
   }
