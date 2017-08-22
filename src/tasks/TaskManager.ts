@@ -10,10 +10,11 @@ import { CordovaDevice } from '../cordova/CordovaDeviceManager'
 
 export class TaskManager{
   private currentTask:CordovaTaskConfiguration;
+  private project:CordovaProjectInfo
+  private cliOptions: CordovaCliOptions
   private platformServer:PlatformServer = null;
   private scriptExecutor:ScriptExecutor = null;
   private cordova:Cordova
-  project:CordovaProjectInfo
   constructor(){
       this.cordova=ProjectManager.getInstance().cordova;
   }
@@ -21,27 +22,27 @@ export class TaskManager{
     if(this.isBusy()){
       throw new Error("TaskManager is busy");
     }
-    let cliOptions: CordovaCliOptions = TaskUtils.createCliOptions(taskConfig);
-    await this.scheduleNodeScripts(taskConfig,project);
+    this.cliOptions = TaskUtils.createCliOptions(taskConfig);
+    await this.scheduleNodeScripts(taskConfig,project,this.cliOptions);
     this.currentTask = taskConfig;
     this.project = project;
     Logger.getInstance().debug('schedule node tasks');
     try{
       switch(this.currentTask.taskType){
         case "prepare":
-            await this.executePrepare(project,cliOptions);
+            await this.executePrepare(project,this.cliOptions);
             this.currentTask = null;
         break;
         case "build":
-            await this.executeBuild(project,cliOptions);
+            await this.executeBuild(project,this.cliOptions);
             this.currentTask = null
         break;
         case "run":
-            await this.executeRun(project,cliOptions);
+            await this.executeRun(project,this.cliOptions);
             this.currentTask = null
         case "buildRun":
-            await this.executeBuild(project,cliOptions);
-            await this.executeRun(project,cliOptions)
+            await this.executeBuild(project,this.cliOptions);
+            await this.executeRun(project,this.cliOptions)
             this.currentTask = null
         break;
       }
@@ -136,16 +137,16 @@ export class TaskManager{
   }
 
   private async execActionTask(action:LiveActions){
-    await this.scheduleNodeScripts(this.currentTask,this.project);
+    await this.scheduleNodeScripts(this.currentTask,this.project,this.cliOptions);
     if(action.type == "doLiveReload"){
       let platform = this.currentTask.selectedPlatform ? this.currentTask.selectedPlatform.name : null;
-      await this.cordova.prepareProjectWithBrowserPatch(this.project.path,platform);
+      await this.cordova.prepareProjectWithBrowserPatch(this.project.path,platform,this.cliOptions);
     }
     return Promise.resolve();
   }
 
 
-  private async scheduleNodeScripts(taskConfig:CordovaTaskConfiguration,project:CordovaProjectInfo){
+  private async scheduleNodeScripts(taskConfig:CordovaTaskConfiguration,project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
     if(!taskConfig.nodeTasks || !(taskConfig.nodeTasks.length > 0)){
       Logger.getInstance().debug('No script defined');
       return Promise.resolve();

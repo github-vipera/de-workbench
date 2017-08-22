@@ -415,9 +415,9 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
-  public runPrepareWithBrowserPatch(projectRoot:string,platform?:string){
+  public runPrepareWithBrowserPatch(projectRoot:string,platform?:string,cliOptions?:any){
     return new Promise((resolve,reject) => {
-      this.runPrepare(projectRoot,platform).then(() => {
+      this.runPrepare(projectRoot,platform,cliOptions).then(() => {
         this.patchExtraBrowserFile(projectRoot);
         resolve();
       },(err) => {

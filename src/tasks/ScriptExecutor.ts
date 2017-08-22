@@ -18,14 +18,14 @@ export class ScriptExecutor extends CommandExecutor{
     let result = await this.runScriptImpl(name,basePath);
     return result;
   }
-  async runNpmScripts(names:Array<string>,basePath:string){
+  async runNpmScripts(names:Array<string>,basePath:string,cliOptions?:any){
     let lastRes;
     for(let name of names){
       lastRes = await this.runNpmScript(name,basePath);
     }
     return lastRes;
   }
-  private async runScriptImpl(name:string,basePath:string){
+  private async runScriptImpl(name:string,basePath:string, cliOptions?:any){
     Logger.getInstance().info("runScriptImpl...");
     //var cmd = "cordova";
     var options = {
