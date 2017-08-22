@@ -395,7 +395,7 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
-  public runPrepare(projectRoot:string, platform:string){
+  public runPrepare(projectRoot:string, platform?:string){
     Logger.getInstance().error("Executing prepare for ", projectRoot, platform);
     return new Promise((resolve,reject) => {
       var cmd = this.createPrepare(platform);
@@ -414,9 +414,9 @@ export class CordovaExecutor extends CommandExecutor {
     });
   }
 
-  public runPrepareWithBrowserPatch(projectRoot:string){
+  public runPrepareWithBrowserPatch(projectRoot:string,platform?:string){
     return new Promise((resolve,reject) => {
-      this.runPrepare(projectRoot,"browser").then(() => {
+      this.runPrepare(projectRoot,platform).then(() => {
         this.patchExtraBrowserFile(projectRoot);
         resolve();
       },(err) => {

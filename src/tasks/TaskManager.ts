@@ -13,6 +13,7 @@ export class TaskManager{
   private platformServer:PlatformServer = null;
   private scriptExecutor:ScriptExecutor = null;
   private cordova:Cordova
+  project:CordovaProjectInfo
   constructor(){
       this.cordova=ProjectManager.getInstance().cordova;
   }
@@ -23,6 +24,7 @@ export class TaskManager{
     let cliOptions: CordovaCliOptions = TaskUtils.createCliOptions(taskConfig);
     await this.scheduleNodeScripts(taskConfig,project);
     this.currentTask = taskConfig;
+    this.project = project;
     Logger.getInstance().debug('schedule node tasks');
     try{
       switch(this.currentTask.taskType){
@@ -58,14 +60,17 @@ export class TaskManager{
   }
   async executeBuild(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
     let platform= this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
-    return this.cordova.buildProject(project.path, platform ,{});
+    return this.cordova.buildProject(project.path, platform ,cliOptions);
   }
 
   async executeRun(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
-    this.startPlatformServer(project);
+    await this.startPlatformServer(project);
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
+    if(platform === 'browser'){
+      cliOptions.flags ? cliOptions.flags.push('--noprepare'): ['--noprepare'];
+    }
     let target:string =  this.currentTask.device ? this.currentTask.device.targetId : null;
-    return this.cordova.runProject(project.path, platform ,target,{});
+    return this.cordova.runProject(project.path, platform ,target,cliOptions);
   }
 
   async executePrepare(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
@@ -89,7 +94,7 @@ export class TaskManager{
       Logger.getInstance().error("Server configuration build fail");
       return Promise.resolve();
     }
-    await this.cordova.prepareProjectWithBrowserPatch(project.path);
+    await this.cordova.prepareProjectWithBrowserPatch(project.path,platform.name);
     this.platformServer = PlatformServerImpl.createNew();
     this.platformServer.start(srvConf);
   }
@@ -122,10 +127,21 @@ export class TaskManager{
    */
   public async sendAction(action:LiveActions) {
     if(this.isPlatformServerRunning()){
+      Logger.getInstance().debug("sendAction ",action.type);
+      await this.execActionTask(action);
       await this.platformServer.executeAction(action);
       return Promise.resolve();
     }
     return Promise.resolve();
+  }
+
+  private async execActionTask(action:LiveActions){
+    if(action.type == "doLiveReload"){
+      let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
+      await this.cordova.prepareProjectWithBrowserPatch(this.project.path,platform);
+    }
+    return Promise.resolve();
+
   }
 
 

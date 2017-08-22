@@ -319,10 +319,10 @@ export class Cordova {
     return this.sharedExecutor.runPrepare(projectRoot, platform);
   }
 
-  public prepareProjectWithBrowserPatch(projectRoot: string): Promise<any> {
+  public prepareProjectWithBrowserPatch(projectRoot: string, platform?:string): Promise<any> {
     Logger.getInstance().debug("prepareProject: ", projectRoot);
     let executor = new CordovaExecutor(null);
-    return executor.runPrepareWithBrowserPatch(projectRoot);
+    return executor.runPrepareWithBrowserPatch(projectRoot,platform);
   }
 
   public runProject(projectRoot:string,platform:string,target:string,options:any): Promise<any> {
