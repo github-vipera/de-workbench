@@ -18,7 +18,7 @@ import {
  attachEventFromObject,
  createTextEditor
 } from '../element/index';
-
+import { UIInputFormElement } from './UIInputFormElement'
 import { EventEmitter }  from 'events'
 const { CompositeDisposable } = require('atom');
 
@@ -39,6 +39,7 @@ export class UIModalPrompt {
   }
 
   protected createEditor(value, placeholder){
+    /*
     let inputEl = createTextEditor({
       value: value,
       placeholder: placeholder,
@@ -46,6 +47,13 @@ export class UIModalPrompt {
         this.events.emit('didChanged')
       }
     })
+    */
+    let inputEl = createElement('input',{
+      className : 'input-text'
+    })
+    inputEl.setAttribute('placeholder', placeholder)
+    inputEl.value = value
+    inputEl.setSelectionRange(0, value.length)
     return inputEl;
   }
 
@@ -81,10 +89,13 @@ export class UIModalPrompt {
         this.doCancel()
       }
     })
+    let spacer = createElement('div',{});
+    spacer.style.height = "10px"
     this.container = createElement('div',{
-      elements: [this.inputEl, createText('Press Esc to cancel')],
+      elements: [this.inputEl, spacer, createText('Press Esc to cancel')],
     })
-    this.container.style.padding = "10px"
+    this.container.style["padding-left"] = "10px"
+    this.container.style["padding-right"] = "10px"
 
     let modalConfig = {
       item: this.container
@@ -97,7 +108,7 @@ export class UIModalPrompt {
   }
 
   protected doConfirm(){
-    let txtValue = this.inputEl["getModel"]().getText();
+    let txtValue = this.inputEl["value"];//["getModel"]().getText();
     this.closePanel();
     this.onConfirmCallback(txtValue);
   }
