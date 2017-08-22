@@ -31,7 +31,8 @@ export class TaskViewEnvironmentTab extends UIBaseComponent {
     this.mainElement=createElement('div',{
       className:'task-env-tab-container',
       elements:[
-        this.environmentVarRenderer.element()
+        this.environmentVarRenderer.element(),
+        this.cliParamsRenderer.element()
       ]
     });
   }
@@ -40,6 +41,10 @@ export class TaskViewEnvironmentTab extends UIBaseComponent {
       task.envVariables = [];
     }
     this.environmentVarRenderer.updateUI(task.envVariables);
+    if(!task.cliParams){
+      task.cliParams = [];
+    }
+    this.cliParamsRenderer.updateUI(task.cliParams);
   }
 }
 
@@ -102,9 +107,6 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
 
   updateUI(values:Array<EnvironmentVariable>){
     console.log('update ui');
-    /*if(this.model){
-      this.model.destroy();
-    }*/
     this.model.forceProperties(values);
   }
   private buildModel(values:Array<EnvironmentVariable>):EnvironmentVarListViewModel{
@@ -113,7 +115,7 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
 
   private fireDataChanged(){
     console.log('fireDataChanged');
-    //this.events.emit('didEnvironmenVarDataChanged');
+    this.events.emit('didEnvironmenVarDataChanged');
   }
 
 }
@@ -186,7 +188,7 @@ class EnvironmentVarListViewModel implements UIExtendedListViewModel {
 
   getColumnName(col:number):string {
     if (col===0){
-      return "Property"
+      return "Env Variable name"
     } else if (col===1){
       return "Value"
     }
@@ -223,11 +225,6 @@ class EnvironmentVarListViewModel implements UIExtendedListViewModel {
     this.events.emit("didModelChanged", this)
   }
 
-  /*public getProperties():Array<EnvironmentVariable>{
-    return this.properties;
-  }*/
-
-
   forceProperties(values:Array<EnvironmentVariable>){
     this.properties = values;
     this.fireModelChanged();
@@ -241,8 +238,178 @@ class EnvironmentVarListViewModel implements UIExtendedListViewModel {
 }
 
 
-
-
 class TaskViewCliParamsRenderer extends UIBaseComponent {
+  private listView:UIExtendedListView;
+  private model:CliParamsListViewModel;
+  private toolbar:HTMLElement
+  private events:EventEmitter;
+  constructor(){
+    super();
+    this.events = new EventEmitter();
+    this.initUI();
+  }
+  private initUI(){
+    this.initToolbar();
+    this.initListView();
+    this.mainElement = createElement('div', {
+      elements: [ this.toolbar, this.listView.element() ],
+      className: 'de-workbench-variants-ctrl-prop-renderer'
+    })
+  }
+  private initToolbar(){
+    let buttonGroup = new UIButtonGroup(UIButtonGroupMode.Standard);
+    buttonGroup.addButton(new UIButtonConfig()
+                            .setId('add')
+                            .setCaption("+")
+                            .setClickListener(()=>{
+                              this.model.addNewProperty();
+                             }))
+    buttonGroup.addButton(new UIButtonConfig()
+                            .setId('add')
+                            .setCaption("-")
+                            .setClickListener(()=>{
+                                this.removeSelectedRow();
+                             }))
+    buttonGroup.element().classList.add('btn-group-xs')
+    this.toolbar = createElement('div',{
+      elements : [
+        buttonGroup.element()
+      ],
+      className: 'de-workbench-variants-ctrl-toolbar'
+    })
+  }
+
+  private initListView(){
+    this.model = this.buildModel([])
+      .addEventListener('didModelChanged',()=>{
+        this.fireDataChanged();
+      });
+    this.listView = new UIExtendedListView(this.model);
+  }
+
+  protected removeSelectedRow(){
+    let row = this.listView.getSelectedRow();
+    this.model.removePropertyAt(row)
+    this.events.emit("didPropertyRemoved")
+  }
+
+  updateUI(values:Array<string>){
+    console.log('update ui');
+    this.model.forceValues(values);
+  }
+  private buildModel(values:Array<string>):CliParamsListViewModel{
+    return new CliParamsListViewModel(values);
+  }
+
+  private fireDataChanged(){
+    console.log('fireDataChanged');
+    this.events.emit('didCliParamsDataChanged');
+  }
+}
+
+class CliParamsListViewModel implements UIExtendedListViewModel{
+  protected values:Array<string>
+  protected events:EventEmitter;
+
+  constructor(values?:Array<string> ){
+    this.events = new EventEmitter();
+    this.values = values != null? values : [];
+  }
+
+  public addEventListener(event:string,listener):CliParamsListViewModel {
+      this.events.addListener(event, listener);
+      return this;
+  }
+
+  public removeEventListener(event:string,listener):CliParamsListViewModel {
+      this.events.removeListener(event, listener);
+      return this;
+  }
+
+  public addNewProperty(){
+    this.values.push("--NewParams");
+    this.fireModelChanged();
+  }
+
+  public removePropertyAt(index:number){
+    if (index>=0){
+      this.values.splice(index, 1);
+      this.fireModelChanged();
+    }
+  }
+
+  hasHeader():boolean{
+    return true
+  }
+
+  getRowCount():number {
+    return this.values.length
+  }
+
+  getColCount():number {
+    return 1
+  }
+
+  getValueAt(row:number, col:number):any {
+    let property:string =  this.values[row];
+    return property
+  }
+
+  getClassNameAt(row:number, col:number):string{
+    return ""
+  }
+
+  getColumnName(col:number):string {
+    if (col===0){
+      return "Cli Args"
+    }
+    return col+"?"
+  }
+
+  getClassName():string {
+    return ""
+  }
+
+  isCellEditable(row:number, col:number):boolean {
+    return true;
+  }
+
+  onValueChanged(row:number, col:number, value:any) {
+    let property:string = this.values[row];
+    if (col===0){
+      this.values[row] = value;
+    }
+    this.fireModelChanged();
+  }
+
+  onEditValidation(row:number, col:number, value:any):UIExtendedListViewValidationResult {
+    let sValue:string = value;
+    if(value.indexOf(' ') >= 0){
+      return {
+        validationStatus:true,
+        validationErrorMessage:"Space are not supported",
+        showValidationError:true
+      };
+    }
+    return {
+      validationStatus:true,
+      validationErrorMessage:"",
+      showValidationError:false
+    };
+  }
+
+  protected fireModelChanged(){
+    this.events.emit("didModelChanged", this)
+  }
+
+  forceValues(values:Array<string>){
+    this.values = values;
+    this.fireModelChanged();
+  }
+
+  public destroy(){
+    this.events.removeAllListeners();
+    this.events = null;
+  }
 
 }
