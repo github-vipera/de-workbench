@@ -396,7 +396,7 @@ export class CordovaExecutor extends CommandExecutor {
   }
 
   public runPrepare(projectRoot:string, platform?:string){
-    Logger.getInstance().error("Executing prepare for ", projectRoot, platform);
+    Logger.getInstance().info("Executing prepare for ", projectRoot, platform);
     return new Promise((resolve,reject) => {
       var cmd = this.createPrepare(platform);
       var options=this.getCmdOptions(projectRoot);
