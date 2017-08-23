@@ -16,6 +16,7 @@ import { ServerManager } from '././DEWorkbench/services/ServerManager'
 import { ProjectManager } from './DEWorkbench/ProjectManager'
 import { EventBus } from './DEWorkbench/EventBus'
 import { ConsumedServices } from './DEWorkbench/ConsumedServices'
+import { GlobalPreferences } from './DEWorkbench/GlobalPreferences'
 
 export default {
 
@@ -30,6 +31,7 @@ export default {
       console.log("DEWB activated.");
 
       //require('devtron').install()
+      GlobalPreferences.getInstance();
 
       this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();
       this.deferredActivation();
@@ -47,6 +49,9 @@ export default {
     this.deWorkbench = new DEWorkbenchClass({
     });
     window["deWorkbench"] = this.deWorkbench; //make it public only for debugging purpose
+    GlobalPreferences.getInstance().then((globalPrefs)=>{
+        window["DEWBGlobalPreferences"] = globalPrefs;
+    }); //make it public only for debugging purpose
 
     let value = 'HeaderPanel';
     this.toolbarPanel = atom.workspace[`add${value}`]({
