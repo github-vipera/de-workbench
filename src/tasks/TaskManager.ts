@@ -2,11 +2,12 @@
 import { ProjectManager } from '../DEWorkbench/ProjectManager';
 import { Cordova , CordovaProjectInfo} from '../cordova/Cordova';
 import { CordovaTaskConfiguration, CordovaCliOptions} from '../cordova/CordovaTasks'
-import { PlatformServer, PlatformServerImpl, PlatformServerConfig, LiveActions} from '../services/remote/PlatformServer'
+import { PlatformServerConfig, LiveActions} from '../services/remote/PlatformServer'
 import { TaskUtils } from './TaskUtils'
 import { Logger }  from '../logger/Logger'
 import { ScriptExecutor } from './ScriptExecutor'
 import { CordovaDevice } from '../cordova/CordovaDeviceManager'
+import { RuntimeSessionHandler } from '../services/remote/RuntimeSessionHandler'
 
 export interface LiveReloadContext {
   runTask?:CordovaTaskConfiguration;
@@ -20,7 +21,8 @@ export class TaskManager{
   private currentTask:CordovaTaskConfiguration;
   private project:CordovaProjectInfo
   //private cliOptions: CordovaCliOptions
-  private platformServer:PlatformServer = null;
+  //private platformServer:PlatformServer = null;
+  private runtimeSessionHandler:RuntimeSessionHandler
   private scriptExecutor:ScriptExecutor = null;
   private cordova:Cordova
 
@@ -113,13 +115,22 @@ export class TaskManager{
       return Promise.resolve();
     }
     await this.cordova.prepareProjectWithBrowserPatch(project.path,platform.name);
-    this.platformServer = PlatformServerImpl.createNew();
-    this.platformServer.start(srvConf);
+    this.runtimeSessionHandler = RuntimeSessionHandler.createRuntimeSession(srvConf);
+    //this.platformServer = PlatformServerImpl.createNew();
+    //this.platformServer.start(srvConf);
   }
 
   stopServer(){
-    if(this.platformServer){
+    /*if(this.platformServer){
       this.platformServer.stop().then(() => {
+          Logger.getInstance().info("Server stop done");
+          this.reloadContext = {};
+      },() => {
+        Logger.getInstance().error("Server stop fail");
+      });
+    }*/
+    if(this.runtimeSessionHandler){
+      this.runtimeSessionHandler.stopServer().then(() => {
           Logger.getInstance().info("Server stop done");
           this.reloadContext = {};
       },() => {
@@ -137,7 +148,7 @@ export class TaskManager{
   }
 
   isPlatformServerRunning():boolean{
-    return this.platformServer && this.platformServer.isRunning();
+    return this.runtimeSessionHandler && this.runtimeSessionHandler.isPlatformServerRunning();
   }
 
   /**
@@ -148,7 +159,8 @@ export class TaskManager{
     if(this.isPlatformServerRunning()){
       Logger.getInstance().debug("sendAction ",action.type);
       await this.execActionTask(action);
-      await this.platformServer.executeAction(action);
+      //await this.platformServer.executeAction(action);
+      await this.runtimeSessionHandler.sendAction(action);
       return Promise.resolve();
     }
     return Promise.resolve();
@@ -175,6 +187,5 @@ export class TaskManager{
     Logger.getInstance().debug('End npm script run');
     return res;
   }
-
 
 }
