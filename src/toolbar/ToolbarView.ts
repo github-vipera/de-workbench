@@ -31,21 +31,14 @@ export interface ToolbarOptions {
   didStop?: Function,
   didBuild?: Function,
   didReload?:Function,
+  didOpenJSConsole?:Function,
   didProjectSettings?: Function,
   didToggleToolbar?: Function,
   didToggleDebugArea?: Function
   didSelectProjectForRun?: Function,
   didToggleConsole?: Function,
   didSelectTaskClick?:Function,
-  didTaskSelected?:Function,
-  /**
-  didOpenScheme?: Function,
-  didRun?: Function,
-  didChangePath?: Function,
-  didStop?: Function,
-  didToggleConsole?: Function,
-  didToggleDebugArea?: Function
-  **/
+  didTaskSelected?:Function
 }
 
 
@@ -53,6 +46,7 @@ export interface ToolbarStatus {
   btnRunEnable?:boolean
   btnStopEnable?:boolean
   btnReloadEnable?:boolean
+  btnOpenJSConsoleEnable?:boolean
   prjSelectorEnable?:boolean
   progressStatus?: UIIndicatorStatus
   progressMsg?: string
@@ -73,6 +67,7 @@ export class ToolbarView {
   private runSelector:UIRunSelectorComponent;
   private statusIndicator: UIStatusIndicatorComponent;
   private reloadButton: HTMLElement;
+  private openJSConsoleButton: HTMLElement;
 
   private toolbarElement: HTMLElement;
   private toolbarAnchor: HTMLElement;
@@ -129,6 +124,7 @@ export class ToolbarView {
       'didRun',
       'didStop',
       'didReload',
+      'didOpenJSConsole',
       'didNewProject',
       'didBuild',
       'didToggleToolbar',
@@ -203,6 +199,17 @@ export class ToolbarView {
       createIcon('refresh')
     ]);
     insertElement(runContainer, this.reloadButton)
+
+
+    this.openJSConsoleButton = createButton({
+      disabled: true,
+      click: () => {
+        this.events.emit('didOpenJSConsole');
+      }
+    },[
+      createIcon('zap')
+    ]);
+    insertElement(runContainer, this.openJSConsoleButton)
 
     insertElement(this.toolbarElement,runContainer);
   }
@@ -305,6 +312,9 @@ export class ToolbarView {
   public updateStatus(status:ToolbarStatus){
     if(status.btnReloadEnable != null){
       this.updateButtonStatus(this.reloadButton,status.btnReloadEnable);
+    }
+    if(status.btnOpenJSConsoleEnable != null){
+      this.updateButtonStatus(this.openJSConsoleButton,status.btnOpenJSConsoleEnable);
     }
     if(status.btnStopEnable != null){
       this.updateButtonStatus(this.stopButton,status.btnStopEnable);
