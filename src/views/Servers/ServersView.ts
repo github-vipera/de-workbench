@@ -18,6 +18,7 @@
    createTextEditor
  } from '../../element/index';
 
+import { EventBus } from '../../DEWorkbench/EventBus'
 import { EventEmitter }  from 'events'
 import { UIPane } from '../../ui-components/UIPane'
 import { ServerManager, ServerProviderWrapper, ServerInstanceWrapper, ServerInstance } from  '../../DEWorkbench/services/ServerManager'
@@ -79,6 +80,10 @@ export class ServersView extends UIPane {
         ],
         className: 'de-workbench-servers-view'
     });
+
+    EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_NAME_CHANGED, (data)=>{
+      this.treeModel.reload();
+    })
 
     return el;
   }

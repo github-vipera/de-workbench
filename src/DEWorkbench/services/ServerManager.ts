@@ -54,6 +54,9 @@ export class ServerManager {
   public static get EVT_SERVER_INSTANCE_REMOVED():string { return "dewb.serverManager.serverInstance.removed"; }
   public static get EVT_SERVER_INSTANCE_STARTED():string { return "dewb.serverManager.serverInstance.started"; }
   public static get EVT_SERVER_INSTANCE_STOPPED():string { return "dewb.serverManager.serverInstance.stopped"; }
+  public static get EVT_SERVER_INSTANCE_CONFIG_CHANGED():string { return "dewb.serverManager.serverInstance.configChanged"; }
+  public static get EVT_SERVER_INSTANCE_NAME_CHANGED():string { return "dewb.serverManager.serverInstance.nameChanged"; }
+
 
   private static instance:ServerManager;
   private providers:Array<ServerProviderWrapper>
@@ -255,7 +258,6 @@ export class ServerManager {
     return new Promise((resolve,reject)=>{
       let preferences = GlobalPreferences.getInstance();
       let instances = preferences.get('/server/instances');
-      console.log("**** instances (storeInstanceConfiguration)", instances)
       if (!instances){
         Logger.getInstance().error("Error saving server instance preferences for id=" + instanceId +": server instance preferences not found.")
         reject("No server instances defined.")
@@ -269,7 +271,37 @@ export class ServerManager {
       }
       instance.configuration = configuration;
       preferences.save('/server/instances', instances);
+      let instanceWrapped = this.getInstanceById(instanceId);
+      EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_CONFIG_CHANGED, instanceWrapped);
       Logger.getInstance().debug("Server instance preferences saved for id=" + instanceId +".")
+      resolve(instanceId);
+    })
+  }
+
+  /**
+   * Store the new configuration into the global preferences
+   */
+  public changeInstanceName(instanceId:string, name:string):Promise<any>{
+    return new Promise((resolve,reject)=>{
+      let preferences = GlobalPreferences.getInstance();
+      let instances = preferences.get('/server/instances');
+      if (!instances){
+        Logger.getInstance().error("Error changing server instance name for id=" + instanceId +": server instance preferences not found.")
+        reject("No server instances defined.")
+        return;
+      }
+      let instance = _.find(instances, { serverInstanceId : instanceId});// _.find(instances, { serverInstanceId : instanceId});
+      if (!instance){
+        reject("Server instance not found.")
+        Logger.getInstance().error("Error changing server instance name for id=" + instanceId +": server instance not found.")
+        return;
+      }
+      instance.instanceName = name;
+      preferences.save('/server/instances', instances);
+      let instanceWrapped = this.getInstanceById(instanceId);
+      instanceWrapped.setName(name);
+      EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_NAME_CHANGED, instanceWrapped);
+      Logger.getInstance().debug("Server instance name changed to '"+ name +"' for id=" + instanceId +".")
       resolve(instanceId);
     })
   }
@@ -294,6 +326,10 @@ export class ServerManager {
    */
   public getInstancesForProvider(providerName:string):Array<ServerInstanceWrapper>{
       return _.filter(this.instances, { provider : providerName});
+  }
+
+  public getInstanceById(instanceId:string):ServerInstanceWrapper {
+    return _.find(this.instances, { instanceId : instanceId});
   }
 
 }
@@ -400,6 +436,9 @@ export class ServerInstanceWrapper implements ServerInstance {
     return this._serverInstance.getConfigurator(configuration);
   }
 
+  public setName(name:string){
+    this._name = name;
+  }
 
 
 }

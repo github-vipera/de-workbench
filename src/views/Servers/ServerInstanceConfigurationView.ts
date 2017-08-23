@@ -187,7 +187,7 @@ class ConfigContainerControl extends UIExtComponent {
       this.fireEvent("didSaveChange", this)
       UINotifications.showInfo("Changes saved successfully.")
     }, (err)=>{
-      alert("Error "+ err)
+      UINotifications.showError("Error saving changes: " + err)
     });
   }
 
@@ -220,13 +220,16 @@ class HeaderCtrl extends UIExtComponent {
       caption:this._serverInstance.name,
       className:  'de-workbench-server-config-header-instanceName text-highlight'
     });
-
-    /**
-    let serverName = createElement('h2',{
-      elements: [ createText(this._serverInstance.name) ],
-      className: 'de-workbench-server-config-header-instanceName text-highlight'
+    this._editableTitle.addEventListener('didValueChange',(evt)=>{
+      let newName = this._editableTitle.getCaption();
+      ServerManager.getInstance().changeInstanceName(this._serverInstance.instanceId, newName).then(()=>{
+        this.fireEvent("didNameChange", this)
+        UINotifications.showInfo("Name changed successfully.")
+      },(err)=>{
+        UINotifications.showError("Error changing name: " + err)
+      })
     })
-    **/
+
 
     let serverProviderType = createElement('span',{
       elements: [ createText(this._serverInstance.provider) ],
