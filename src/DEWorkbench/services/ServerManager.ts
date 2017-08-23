@@ -65,7 +65,6 @@ export class ServerManager {
     Logger.getInstance().debug("Creating ServerManager...")
     this.providers = [];
     this.instances = [];
-
     this._preferences = GlobalPreferences.getInstance();
     this.reloadFromConfiguration();
   }
@@ -77,6 +76,9 @@ export class ServerManager {
       return ServerManager.instance;
   }
 
+  /**
+   * Reload global preferences and restore saved instances
+   */
   protected reloadFromConfiguration():Promise<any>{
     return new Promise((resolve,reject)=>{
       let instances = this._preferences.get('server/instances')
@@ -155,6 +157,9 @@ export class ServerManager {
     return _.find(this.providers, { id : providerId});
   }
 
+  /**
+   * Restore a global preferences saved instanceName
+   */
   protected restoreServerInstance(providerId:string, instanceName:string, previousInstanceId:string, configuration:any):ServerInstanceWrapper{
       let serverProvider:ServerProviderWrapper = this.getProviderById(providerId);
       if (serverProvider){
@@ -248,15 +253,24 @@ export class ServerManager {
     })
   }
 
+  /**
+   * Unregister an instance
+   */
   private unregisterInstance(instanceWrapped:ServerInstanceWrapper){
     EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_REMOVED, instanceWrapped);
     instanceWrapped.destroy();
   }
 
+  /**
+   * Return all current instances
+   */
   public getInstances():Array<ServerInstanceWrapper>{
       return this.instances;
   }
 
+  /**
+   * Return instances for a given provider
+   */
   public getInstancesForProvider(providerName:string):Array<ServerInstanceWrapper>{
       return _.filter(this.instances, { provider : providerName});
   }
