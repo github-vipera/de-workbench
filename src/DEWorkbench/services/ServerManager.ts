@@ -58,11 +58,16 @@ export class ServerManager {
   private static instance:ServerManager;
   private providers:Array<ServerProviderWrapper>
   private instances:Array<ServerInstanceWrapper>
+  private pendingConfigInstances:Array<any> //are the configured instances, ready to instantiated when the provider will ben installed
+  private _preferences:GlobalPreferences;
 
   private constructor() {
     Logger.getInstance().debug("Creating ServerManager...")
     this.providers = [];
     this.instances = [];
+
+    this._preferences = GlobalPreferences.getInstance();
+    this.reloadFromConfiguration();
   }
 
   static getInstance() {
@@ -72,12 +77,55 @@ export class ServerManager {
       return ServerManager.instance;
   }
 
+  protected reloadFromConfiguration():Promise<any>{
+    return new Promise((resolve,reject)=>{
+      let instances = this._preferences.get('server/instances')
+      if (!instances){
+        instances = [];
+      }
+      this.pendingConfigInstances = instances;
+      this.checkForPendingInstances();
+      resolve("done")
+    });
+  }
+
+  /**
+   * This method check pending instances for instantiation
+   */
+  protected async checkForPendingInstances():Promise<any>{
+    for (var i=0;i<this.pendingConfigInstances.length;i++){
+      let pendingInstance = this.pendingConfigInstances[i];
+      let providerName = pendingInstance["providerName"];
+      let providerId = pendingInstance["providerId"];
+      let serverInstanceId = pendingInstance["serverInstanceId"];
+      let instanceName = pendingInstance["instanceName"];
+      let serverProvider = this.getProviderById(providerId);
+      if (serverProvider){
+        console.log("Server provider " + providerName +" available. Creating instance...")
+        let serverInstance = await this.restoreServerInstance(providerId, instanceName, serverInstanceId, pendingInstance["configuration"])
+        let newInstanceId = serverInstance.instanceId;
+        //TODO!! change id on config
+        this.pendingConfigInstances[i]["toRemove"] = true;
+      } else {
+        console.log("Server provider: " + providerName +" not yet available.")
+      }
+    }
+    //then remove all marked "toRemove"
+    _.remove(this.pendingConfigInstances, function (intance) {
+        return intance["toRemove"]
+    });
+  }
+
+  /**
+   * Register a new server provider
+   */
   public registerProvider(provider:ServerProvider):ServerProviderWrapper{
     try {
       Logger.getInstance().debug("Registering Server Provider: ",provider)
       console.log("Registering Server Provider: ", provider)
       let wrapper = new ServerProviderWrapper(provider);
       this.providers.push(wrapper)
+      this.checkForPendingInstances();
       EventBus.getInstance().publish(ServerManager.EVT_PROVIDER_REGISTERED, wrapper);
       return wrapper;
     } catch (ex){
@@ -87,6 +135,9 @@ export class ServerManager {
     }
   }
 
+  /**
+   * Return the list of registered providers
+   */
   public getProviders():Array<ServerProviderWrapper>{
     return this.providers;
   }
@@ -104,69 +155,97 @@ export class ServerManager {
     return _.find(this.providers, { id : providerId});
   }
 
-  public createServerInstance(providerId:string, instanceName:string, configuration:any):ServerInstanceWrapper{
-    let serverProvider:ServerProviderWrapper = this.getProviderById(providerId);
-    if (serverProvider){
-      Logger.getInstance().info("Creating new server instance for " + serverProvider.getProviderName()+"...")
-      let instance = serverProvider.createInstance(configuration);
-      let wrapper =  this.registerInstance(serverProvider.getProviderName(), serverProvider.id, instanceName, instance, configuration)
-      EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_CREATED, wrapper);
-      Logger.getInstance().info("New server instance created " + serverProvider.getProviderName()+" [instanceId:"+wrapper.instanceId+"].")
-      return wrapper;
-    } else {
-      Logger.getInstance().error("Error creating new server instance for " + serverProvider.getProviderName()+": Provider not found.")
-      throw ("Server Provider not found for '"+ providerId +"'.")
-    }
+  protected restoreServerInstance(providerId:string, instanceName:string, previousInstanceId:string, configuration:any):ServerInstanceWrapper{
+      let serverProvider:ServerProviderWrapper = this.getProviderById(providerId);
+      if (serverProvider){
+        Logger.getInstance().info("Restoring server instance for " + serverProvider.getProviderName()+"...")
+        let instance = serverProvider.createInstance(configuration);
+        let wrapper =  this.registerInstance(serverProvider.getProviderName(), serverProvider.id, instanceName, instance, configuration, previousInstanceId)
+        EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_CREATED, wrapper);
+        Logger.getInstance().info("Server instance restored " + serverProvider.getProviderName()+" [instanceId:"+wrapper.instanceId+"].")
+        return wrapper;
+      } else {
+        Logger.getInstance().error("Error restoring server instance for " + serverProvider.getProviderName()+": Provider not found.")
+        throw("Server Provider not found for '"+ providerId +"'.")
+      }
   }
 
-  private registerInstance(providerName:string, providerId:string, instanceName:string, serverInstance:ServerInstance, configuration:any):ServerInstanceWrapper {
+  /**
+   * Create a new server instance
+   */
+  public createServerInstance(providerId:string, instanceName:string, configuration:any):ServerInstanceWrapper {
+      let serverProvider:ServerProviderWrapper = this.getProviderById(providerId);
+      if (serverProvider){
+        Logger.getInstance().info("Creating new server instance for " + serverProvider.getProviderName()+"...")
+        let instance = serverProvider.createInstance(configuration);
+        let wrapper =  this.registerInstance(serverProvider.getProviderName(), serverProvider.id, instanceName, instance, configuration);
+        EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_CREATED, wrapper);
+        Logger.getInstance().info("New server instance created " + serverProvider.getProviderName()+" [instanceId:"+wrapper.instanceId+"].")
+        return wrapper
+      } else {
+        Logger.getInstance().error("Error creating new server instance for " + serverProvider.getProviderName()+": Provider not found.")
+        throw ("Server Provider not found for '"+ providerId +"'.")
+      }
+  }
+
+  /**
+   * Register a new server instance
+   */
+  private registerInstance(providerName:string, providerId:string, instanceName:string, serverInstance:ServerInstance, configuration:any, oldServerInstanceId?:string):ServerInstanceWrapper {
     Logger.getInstance().debug("Registering new server instance for provider=" + providerName +"...")
-    let wrapper = new ServerInstanceWrapper(providerName, instanceName, serverInstance, configuration)
-    Logger.getInstance().debug("New server instance registered with id=" + wrapper.instanceId +".")
-    this.instances.push(wrapper)
-    GlobalPreferences.getInstance().then((preferences)=>{
-      let instances = preferences.get('server.instances');
-      if (!instances){
-        instances = [];
+      let wrapper = new ServerInstanceWrapper(providerName, instanceName, serverInstance, configuration)
+
+      let prefInstances = this._preferences.get('server/instances');
+      if (!prefInstances){
+        prefInstances = [];
       }
-      let instancePrefs = {
-        providerName: providerName,
-        providerId: providerId,
-        serverInstanceId: wrapper.instanceId,
-        instanceName: wrapper.name,
-        configuration: configuration
+
+      if (oldServerInstanceId){
+        //update existing
+        let instance = _.find(prefInstances, { serverInstanceId : oldServerInstanceId});
+        instance["serverInstanceId"] = wrapper.instanceId;
+      } else {
+        // store new
+        let instancePrefs = {
+          providerName: providerName,
+          providerId: providerId,
+          serverInstanceId: wrapper.instanceId,
+          instanceName: wrapper.name,
+          configuration: configuration
+        }
+        prefInstances.push(instancePrefs)
       }
-      instances.push(instancePrefs)
-      preferences.save('server.instances', instances)
-      Logger.getInstance().debug("New server instance saved with id=" + wrapper.instanceId +".")
-    })
-    return wrapper;
+
+      this._preferences.save('server/instances', prefInstances);
+
+      Logger.getInstance().debug("New server instance registered with id=" + wrapper.instanceId +".")
+      this.instances.push(wrapper)
+      return wrapper;
   }
 
+  /**
+   * Store the new configuration into the global preferences
+   */
   public storeInstanceConfiguration(instanceId:string, configuration:any):Promise<any>{
     Logger.getInstance().debug("Saving server instance preferences for id=" + instanceId +"...")
     return new Promise((resolve,reject)=>{
-      GlobalPreferences.getInstance().then((preferences)=>{
-        let instances = preferences.get('server.instances');
-        if (!instances){
-          Logger.getInstance().error("Error saving server instance preferences for id=" + instanceId +": server instance preferences not found.")
-          reject("No server instances defined.")
-          return;
-        }
-        let instance = _.find(instances, { serverInstanceId : instanceId});
-        if (!instance){
-          reject("Server instance not found.")
-          Logger.getInstance().error("Error saving server instance preferences for id=" + instanceId +": server instance not found.")
-          return;
-        }
-        instance["configuration"] = configuration;
-        preferences.save('server.instances', instances);
-        Logger.getInstance().debug("Server instance preferences saved for id=" + instanceId +".")
-        resolve(instanceId);
-      }, (err)=>{
-        reject(err)
-      })
-    });
+      let instances = this._preferences.get('server/instances');
+      if (!instances){
+        Logger.getInstance().error("Error saving server instance preferences for id=" + instanceId +": server instance preferences not found.")
+        reject("No server instances defined.")
+        return;
+      }
+      let instance = _.find(instances, { serverInstanceId : instanceId});// _.find(instances, { serverInstanceId : instanceId});
+      if (!instance){
+        reject("Server instance not found.")
+        Logger.getInstance().error("Error saving server instance preferences for id=" + instanceId +": server instance not found.")
+        return;
+      }
+      instance.configuration = configuration;
+      this._preferences.save('server/instances', instances);
+      Logger.getInstance().debug("Server instance preferences saved for id=" + instanceId +".")
+      resolve(instanceId);
+    })
   }
 
   private unregisterInstance(instanceWrapped:ServerInstanceWrapper){

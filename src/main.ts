@@ -32,6 +32,7 @@ export default {
 
       //require('devtron').install()
       GlobalPreferences.getInstance();
+      ServerManager.getInstance();
 
       this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();
       this.deferredActivation();
@@ -49,9 +50,7 @@ export default {
     this.deWorkbench = new DEWorkbenchClass({
     });
     window["deWorkbench"] = this.deWorkbench; //make it public only for debugging purpose
-    GlobalPreferences.getInstance().then((globalPrefs)=>{
-        window["DEWBGlobalPreferences"] = globalPrefs;
-    }); //make it public only for debugging purpose
+    window["DEWBGlobalPreferences"] =  GlobalPreferences.getInstance()//make it public only for debugging purpose
 
     let value = 'HeaderPanel';
     this.toolbarPanel = atom.workspace[`add${value}`]({

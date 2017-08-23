@@ -145,7 +145,7 @@ export class ServersView extends UIPane {
 
   protected createNewServerProviderFor(serverProvider:ServerProviderWrapper){
     let newInstanceName = "New Server";
-    let instance = ServerManager.getInstance().createServerInstance(serverProvider.id, newInstanceName, {});
+    let instance = ServerManager.getInstance().createServerInstance(serverProvider.id, newInstanceName, {})
     this.treeModel.reload();
     this.doConfigureInstance(instance);
   }
