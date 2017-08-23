@@ -15,12 +15,13 @@ const {
     allowUnsafeNewFunction
 } = require('loophole');
 
-const trivialdb = require('trivialdb');
 const fs = require('fs')
 const path = require('path')
 
 const _ = require('lodash');
 const GUID = require('guid');
+
+var JsonDB = require('node-json-db');
 
 export class GlobalPreferences {
 
@@ -28,25 +29,16 @@ export class GlobalPreferences {
   private _db:any;
 
   private constructor(){
-    this._db = trivialdb.db('de_workbench_preferences', { loadFromDisk: true, rootPath: GlobalPreferences.preferencesFolder, prettyPrint:true });
-    console.log("Global Preferences:" , GlobalPreferences.preferencesFolder)
-    this.load().then((prefs)=>{
-      prefs.save("last_access", new Date().toString())
-    });
+    this.ensureFolder(GlobalPreferences.preferencesFolder)
+    let prefsFile = path.join(GlobalPreferences.preferencesFolder,'de_workbench_preferences.json');
+    this._db = new JsonDB(prefsFile, false, true);
+    console.log("Global Preferences:" , prefsFile)
   }
 
-  private load():Promise<GlobalPreferences>{
-    return new Promise((resolve,reject)=>{
-      if(!fs.existsSync(GlobalPreferences.preferencesFolder)){
-        this.saveTimestamp()
-        resolve(this);
-        return;
-      }
-      this._db.reload().then(()=>{
-        this.saveTimestamp()
-        resolve(this);
-      },reject);
-    })
+  private ensureFolder(folder){
+    if (!fs.existsSync(folder)){
+      fs.mkdirSync(folder);
+    }
   }
 
   private saveTimestamp(){
@@ -61,20 +53,28 @@ export class GlobalPreferences {
     return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
   }
 
-  public static getInstance():Promise<GlobalPreferences>{
+  public static getInstance():GlobalPreferences{
     if (!this._instance){
       this._instance = new GlobalPreferences();
     }
-    return this._instance.load();
+    return this._instance;
   }
 
   public get(key:string){
-    return this._db.get(key);
+    try {
+      return this._db.getData(key);
+    } catch(error) {
+        return null;
+    };
   }
 
   public save(key:string, value:any){
-    return this._db.save(key, value);
+    this._db.push(key, value);
+    this._db.save();
   }
 
+  public delete(key:string){
+    this._db.delete(key)
+  }
 
 }
