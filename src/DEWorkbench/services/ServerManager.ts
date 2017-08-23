@@ -9,10 +9,11 @@
 import { Logger } from '../../logger/Logger'
 import { CordovaPlugin } from '../../cordova/Cordova'
 import { EventBus } from '../EventBus'
+import { GlobalPreferences } from '../GlobalPreferences'
 
 const _ = require('lodash');
 const GUID = require('guid');
-
+var md5 = require('md5');
 
 export enum ServerStatus {
   Stopped = 0,
@@ -55,7 +56,7 @@ export class ServerManager {
   public static get EVT_SERVER_INSTANCE_STOPPED():string { return "dewb.serverManager.serverInstance.stopped"; }
 
   private static instance:ServerManager;
-  private providers:Array<ServerProvider>
+  private providers:Array<ServerProviderWrapper>
   private instances:Array<ServerInstanceWrapper>
 
   private constructor() {
@@ -71,23 +72,26 @@ export class ServerManager {
       return ServerManager.instance;
   }
 
-  public registerProvider(provider:ServerProvider){
+  public registerProvider(provider:ServerProvider):ServerProviderWrapper{
     try {
       Logger.getInstance().debug("Registering Server Provider: ",provider)
       console.log("Registering Server Provider: ", provider)
-      this.providers.push(provider)
-      EventBus.getInstance().publish(ServerManager.EVT_PROVIDER_REGISTERED, provider);
+      let wrapper = new ServerProviderWrapper(provider);
+      this.providers.push(wrapper)
+      EventBus.getInstance().publish(ServerManager.EVT_PROVIDER_REGISTERED, wrapper);
+      return wrapper;
     } catch (ex){
       Logger.getInstance().error("Error registering Server Provider: ", ex)
       console.error("Error registering Server Provider: ", ex)
+      throw ex;
     }
   }
 
-  public getProviders():Array<ServerProvider>{
+  public getProviders():Array<ServerProviderWrapper>{
     return this.providers;
   }
 
-  protected getProviderByName(providerName:string):ServerProvider {
+  protected getProviderByName(providerName:string):ServerProviderWrapper {
       for (var i=0;i<this.providers.length;i++){
         if (this.providers[i].getProviderName()===providerName){
           return this.providers[i];
@@ -96,22 +100,73 @@ export class ServerManager {
       return null;
   }
 
-  public createServerInstance(providerName:string, instanceName:string, configuration:any):ServerInstanceWrapper{
-    let serverProvider:ServerProvider = this.getProviderByName(providerName);
+  protected getProviderById(providerId:string):ServerProviderWrapper {
+    return _.find(this.providers, { id : providerId});
+  }
+
+  public createServerInstance(providerId:string, instanceName:string, configuration:any):ServerInstanceWrapper{
+    let serverProvider:ServerProviderWrapper = this.getProviderById(providerId);
     if (serverProvider){
+      Logger.getInstance().info("Creating new server instance for " + serverProvider.getProviderName()+"...")
       let instance = serverProvider.createInstance(configuration);
-      let wrapper =  this.registerInstance(providerName, instanceName, instance, configuration)
+      let wrapper =  this.registerInstance(serverProvider.getProviderName(), serverProvider.id, instanceName, instance, configuration)
       EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_CREATED, wrapper);
+      Logger.getInstance().info("New server instance created " + serverProvider.getProviderName()+" [instanceId:"+wrapper.instanceId+"].")
       return wrapper;
     } else {
-      throw ("Server Provider not found for '"+ providerName +"'.")
+      Logger.getInstance().error("Error creating new server instance for " + serverProvider.getProviderName()+": Provider not found.")
+      throw ("Server Provider not found for '"+ providerId +"'.")
     }
   }
 
-  private registerInstance(providerName:string, instanceName:string, serverInstance:ServerInstance, configuration:any):ServerInstanceWrapper {
+  private registerInstance(providerName:string, providerId:string, instanceName:string, serverInstance:ServerInstance, configuration:any):ServerInstanceWrapper {
+    Logger.getInstance().debug("Registering new server instance for provider=" + providerName +"...")
     let wrapper = new ServerInstanceWrapper(providerName, instanceName, serverInstance, configuration)
+    Logger.getInstance().debug("New server instance registered with id=" + wrapper.instanceId +".")
     this.instances.push(wrapper)
+    GlobalPreferences.getInstance().then((preferences)=>{
+      let instances = preferences.get('server.instances');
+      if (!instances){
+        instances = [];
+      }
+      let instancePrefs = {
+        providerName: providerName,
+        providerId: providerId,
+        serverInstanceId: wrapper.instanceId,
+        instanceName: wrapper.name,
+        configuration: configuration
+      }
+      instances.push(instancePrefs)
+      preferences.save('server.instances', instances)
+      Logger.getInstance().debug("New server instance saved with id=" + wrapper.instanceId +".")
+    })
     return wrapper;
+  }
+
+  public storeInstanceConfiguration(instanceId:string, configuration:any):Promise<any>{
+    Logger.getInstance().debug("Saving server instance preferences for id=" + instanceId +"...")
+    return new Promise((resolve,reject)=>{
+      GlobalPreferences.getInstance().then((preferences)=>{
+        let instances = preferences.get('server.instances');
+        if (!instances){
+          Logger.getInstance().error("Error saving server instance preferences for id=" + instanceId +": server instance preferences not found.")
+          reject("No server instances defined.")
+          return;
+        }
+        let instance = _.find(instances, { serverInstanceId : instanceId});
+        if (!instance){
+          reject("Server instance not found.")
+          Logger.getInstance().error("Error saving server instance preferences for id=" + instanceId +": server instance not found.")
+          return;
+        }
+        instance["configuration"] = configuration;
+        preferences.save('server.instances', instances);
+        Logger.getInstance().debug("Server instance preferences saved for id=" + instanceId +".")
+        resolve(instanceId);
+      }, (err)=>{
+        reject(err)
+      })
+    });
   }
 
   private unregisterInstance(instanceWrapped:ServerInstanceWrapper){
@@ -129,6 +184,34 @@ export class ServerManager {
 
 }
 
+export class ServerProviderWrapper implements ServerProvider {
+  _provider: ServerProvider;
+  _id: string;
+  constructor(serverProvider:ServerProvider){
+    this._provider = serverProvider;
+    this._id = ServerProviderWrapper.idFromName(name);
+  }
+  createInstance(configuration:any):ServerInstance {
+    return this._provider.createInstance(configuration)
+  }
+  destroyInstance(instance:ServerInstance) {
+    this._provider.destroyInstance(instance)
+  }
+  getProviderName():string {
+    return this._provider.getProviderName()
+  }
+  public get id():string {
+    return this._id;
+  }
+  public provider():ServerProvider {
+    return this._provider
+  }
+  public static idFromName(name:string):string{
+    let id = md5(name)
+    return id;
+  }
+
+}
 
 export class ServerInstanceWrapper implements ServerInstance {
 

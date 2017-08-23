@@ -20,13 +20,13 @@
 
 import { EventEmitter }  from 'events'
 import { UIPane } from '../../ui-components/UIPane'
-import { ServerManager, ServerProvider, ServerInstanceWrapper, ServerInstance } from  '../../DEWorkbench/services/ServerManager'
+import { ServerManager, ServerProviderWrapper, ServerInstanceWrapper, ServerInstance } from  '../../DEWorkbench/services/ServerManager'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { Logger } from '../../logger/Logger'
 import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, findItemInTreeModel } from '../../ui-components/UITreeView'
 import { ServerInstanceConfigurationView } from './ServerInstanceConfigurationView'
 
-const StringHash = require('string-hash')
+const md5 = require('md5')
 const _ = require('lodash')
 
 export class ServersView extends UIPane {
@@ -143,9 +143,9 @@ export class ServersView extends UIPane {
     this.doConfigureInstance(nodeItem.serverInstance);
   }
 
-  protected createNewServerProviderFor(serverProvider:ServerProvider){
+  protected createNewServerProviderFor(serverProvider:ServerProviderWrapper){
     let newInstanceName = "New Server";
-    let instance = ServerManager.getInstance().createServerInstance(serverProvider.getProviderName(), newInstanceName, {});
+    let instance = ServerManager.getInstance().createServerInstance(serverProvider.id, newInstanceName, {});
     this.treeModel.reload();
     this.doConfigureInstance(instance);
   }
@@ -359,7 +359,7 @@ class ServerRootItem implements UITreeItem {
 
 class ServerProviderItem implements UITreeItem {
 
-  serverProvider:ServerProvider;
+  serverProvider:ServerProviderWrapper;
   id:string;
   name:string;
   className:string="de-workbench-servers-treeview-provider-item";
@@ -375,7 +375,7 @@ class ServerProviderItem implements UITreeItem {
   }];
 
 
-  constructor(serverProvider:ServerProvider){
+  constructor(serverProvider:ServerProviderWrapper){
       this.serverProvider = serverProvider;
       this.name = this.serverProvider.getProviderName();
       this.id = this.toIdFromName(this.name);
@@ -389,7 +389,7 @@ class ServerProviderItem implements UITreeItem {
   }
 
   protected toIdFromName(name:string):string{
-    let id = StringHash(name)
+    let id = md5(name)
     return id;
   }
 
@@ -421,7 +421,7 @@ class ServerInstanceItem implements UITreeItem {
   }
 
   protected toIdFromName(name:string):string{
-    let id = StringHash(name)
+    let id = md5(name)
     return id;
   }
 }

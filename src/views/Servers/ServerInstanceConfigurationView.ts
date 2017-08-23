@@ -28,7 +28,7 @@ import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-co
 import { UILoggerComponent,LogLine,IFilterableModel } from '../../ui-components/UILoggerComponent'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
 
-const StringHash = require('string-hash')
+//const md5 = require('md5')
 const _ = require('lodash')
 
 export class ServerInstanceConfigurationView extends UIPane {
@@ -64,7 +64,6 @@ export class ServerInstanceConfigurationView extends UIPane {
   }
 
 }
-
 
 class ServerInstanceConfigurationCtrl extends UIExtComponent {
 
@@ -177,12 +176,16 @@ class ConfigContainerControl extends UIExtComponent {
   protected saveChanges(){
     let newConfig = this._configurator.getConfiguration()
     //TODO!! store new config
-    // then apply new config to the instance
-    this._serverInstance.configure(newConfig);
-    // store on configurator
-    this._configurator.applyConfiguration(newConfig)
-    // fire the event
-    this.fireEvent("didSaveChange", this)
+    ServerManager.getInstance().storeInstanceConfiguration(this._serverInstance.instanceId, newConfig).then(()=>{
+      // then apply new config to the instance
+      this._serverInstance.configure(newConfig);
+      // store on configurator
+      this._configurator.applyConfiguration(newConfig)
+      // fire the event
+      this.fireEvent("didSaveChange", this)
+    }, (err)=>{
+      alert("Error "+ err)
+    });
   }
 
   protected fireConfigChanged(){
