@@ -20,8 +20,6 @@ export interface LiveReloadContext {
 export class TaskManager{
   private currentTask:CordovaTaskConfiguration;
   private project:CordovaProjectInfo
-  //private cliOptions: CordovaCliOptions
-  //private platformServer:PlatformServer = null;
   private runtimeSessionHandler:RuntimeSessionHandler
   private scriptExecutor:ScriptExecutor = null;
   private cordova:Cordova
@@ -116,19 +114,9 @@ export class TaskManager{
     }
     await this.cordova.prepareProjectWithBrowserPatch(project.path,platform.name);
     this.runtimeSessionHandler = RuntimeSessionHandler.createRuntimeSession(srvConf);
-    //this.platformServer = PlatformServerImpl.createNew();
-    //this.platformServer.start(srvConf);
   }
 
   stopServer(){
-    /*if(this.platformServer){
-      this.platformServer.stop().then(() => {
-          Logger.getInstance().info("Server stop done");
-          this.reloadContext = {};
-      },() => {
-        Logger.getInstance().error("Server stop fail");
-      });
-    }*/
     if(this.runtimeSessionHandler){
       this.runtimeSessionHandler.stopServer().then(() => {
           Logger.getInstance().info("Server stop done");
@@ -159,7 +147,6 @@ export class TaskManager{
     if(this.isPlatformServerRunning()){
       Logger.getInstance().debug("sendAction ",action.type);
       await this.execActionTask(action);
-      //await this.platformServer.executeAction(action);
       await this.runtimeSessionHandler.sendAction(action);
       return Promise.resolve();
     }

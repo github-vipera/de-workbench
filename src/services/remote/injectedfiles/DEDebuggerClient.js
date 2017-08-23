@@ -6,11 +6,29 @@ console.info("DEDebuggerClient injected");
 function initPlatformDebugSocket(address){
   console.log("initPlatformDebugSocket: " + address);
   var __deDebuggerSocket = io(address);
+
   if(typeof window != "undefined"){
-    window.deDebuggerSocket=__deDebuggerSocket;
+    window.deDebuggerSocket =__deDebuggerSocket;
   }else{
     console.warn("window is undefined");
   }
+
+  var sendResultToDebugger=function(result,request){
+    window.deDebuggerSocket.emit('evalResult',{
+      'status':'OK',
+      'evalRes':result,
+      'id': request.id
+    });
+  };
+
+  var sendErrorToDebugger=function(err,request){
+    window.deDebuggerSocket.emit('evalResult',{
+      'status':'ERROR',
+      'err': {message: err.message, stack: err.stack },
+      'id': request.id
+    });
+  }
+
   __deDebuggerSocket.on('connection', function(socket) {
       console.log('a user connected');
   });
@@ -18,7 +36,12 @@ function initPlatformDebugSocket(address){
   __deDebuggerSocket.on('doEval', function(message) {
       console.log('doEval called');
       var scriptSrc= message.cmd;
-      eval(scriptSrc);
+      try {
+        var res = eval(scriptSrc);
+        sendResultToDebugger(res,message);
+      } catch (e) {
+        sendErrorToDebugger(e,message);
+      }
       console.log('doEval done');
   });
   __deDebuggerSocket.on('doLiveReload', function() {

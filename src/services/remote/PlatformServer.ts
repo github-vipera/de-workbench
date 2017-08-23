@@ -1,6 +1,7 @@
 'use babel'
 //import * as express from "express";
-import {Logger} from '../../logger/Logger'
+import { Logger } from '../../logger/Logger'
+import { EventEmitter } from 'events'
 const {
     allowUnsafeEval,
     allowUnsafeNewFunction
@@ -24,6 +25,8 @@ export interface PlatformServer {
   start(config: PlatformServerConfig): void
   stop(): Promise<any>
   clear(): Promise<any>
+  addEventListener(event:string,listener:(...args:any[]) => void): void
+  removeEventListener(event:string,listener?:(...args:any[]) => void): void
   executeAction(action:LiveActions):Promise<any>
   isRunning():boolean
 }
@@ -35,8 +38,9 @@ export class PlatformServerImpl implements PlatformServer {
   protected http: any
   protected sockets = {};
   protected config: PlatformServerConfig
+  protected events:EventEmitter
   constructor() {
-    //NOP
+    this.events = new EventEmitter();
   }
 
   public start(config: PlatformServerConfig) {
@@ -109,6 +113,10 @@ export class PlatformServerImpl implements PlatformServer {
             //socket.destroy();
             Logger.getInstance().debug("socket closed");
         });
+
+        socket.on('evalResult',(resultMessage) => {
+           this.events.emit('didJSEvalResultReceived',resultMessage);
+        });
     });
   }
 
@@ -142,6 +150,7 @@ export class PlatformServerImpl implements PlatformServer {
         return Promise.resolve();
       case "doEval":
         this.io.emit("doEval",{
+          id:action.id,
           cmd:action.cmd
         });
         return Promise.resolve();
@@ -153,11 +162,25 @@ export class PlatformServerImpl implements PlatformServer {
     }
   }
 
-  isRunning():boolean{
+  public isRunning():boolean{
     return this.http && this.http.listening
   }
+
+  public addEventListener(event:string,listener:(...args:any[]) => void){
+    this.events.addListener(event,listener);
+  }
+
+  public removeEventListener(event:string,listener?:(...args:any[]) => void){
+    if(listener){
+      this.events.removeListener(event,listener);
+    }else{
+      this.events.removeAllListeners(event)
+    }
+  }
+
 
   public static createNew():PlatformServer{
     return new PlatformServerImpl();
   }
+
 }

@@ -2,11 +2,14 @@
 import { PlatformServer, PlatformServerImpl, PlatformServerConfig,LiveActions } from './PlatformServer'
 import { ConsumedServices } from '../../DEWorkbench/ConsumedServices'
 import {Logger} from '../../logger/Logger'
+import {EventEmitter} from 'events'
 const uuidv4 = require('uuid/v4');
+
 export interface JSSession {
   getId():string
   execJSCommand(jsCommand:string):Promise<any>
-  execJSCommandWithResult():Promise<any>
+  didJSResultReceived(listener: (...args:any[]) => void):void
+  close();
 }
 
 
@@ -91,13 +94,20 @@ export class RuntimeSessionHandler {
 class BaseJSSession implements JSSession{
   private server:PlatformServer;
   private sessionId:string
+  private callback:any
+  private events:EventEmitter
+
   constructor(server:PlatformServer){
     this.server = server;
     this.sessionId = uuidv4();
+    this.events = new EventEmitter();
+    this.attachSessionListeners();
   }
+
   getId():string{
     return this.sessionId;
   }
+
   async execJSCommand(jsCommand:string):Promise<any>{
     let result= await this.server.executeAction({
       type :'doEval',
@@ -106,9 +116,23 @@ class BaseJSSession implements JSSession{
     return result;
   }
 
-  execJSCommandWithResult():Promise<any>{
-    //TODO
-    return null;
+  private attachSessionListeners(){
+    this.callback = this.onJSCommandResult.bind(this);
+    this.server.addEventListener('didJSEvalResultReceived',this.callback);
+  }
+
+  private onJSCommandResult(result){
+    Logger.getInstance().debug('Receive result',JSON.stringify(result));
+    this.events.emit('didJSEvalResultReceived',result);
+  }
+
+  close(){
+    this.server.removeEventListener('didJSEvalResultReceived',this.callback);
+    this.events.removeAllListeners();
+  }
+
+  didJSResultReceived(listener){
+    this.events.addListener('didJSEvalResultReceived',listener);
   }
 }
 
@@ -118,6 +142,19 @@ export class ConsoleHandler {
   private console:any
   public setSession(session:JSSession){
     this.session = session;
+    this.session.didJSResultReceived((message) => {
+      this.console.logInput();
+      this.console.done();
+      if(this.console){
+        if(message.status == "OK"){
+          this.console.stdout(message.evalRes);
+        }
+        else{
+          this.console.stderr("Error:",(message.err));
+        }
+      }
+      this.console.input();
+    });
   }
   public openConsole(){
     if(!this.console){
@@ -140,14 +177,13 @@ export class ConsoleHandler {
 
   private onCmdEval(arg){
     var editor = arg.editor;
-    this.console.logInput();
-    this.console.done();
     try {
       let textCmd = editor.getText();
       this.session.execJSCommand(textCmd).then(() => {
-        this.console.stdout("The command was sent");
+        Logger.getInstance().debug('Js command send to session',this.session.getId());
+      },(err) => {
+        this.console.stderr("Error: " + JSON.stringify(err));
       });
-      return this.console.input();
     } catch (error){
       this.console.stderr(error);
       return this.console.input();
@@ -160,6 +196,7 @@ export class ConsoleHandler {
       delete this.console.emitter.handlersByEventName.eval;
       this.console.close();
     }
+    this.session.close()
     this.session = null;
     this.console = null;
   }
