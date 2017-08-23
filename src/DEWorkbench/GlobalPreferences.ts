@@ -31,7 +31,7 @@ export class GlobalPreferences {
   private constructor(){
     this.ensureFolder(GlobalPreferences.preferencesFolder)
     let prefsFile = path.join(GlobalPreferences.preferencesFolder,'de_workbench_preferences.json');
-    this._db = new JsonDB(prefsFile, false, true);
+    this._db = new JsonDB(prefsFile, true, true);
     console.log("Global Preferences:" , prefsFile)
   }
 
@@ -70,7 +70,6 @@ export class GlobalPreferences {
 
   public save(key:string, value:any){
     this._db.push(key, value);
-    this._db.save();
   }
 
   public delete(key:string){

@@ -8,6 +8,9 @@
 
  var winston = require('winston');
 import {EventSupport,EventSupportDelegate} from '../utils/EventSupport'
+import { GlobalPreferences } from '../DEWorkbench/GlobalPreferences'
+
+const path = require("path")
 
 export class Logger {
 
@@ -18,25 +21,25 @@ export class Logger {
 
 
   private constructor(){
-
+    let filePath = path.join(GlobalPreferences.preferencesFolder, 'de_workbench.log')
     this.logger = new (winston.Logger)({
       transports: [
-        /**
         new winston.transports.File({
-            level: 'verbose',
-            filename: '/Users/enrico/Develop/NewDynamicEngine/Atom Plugins/de-workbench/all-logs.log',
+            level: 'debug',
+            filename: filePath,
             handleExceptions: true,
-            json: true,
+            json: false,
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false
-        }),**/
+        })
+        /**,
         new winston.transports.Console({
             level: 'verbose',
             handleExceptions: true,
             json: false,
             colorize: true
-        })
+        })**/
       ]
     });
     this.evtSupport = new EventSupport();
