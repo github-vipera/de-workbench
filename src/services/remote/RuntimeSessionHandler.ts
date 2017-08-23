@@ -150,7 +150,7 @@ export class ConsoleHandler {
           this.console.stdout(message.evalRes);
         }
         else{
-          this.console.stderr("Error:",(message.err));
+          this.console.stderr("Error: " + JSON.stringify(message.err));
         }
       }
       this.console.input();
