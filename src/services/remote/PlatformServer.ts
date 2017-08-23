@@ -141,7 +141,9 @@ export class PlatformServerImpl implements PlatformServer {
         this.io.emit("doLiveReload");
         return Promise.resolve();
       case "doEval":
-        this.io.emit("doEval",action.cmd);
+        this.io.emit("doEval",{
+          cmd:action.cmd
+        });
         return Promise.resolve();
       default:
         Promise.reject({

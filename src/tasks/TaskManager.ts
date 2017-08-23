@@ -188,4 +188,8 @@ export class TaskManager{
     return res;
   }
 
+  public getRuntimeSessionHandler():RuntimeSessionHandler{
+    return this.runtimeSessionHandler;
+  }
+
 }

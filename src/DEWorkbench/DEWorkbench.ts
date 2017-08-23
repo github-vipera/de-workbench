@@ -109,6 +109,13 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
         this.getTaskManager().sendAction({
           type: 'doLiveReload'
         });
+      },
+      didOpenJSConsole: () => {
+        console.log('didOpenJSConsole');
+        let runtimeHandler=this.getTaskManager().getRuntimeSessionHandler();
+        if(runtimeHandler && runtimeHandler.canOpenJSSession()){
+          let consoleHandler = runtimeHandler.openConsole();
+        }
       }
      });
 
@@ -322,6 +329,7 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
          if(serverRunning){
            this.toolbarView.updateStatus({
              btnReloadEnable:true,
+             btnOpenJSConsoleEnable:true,
            });
          }
          return;
@@ -333,6 +341,7 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
              btnStopEnable:true,
              btnRunEnable:true,
              btnReloadEnable:true,
+             btnOpenJSConsoleEnable:true,
              progressStatus: UIIndicatorStatus.Busy,
              progressIcon: 'status-success',
              progressMsg : 'Server running'
@@ -343,6 +352,7 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
              btnRunEnable:true,
              btnStopEnable:true,
              btnReloadEnable:false,
+             btnOpenJSConsoleEnable:false,
              progressIcon: 'status-error',
              progressStatus: UIIndicatorStatus.Error,
              progressMsg : `${taskConfiguration.displayName} - ${platform} Fail (Server running)`
@@ -350,7 +360,8 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
          }
        }else{
          this.toolbarView.updateStatus({
-           btnReloadEnable:false
+           btnReloadEnable:false,
+           btnOpenJSConsoleEnable:false,
          });
          if(taskDone){
             this.toolbarView.setSuccessStatus(`${taskConfiguration.displayName} - ${platform} Done`);

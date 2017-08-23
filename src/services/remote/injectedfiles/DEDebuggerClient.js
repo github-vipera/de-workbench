@@ -17,8 +17,8 @@ function initPlatformDebugSocket(address){
 
   __deDebuggerSocket.on('doEval', function(message) {
       console.log('doEval called');
-      var scriptStr = message.cmd;
-      eval(cmd);
+      var scriptSrc= message.cmd;
+      eval(scriptSrc);
       console.log('doEval done');
   });
   __deDebuggerSocket.on('doLiveReload', function() {
