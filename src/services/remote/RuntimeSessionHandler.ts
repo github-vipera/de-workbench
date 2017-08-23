@@ -71,6 +71,8 @@ export class RuntimeSessionHandler {
     try{
       let result = await this.platformServer.stop();
       Logger.getInstance().info("Server stop done");
+      this.consoleHandler.close();
+      this.consoleHandler = null;
       return Promise.resolve();
     }catch(ex){
       Logger.getInstance().error("Server stop fail",ex);
@@ -114,12 +116,13 @@ class BaseJSSession implements JSSession{
 export class ConsoleHandler {
   private session:JSSession;
   private console:any
-
   public setSession(session:JSSession){
     this.session = session;
   }
   public openConsole(){
-    this.createConsoleBridge();
+    if(!this.console){
+      this.createConsoleBridge();
+    }
     this.console.open({
       split: 'down',
       searchAllPanes: false
@@ -128,27 +131,37 @@ export class ConsoleHandler {
 
   private createConsoleBridge(){
     this.console = ConsumedServices.ink.Console.fromId('dewb-jssession-cmd-client')
+    console.log("console",this.console)
     this.console.setModes([
       {name: 'DE Workbench JS Console', default: true, grammar: 'source.javascript'}
     ]);
-    let cons = this.console;
-    this.console.onEval((arg)=>{
-      var editor = arg.editor;
-      cons.logInput();
-      cons.done();
-      try {
-        let textCmd = editor.getText();
-        this.session.execJSCommand(textCmd).then(() => {
-          cons.stdout("Command sent to client");
-        });
-        return cons.input();
-      } catch (error){
-        cons.stderr(error);
-        return cons.input();
-      }
-    });
+    this.console.onEval(this.onCmdEval.bind(this));
   }
 
-
+  private onCmdEval(arg){
+    var editor = arg.editor;
+    this.console.logInput();
+    this.console.done();
+    try {
+      let textCmd = editor.getText();
+      this.session.execJSCommand(textCmd).then(() => {
+        this.console.stdout("The command was sent");
+      });
+      return this.console.input();
+    } catch (error){
+      this.console.stderr(error);
+      return this.console.input();
+    }
+  }
+  public close(){
+    if(this.console){
+      console.log('clear emitter');
+      this.console.emitter.off('eval',this.onCmdEval);
+      delete this.console.emitter.handlersByEventName.eval;
+      this.console.close();
+    }
+    this.session = null;
+    this.console = null;
+  }
 
 }
