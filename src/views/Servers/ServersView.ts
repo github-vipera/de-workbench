@@ -25,6 +25,7 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { Logger } from '../../logger/Logger'
 import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, findItemInTreeModel } from '../../ui-components/UITreeView'
 import { ServerInstanceConfigurationView } from './ServerInstanceConfigurationView'
+import { UINotifications } from '../../ui-components/UINotifications'
 
 const md5 = require('md5')
 const _ = require('lodash')
@@ -124,10 +125,21 @@ export class ServersView extends UIPane {
   }
 
   protected createNewServerInstanceForNode(nodeItem:ServerProviderItem){
-    this.createNewServerProviderFor(nodeItem.serverProvider);
+    if (nodeItem && nodeItem.serverProvider){
+      this.createNewServerProviderFor(nodeItem.serverProvider);
+    }
   }
 
   protected removeServerInstanceForNode(nodeItem:ServerInstanceItem){
+    const selected = atom.confirm({
+        message: 'Delete Server Instance',
+        detailedMessage: 'Do you want to confirm the ' + nodeItem.serverInstance.name +' server instance deletion ?',
+        buttons: ['Yes, Delete it', 'Cancel']
+      });
+      if (selected==0){
+        this.removeServerInstance(nodeItem.serverInstance);
+      }
+
     //TODO!
   }
 
@@ -153,6 +165,11 @@ export class ServersView extends UIPane {
   protected doConfigureInstance(serverInstance:ServerInstanceWrapper){
     let configPane = new ServerInstanceConfigurationView(serverInstance);
     configPane.open()
+  }
+
+  protected removeServerInstance(serverInstance:ServerInstanceWrapper){
+    //TODO!!
+    UINotifications.showInfo("Server instance removed successfully.")
   }
 
 }

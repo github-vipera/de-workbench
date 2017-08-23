@@ -59,13 +59,15 @@ export class ServerManager {
   private providers:Array<ServerProviderWrapper>
   private instances:Array<ServerInstanceWrapper>
   private pendingConfigInstances:Array<any> //are the configured instances, ready to instantiated when the provider will ben installed
-  private _preferences:GlobalPreferences;
+  //private _preferences:GlobalPreferences;
 
   private constructor() {
     Logger.getInstance().debug("Creating ServerManager...")
     this.providers = [];
     this.instances = [];
-    this._preferences = GlobalPreferences.getInstance();
+    //this._preferences = GlobalPreferences.getInstance();
+    //let instances = this._preferences.get('/server/instances')
+    this.checkForDefaultPreferences();
     this.reloadFromConfiguration();
   }
 
@@ -76,16 +78,30 @@ export class ServerManager {
       return ServerManager.instance;
   }
 
+  protected checkForDefaultPreferences(){
+    let preferences = GlobalPreferences.getInstance();
+    let serverPrefs = preferences.get('server')
+    if (!serverPrefs){
+      preferences.save('/server', { instances: [] })
+    }
+    let instancesPrefs = preferences.get('/server/instances')
+    if (!instancesPrefs){
+      preferences.save('/server/instances', [])
+    }
+  }
+
   /**
    * Reload global preferences and restore saved instances
    */
-  protected reloadFromConfiguration():Promise<any>{
+  protected reloadFromConfiguration(){
     return new Promise((resolve,reject)=>{
-      let instances = this._preferences.get('server/instances')
+      let preferences = GlobalPreferences.getInstance();
+      let instances = preferences.get('/server/instances')
+      console.log("**** instances (reloadFromConfiguration) ", instances)
       if (!instances){
         instances = [];
       }
-      this.pendingConfigInstances = instances;
+      this.pendingConfigInstances = _.cloneDeep(instances);
       this.checkForPendingInstances();
       resolve("done")
     });
@@ -95,6 +111,7 @@ export class ServerManager {
    * This method check pending instances for instantiation
    */
   protected async checkForPendingInstances():Promise<any>{
+    console.log("**** instances (pendingConfigInstances) ", this.pendingConfigInstances)
     for (var i=0;i<this.pendingConfigInstances.length;i++){
       let pendingInstance = this.pendingConfigInstances[i];
       let providerName = pendingInstance["providerName"];
@@ -199,8 +216,10 @@ export class ServerManager {
   private registerInstance(providerName:string, providerId:string, instanceName:string, serverInstance:ServerInstance, configuration:any, oldServerInstanceId?:string):ServerInstanceWrapper {
     Logger.getInstance().debug("Registering new server instance for provider=" + providerName +"...")
       let wrapper = new ServerInstanceWrapper(providerName, instanceName, serverInstance, configuration)
+      let preferences = GlobalPreferences.getInstance();
 
-      let prefInstances = this._preferences.get('server/instances');
+      let prefInstances = preferences.get('/server/instances');
+      console.log("**** instances (registerInstance)", prefInstances)
       if (!prefInstances){
         prefInstances = [];
       }
@@ -221,7 +240,7 @@ export class ServerManager {
         prefInstances.push(instancePrefs)
       }
 
-      this._preferences.save('server/instances', prefInstances);
+      preferences.save('/server/instances', prefInstances);
 
       Logger.getInstance().debug("New server instance registered with id=" + wrapper.instanceId +".")
       this.instances.push(wrapper)
@@ -234,7 +253,9 @@ export class ServerManager {
   public storeInstanceConfiguration(instanceId:string, configuration:any):Promise<any>{
     Logger.getInstance().debug("Saving server instance preferences for id=" + instanceId +"...")
     return new Promise((resolve,reject)=>{
-      let instances = this._preferences.get('server/instances');
+      let preferences = GlobalPreferences.getInstance();
+      let instances = preferences.get('/server/instances');
+      console.log("**** instances (storeInstanceConfiguration)", instances)
       if (!instances){
         Logger.getInstance().error("Error saving server instance preferences for id=" + instanceId +": server instance preferences not found.")
         reject("No server instances defined.")
@@ -247,7 +268,7 @@ export class ServerManager {
         return;
       }
       instance.configuration = configuration;
-      this._preferences.save('server/instances', instances);
+      preferences.save('/server/instances', instances);
       Logger.getInstance().debug("Server instance preferences saved for id=" + instanceId +".")
       resolve(instanceId);
     })

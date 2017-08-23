@@ -31,7 +31,7 @@ export default {
       console.log("DEWB activated.");
 
       //require('devtron').install()
-      GlobalPreferences.getInstance();
+      //GlobalPreferences.getInstance();
       ServerManager.getInstance();
 
       this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();

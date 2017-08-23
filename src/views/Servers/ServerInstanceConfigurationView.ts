@@ -27,6 +27,8 @@ import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, find
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { UILoggerComponent,LogLine,IFilterableModel } from '../../ui-components/UILoggerComponent'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
+import { UINotifications } from '../../ui-components/UINotifications'
+import { UIEditableLabel } from '../../ui-components/UIEditableLabel'
 
 //const md5 = require('md5')
 const _ = require('lodash')
@@ -70,7 +72,7 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
   _serverInstance:ServerInstanceWrapper;
   _headerCtrl:HeaderCtrl;
   _tabbedView: UITabbedView;
-  _logCtrl: ServerLogView;
+  //_logCtrl: ServerLogView;
   _confCtrl : ConfigContainerControl;
 
   constructor(serverInstance:ServerInstanceWrapper){
@@ -85,7 +87,7 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
       alert("action:" + action)
     })
 
-    this._logCtrl = new ServerLogView(this._serverInstance);
+    //this._logCtrl = new ServerLogView(this._serverInstance);
     this._confCtrl = new ConfigContainerControl(this._serverInstance);
     this._confCtrl.addEventListener('didConfigurationChange',(evt)=>{
       console.log("TODO enable Save button and Revert Changes!")
@@ -99,7 +101,7 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
 
     this._tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
     this._tabbedView.element().classList.add('de-workbench-server-config-tabbedview')
-    this._tabbedView.addView(new UITabbedViewItem('log',       'Log',  this._logCtrl.element() ));
+    //this._tabbedView.addView(new UITabbedViewItem('log',       'Log',  this._logCtrl.element() ));
     this._tabbedView.addView(new UITabbedViewItem('configuration',   'Configuration',  this._confCtrl.element()));
 
     this.mainElement = createElement('div',{
@@ -175,14 +177,15 @@ class ConfigContainerControl extends UIExtComponent {
 
   protected saveChanges(){
     let newConfig = this._configurator.getConfiguration()
-    //TODO!! store new config
+    //store new config into the global preferences
     ServerManager.getInstance().storeInstanceConfiguration(this._serverInstance.instanceId, newConfig).then(()=>{
       // then apply new config to the instance
       this._serverInstance.configure(newConfig);
-      // store on configurator
+      // store on configurator provider
       this._configurator.applyConfiguration(newConfig)
       // fire the event
       this.fireEvent("didSaveChange", this)
+      UINotifications.showInfo("Changes saved successfully.")
     }, (err)=>{
       alert("Error "+ err)
     });
@@ -203,6 +206,7 @@ class HeaderCtrl extends UIExtComponent {
   _serverInstance:ServerInstanceWrapper;
   _startInstanceButton:HTMLElement;
   _stopInstanceButton:HTMLElement;
+  _editableTitle: UIEditableLabel;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super();
@@ -212,11 +216,17 @@ class HeaderCtrl extends UIExtComponent {
   }
 
   protected initUI(){
+    this._editableTitle = new UIEditableLabel({
+      caption:this._serverInstance.name,
+      className:  'de-workbench-server-config-header-instanceName text-highlight'
+    });
 
+    /**
     let serverName = createElement('h2',{
       elements: [ createText(this._serverInstance.name) ],
       className: 'de-workbench-server-config-header-instanceName text-highlight'
     })
+    **/
 
     let serverProviderType = createElement('span',{
       elements: [ createText(this._serverInstance.provider) ],
@@ -262,7 +272,7 @@ class HeaderCtrl extends UIExtComponent {
     })
 
     this.mainElement = createElement('div',{
-      elements: [ serverName,subCont,tabbedToolbar  ],
+      elements: [ this._editableTitle.element(),subCont,tabbedToolbar  ],
       className: 'de-workbench-server-config-header-cont'
     })
 
