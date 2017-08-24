@@ -102,8 +102,13 @@ export class UIPane {
       let atomWorkspace:any = atom.workspace;
       atomWorkspace["open"](this.item).then((view)=>{
           this.atomTextEditor = view;
+          this.afterOpen();
       });
     }
+  }
+
+  protected afterOpen(){
+    //nop, overridable
   }
 
   public destroy(){

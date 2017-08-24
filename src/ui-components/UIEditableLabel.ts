@@ -85,6 +85,12 @@ export class UIEditableLabel extends UIExtComponent {
     }
   }
 
+  public startEdit(){
+    if (this._editable){
+      this.startEditing(this._labelEl);
+    }
+  }
+
   protected createEditor():HTMLElement{
     //let editorEl = createTextEditor({});
     let editorEl = createElement('input',{})
@@ -183,5 +189,5 @@ export class UIEditableLabel extends UIExtComponent {
   public getCaption():string {
     return this._labelEl.innerText;
   }
-  
+
 }

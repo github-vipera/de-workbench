@@ -40,15 +40,17 @@ export class ServerInstanceConfigurationView extends UIPane {
   _configCtrl : ServerInstanceConfigurationCtrl;
   _overlayEl:HTMLElement;
   _removed:boolean=false;
+  _options:any;
 
-  constructor(serverInstance:ServerInstanceWrapper){
+  constructor(serverInstance:ServerInstanceWrapper, options?:any){
     super({
       title: "Server[" + serverInstance.name +"]",
       projectRoot: "__",
       paneName : "DEServerConfig_" + serverInstance.instanceId,
       location : 'center',
       userData : {
-        serverInstance : serverInstance
+        serverInstance : serverInstance,
+        options: options
       }
     })
     Logger.getInstance().debug("ServerInstanceConfigurationView creating for ",this.projectRoot, this.projectId);
@@ -56,6 +58,7 @@ export class ServerInstanceConfigurationView extends UIPane {
 
   protected createUI():HTMLElement {
     this._serverInstance = this.options.userData.serverInstance;
+    this._options = this.options.userData.options;
 
     this._configCtrl = new  ServerInstanceConfigurationCtrl(this._serverInstance)
 
@@ -72,7 +75,7 @@ export class ServerInstanceConfigurationView extends UIPane {
     EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_REMOVED, (eventData)=>{
       let instanceId:string = eventData[0];
       // filter events only for this server
-      if (instanceId===this._serverInstance.instanceId){
+      if (this._serverInstance && instanceId===this._serverInstance.instanceId){
         this._serverInstance = null;
         this.onInstanceRemoved();
       }
@@ -89,6 +92,14 @@ export class ServerInstanceConfigurationView extends UIPane {
 
   protected onInstanceRemoved(){
     this.showOverlay(true)
+  }
+
+  protected afterOpen(){
+    if (this._options && this._options.isNew){
+      if (this._options.isNew){
+        this._configCtrl.startEditName()
+      }
+    }
   }
 
 }
@@ -143,10 +154,9 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
   }
 
 
-  createFooView():HTMLElement {
-      return createElement('div',{
 
-      })
+  public startEditName(){
+    this._headerCtrl.startEditName();
   }
 
   public destroy(){
@@ -326,6 +336,10 @@ class HeaderCtrl extends UIExtComponent {
     })
 
     this.setStatus(this._serverInstance.status);
+  }
+
+  public startEditName(){
+    this._editableTitle.startEdit();
   }
 
   protected onServerStatusChanged(serverInstance:ServerInstanceWrapper){

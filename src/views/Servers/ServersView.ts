@@ -65,7 +65,7 @@ export class ServersView extends UIPane {
       if (nodeType.value==="serverInstance"){
         let nodeId = this.treeView.getCurrentSelectedItemId();
         let nodeItem = <ServerInstanceItem>this.treeModel.getItemById(nodeId);
-        this.doConfigureInstance(nodeItem.serverInstance);
+        this.doConfigureInstance(nodeItem.serverInstance, false);
       }
     })
 
@@ -165,18 +165,18 @@ export class ServersView extends UIPane {
   }
 
   protected configureServerInstanceForNode(nodeItem:ServerInstanceItem){
-    this.doConfigureInstance(nodeItem.serverInstance);
+    this.doConfigureInstance(nodeItem.serverInstance, false);
   }
 
   protected createNewServerProviderFor(serverProvider:ServerProviderWrapper){
     let newInstanceName = "New Server";
     let instance = ServerManager.getInstance().createServerInstance(serverProvider.id, newInstanceName, {})
     this.treeModel.reload();
-    this.doConfigureInstance(instance);
+    this.doConfigureInstance(instance, true);
   }
 
-  protected doConfigureInstance(serverInstance:ServerInstanceWrapper){
-    let configPane = new ServerInstanceConfigurationView(serverInstance);
+  protected doConfigureInstance(serverInstance:ServerInstanceWrapper, isNew:boolean){
+    let configPane = new ServerInstanceConfigurationView(serverInstance, { isNew:isNew });
     configPane.open()
   }
 
