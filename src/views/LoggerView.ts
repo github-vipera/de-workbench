@@ -38,7 +38,7 @@ export class LoggerView {
     Logger.getInstance().info("LoggerView initializing...");
     this.atomWorkspace = atom.workspace;
     this.events = new EventEmitter()
-    this.logModel = new FileTailLogModel(Logger.getLoggerBufferFilePath(),5);
+    this.logModel = new FileTailLogModel(Logger.getLoggerBufferFilePath(),10);
     this.initUI();
     //this.bindWithLogger();
   }

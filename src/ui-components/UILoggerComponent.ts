@@ -244,19 +244,22 @@ export class FileTailLogModel extends BaseLogModel {
     this.filePath = filePath;
     if(lastLine>0){
       var count=0;
+      var lastLines:Array<LogLine>=[];
       lineReader.eachLine(this.filePath, (line, last) => {
         console.log(line);
         try{
-          this.createAndAddLogLine(JSON.parse(line));
+          lastLines.unshift(this.createLogLine(JSON.parse(line)));
         }catch(err){
-          //console.error(err);
         }
         count++;
         if (count >= lastLine) {
+          _.forEach(lastLines,(line:LogLine) => {
+            this.appendLogLine(line);
+          });
+          this.attachTailToFile();
           return false; // stop reading
         }
       });
-      this.attachTailToFile();
     }else{
       this.attachTailToFile();
     }
@@ -273,6 +276,17 @@ export class FileTailLogModel extends BaseLogModel {
       message: msg,
       timestamp: timestamp
     });
+  }
+
+  private createLogLine(data):LogLine{
+    let msg= data["0"];
+    let logLevelStr = data["level"];
+    let timestamp = data["timestamp"];
+    return {
+      logLevel: this.convertToLogLevel(logLevelStr),
+      message: msg,
+      timestamp: timestamp
+    }
   }
 
   private convertToLogLevel(logLevelStr:string):LogLevel{
