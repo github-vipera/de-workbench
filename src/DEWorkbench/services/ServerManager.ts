@@ -312,7 +312,7 @@ export class ServerManager {
 
   protected onServerInstanceStatusChanged(serverInstance:ServerInstance){
     let wrapper = this.getInstanceWrapper(serverInstance)
-    Logger.getInstance().info("Server ''"+ wrapper.name +"' ["+ wrapper.instanceId +"] now is " + wrapper.statusStr)
+    Logger.getInstance().info("Server "+ wrapper.name +"' ["+ wrapper.instanceId +"] now is " + wrapper.statusStr)
     EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_STATUS_CHANGED, wrapper)
   }
 

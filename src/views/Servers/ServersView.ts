@@ -21,7 +21,7 @@
 import { EventBus } from '../../DEWorkbench/EventBus'
 import { EventEmitter }  from 'events'
 import { UIPane } from '../../ui-components/UIPane'
-import { ServerManager, ServerProviderWrapper, ServerInstanceWrapper, ServerInstance } from  '../../DEWorkbench/services/ServerManager'
+import { ServerManager, ServerProviderWrapper, ServerInstanceWrapper, ServerInstance, ServerStatus } from  '../../DEWorkbench/services/ServerManager'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { Logger } from '../../logger/Logger'
 import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, findItemInTreeModel } from '../../ui-components/UITreeView'
@@ -46,6 +46,7 @@ export class ServersView extends UIPane {
     })
 
     Logger.getInstance().debug("ServersView creating for ",this.projectRoot, this.projectId);
+
 
   }
 
@@ -328,7 +329,7 @@ class ServersTreeModel implements UITreeViewModel {
     let providers = ServerManager.getInstance().getProviders();
     let providerItems = new Array<ServerProviderItem>();
     for (var i=0;i<providers.length;i++){
-      let providerItem = new ServerProviderItem(providers[i])
+      let providerItem = new ServerProviderItem(providers[i], this)
       providerItems.push(providerItem)
     }
 
@@ -359,6 +360,10 @@ class ServersTreeModel implements UITreeViewModel {
     this.events = null;
   }
 
+  public onItemChanged(item:UITreeItem){
+    this.events.emit("didModelChanged");
+  }
+
 }
 
 class ServerRootItem implements UITreeItem {
@@ -387,9 +392,8 @@ class ServerProviderItem implements UITreeItem {
   className:string="de-workbench-servers-treeview-provider-item";
   icon:string="icon-database";
   expanded:boolean=true;
-  //htmlElement?:HTMLElement;
   children?:Array<UITreeItem>;
-  //selected?:boolean;
+  listener:any;
 
   attributes = [{
     name: 'srvNodeType',
@@ -397,7 +401,8 @@ class ServerProviderItem implements UITreeItem {
   }];
 
 
-  constructor(serverProvider:ServerProviderWrapper){
+  constructor(serverProvider:ServerProviderWrapper, listener){
+      this.listener = listener
       this.serverProvider = serverProvider;
       this.name = this.serverProvider.getProviderName();
       this.id = this.toIdFromName(this.name);
@@ -405,7 +410,7 @@ class ServerProviderItem implements UITreeItem {
       this.children = [];
       let instances = ServerManager.getInstance().getInstancesForProvider(this.serverProvider.getProviderName())
       for (var i=0;i<instances.length;i++){
-        this.children.push( new ServerInstanceItem(instances[i]) )
+        this.children.push( new ServerInstanceItem(instances[i], this) )
       }
       console.log(this.children.length)
   }
@@ -413,6 +418,10 @@ class ServerProviderItem implements UITreeItem {
   protected toIdFromName(name:string):string{
     let id = md5(name)
     return id;
+  }
+
+  public onItemChanged(item:UITreeItem){
+    this.listener.onItemChanged(item)
   }
 
 }
@@ -423,27 +432,60 @@ class ServerInstanceItem implements UITreeItem {
   id:string;
   name:string;
   className:string="de-workbench-servers-treeview-instance-item";
-  icon:string="icon-rocket";
+  icon:string="";
   expanded:boolean=true;
-
-  //htmlElement?:HTMLElement;
-  //children?:Array<UITreeItem>;
-  //selected?:boolean;
+  listener:any;
 
   public attributes = [{
     name: 'srvNodeType',
     value:'serverInstance'
   }];
 
-  constructor(serverInstance:ServerInstanceWrapper){
+  constructor(serverInstance:ServerInstanceWrapper, listener){
+      this.listener = listener
       this.serverInstance = serverInstance;
       this.name = this.serverInstance.name;
       this.id = serverInstance.instanceId;
       this.expanded = true;
+
+      EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_STATUS_CHANGED, (eventData)=>{
+        let serverInstance:ServerInstanceWrapper = eventData[0];
+        // filter events only for this server
+        if (serverInstance.instanceId===this.serverInstance.instanceId){
+          this.onServerStatusChanged(true);
+        }
+      })
+
+      this.onServerStatusChanged(false);
+  }
+
+  protected onServerStatusChanged(notify:boolean){
+    this.className ="de-workbench-servers-treeview-instance-item";
+
+    if (this.serverInstance.status===ServerStatus.Running){
+      this.icon = "icon-pulse"
+      this.className=this.className + " instance-running";
+    }
+    else if (this.serverInstance.status===ServerStatus.Stopped){
+      this.icon = "icon-primitive-square"
+      this.className=this.className + " instance-stopped";
+    }
+    else if (this.serverInstance.status===ServerStatus.Starting){
+      this.icon = "icon-rocket"
+      this.className=this.className + " instance-starting";
+    }
+    else if (this.serverInstance.status===ServerStatus.Stopping){
+      this.icon = "icon-primitive-dot"
+      this.className=this.className + " instance-stopping";
+    }
+    if (notify){
+      this.listener.onItemChanged(this)
+    }
   }
 
   protected toIdFromName(name:string):string{
     let id = md5(name)
     return id;
   }
+
 }

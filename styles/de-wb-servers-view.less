@@ -14,8 +14,20 @@
   color:@text-color-info;
 }
 
+
 .de-workbench-servers-treeview-instance-item {
-  color:@background-color-success;
+  &.instance-running {
+    color:@text-color-success;
+  }
+  &.instance-starting {
+    color:@text-color-info;
+  }
+  &.instance-stopping {
+    color:@text-color-error;
+  }
+  &.instance-stopped {
+    color:@text-color;
+  }
 }
 
 .de-workbench-servers-toolbar-container {

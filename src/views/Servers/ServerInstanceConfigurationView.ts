@@ -216,7 +216,7 @@ class HeaderCtrl extends UIExtComponent {
       let serverInstance:ServerInstanceWrapper = eventData[0];
       // filter events only for this server
       if (serverInstance.instanceId===this._serverInstance.instanceId){
-        this.onServerStatusChanged(eventData[0]);
+        this.onServerStatusChanged(serverInstance);
       }
     })
     this._serverInstance = serverInstance;
