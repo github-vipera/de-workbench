@@ -215,7 +215,9 @@ export class ServerManager {
 
   public removeServerInstance(serverInstance:ServerInstance){
     let wrapped = this.getInstanceWrapper(serverInstance);
-    wrapped.stop()
+    if (wrapped.status===ServerStatus.Running){
+      wrapped.stop()
+    }
     this.unregisterInstance(wrapped)
     Logger.getInstance().info("Server instance removed " + wrapped.name +" [instanceId:"+wrapped.instanceId+"].")
     EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_REMOVED, wrapped);
