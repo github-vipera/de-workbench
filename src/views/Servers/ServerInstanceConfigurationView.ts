@@ -38,6 +38,7 @@ export class ServerInstanceConfigurationView extends UIPane {
 
   _serverInstance:ServerInstanceWrapper;
   _configCtrl : ServerInstanceConfigurationCtrl;
+  _overlayEl:HTMLElement;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super({
@@ -57,13 +58,33 @@ export class ServerInstanceConfigurationView extends UIPane {
 
     this._configCtrl = new  ServerInstanceConfigurationCtrl(this._serverInstance)
 
+    this._overlayEl = createElement('div',{
+      className:'de-workbench-overlay de-workbench-server-overlay'
+    })
+    this.showOverlay(false)
+
     let mainContainer = createElement('div',{
-      elements : [ this._configCtrl.element() ],
+      elements : [ this._configCtrl.element(), this._overlayEl ],
       className: 'de-workbench-server-config-pane'
     })
 
+    EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_REMOVED, (eventData)=>{
+      let serverInstance:ServerInstanceWrapper = eventData[0];
+      // filter events only for this server
+      if (serverInstance.instanceId===this._serverInstance.instanceId){
+        this.onInstanceRemoved();
+      }
+    })
 
     return mainContainer;
+  }
+
+  protected showOverlay(show:boolean){
+    this._overlayEl.style.visibility = (show?'visible':'hidden')
+  }
+
+  protected onInstanceRemoved(){
+    this.showOverlay(true)
   }
 
 }
