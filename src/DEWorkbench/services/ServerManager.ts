@@ -213,6 +213,15 @@ export class ServerManager {
       }
   }
 
+  public removeServerInstance(serverInstance:ServerInstance){
+    let wrapped = this.getInstanceWrapper(serverInstance);
+    wrapped.stop()
+    this.unregisterInstance(wrapped)
+    Logger.getInstance().info("Server instance removed " + wrapped.name +" [instanceId:"+wrapped.instanceId+"].")
+    EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_REMOVED, wrapped);
+    UINotifications.showInfo("Server '" + wrapped.name +"' was removed.")
+  }
+
   /**
    * Register a new server instance
    */
@@ -311,7 +320,7 @@ export class ServerManager {
     })
   }
 
-  protected onServerInstanceStatusChanged(serverInstance:ServerInstance){
+  private onServerInstanceStatusChanged(serverInstance:ServerInstance){
     let wrapper = this.getInstanceWrapper(serverInstance)
     Logger.getInstance().info("Server "+ wrapper.name +"' ["+ wrapper.instanceId +"] now is " + wrapper.statusStr)
     EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_STATUS_CHANGED, wrapper)
@@ -323,6 +332,17 @@ export class ServerManager {
    */
   private unregisterInstance(instanceWrapped:ServerInstanceWrapper){
     EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_REMOVED, instanceWrapped);
+
+    let preferences = GlobalPreferences.getInstance();
+    let prefInstances = preferences.get('/server/instances');
+    console.log("**** instances (registerInstance)", prefInstances)
+    if (!prefInstances){
+      prefInstances = [];
+    }
+    _.remove(prefInstances, { serverInstanceId : instanceWrapped.instanceId})
+    preferences.save('/server/instances', prefInstances);
+
+    _.remove(this.instances, { instanceId : instanceWrapped.instanceId})
     instanceWrapped.destroy();
   }
 
@@ -347,7 +367,10 @@ export class ServerManager {
   /**
    * Return the wrapper for the given instance
    */
-  protected getInstanceWrapper(serverInstance:ServerInstance):ServerInstanceWrapper{
+  private getInstanceWrapper(serverInstance:ServerInstance):ServerInstanceWrapper{
+    if (serverInstance instanceof ServerInstanceWrapper){
+      return serverInstance
+    }
     for (var i=0;i<this.instances.length;i++){
       if (this.instances[i].serverInstance===serverInstance){
         return (this.instances[i]);

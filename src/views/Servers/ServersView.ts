@@ -85,6 +85,9 @@ export class ServersView extends UIPane {
     EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_NAME_CHANGED, (data)=>{
       this.treeModel.reload();
     })
+    EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_REMOVED, (data)=>{
+      this.treeModel.reload();
+    })
 
     return el;
   }
@@ -137,24 +140,28 @@ export class ServersView extends UIPane {
   }
 
   protected removeServerInstanceForNode(nodeItem:ServerInstanceItem){
-    const selected = atom.confirm({
-        message: 'Delete Server Instance',
-        detailedMessage: 'Do you want to confirm the ' + nodeItem.serverInstance.name +' server instance deletion ?',
-        buttons: ['Yes, Delete it', 'Cancel']
-      });
-      if (selected==0){
-        this.removeServerInstance(nodeItem.serverInstance);
-      }
-
-    //TODO!
+    if (nodeItem && nodeItem.serverInstance){
+      const selected = atom.confirm({
+          message: 'Delete Server Instance',
+          detailedMessage: 'Do you want to confirm the ' + nodeItem.serverInstance.name +' server instance deletion ?',
+          buttons: ['Yes, Delete it', 'Cancel']
+        });
+        if (selected==0){
+          this.removeServerInstance(nodeItem.serverInstance);
+        }
+    }
   }
 
   protected startServerInstanceForNode(nodeItem:ServerInstanceItem){
-    //TODO!
+    if (nodeItem && nodeItem.serverInstance && nodeItem.serverInstance.status===ServerStatus.Stopped){
+      nodeItem.serverInstance.start();
+    }
   }
 
   protected stopServerInstanceForNode(nodeItem:ServerInstanceItem){
-    //TODO!
+    if (nodeItem && nodeItem.serverInstance && nodeItem.serverInstance.status===ServerStatus.Running){
+      nodeItem.serverInstance.stop();
+    }
   }
 
   protected configureServerInstanceForNode(nodeItem:ServerInstanceItem){
@@ -174,8 +181,7 @@ export class ServersView extends UIPane {
   }
 
   protected removeServerInstance(serverInstance:ServerInstanceWrapper){
-    //TODO!!
-    UINotifications.showInfo("Server instance removed successfully.")
+      ServerManager.getInstance().removeServerInstance(serverInstance)
   }
 
 }
