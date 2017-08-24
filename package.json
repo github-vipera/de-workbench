@@ -65,7 +65,44 @@
       }
     }
   },
-  "configSchema": {},
+  "configSchema": {
+    "AndroidWSPort": {
+      "title": "Android platform WS port",
+      "description": "WebSocket port for Android",
+      "type": "integer",
+      "default": 3000,
+      "minimum": 1,
+      "maximum": 65535,
+      "order": 1
+    },
+    "iOSWSPort": {
+      "title": "iOS platform WS port",
+      "description": "WebSocket port for iOS",
+      "type": "integer",
+      "default": 3001,
+      "minimum": 1,
+      "maximum": 65535,
+      "order": 2
+    },
+    "BrowserWSPort": {
+      "title": "Browser platform WS port",
+      "description": "WebSocket port for Browser",
+      "type": "integer",
+      "default": 3002,
+      "minimum": 1,
+      "maximum": 65535,
+      "order": 3
+    },
+    "BrowserEmulationPort": {
+      "title": "Browser emulation port",
+      "description": "Browser emulation server port",
+      "type": "integer",
+      "default": 8001,
+      "minimum": 1,
+      "maximum": 65535,
+      "order": 4
+    }
+  },
   "package-deps": [
     "ink"
   ],
