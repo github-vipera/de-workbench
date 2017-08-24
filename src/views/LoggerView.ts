@@ -24,30 +24,31 @@ import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Cordova, CordovaPlatform, CordovaPlugin } from '../cordova/Cordova'
 import { UIListView, UIListViewModel } from '../ui-components/UIListView'
 import { Logger,LoggerListener ,LogLevel} from '../logger/Logger'
-import { UILoggerComponent,LogLine,IFilterableModel } from '../ui-components/UILoggerComponent'
+import { UILoggerComponent,LogLine, IFilterableModel ,FileTailLogModel } from '../ui-components/UILoggerComponent'
 
-export class LoggerView implements LoggerListener {
+export class LoggerView {
 
   private element: HTMLElement
   private events: EventEmitter
   private panel: any
   private item: any;
   private atomWorkspace:any;
+  private logModel:FileTailLogModel;
   private loggerComponent:UILoggerComponent;
-
   constructor () {
+
+    //TEST:
+    //let testModel = new FileTailLogModel('/Users/enrico/.de_workbench/de_workbench_json.log')
     //this.bindWihtLogger();
     Logger.getInstance().info("LoggerView initializing...");
-
     this.atomWorkspace = atom.workspace;
     this.events = new EventEmitter()
-
+    this.logModel = new FileTailLogModel('/Users/enrico/.de_workbench/de_workbench_json.log',10);
     this.initUI();
-    this.bindWithLogger();
-
+    //this.bindWithLogger();
   }
 
-  bindWithLogger(){
+  /*bindWithLogger(){
     console.log("bindWithLogger");
     Logger.getInstance().addLoggingListener(this);
     Logger.getInstance().debug("LoggerView -> bind with log done");
@@ -55,14 +56,14 @@ export class LoggerView implements LoggerListener {
 
   onLogging(level:LogLevel, msg:string){
     this.loggerComponent.addLog(msg,level);
-  }
+  }*/
 
   /**
    * Initialize the UI
    */
   initUI() {
-    Logger.getInstance().debug("LoggerView initUI called...");
-    this.loggerComponent = new UILoggerComponent(true);
+    //Logger.getInstance().debug("LoggerView initUI called...");
+    this.loggerComponent = new UILoggerComponent(true,this.logModel);
     // Create the main UI
     this.element = createElement('div',{
       elements : [

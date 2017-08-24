@@ -22,6 +22,7 @@ export class Logger {
 
   private constructor(){
     let filePath = path.join(GlobalPreferences.preferencesFolder, 'de_workbench.log')
+    let filePathJSON = path.join(GlobalPreferences.preferencesFolder, 'de_workbench_json.log')
     this.logger = new (winston.Logger)({
       transports: [
         new winston.transports.File({
@@ -29,6 +30,16 @@ export class Logger {
             filename: filePath,
             handleExceptions: true,
             json: false,
+            maxsize: 5242880, //5MB
+            maxFiles: 5,
+            colorize: false
+        }),
+        new winston.transports.File({
+            level: 'debug',
+            name: 'log-buffer',
+            filename: filePathJSON,
+            handleExceptions: true,
+            json: true,
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false

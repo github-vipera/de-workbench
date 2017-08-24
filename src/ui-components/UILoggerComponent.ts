@@ -23,11 +23,21 @@ import { UIListViewModel } from 'UIListView'
 import * as _ from 'lodash'
 import {LogLevel} from '../logger/Logger'
 import {UISelect, UISelectItem, UISelectListener} from './UISelect';
+import {EventEmitter} from 'events'
 const moment = require('moment')
+const Tail = require('tail').Tail;
+const {
+    allowUnsafeEval,
+    allowUnsafeNewFunction
+} = require('loophole');
+
+const lineReader = require('reverse-line-reader');
+
 
 export interface LogLine{
   logLevel:LogLevel
   message:string
+  timestamp:string
 }
 export interface LogModelListener{
   rowAppended(newLine:LogLine):void
@@ -215,6 +225,79 @@ export class FilterableLogModel extends BaseLogModel implements IFilterableModel
   }
 }
 
+const LOG_LEVEL_CONVERSION_MAP = {
+  'trace':LogLevel.TRACE,
+  'debug':LogLevel.DEBUG,
+  'info':LogLevel.INFO,
+  'warn':LogLevel.WARN,
+  'error':LogLevel.ERROR
+};
+
+export class FileTailLogModel extends BaseLogModel {
+
+  private filePath:string;
+  private events:EventEmitter
+  private tail
+  constructor(filePath:string,lastLine?:number){
+    super();
+    this.events= new EventEmitter();
+    this.filePath = filePath;
+    if(lastLine>0){
+      var count=0;
+      lineReader.eachLine(this.filePath, (line, last) => {
+        console.log(line);
+        try{
+          this.createAndAddLogLine(JSON.parse(line));
+        }catch(err){
+          //console.error(err);
+        }
+        count++;
+        if (count >= lastLine) {
+          return false; // stop reading
+        }
+      });
+      this.attachTailToFile();
+    }else{
+      this.attachTailToFile();
+    }
+
+  }
+
+  private createAndAddLogLine(data){
+    console.log('createAndAddLogLine');
+    let msg= data["0"];
+    let logLevelStr = data["level"];
+    let timestamp = data["timestamp"];
+    this.appendLogLine({
+      logLevel: this.convertToLogLevel(logLevelStr),
+      message: msg,
+      timestamp: timestamp
+    });
+  }
+
+  private convertToLogLevel(logLevelStr:string):LogLevel{
+    return LOG_LEVEL_CONVERSION_MAP[logLevelStr] || LogLevel.TRACE;
+  }
+
+  private attachTailToFile(){
+    this.tail = new Tail(this.filePath);
+    this.tail.on("line", (data) => {
+      this.createAndAddLogLine(JSON.parse(data));
+    });
+
+    this.tail.on("error", (error) => {
+      console.log("LOG_TAIL_ERROR:",error);
+      this.events.emit('didLogTailError',error);
+    });
+  }
+}
+
+
+
+/***************************************************************
+   View (UI) section
+
+ ***************************************************************/
 
 export class UILogView extends UIBaseComponent implements LogModelListener {
   private model:LogModel;
@@ -241,7 +324,7 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
 
   private appendNewNode(newLine:LogLine){
     let cssClass= this.getClassByLevel(newLine.logLevel);
-    let element:HTMLElement = this.createLogLineElement(newLine.message,cssClass);
+    let element:HTMLElement = this.createLogLineElement(newLine,cssClass);
     this.element().appendChild(element);
     this.updateScroll();
   }
@@ -298,7 +381,8 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
     }
   }
 
-  private createLogLineElement(message:string, className?:string):HTMLElement {
+  private createLogLineElement(logLine:LogLine, className?:string):HTMLElement {
+    let message = logLine.timestamp + ' - ' + logLine.message;
     return createElement('div',{
       elements: [
         createElement('div',{
@@ -319,9 +403,9 @@ export class UILoggerComponent extends UIBaseComponent {
   private logView:UILogView;
   private logModel:FilterableLogModel;
 
-  constructor(showToolbar?:boolean){
+  constructor(showToolbar?:boolean,logModel?:LogModel){
       super();
-      this.logModel = new FilterableLogModel(new BaseLogModel());
+      this.logModel = new FilterableLogModel(logModel || new BaseLogModel());
       this.logView= new UILogView(this.logModel);
       this.buildUI(showToolbar || false);
   }
@@ -363,11 +447,12 @@ export class UILoggerComponent extends UIBaseComponent {
   }
 
 
-  public addLog(message:string, level?:LogLevel):UILoggerComponent{
-    let completeMessage = UILoggerComponent.getFormattedTimestamp() + " - " + message;
+  public addLog(message:string, level?:LogLevel, timestamp?:string):UILoggerComponent{
+    //let completeMessage =  UILoggerComponent.getFormattedTimestamp() + " - " + message;
     this.logModel.appendLogLine({
-      message: completeMessage,
+      message: message,
       logLevel:level || LogLevel.DEBUG,
+      timestamp:timestamp || UILoggerComponent.getFormattedTimestamp()
     });
     return this;
   }
