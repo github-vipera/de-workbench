@@ -39,6 +39,7 @@ export class ServerInstanceConfigurationView extends UIPane {
   _serverInstance:ServerInstanceWrapper;
   _configCtrl : ServerInstanceConfigurationCtrl;
   _overlayEl:HTMLElement;
+  _removed:boolean=false;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super({
@@ -69,9 +70,10 @@ export class ServerInstanceConfigurationView extends UIPane {
     })
 
     EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_REMOVED, (eventData)=>{
-      let serverInstance:ServerInstanceWrapper = eventData[0];
+      let instanceId:string = eventData[0];
       // filter events only for this server
-      if (serverInstance.instanceId===this._serverInstance.instanceId){
+      if (instanceId===this._serverInstance.instanceId){
+        this._serverInstance = null;
         this.onInstanceRemoved();
       }
     })
@@ -80,6 +82,8 @@ export class ServerInstanceConfigurationView extends UIPane {
   }
 
   protected showOverlay(show:boolean){
+    this._removed = true;
+    this._configCtrl.invalidate();
     this._overlayEl.style.visibility = (show?'visible':'hidden')
   }
 
@@ -94,8 +98,8 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
   _serverInstance:ServerInstanceWrapper;
   _headerCtrl:HeaderCtrl;
   _tabbedView: UITabbedView;
-  //_logCtrl: ServerLogView;
   _confCtrl : ConfigContainerControl;
+  _removed:boolean=false;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super();
@@ -132,6 +136,13 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
     })
   }
 
+  public invalidate(){
+    this._headerCtrl.invalidate();
+    this._confCtrl.invalidate();
+    this._removed;
+  }
+
+
   createFooView():HTMLElement {
       return createElement('div',{
 
@@ -148,6 +159,7 @@ class ConfigContainerControl extends UIExtComponent {
   _serverInstance:ServerInstanceWrapper;
   _configPanelElement:HTMLElement;
   _configurator:ServerInstanceConfigurator;
+  _removed:boolean;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super();
@@ -217,6 +229,10 @@ class ConfigContainerControl extends UIExtComponent {
     this.fireEvent("didConfigurationChange", this)
   }
 
+  public invalidate(){
+    this._removed = true;
+  }
+
 
 }
 
@@ -230,6 +246,7 @@ class HeaderCtrl extends UIExtComponent {
   _stopInstanceButton:HTMLElement;
   _editableTitle: UIEditableLabel;
   _status:HTMLElement;
+  _removed:boolean=false;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super();
@@ -364,6 +381,10 @@ class HeaderCtrl extends UIExtComponent {
     if (this._serverInstance.status===ServerStatus.Running){
       this._serverInstance.stop();
     }
+  }
+
+  public invalidate(){
+    this._removed = true;
   }
 
 }

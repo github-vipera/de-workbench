@@ -215,13 +215,16 @@ export class ServerManager {
 
   public removeServerInstance(serverInstance:ServerInstance){
     let wrapped = this.getInstanceWrapper(serverInstance);
+    let instanceId = wrapped;
+    let instanceName = wrapped.name;
     if (wrapped.status===ServerStatus.Running){
       wrapped.stop()
     }
     this.unregisterInstance(wrapped)
-    Logger.getInstance().info("Server instance removed " + wrapped.name +" [instanceId:"+wrapped.instanceId+"].")
-    EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_REMOVED, wrapped);
-    UINotifications.showInfo("Server '" + wrapped.name +"' was removed.")
+
+    //from now wrapped instance is invalid
+    Logger.getInstance().info("Server instance removed " + wrapped.name +" [instanceId:"+instanceId+"].")
+    UINotifications.showInfo("Server '" + instanceName +"' was removed.")
   }
 
   /**
@@ -324,17 +327,21 @@ export class ServerManager {
 
   private onServerInstanceStatusChanged(serverInstance:ServerInstance){
     let wrapper = this.getInstanceWrapper(serverInstance)
-    Logger.getInstance().info("Server "+ wrapper.name +"' ["+ wrapper.instanceId +"] now is " + wrapper.statusStr)
-    EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_STATUS_CHANGED, wrapper)
-    UINotifications.showInfo("Server '" + wrapper.name +"' is now " + wrapper.statusStr)
+    if (wrapper){
+      Logger.getInstance().info("Server "+ wrapper.name +"' ["+ wrapper.instanceId +"] now is " + wrapper.statusStr)
+      EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_STATUS_CHANGED, wrapper)
+      UINotifications.showInfo("Server '" + wrapper.name +"' is now " + wrapper.statusStr)
+    } else {
+      //nop, probably alredy removed
+    }
   }
 
   /**
    * Unregister an instance
    */
   private unregisterInstance(instanceWrapped:ServerInstanceWrapper){
-    EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_REMOVED, instanceWrapped);
-
+    let instanceId = instanceWrapped.instanceId;
+    let instanceName = instanceWrapped.name;
     let preferences = GlobalPreferences.getInstance();
     let prefInstances = preferences.get('/server/instances');
     console.log("**** instances (registerInstance)", prefInstances)
@@ -346,6 +353,8 @@ export class ServerManager {
 
     _.remove(this.instances, { instanceId : instanceWrapped.instanceId})
     instanceWrapped.destroy();
+
+    EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_REMOVED, instanceId);
   }
 
   /**
