@@ -10,6 +10,7 @@ import { Logger } from '../../logger/Logger'
 import { CordovaPlugin } from '../../cordova/Cordova'
 import { EventBus } from '../EventBus'
 import { GlobalPreferences } from '../GlobalPreferences'
+import { UINotifications } from '../../ui-components/UINotifications'
 
 const _ = require('lodash');
 const GUID = require('guid');
@@ -314,6 +315,7 @@ export class ServerManager {
     let wrapper = this.getInstanceWrapper(serverInstance)
     Logger.getInstance().info("Server "+ wrapper.name +"' ["+ wrapper.instanceId +"] now is " + wrapper.statusStr)
     EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_STATUS_CHANGED, wrapper)
+    UINotifications.showInfo("Server '" + wrapper.name +"' is now " + wrapper.statusStr)
   }
 
   /**

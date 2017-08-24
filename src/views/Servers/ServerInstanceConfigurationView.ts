@@ -251,8 +251,7 @@ class HeaderCtrl extends UIExtComponent {
     })
     atom["tooltips"].add(this._startInstanceButton, {title:'Start this Server instance'})
     this._startInstanceButton.addEventListener('click',()=>{
-      this._serverInstance.start();
-      //this.fireEvent('didActionClick', HeaderCtrl.ActionStartServerInstance)
+      this.doStart()
     })
 
     this._stopInstanceButton = createElement('button',{
@@ -261,8 +260,7 @@ class HeaderCtrl extends UIExtComponent {
     })
     atom["tooltips"].add(this._stopInstanceButton, {title:'Stop this Server instance'})
     this._stopInstanceButton.addEventListener('click',()=>{
-      this._serverInstance.stop();
-      //this.fireEvent('didActionClick', HeaderCtrl.ActionStopServerInstance)
+      this.doStop();
     })
     let tabbedToolbar = createElement('div',{
       elements: [
@@ -333,6 +331,18 @@ class HeaderCtrl extends UIExtComponent {
 
   public destroy(){
     super.destroy();
+  }
+
+  protected doStart(){
+    if (this._serverInstance.status===ServerStatus.Stopped){
+      this._serverInstance.start();
+    }
+  }
+
+  protected doStop(){
+    if (this._serverInstance.status===ServerStatus.Running){
+      this._serverInstance.stop();
+    }
   }
 
 }
