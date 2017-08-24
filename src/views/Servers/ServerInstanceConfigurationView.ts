@@ -20,7 +20,7 @@
 
 import { EventEmitter }  from 'events'
 import { UIPane } from '../../ui-components/UIPane'
-import { ServerManager, ServerProvider, ServerInstanceWrapper, ServerInstance,ServerInstanceConfigurator } from  '../../DEWorkbench/services/ServerManager'
+import { ServerManager, ServerProvider, ServerInstanceWrapper, ServerInstance,ServerInstanceConfigurator, ServerStatus } from  '../../DEWorkbench/services/ServerManager'
 import { UIComponent, UIBaseComponent, UIExtComponent } from '../../ui-components/UIComponent'
 import { Logger } from '../../logger/Logger'
 import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, findItemInTreeModel } from '../../ui-components/UITreeView'
@@ -29,6 +29,7 @@ import { UILoggerComponent,LogLine,IFilterableModel } from '../../ui-components/
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
 import { UINotifications } from '../../ui-components/UINotifications'
 import { UIEditableLabel } from '../../ui-components/UIEditableLabel'
+import { EventBus } from '../../DEWorkbench/EventBus'
 
 //const md5 = require('md5')
 const _ = require('lodash')
@@ -207,10 +208,17 @@ class HeaderCtrl extends UIExtComponent {
   _startInstanceButton:HTMLElement;
   _stopInstanceButton:HTMLElement;
   _editableTitle: UIEditableLabel;
+  _status:HTMLElement;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super();
-    //this._events = new EventEmitter()
+    EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_STATUS_CHANGED, (eventData)=>{
+      let serverInstance:ServerInstanceWrapper = eventData[0];
+      // filter events only for this server
+      if (serverInstance.instanceId===this._serverInstance.instanceId){
+        this.onServerStatusChanged(eventData[0]);
+      }
+    })
     this._serverInstance = serverInstance;
     this.initUI();
   }
@@ -243,7 +251,8 @@ class HeaderCtrl extends UIExtComponent {
     })
     atom["tooltips"].add(this._startInstanceButton, {title:'Start this Server instance'})
     this._startInstanceButton.addEventListener('click',()=>{
-      this.fireEvent('didActionClick', HeaderCtrl.ActionStartServerInstance)
+      this._serverInstance.start();
+      //this.fireEvent('didActionClick', HeaderCtrl.ActionStartServerInstance)
     })
 
     this._stopInstanceButton = createElement('button',{
@@ -252,7 +261,8 @@ class HeaderCtrl extends UIExtComponent {
     })
     atom["tooltips"].add(this._stopInstanceButton, {title:'Stop this Server instance'})
     this._stopInstanceButton.addEventListener('click',()=>{
-      this.fireEvent('didActionClick', HeaderCtrl.ActionStopServerInstance)
+      this._serverInstance.stop();
+      //this.fireEvent('didActionClick', HeaderCtrl.ActionStopServerInstance)
     })
     let tabbedToolbar = createElement('div',{
       elements: [
@@ -264,13 +274,13 @@ class HeaderCtrl extends UIExtComponent {
     });
 
 
-    let status = createElement('span',{
-      elements: [ createText("Running") ],
-      className: 'de-workbench-server-config-header-status highlight-success'
+    this._status = createElement('span',{
+      elements: [ createText("Unknown Status") ],
+      className: 'de-workbench-server-config-header-status'
     })
 
     let subCont = createElement('div',{
-      elements: [ serverProviderType, status ],
+      elements: [ serverProviderType, this._status ],
       className: 'de-workbench-server-config-header-subcont'
     })
 
@@ -279,8 +289,47 @@ class HeaderCtrl extends UIExtComponent {
       className: 'de-workbench-server-config-header-cont'
     })
 
+    this.setStatus(this._serverInstance.status);
   }
 
+  protected onServerStatusChanged(serverInstance:ServerInstanceWrapper){
+      this.setStatus(serverInstance.status)
+  }
+
+  //highlight-success
+  protected setStatus(status:ServerStatus){
+    if (status===ServerStatus.Running){
+      //highlight-success
+      this.cleanStatus();
+      this._status.classList.add('highlight-success')
+      this._status.innerText = "Running"
+    } else if (status===ServerStatus.Stopped){
+      //highlight
+      this.cleanStatus();
+      this._status.classList.add('highlight-error')
+      this._status.innerText = "Not Running"
+    } else if (status===ServerStatus.Starting){
+      this.cleanStatus();
+      this._status.classList.add('highlight-warning')
+      this._status.innerText = "Starting"
+    } else if (status===ServerStatus.Stopping){
+      this.cleanStatus();
+      this._status.classList.add('highlight-warning')
+      this._status.innerText = "Stopping"
+    } else {
+      this.cleanStatus();
+      this._status.classList.add('highlight')
+      this._status.innerText = "Unknown Status"
+    }
+  }
+
+  protected cleanStatus(){
+    this._status.classList.remove('highlight')
+    this._status.classList.remove('highlight-info')
+    this._status.classList.remove('highlight-warning')
+    this._status.classList.remove('highlight-success')
+    this._status.classList.remove('highlight-error')
+  }
 
   public destroy(){
     super.destroy();

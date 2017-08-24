@@ -52,10 +52,9 @@ export class ServerManager {
   public static get EVT_PROVIDER_REGISTERED():string { return "dewb.serverManager.provider.registered"; }
   public static get EVT_SERVER_INSTANCE_CREATED():string { return "dewb.serverManager.serverInstance.created"; }
   public static get EVT_SERVER_INSTANCE_REMOVED():string { return "dewb.serverManager.serverInstance.removed"; }
-  public static get EVT_SERVER_INSTANCE_STARTED():string { return "dewb.serverManager.serverInstance.started"; }
-  public static get EVT_SERVER_INSTANCE_STOPPED():string { return "dewb.serverManager.serverInstance.stopped"; }
   public static get EVT_SERVER_INSTANCE_CONFIG_CHANGED():string { return "dewb.serverManager.serverInstance.configChanged"; }
   public static get EVT_SERVER_INSTANCE_NAME_CHANGED():string { return "dewb.serverManager.serverInstance.nameChanged"; }
+  public static get EVT_SERVER_INSTANCE_STATUS_CHANGED():string { return "dewb.serverManager.serverInstance.statusChange"; }
 
 
   private static instance:ServerManager;
@@ -247,6 +246,11 @@ export class ServerManager {
 
       Logger.getInstance().debug("New server instance registered with id=" + wrapper.instanceId +".")
       this.instances.push(wrapper)
+
+      //listen for events
+      wrapper.addEventListener('onDidStatusChange', (evt)=>{
+          this.onServerInstanceStatusChanged(evt)
+      })
       return wrapper;
   }
 
@@ -306,6 +310,12 @@ export class ServerManager {
     })
   }
 
+  protected onServerInstanceStatusChanged(serverInstance:ServerInstance){
+    let wrapper = this.getInstanceWrapper(serverInstance)
+    Logger.getInstance().info("Server ''"+ wrapper.name +"' ["+ wrapper.instanceId +"] now is " + wrapper.statusStr)
+    EventBus.getInstance().publish(ServerManager.EVT_SERVER_INSTANCE_STATUS_CHANGED, wrapper)
+  }
+
   /**
    * Unregister an instance
    */
@@ -330,6 +340,18 @@ export class ServerManager {
 
   public getInstanceById(instanceId:string):ServerInstanceWrapper {
     return _.find(this.instances, { instanceId : instanceId});
+  }
+
+  /**
+   * Return the wrapper for the given instance
+   */
+  protected getInstanceWrapper(serverInstance:ServerInstance):ServerInstanceWrapper{
+    for (var i=0;i<this.instances.length;i++){
+      if (this.instances[i].serverInstance===serverInstance){
+        return (this.instances[i]);
+      }
+    }
+    return null;
   }
 
 }
@@ -438,6 +460,21 @@ export class ServerInstanceWrapper implements ServerInstance {
 
   public setName(name:string){
     this._name = name;
+  }
+
+  public get statusStr():string{
+    if (this.status===ServerStatus.Running){
+      return "Running"
+    }
+    else if (this.status===ServerStatus.Stopped){
+      return "Stopped"
+    }
+    else if (this.status===ServerStatus.Starting){
+      return "Starting"
+    }
+    else if (this.status===ServerStatus.Stopping){
+      return "Stopping"
+    }
   }
 
 
