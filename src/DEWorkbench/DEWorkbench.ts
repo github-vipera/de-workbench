@@ -187,7 +187,7 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    }
 
    showProjectSettings() {
-     Logger.getInstance().debug("DEWorkbench showProjectSettings called");
+     //Logger.getInstance().debug("DEWorkbench showProjectSettings called");
      let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
      if (currentprojectPath){
        let projectSettingsView = new ProjectSettingsView(currentprojectPath);
@@ -196,7 +196,7 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    }
 
    openServersView(){
-     Logger.getInstance().debug("DEWorkbench openServersView called");
+     //Logger.getInstance().debug("DEWorkbench openServersView called");
      let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
      if (currentprojectPath){
        let serversView = new ServersView(currentprojectPath);
@@ -205,7 +205,7 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    }
 
    openPushTool(){
-     Logger.getInstance().debug("DEWorkbench showPushTool called");
+     //Logger.getInstance().debug("DEWorkbench showPushTool called");
      let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
      if (currentprojectPath){
        let pushToolView = new PushToolView(currentprojectPath);
@@ -218,13 +218,13 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    }
 
    toggleDebugArea(){
-     Logger.getInstance().debug("DEWorkbench toggleDebugArea called");
+     //Logger.getInstance().debug("DEWorkbench toggleDebugArea called");
      this.events.emit('didToggleDebugArea');
      this.openDebugArea();
    }
 
    toggleLogger(){
-     Logger.getInstance().debug("DEWorkbench toggleLogger called");
+     //Logger.getInstance().debug("DEWorkbench toggleLogger called");
      this.events.emit('didToggleLogger');
      this.openLogger();
    }
@@ -234,7 +234,7 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    }
 
    async showCordovaTaskModal(){
-     console.log("showCordovaTaskModal");
+     //console.log("showCordovaTaskModal");
      if(this.selectedProjectForTask == null){
        Logger.getInstance().warn("select project before run task");
        return;
