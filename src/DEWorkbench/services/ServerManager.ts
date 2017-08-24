@@ -463,11 +463,19 @@ export class ServerInstanceWrapper implements ServerInstance {
   }
 
   public start(){
-    this._serverInstance.start();
+    try {
+      this._serverInstance.start();
+    } catch(err){
+      UINotifications.showError("Start '" + this._name + "' Server Error:\n" + err)
+    }
   }
 
   public stop(){
-    this._serverInstance.stop();
+    try {
+      this._serverInstance.stop();
+    } catch(err){
+      UINotifications.showError("Stop '" + this._name + "' Server Error: " + err)
+    }
   }
 
   public configure(configuration:any){
