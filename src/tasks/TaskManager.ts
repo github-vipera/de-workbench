@@ -86,6 +86,7 @@ export class TaskManager{
     let platform = this.currentTask.selectedPlatform ?this.currentTask.selectedPlatform.name : null;
     if(platform === 'browser'){
       cliOptions.flags ? cliOptions.flags.push('--noprepare'): ['--noprepare'];
+      cliOptions.flags.push('--port=' + parseInt(atom.config.get('de-workbench.BrowserEmulationPort')));
     }
     let target:string =  this.currentTask.device ? this.currentTask.device.targetId : null;
     return this.cordova.runProject(project.path, platform ,target,cliOptions);

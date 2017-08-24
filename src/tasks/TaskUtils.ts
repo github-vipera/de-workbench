@@ -33,13 +33,13 @@ export class TaskUtils {
   public static getPlatformServerPort(platform:string):number{
       //TODO read from config
       if(platform === 'android'){
-        return 3000;
+        return parseInt(atom.config.get('de-workbench.AndroidWSPort'));
       }
       else if(platform === 'ios'){
-        return 3001;
+        return parseInt(atom.config.get('de-workbench.iOSWSPort'));
       }
       else if(platform === 'browser'){
-        return 3002;
+        return parseInt(atom.config.get('de-workbench.BrowserWSPort'));
       }
   }
 
