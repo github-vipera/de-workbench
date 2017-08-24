@@ -27,7 +27,6 @@ import { Logger,LoggerListener ,LogLevel} from '../logger/Logger'
 import { UILoggerComponent,LogLine, IFilterableModel ,FileTailLogModel } from '../ui-components/UILoggerComponent'
 
 export class LoggerView {
-
   private element: HTMLElement
   private events: EventEmitter
   private panel: any
@@ -36,14 +35,10 @@ export class LoggerView {
   private logModel:FileTailLogModel;
   private loggerComponent:UILoggerComponent;
   constructor () {
-
-    //TEST:
-    //let testModel = new FileTailLogModel('/Users/enrico/.de_workbench/de_workbench_json.log')
-    //this.bindWihtLogger();
     Logger.getInstance().info("LoggerView initializing...");
     this.atomWorkspace = atom.workspace;
     this.events = new EventEmitter()
-    this.logModel = new FileTailLogModel('/Users/enrico/.de_workbench/de_workbench_json.log',10);
+    this.logModel = new FileTailLogModel(Logger.getLoggerBufferFilePath(),5);
     this.initUI();
     //this.bindWithLogger();
   }
@@ -102,7 +97,12 @@ export class LoggerView {
    * close this view
    */
   close () {
-    this.panel.hide()
+    this.panel.hide();
+  }
+
+  destroy(){
+    this.panel.hide();
+    this.logModel.destroy();
   }
 
 }

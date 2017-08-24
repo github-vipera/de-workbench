@@ -63,6 +63,10 @@ export class Logger {
       return Logger.instance;
   }
 
+  static getLoggerBufferFilePath(){
+    return path.join(GlobalPreferences.preferencesFolder, 'de_workbench_json.log');
+  }
+
   info(...msg){
     this.fireLogEvent(LogLevel.INFO,msg);
     this.logger.info(msg);

@@ -290,6 +290,11 @@ export class FileTailLogModel extends BaseLogModel {
       this.events.emit('didLogTailError',error);
     });
   }
+
+  destroy(){
+    this.tail.unwatch();
+    this.tail = null;
+  }
 }
 
 
