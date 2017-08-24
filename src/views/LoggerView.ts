@@ -35,7 +35,7 @@ export class LoggerView {
   private logModel:FileTailLogModel;
   private loggerComponent:UILoggerComponent;
   constructor () {
-    Logger.getInstance().info("LoggerView initializing...");
+    //Logger.getInstance().info("LoggerView initializing...");
     this.atomWorkspace = atom.workspace;
     this.events = new EventEmitter()
     this.logModel = new FileTailLogModel(Logger.getLoggerBufferFilePath(),5);
@@ -71,7 +71,7 @@ export class LoggerView {
    * Open this view
    */
   open () {
-    Logger.getInstance().debug("LoggerView open called...");
+    //Logger.getInstance().debug("LoggerView open called...");
     if (this.item){
       this.atomWorkspace.toggle(this.item);
     } else {
