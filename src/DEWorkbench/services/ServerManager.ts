@@ -100,7 +100,6 @@ export class ServerManager {
     return new Promise((resolve,reject)=>{
       let preferences = GlobalPreferences.getInstance();
       let instances = preferences.get('/server/instances')
-      console.log("**** instances (reloadFromConfiguration) ", instances)
       if (!instances){
         instances = [];
       }
@@ -114,7 +113,6 @@ export class ServerManager {
    * This method check pending instances for instantiation
    */
   protected async checkForPendingInstances():Promise<any>{
-    console.log("**** instances (pendingConfigInstances) ", this.pendingConfigInstances)
     for (var i=0;i<this.pendingConfigInstances.length;i++){
       let pendingInstance = this.pendingConfigInstances[i];
       let providerName = pendingInstance["providerName"];
@@ -236,7 +234,6 @@ export class ServerManager {
       let preferences = GlobalPreferences.getInstance();
 
       let prefInstances = preferences.get('/server/instances');
-      console.log("**** instances (registerInstance)", prefInstances)
       if (!prefInstances){
         prefInstances = [];
       }
@@ -344,7 +341,6 @@ export class ServerManager {
     let instanceName = instanceWrapped.name;
     let preferences = GlobalPreferences.getInstance();
     let prefInstances = preferences.get('/server/instances');
-    console.log("**** instances (registerInstance)", prefInstances)
     if (!prefInstances){
       prefInstances = [];
     }
@@ -397,7 +393,7 @@ export class ServerProviderWrapper implements ServerProvider {
   _id: string;
   constructor(serverProvider:ServerProvider){
     this._provider = serverProvider;
-    this._id = ServerProviderWrapper.idFromName(name);
+    this._id = ServerProviderWrapper.idFromName(this._provider.getProviderName());
   }
   createInstance(configuration:any):ServerInstance {
     return this._provider.createInstance(configuration)
