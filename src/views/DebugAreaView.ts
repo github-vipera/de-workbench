@@ -19,7 +19,9 @@
  } from '../element/index';
 
  import { EventEmitter }  from 'events'
-
+const ResizeObserver = require('resize-observer-polyfill');
+const Terminal = require('xterm');
+Terminal.loadAddon('fit');
 
 export class DebugAreaView {
 
@@ -32,18 +34,56 @@ export class DebugAreaView {
   private editorElement: HTMLElement;
   private item: any;
   private atomWorkspace:any;
+  private terminal:any;
 
   constructor () {
     this.atomWorkspace = atom.workspace;
 
     this.events = new EventEmitter()
-    this.element = document.createElement('de-workbench-debugarea-view')
-
-    let title =  createElement('scheme-label', {
-        elements: [createText('Debug Area')]
+    this.element = document.createElement('de-workbench-terminal-view')
+    /**
+    this.element.addEventListener('copy',()=>{
+      console.log("On copy " , this.terminal)
     })
-    insertElement(this.element, title)
+    **/
 
+    let resizeObserver = new ResizeObserver(() => this.outputResized());
+		resizeObserver.observe(this.element);
+
+    atom.commands.add('de-workbench-terminal-view', {
+          'de-workbench-terminal:copy': () => this.copyToClipboard()
+    });
+
+  this.terminal = new Terminal({
+   			rows: 10,
+   			cols: 80,
+        scrollback:10,
+   			useStyle: false,
+   			cursorBlink: false
+   		});
+    this.terminal.open(this.element)
+    this.terminal.fit();
+
+    this.terminal.write('Hello from \033[1;3;31mxterm.js\033[0m $ \r\n')
+
+    this.terminal.write('\x1b[31mWelcome to term.js!\x1b[m\r\n');
+    for (var i=0;i<20;i++){
+      this.terminal.write('Hello World! ' + i + '\r\n');
+    }
+
+    var style = '';
+    		const editor = atom.config["settings"].editor;
+
+    		if (editor) {
+    			if (editor.fontSize)
+    				style += 'font-size:' + editor.fontSize + 'px;';
+    			if (editor.fontFamily)
+    				style += 'font-family:' + editor.fontFamily + ';';
+    			if (editor.lineHeight)
+    				style += 'line-height:' + editor.lineHeight + ';';
+
+    			this.element.setAttribute('style', style);
+    		}
 
   }
 
@@ -72,6 +112,9 @@ export class DebugAreaView {
     this.panel.hide()
   }
 
+  run(){
+      alert("RUN!")
+  }
 
   createControlText (pluginName: string, key: string, config: any) {
     let value = ''
@@ -101,5 +144,13 @@ export class DebugAreaView {
       elements: elements
     })
   }
+
+  protected outputResized(){
+    return this.terminal.fit();
+  }
+
+  copyToClipboard() {
+  		return atom.clipboard.write(this.terminal.getSelection());
+}
 
 }
