@@ -37,16 +37,9 @@ export class BookmarksView extends UIPane {
   listView:UIExtendedListView;
   model:UIExtendedListViewModel;
 
-  constructor(projectRoot:string){
-    super({
-      title: "Bookmarks",
-      projectRoot: projectRoot,
-      paneName : "DEBookmarks",
-      location : 'right'
-    })
-
-    Logger.getInstance().debug("BookmarksView creating for ",this.projectRoot, this.projectId);
-
+  constructor(params:any){
+    super(params)
+    console.log("BookmarksView creating for ",this.paneId);
   }
 
   protected createUI():HTMLElement {

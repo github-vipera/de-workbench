@@ -17,6 +17,8 @@ import { ProjectManager } from './DEWorkbench/ProjectManager'
 import { EventBus } from './DEWorkbench/EventBus'
 import { ConsumedServices } from './DEWorkbench/ConsumedServices'
 import { GlobalPreferences } from './DEWorkbench/GlobalPreferences'
+import { ViewManager } from './DEWorkbench/ViewManager'
+
 
 export default {
 
@@ -62,8 +64,8 @@ export default {
         'dewb-menu-view-:toolbar-toggle': () => this.toggleToolbar(),
         'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector(),
         'dewb-menu-view-:pushtool-show': () => this.showPushTool(),
-        'dewb-menu-view-:servers-show':()=>this.showServers(),
-        'dewb-menu-view-:bookmarks-toggle':()=>this.toggleBookmarks(),
+        'dewb-menu-view-:servers-show':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_SERVERS),
+        'dewb-menu-view-:bookmarks-toggle':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_SERVERS),
         'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger()
       });
     this.subscriptions = new CompositeDisposable();
@@ -79,15 +81,10 @@ export default {
   },
 
   showPushTool(){
-    this.deWorkbench.openPushTool();
-  },
-
-  showServers(){
-    this.deWorkbench.openServersView();
-  },
-
-  toggleBookmarks(){
-    this.deWorkbench.openBookmarksView();
+    let currentprojectPath:string = ProjectManager.getInstance().getCurrentProjectPath();
+    if (currentprojectPath){
+      this.deWorkbench.viewManager.openView(ViewManager.VIEW_PUSHTOOLS(currentprojectPath));
+    }
   },
 
   toggleProjectInspector(){
@@ -107,40 +104,6 @@ export default {
   consumeInk: function (ink) {
     ConsumedServices.ink = ink;
     this.ink = ink;
-    //InkProvider.getInstance().setInk(this.ink);
-
-    /**
-    //const {allowUnsafeEval, allowUnsafeNewFunction} = require('loophole');
-    let cons = ink.Console.fromId('dewb-language-client')
-    cons.setModes([
-      {
-        grammar: 'javascript'
-      }
-    ]);
-    cons.open({
-      split: 'down',
-      searchAllPanes: true
-    })
-
-    cons.onEval(function(arg) {
-      var editor;
-      editor = arg.editor;
-      cons.logInput();
-      cons.done();
-      //console.log(editor.getText())
-      //Logger.getInstance().info("Typed ", editor.getText() )
-      try {
-        let evaluated = null;//eval(editor.getText())
-        var docTemplate = allowUnsafeEval(() => allowUnsafeNewFunction(() => evaluated = eval(editor.getText())));
-        cons.stdout(evaluated);
-        return cons.input();
-      } catch (error){
-        cons.stderr(error);
-        return cons.input();
-      }
-    });
-    **/
-
   },
 
   provideCordovaPluginsProvider () {
@@ -166,7 +129,6 @@ export default {
   provideServerManager(){
     console.log("provideServerManager called")
     return ServerManager.getInstance();
-
   }
 
 }

@@ -20,6 +20,8 @@
 
 import { EventBus } from '../../DEWorkbench/EventBus'
 import { EventEmitter }  from 'events'
+import { DEWorkbench } from '../../DEWorkbench/DEWorkbench'
+import { ViewManager } from '../../DEWorkbench/ViewManager'
 import { UIPane } from '../../ui-components/UIPane'
 import { ServerManager, ServerProviderWrapper, ServerInstanceWrapper, ServerInstance, ServerStatus } from  '../../DEWorkbench/services/ServerManager'
 import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
@@ -37,17 +39,9 @@ export class ServersView extends UIPane {
   protected treeView:UITreeView;
   protected toolbar:ServersToolbar;
 
-  constructor(projectRoot:string){
-    super({
-      title: "Servers",
-      projectRoot: projectRoot,
-      paneName : "DEServers",
-      location : 'right'
-    })
-
-    Logger.getInstance().debug("ServersView creating for ",this.projectRoot, this.projectId);
-
-
+  constructor(params:any){
+    super(params);
+    console.log("ServersView creating for ",this.paneId);
   }
 
   protected createUI():HTMLElement {
@@ -176,8 +170,11 @@ export class ServersView extends UIPane {
   }
 
   protected doConfigureInstance(serverInstance:ServerInstanceWrapper, isNew:boolean){
+    /**
     let configPane = new ServerInstanceConfigurationView(serverInstance, { isNew:isNew });
     configPane.open()
+    **/
+    DEWorkbench.default.viewManager.openView(ViewManager.VIEW_SERVER_INSTANCE(serverInstance))
   }
 
   protected removeServerInstance(serverInstance:ServerInstanceWrapper){
@@ -206,6 +203,7 @@ class ServersToolbar extends UIBaseComponent {
     this.events  = new EventEmitter();
     this.initUI();
   }
+
   protected initUI(){
 
     // tabbed toolbar

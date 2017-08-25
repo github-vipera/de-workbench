@@ -25,6 +25,7 @@ import { UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
 import { ServersView }from '../views/Servers/ServersView'
 import { BookmarkManager } from './BookmarkManager'
 import { BookmarksView } from '../views/Bookmarks/BookmarksView'
+import { ViewManager } from './ViewManager'
 
  import {
    createText,
@@ -57,12 +58,13 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    private taskConfiguration:CordovaTaskConfiguration;
    public serversView: ServersView
    private updateToolbarTimeout:any;
-
+   private _viewManager:ViewManager;
+   private static _instance:DEWorkbench;
 
    constructor(options:WorkbenchOptions){
      Logger.getInstance().info("Initializing DEWorkbench...");
 
-     //let cu = new CordovaUtils();
+     this._viewManager = new ViewManager()
 
      this.projectManager = ProjectManager.getInstance();
 
@@ -147,7 +149,14 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
      this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
      this.events.on('didTaskSelected',this.onTaskSelected.bind(this));
      this.events.on('didStoreTasks',this.onStoreTasks.bind(this));
+
+     DEWorkbench._instance = this;
+
      Logger.getInstance().info("DEWorkbench initialized successfully.");
+   }
+
+   public static get default():DEWorkbench {
+     return this._instance;
    }
 
    public showNewProjectModal(){
@@ -163,14 +172,11 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    openProjectInspector(){
    }
 
+   /*
    openBookmarksView(){
-     Logger.getInstance().debug("DEWorkbench openBookmarksView called");
-     let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
-     if (currentprojectPath){
-       let bookmarksView = new BookmarksView(currentprojectPath);
-       bookmarksView.open();
-     }
+     this._viewManager.openView(ViewManager.VIEW_BOOKMARKS)
    }
+   */
 
    openDebugArea(){
      if (!this.debugAreaView){
@@ -187,29 +193,10 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    }
 
    showProjectSettings() {
-     //Logger.getInstance().debug("DEWorkbench showProjectSettings called");
      let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
      if (currentprojectPath){
        let projectSettingsView = new ProjectSettingsView(currentprojectPath);
        projectSettingsView.open();
-     }
-   }
-
-   openServersView(){
-     //Logger.getInstance().debug("DEWorkbench openServersView called");
-     let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
-     if (currentprojectPath){
-       let serversView = new ServersView(currentprojectPath);
-       serversView.open();
-     }
-   }
-
-   openPushTool(){
-     //Logger.getInstance().debug("DEWorkbench showPushTool called");
-     let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
-     if (currentprojectPath){
-       let pushToolView = new PushToolView(currentprojectPath);
-       pushToolView.open();
      }
    }
 
@@ -383,6 +370,10 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
    destroy () {
      // destroy all
      Logger.getInstance().info("DEWorkbench destroying...");
+   }
+
+   public get viewManager():ViewManager {
+     return this._viewManager;
    }
 
 }

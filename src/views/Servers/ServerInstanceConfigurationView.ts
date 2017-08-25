@@ -40,25 +40,16 @@ export class ServerInstanceConfigurationView extends UIPane {
   _configCtrl : ServerInstanceConfigurationCtrl;
   _overlayEl:HTMLElement;
   _removed:boolean=false;
-  _options:any;
 
-  constructor(serverInstance:ServerInstanceWrapper, options?:any){
-    super({
-      title: "Server[" + serverInstance.name +"]",
-      projectRoot: "__",
-      paneName : "DEServerConfig_" + serverInstance.instanceId,
-      location : 'center',
-      userData : {
-        serverInstance : serverInstance,
-        options: options
-      }
-    })
-    Logger.getInstance().debug("ServerInstanceConfigurationView creating for ",this.projectRoot, this.projectId);
+  constructor(params:any){
+    super(params)
+    console.log("this.paneId " + this.paneId)
+    Logger.getInstance().debug("ServerInstanceConfigurationView creating for ",this.paneId);
   }
 
   protected createUI():HTMLElement {
     this._serverInstance = this.options.userData.serverInstance;
-    this._options = this.options.userData.options;
+    //this._options = this.options.userData.options;
 
     this._configCtrl = new  ServerInstanceConfigurationCtrl(this._serverInstance)
 
@@ -71,6 +62,14 @@ export class ServerInstanceConfigurationView extends UIPane {
       elements : [ this._configCtrl.element(), this._overlayEl ],
       className: 'de-workbench-server-config-pane'
     })
+
+    EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_NAME_CHANGED, (eventData)=>{
+      let instanceId:ServerInstanceWrapper = eventData[0];
+      // filter events only for this server
+      if (this._serverInstance && instanceId.instanceId===this._serverInstance.instanceId){
+        this.onInstanceRenamed();
+      }
+    });
 
     EventBus.getInstance().subscribe(ServerManager.EVT_SERVER_INSTANCE_REMOVED, (eventData)=>{
       let instanceId:string = eventData[0];
@@ -95,11 +94,15 @@ export class ServerInstanceConfigurationView extends UIPane {
   }
 
   protected afterOpen(){
-    if (this._options && this._options.isNew){
-      if (this._options.isNew){
+    if (this.options.userData.options && this.options.userData.options.isNew){
+      if (this.options.userData.options){
         this._configCtrl.startEditName()
       }
     }
+  }
+
+  protected onInstanceRenamed(){
+    //this.setPaneTitle("Pippo")
   }
 
 }

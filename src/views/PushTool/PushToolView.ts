@@ -33,20 +33,15 @@ export class PushToolView extends UIPane {
   private sendPushView:SendPushView;
   private pushSettingsView:PushSettingsView;
 
-  constructor(projectRoot:string){
-    super({
-      title: "Push Tool",
-      projectRoot: projectRoot,
-      paneName : "PushTool"
-    })
-
-    Logger.getInstance().debug("PushToolsView creating for ",this.projectRoot, this.projectId);
+  constructor(params:any){
+    super(params)
+    Logger.getInstance().debug("PushToolsView creating for ",this.paneId);
 
   }
 
   protected createUI():HTMLElement {
-    this.sendPushView = new SendPushView(this.projectRoot)
-    this.pushSettingsView = new PushSettingsView(this.projectRoot)
+    this.sendPushView = new SendPushView(this.options.userData.projectRoot)
+    this.pushSettingsView = new PushSettingsView(this.options.userData.projectRoot)
 
     this.tabbedView = new UITabbedView();//.setTabType(UITabbedViewTabType.Horizontal);
     this.tabbedView.addView(new UITabbedViewItem('sendPush',           'Send Push',              this.sendPushView.element()).setTitleClass('icon icon-comment'));
