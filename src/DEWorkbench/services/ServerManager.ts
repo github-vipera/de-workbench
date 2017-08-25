@@ -109,6 +109,16 @@ export class ServerManager {
     });
   }
 
+  public loadSettingsForServerInstance(instanceId:string):any {
+    let preferences = GlobalPreferences.getInstance();
+    let instances = preferences.get('/server/instances')
+    if (!instances){
+      instances = [];
+    }
+    let instance = _.find(instances, { serverInstanceId : instanceId});
+    return instance;
+  }
+
   /**
    * This method check pending instances for instantiation
    */

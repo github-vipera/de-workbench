@@ -181,10 +181,11 @@ class ConfigContainerControl extends UIExtComponent {
   }
 
   protected initUI(){
+    let savedConfiguration = this.getInstanceSettings().configuration;
     // get the configurator instance
-    this._configurator = this._serverInstance.getConfigurator(this._serverInstance.configuration);
+    this._configurator = this._serverInstance.getConfigurator(savedConfiguration/*this._serverInstance.configuration*/);
     // set the current configuration
-    this._configurator.applyConfiguration(this._serverInstance.configuration)
+    this._configurator.applyConfiguration(savedConfiguration /*this._serverInstance.configuration*/)
     // then get the configurator UI
     this._configPanelElement = this._configurator.getConfigurationPane();
 
@@ -215,6 +216,10 @@ class ConfigContainerControl extends UIExtComponent {
       this.fireConfigChanged()
     })
 
+  }
+
+  protected getInstanceSettings(){
+    return ServerManager.getInstance().loadSettingsForServerInstance(this._serverInstance.instanceId)
   }
 
   protected revertChanges(){
