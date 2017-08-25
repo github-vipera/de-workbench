@@ -14,6 +14,11 @@ de-workbench-terminal-view {
 	line-height: normal;
 
 	overflow: hidden;
+
+	.terminal-cursor {
+		visibility: hidden;
+	}
+
 }
 
 de-workbench-terminal-view[data-theme='light'] {
@@ -34,8 +39,4 @@ de-workbench-terminal-view[data-theme='dark'] {
 
 	.stdout { color: white; }
 	.stderr { color: red; }
-}
-
-.terminal-cursor {
-	visibility: hidden;
 }
