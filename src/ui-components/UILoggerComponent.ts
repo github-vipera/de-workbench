@@ -32,7 +32,9 @@ const {
 } = require('loophole');
 
 const lineReader = require('reverse-line-reader');
-
+const ResizeObserver = require('resize-observer-polyfill');
+const Terminal = require('xterm');
+Terminal.loadAddon('fit');
 
 export interface LogLine{
   logLevel:LogLevel
@@ -321,6 +323,7 @@ export class FileTailLogModel extends BaseLogModel {
 export class UILogView extends UIBaseComponent implements LogModelListener {
   private model:LogModel;
   private autoscroll:boolean = true;
+  private terminal:any
   constructor(model?:LogModel){
     super();
     this.model=model != null? model:new BaseLogModel();
@@ -328,9 +331,34 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
     this.initUI();
   }
   private initUI(){
-    this.mainElement = createElement('div',{
+    this.mainElement = createElement('de-workbench-terminal-view',{
       className: "de-workbench-uilogger-loglines"
     });
+
+    let resizeObserver = new ResizeObserver(() => this.outputResized());
+    resizeObserver.observe(this.mainElement);
+
+    atom.commands.add('de-workbench-terminal-view', {
+          'de-workbench-terminal:copy': () => this.copyToClipboard()
+    });
+
+    this.terminal = new Terminal({
+        scrollback:500,
+        useStyle: false,
+        cursorBlink: false
+      });
+    this.terminal.open(this.mainElement)
+    this.terminal.fit();
+
+  }
+
+  copyToClipboard(){
+    console.log("copy!!!!!!!!");
+    return atom.clipboard.write(this.terminal.getSelection());
+  }
+  
+  protected outputResized(){
+    return this.terminal.fit();
   }
 
   isAutoscroll():boolean{
@@ -342,15 +370,17 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
   }
 
   private appendNewNode(newLine:LogLine){
-    let cssClass= this.getClassByLevel(newLine.logLevel);
+    /*let cssClass= this.getClassByLevel(newLine.logLevel);
     let element:HTMLElement = this.createLogLineElement(newLine,cssClass);
     this.element().appendChild(element);
-    this.updateScroll();
+    this.updateScroll();*/
+    this.terminal.writeln(`${newLine.timestamp} - ${newLine.message}`);
   }
 
   updateScroll(force?:boolean){
     if (this.autoscroll || force){
-      this.mainElement.scrollTop = this.mainElement.scrollHeight;
+      //this.mainElement.scrollTop = this.mainElement.scrollHeight;
+      this.terminal.scrollToBottom();
     }
   }
 
@@ -375,7 +405,7 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
   }
 
   rowDropped(line:LogLine){
-    this.mainElement.removeChild(this.mainElement.firstChild);
+    //this.mainElement.removeChild(this.mainElement.firstChild);
   }
 
   rowsChanged(){
@@ -392,12 +422,13 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
   }
 
   private clearMainElement(){
-    if(!this.mainElement){
+    /*if(!this.mainElement){
       return;
     }
     while(this.mainElement.firstChild){
       this.mainElement.removeChild(this.mainElement.firstChild);
-    }
+    }*/
+    this.terminal.clear();
   }
 
   private createLogLineElement(logLine:LogLine, className?:string):HTMLElement {
@@ -415,6 +446,8 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
     })
   }
 }
+
+
 
 export class UILoggerComponent extends UIBaseComponent {
   public readonly autoscroll:boolean = true;
