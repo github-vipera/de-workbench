@@ -29,17 +29,15 @@ import { InstallNewPluginsView } from './plugins/InstallNewPluginsView'
 import { VariantsView } from './variants/VariantsView'
 import { AppSignatureView } from './signature/AppSignatureView'
 import { GeneralSettingsView } from './GeneralSettingsView'
+import { UIPane } from '../../ui-components/UIPane'
 
 const crypto = require('crypto');
 
-export class ProjectSettingsView {
+export class ProjectSettingsView extends UIPane {
 
-  private element: HTMLElement
-  private item: any;
   private projectRoot: string;
   private projectId: string;
   private tabbedView: UITabbedView;
-  private atomTextEditor: any;
 
   // Sub views
   private installedPluginsView: InstalledPluginsView;
@@ -48,22 +46,16 @@ export class ProjectSettingsView {
   private appSignatureView: AppSignatureView;
   private generalSettingsView: GeneralSettingsView;
 
-  constructor(projectRoot:string){
-    this.projectRoot = projectRoot;
-    this.projectId = crypto.createHash('md5').update(projectRoot).digest("hex");
+  constructor(params:any){
+    super(params)
+    Logger.getInstance().debug("PushToolsView creating for ",this.paneId);
 
-    Logger.getInstance().debug("ProjectSettingsView creating for ",this.projectRoot, this.projectId);
-
-    // Isnitialize the UI
-    this.initUI();
-
-    this.reloadProjectSettings();
   }
 
   private reloadProjectSettings(){
   }
 
-  private initUI(){
+  protected  createUI():HTMLElement{
     Logger.getInstance().debug("ProjectSettingsView initUI called.");
 
     // create the single views
@@ -74,7 +66,7 @@ export class ProjectSettingsView {
     this.generalSettingsView = new GeneralSettingsView();
 
     // Create the main UI
-    this.element = document.createElement('de-workbench-project-settings')
+    let element = document.createElement('de-workbench-project-settings')
 
     this.tabbedView = new UITabbedView();//.setTabType(UITabbedViewTabType.Horizontal);
     this.tabbedView.addView(new UITabbedViewItem('general',           'General',              this.generalSettingsView.element()).setTitleClass('icon icon-settings'));
@@ -89,48 +81,11 @@ export class ProjectSettingsView {
         ],
         className: 'de-workbench-project-settings-view'
     });
-    insertElement(this.element, el)
+    insertElement(element, el)
+
+    return element;
   }
 
-  createSimpleEmptyView(color:string):HTMLElement {
-      let el = createElement('div',{
-        elements : [
-          createText(color)
-        ]
-      });
-      el.style["background-color"] = color;
-      el.style["width"] = "100%";
-      el.style["heightz"] = "100%";
-      return el;
-  }
-
-  /**
-   * Open this view
-   */
-  open () {
-    Logger.getInstance().debug("ProjectSettingsView open called for ",this.projectRoot, this.projectId);
-    if (this.item){
-      atom.workspace["toggle"](this.item);
-    } else {
-      const  prefix = "dewb";
-      const uri = prefix + '//' + '_prjsettings_' + this.projectId;
-      this.item = {
-        activatePane: true,
-        searchAllPanes: true,
-        location: 'center',
-        element: this.element,
-        getTitle: () => 'DE Project Settings',
-        getURI: () => uri,
-        destroy: ()=>{
-          this.destroy()
-        }
-      };
-      let atomWorkspace:any = atom.workspace;
-      atomWorkspace["open"](this.item).then((view)=>{
-          this.atomTextEditor = view;
-      });
-    }
-  }
 
   public destroy(){
     this.generalSettingsView.destroy();

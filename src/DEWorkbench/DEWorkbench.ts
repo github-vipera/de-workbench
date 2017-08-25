@@ -193,10 +193,16 @@ import { ViewManager } from './ViewManager'
    }
 
    showProjectSettings() {
+     /**
      let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
      if (currentprojectPath){
        let projectSettingsView = new ProjectSettingsView(currentprojectPath);
        projectSettingsView.open();
+     }
+     **/
+     let currentprojectPath:string = ProjectManager.getInstance().getCurrentProjectPath();
+     if (currentprojectPath){
+       this.viewManager.openView(ViewManager.VIEW_PROJECT_SETTINGS(currentprojectPath));
      }
    }
 

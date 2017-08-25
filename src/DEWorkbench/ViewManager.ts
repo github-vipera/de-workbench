@@ -14,6 +14,7 @@ import { ServersView } from '../views/Servers/ServersView'
 import { ServerInstanceConfigurationView } from '../views/Servers/ServerInstanceConfigurationView'
 import { BookmarksView } from '../views/Bookmarks/BookmarksView'
 import { PushToolView } from '../views/PushTool/PushToolView'
+import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsView'
 
 const md5 = require("md5")
 
@@ -51,6 +52,9 @@ export class ViewManager {
     else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"serverInstance")){
       return new ServerInstanceConfigurationView(params)
     }
+    else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"projectSettings")){
+      return new ProjectSettingsView(params)
+    }
     return null;
   }
 
@@ -58,6 +62,7 @@ export class ViewManager {
   public static get VIEW_BOOKMARKS():ViewInfo { return {id:"bookmarks",title:"Bookmarks",uri:ViewManager.buildURI("bookmarks"),location:"bottom",activatePane:true,searchAllPanes:true} }
   public static VIEW_PUSHTOOLS(projectRoot:string):ViewInfo { return {id:"pushTool",title:"Push Tool",uri:ViewManager.buildURI("pushTool",projectRoot),location:"center",activatePane:true,searchAllPanes:true, userData: { projectRoot:projectRoot }} }
   public static VIEW_SERVER_INSTANCE(serverInstance:any):ViewInfo { return {id:"serverInstance_" + serverInstance.instanceId,title:"Server ["+ serverInstance.name +"]",uri:ViewManager.buildURI("serverInstance",serverInstance.instanceId),location:"center",activatePane:true,searchAllPanes:true, userData: { serverInstance:serverInstance }} }
+  public static VIEW_PROJECT_SETTINGS(projectRoot:string):ViewInfo { return {id:"projectSettings",title:"Project Settings",uri:ViewManager.buildURI("projectSettings",projectRoot),location:"center",activatePane:true,searchAllPanes:true, userData: { projectRoot:projectRoot }} }
 
   public openView(viewInfo:ViewInfo){
       let item = {
