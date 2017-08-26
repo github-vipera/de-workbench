@@ -15,13 +15,17 @@ import { ServerInstanceConfigurationView } from '../views/Servers/ServerInstance
 import { BookmarksView } from '../views/Bookmarks/BookmarksView'
 import { PushToolView } from '../views/PushTool/PushToolView'
 import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsView'
+import { LoggerView } from '../views/LoggerView'
 
 const md5 = require("md5")
 const $ = require("jquery")
 
 export class ViewManager {
 
+  private _registeredItems:any={};
+
   constructor(){
+    this._registeredItems = {}
     this.registerOpeners()
   }
 
@@ -56,14 +60,27 @@ export class ViewManager {
     else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"projectSettings")){
       return new ProjectSettingsView(params)
     }
+    else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"logInspector")){
+      return new LoggerView(params)
+    }
     return null;
   }
 
   public static get VIEW_SERVERS():ViewInfo { return {id:"servers",title:"Servers",uri:ViewManager.buildURI("servers"),location:"left",activatePane:true,searchAllPanes:true} }
   public static get VIEW_BOOKMARKS():ViewInfo { return {id:"bookmarks",title:"Bookmarks",uri:ViewManager.buildURI("bookmarks"),location:"bottom",activatePane:true,searchAllPanes:true} }
   public static VIEW_PUSHTOOLS(projectRoot:string):ViewInfo { return {id:"pushTool",title:"Push Tool",uri:ViewManager.buildURI("pushTool",projectRoot),location:"center",activatePane:true,searchAllPanes:true, userData: { projectRoot:projectRoot }} }
-  public static VIEW_SERVER_INSTANCE(serverInstance:any):ViewInfo { return {id:"serverInstance_" + serverInstance.instanceId,title:"Server ["+ serverInstance.name +"]",uri:ViewManager.buildURI("serverInstance",serverInstance.instanceId),location:"center",activatePane:true,searchAllPanes:true, userData: { serverInstance:serverInstance }} }
+  public static VIEW_SERVER_INSTANCE(serverInstance:any):ViewInfo { return {id:"serverInstance_" + serverInstance.instanceId,title: serverInstance.name ,uri:ViewManager.buildURI("serverInstance",serverInstance.instanceId),location:"center",activatePane:true,searchAllPanes:true, userData: { serverInstance:serverInstance }} }
   public static VIEW_PROJECT_SETTINGS(projectRoot:string):ViewInfo { return {id:"projectSettings",title:"Project Settings",uri:ViewManager.buildURI("projectSettings",projectRoot),location:"center",activatePane:true,searchAllPanes:true, userData: { projectRoot:projectRoot }} }
+  public static get VIEW_LOG_INSPECTOR():ViewInfo { return {id:"logInspector",title:"DE Log Inspector",uri:ViewManager.buildURI("logInspector"),location:"bottom",activatePane:true,searchAllPanes:true,toggleEnable:true} }
+
+  public toggleView(viewInfo:ViewInfo){
+    let item = this._registeredItems[viewInfo.id];
+    if (item){
+      atom.workspace["toggle"](item.getURI());
+    } else {
+      this.openView(viewInfo)
+    }
+  }
 
   public openView(viewInfo:ViewInfo, extUserData?:any){
       let item = {
@@ -77,6 +94,9 @@ export class ViewManager {
       }
       if (extUserData){
         $.extend(item.userData, extUserData)
+      }
+      if (viewInfo.toggleEnable){
+        this.registerItem(item)
       }
       atom.workspace.open(viewInfo.uri,item).then((view)=>{
         if (view["didOpen"]){
@@ -94,6 +114,10 @@ export class ViewManager {
     return ret;
   }
 
+  private registerItem(item){
+      this._registeredItems[item.id] = item;
+  }
+
 }
 
 export interface ViewInfo {
@@ -103,5 +127,6 @@ export interface ViewInfo {
   location:string,
   activatePane:boolean,
   searchAllPanes:boolean,
-  userData?:any
+  userData?:any,
+  toggleEnable?:boolean
 }

@@ -135,10 +135,6 @@ import { ViewManager } from './ViewManager'
     })
     **/
 
-     // Create the Logger inspector
-     //this.loggerView = new LoggerView();
-
-     //this.debugAreaView = new DebugAreaView();
 
      attachEventFromObject(this.events, [
        'didToggleToolbar'
@@ -172,11 +168,7 @@ import { ViewManager } from './ViewManager'
    openProjectInspector(){
    }
 
-   /*
-   openBookmarksView(){
-     this._viewManager.openView(ViewManager.VIEW_BOOKMARKS)
-   }
-   */
+
 
    openDebugArea(){
      if (!this.debugAreaView){
@@ -185,21 +177,8 @@ import { ViewManager } from './ViewManager'
      this.debugAreaView.open();
    }
 
-   openLogger(){
-     if (!this.loggerView){
-       this.loggerView = new LoggerView();
-     }
-     this.loggerView.open();
-   }
 
    showProjectSettings() {
-     /**
-     let currentprojectPath:string = this.projectManager.getCurrentProjectPath();
-     if (currentprojectPath){
-       let projectSettingsView = new ProjectSettingsView(currentprojectPath);
-       projectSettingsView.open();
-     }
-     **/
      let currentprojectPath:string = ProjectManager.getInstance().getCurrentProjectPath();
      if (currentprojectPath){
        this.viewManager.openView(ViewManager.VIEW_PROJECT_SETTINGS(currentprojectPath));
@@ -211,15 +190,13 @@ import { ViewManager } from './ViewManager'
    }
 
    toggleDebugArea(){
-     //Logger.getInstance().debug("DEWorkbench toggleDebugArea called");
      this.events.emit('didToggleDebugArea');
      this.openDebugArea();
    }
 
    toggleLogger(){
-     //Logger.getInstance().debug("DEWorkbench toggleLogger called");
      this.events.emit('didToggleLogger');
-     this.openLogger();
+     this.viewManager.toggleView(ViewManager.VIEW_LOG_INSPECTOR)
    }
 
    getToolbarElement() {
@@ -227,7 +204,6 @@ import { ViewManager } from './ViewManager'
    }
 
    async showCordovaTaskModal(){
-     //console.log("showCordovaTaskModal");
      if(this.selectedProjectForTask == null){
        Logger.getInstance().warn("select project before run task");
        return;

@@ -20,6 +20,7 @@
 
 import { EventEmitter }  from 'events'
 import { Logger } from '../logger/Logger'
+
 const md5 = require('md5');
 
 export interface PaneViewOptions {
@@ -42,9 +43,13 @@ export class UIPane {
   protected item: any;
   protected atomTextEditor: any;
   private _options:PaneViewOptions;
+  private _events:EventEmitter;
+  private _title:string;
 
   constructor(options:PaneViewOptions){
     this._options = options;
+    this._events = new EventEmitter()
+    this._title = this._options.getTitle();
     console.log("UIPane creating for ", this._options.id);
     // Initialize the UI
     this.initUI();
@@ -79,8 +84,9 @@ export class UIPane {
     this.domEl.remove();
   }
 
-  public setPaneTitle(title:string){
-    //TODO!!
+  public setTitle(title:string){
+    this._title = title;
+    this.fireEvent('did-change-title', title)
   }
 
   public get paneId():string {
@@ -95,8 +101,8 @@ export class UIPane {
       return md5(value)
   }
 
-  getTitle() {
-    return this._options.getTitle();
+  getTitle():string {
+    return this._title;
   }
 
   public get element():HTMLElement {
@@ -105,6 +111,10 @@ export class UIPane {
 
   public getURI(){
     return  this._options.getURI();
+  }
+
+  protected fireEvent(event, ...params){
+    this._events.emit(event, params)
   }
 
 }
