@@ -102,7 +102,12 @@ export class ServerInstanceConfigurationView extends UIPane {
   }
 
   protected onInstanceRenamed(){
+    super.setTitle(this._serverInstance.name)
     //this.setPaneTitle("Pippo")
+  }
+
+  getTitle():string {
+    return "Server [" + super.getTitle() +"]"
   }
 
 }
