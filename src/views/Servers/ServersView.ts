@@ -170,11 +170,7 @@ export class ServersView extends UIPane {
   }
 
   protected doConfigureInstance(serverInstance:ServerInstanceWrapper, isNew:boolean){
-    /**
-    let configPane = new ServerInstanceConfigurationView(serverInstance, { isNew:isNew });
-    configPane.open()
-    **/
-    DEWorkbench.default.viewManager.openView(ViewManager.VIEW_SERVER_INSTANCE(serverInstance))
+    DEWorkbench.default.viewManager.openView(ViewManager.VIEW_SERVER_INSTANCE(serverInstance), { isNew: isNew })
   }
 
   protected removeServerInstance(serverInstance:ServerInstanceWrapper){

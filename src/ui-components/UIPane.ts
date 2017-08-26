@@ -70,40 +70,7 @@ export class UIPane {
       throw ("Invalid implementation")
   }
 
-   /**
-   * Open this view
-   */
-  // open () {
-  //   Logger.getInstance().debug("Panel open called for ",this._options.id);
-  //   if (this.item){
-  //     atom.workspace["toggle"](this.item);
-  //   } else {
-  //     let locationStr = 'center'
-  //     if (this._options.location){
-  //       locationStr = this._options.location
-  //     }
-  //     const uri = UIPane.PANE_URI_PREFIX  + this._options.id;
-  //     console.log("Opening UIPane [URI=" + uri +"]");
-  //     this.item = {
-  //       activatePane: this._options.activatePane,
-  //       searchAllPanes: true, /*this._options.searchAllPanes,*/
-  //       location: locationStr,
-  //       element: this.domEl,
-  //       getTitle: () => this._options.title,
-  //       getURI: () => uri,
-  //       destroy: ()=>{
-  //         this.destroy()
-  //       }
-  //     };
-  //     let atomWorkspace:any = atom.workspace;
-  //     atomWorkspace["open"](uri, this.item).then((view)=>{
-  //         this.atomTextEditor = view;
-  //         this.afterOpen();
-  //     });
-  //   }
-  // }
-
-  protected afterOpen(){
+  public didOpen(){
     //nop, overridable
   }
 

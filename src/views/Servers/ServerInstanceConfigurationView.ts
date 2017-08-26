@@ -49,7 +49,6 @@ export class ServerInstanceConfigurationView extends UIPane {
 
   protected createUI():HTMLElement {
     this._serverInstance = this.options.userData.serverInstance;
-    //this._options = this.options.userData.options;
 
     this._configCtrl = new  ServerInstanceConfigurationCtrl(this._serverInstance)
 
@@ -93,10 +92,11 @@ export class ServerInstanceConfigurationView extends UIPane {
     this.showOverlay(true)
   }
 
-  protected afterOpen(){
-    if (this.options.userData.options && this.options.userData.options.isNew){
-      if (this.options.userData.options){
+  public didOpen(){
+    if (this.options.userData && this.options.userData.isNew){
+      if (this.options.userData.isNew){
         this._configCtrl.startEditName()
+        this.options.userData.isNew = false;
       }
     }
   }
