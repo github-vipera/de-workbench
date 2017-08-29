@@ -29,6 +29,7 @@ import { Logger } from '../../logger/Logger'
 import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, findItemInTreeModel } from '../../ui-components/UITreeView'
 import { ServerInstanceConfigurationView } from './ServerInstanceConfigurationView'
 import { UINotifications } from '../../ui-components/UINotifications'
+const  { CompositeDisposable } = require('atom');
 
 const md5 = require('md5')
 const _ = require('lodash')
@@ -38,6 +39,7 @@ export class ServersView extends UIPane {
   protected treeModel:ServersTreeModel;
   protected treeView:UITreeView;
   protected toolbar:ServersToolbar;
+  protected subscriptions:any;
 
   constructor(params:any){
     super(params);
@@ -68,7 +70,7 @@ export class ServersView extends UIPane {
       this.doToolbarAction(action);
     })
 
-    let el = createElement('div', {
+    let el = createElement('de-workbench-servers-view', {
         elements: [
           this.toolbar.element(),
           this.treeView.element()
@@ -83,8 +85,63 @@ export class ServersView extends UIPane {
       this.treeModel.reload();
     })
 
+
+    atom["contextMenu"].add({'.de-workbench-servers-treeview-instance-item' : [{label: 'Start Server', command: 'dewb-menu-view-:start-server'}, {label: 'Stop Server', command: 'dewb-menu-view-:stop-server'}]})
+    // add commands
+    let commands = atom.commands.add('.de-workbench-servers-treeview-instance-item', {
+        'dewb-menu-view-:start-server': (evt) => this.doStartServer(evt),
+        'dewb-menu-view-:stop-server': (evt) => this.doStopServer(evt)
+      });
+    // add commands subs
+    this.subscriptions = new CompositeDisposable();
+    this.subscriptions.add(commands);
+
     return el;
   }
+
+  protected doStartServer(evt){
+    let targetElement:HTMLElement = evt.target;
+    let nodeId = undefined;
+    if (targetElement.classList.contains('de-workbench-servers-treeview-instance-item')){
+      nodeId = targetElement.getAttribute("treeitemId")
+    } else if (targetElement.parentElement && targetElement.parentElement.classList.contains('de-workbench-servers-treeview-instance-item')) {
+      nodeId = targetElement.parentElement.getAttribute("treeitemId")
+    }
+    if (nodeId){
+      let nodeItem = <ServerInstanceItem>this.treeModel.getItemById(nodeId);
+      if (nodeItem){
+        if (nodeItem.serverInstance){
+          if (nodeItem.serverInstance.status===ServerStatus.Stopped){
+            nodeItem.serverInstance.start();
+          }
+        }
+      } else{
+      }
+    }
+  }
+
+  protected doStopServer(evt){
+    let targetElement:HTMLElement = evt.target;
+    let nodeId = undefined;
+    if (targetElement.classList.contains('de-workbench-servers-treeview-instance-item')){
+      nodeId = targetElement.getAttribute("treeitemId")
+    } else if (targetElement.parentElement && targetElement.parentElement.classList.contains('de-workbench-servers-treeview-instance-item')) {
+      nodeId = targetElement.parentElement.getAttribute("treeitemId")
+    }
+    if (nodeId){
+      let nodeItem = <ServerInstanceItem>this.treeModel.getItemById(nodeId);
+      if (nodeItem){
+        if (nodeItem.serverInstance){
+          if (nodeItem.serverInstance.status===ServerStatus.Running){
+            nodeItem.serverInstance.stop();
+          }
+        }
+      } else{
+      }
+    }
+  }
+
+
 
   protected updateToolbar(nodeType:string){
       if (nodeType==="root"){

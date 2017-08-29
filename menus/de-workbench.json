@@ -3,7 +3,8 @@
     "label": "Packages",
     "submenu": [{
       "label": "DE Workbench",
-      "submenu": [{
+      "submenu": [
+      {
         "label": "View",
         "submenu": [{
           "label": "Toggle Toolbar",

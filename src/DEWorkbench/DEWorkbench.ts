@@ -121,27 +121,11 @@ import { ViewManager } from './ViewManager'
       }
      });
 
-     /**
-     atom.workspace['observeActivePaneItem']((editor) => {
-      if (editor) {
-        let range = [[1, 0], [1, 0]]
-        let marker = editor.markBufferRange(range)
-        let decorator = editor.decorateMarker(marker, {
-          type: 'line-number',
-          class: 'bugs-breakpoint'
-        })
-        //this.editorManager.addFeatures(editor)
-      }
-    })
-    **/
-
-
      attachEventFromObject(this.events, [
        'didToggleToolbar'
      ], options);
 
      ProjectManager.getInstance().didProjectChanged((projectPath)=>this.onProjectChanged(projectPath));
-     //this.events.on('didStop',this.onStopTask.bind(this));
      this.events.on('didRunTask',this.onTaskRunRequired.bind(this));
      this.events.on('didTaskSelected',this.onTaskSelected.bind(this));
      this.events.on('didStoreTasks',this.onStoreTasks.bind(this));
