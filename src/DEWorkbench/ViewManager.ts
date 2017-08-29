@@ -16,6 +16,11 @@ import { BookmarksView } from '../views/Bookmarks/BookmarksView'
 import { PushToolView } from '../views/PushTool/PushToolView'
 import { ProjectSettingsView } from '../views/ProjectSettings/ProjectSettingsView'
 import { LoggerView } from '../views/LoggerView'
+import { DebugAreaView } from '../views/DebugArea/DebugAreaView'
+import { DebugBreakpointsView } from '../views/DebugArea/DebugBreakpointsView'
+import { DebugCallStackView } from '../views/DebugArea/DebugCallStackView'
+import { DebugVariablesView } from '../views/DebugArea/DebugVariablesView'
+import { DebugWatchExpressionsView } from '../views/DebugArea/DebugWatchExpressionsView'
 
 const md5 = require("md5")
 const $ = require("jquery")
@@ -63,6 +68,22 @@ export class ViewManager {
     else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"logInspector")){
       return new LoggerView(params)
     }
+    else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"debugAreaView")){
+      return new DebugAreaView(params)
+    }
+    else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"debugBreakpointsView")){
+      return new DebugBreakpointsView(params)
+    }
+    else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"debugCallStackView")){
+      return new DebugCallStackView(params)
+    }
+    else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"debugVariablesView")){
+      return new DebugVariablesView(params)
+    }
+    else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"debugWatchExpressionsView")){
+      return new DebugWatchExpressionsView(params)
+    }
+
     return null;
   }
 
@@ -72,6 +93,14 @@ export class ViewManager {
   public static VIEW_SERVER_INSTANCE(serverInstance:any):ViewInfo { return {id:"serverInstance_" + serverInstance.instanceId,title: serverInstance.name ,uri:ViewManager.buildURI("serverInstance",serverInstance.instanceId),location:"center",activatePane:true,searchAllPanes:true, userData: { serverInstance:serverInstance }} }
   public static VIEW_PROJECT_SETTINGS(projectRoot:string):ViewInfo { return {id:"projectSettings",title:"Project Settings",uri:ViewManager.buildURI("projectSettings",projectRoot),location:"center",activatePane:true,searchAllPanes:true, userData: { projectRoot:projectRoot }} }
   public static get VIEW_LOG_INSPECTOR():ViewInfo { return {id:"logInspector",title:"DE Log Inspector",uri:ViewManager.buildURI("logInspector"),location:"bottom",activatePane:true,searchAllPanes:true,toggleEnable:true} }
+
+  // DEBUG BLOCKS
+  public static get VIEW_DEBUG_AREA():ViewInfo { return {id:"debugAreaView",title:"Debug Area",uri:ViewManager.buildURI("debugAreaView"),location:"right",activatePane:true,searchAllPanes:true,toggleEnable:true} }
+  public static get VIEW_DEBUG_BREAKPOINTS():ViewInfo { return {id:"debugBreakpointsView",title:"Breakpoints",uri:ViewManager.buildURI("debugBreakpointsView"),location:"right",activatePane:true,searchAllPanes:true,toggleEnable:true} }
+  public static get VIEW_DEBUG_CALL_STACK():ViewInfo { return {id:"debugCallStackView",title:"Call Stack",uri:ViewManager.buildURI("debugCallStackView"),location:"right",activatePane:true,searchAllPanes:true,toggleEnable:true} }
+  public static get VIEW_DEBUG_VARIABLES():ViewInfo { return {id:"debugVariablesView",title:"Variables",uri:ViewManager.buildURI("debugVariablesView"),location:"right",activatePane:true,searchAllPanes:true,toggleEnable:true} }
+  public static get VIEW_DEBUG_WATCH_EXPRESSIONS():ViewInfo { return {id:"debugWatchExpressionsView",title:"Watch Expressions",uri:ViewManager.buildURI("debugWatchExpressionsView"),location:"right",activatePane:true,searchAllPanes:true,toggleEnable:true} }
+
 
   public toggleView(viewInfo:ViewInfo){
     let item = this._registeredItems[viewInfo.id];

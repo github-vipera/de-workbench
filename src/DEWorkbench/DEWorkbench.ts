@@ -10,7 +10,6 @@ import { ToolbarView } from '../toolbar/ToolbarView'
 import { NewProjectView } from '../views/NewProject/NewProjectView'
 import { EventEmitter }  from 'events';
 const  { CompositeDisposable } = require('atom');
-import { DebugAreaView }from '../views/DebugAreaView'
 import { CordovaUtils } from '../cordova/CordovaUtils'
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { Logger } from '../logger/Logger'
@@ -49,7 +48,6 @@ import { ViewManager } from './ViewManager'
  export class DEWorkbench {
 
    public toolbarView: ToolbarView
-   public debugAreaView: DebugAreaView
    public loggerView: LoggerView
    private events: EventEmitter;
    public projectManager: ProjectManager;
@@ -132,6 +130,14 @@ import { ViewManager } from './ViewManager'
 
      DEWorkbench._instance = this;
 
+     let commands = atom.commands.add('atom-workspace', {
+         'dewb-menu-view-:debug-breakpoint-toggle': () => this.toggleBreakpointsView(),
+         'dewb-menu-view-:debug-call-stack-toggle': () => this.toggleCallStackView(),
+         'dewb-menu-view-:debug-variables-toggle': () => this.toggleVariablesView(),
+         'dewb-menu-view-:debug-watch-expressions-toggle': () => this.toggleWatchExpressionsView()
+       });
+
+
      Logger.getInstance().info("DEWorkbench initialized successfully.");
    }
 
@@ -145,6 +151,22 @@ import { ViewManager } from './ViewManager'
      newProjectView.open();
    }
 
+   toggleBreakpointsView(){
+     this.viewManager.toggleView(ViewManager.VIEW_DEBUG_BREAKPOINTS);
+   }
+
+   toggleCallStackView(){
+     this.viewManager.toggleView(ViewManager.VIEW_DEBUG_CALL_STACK);
+   }
+
+   toggleVariablesView(){
+     this.viewManager.toggleView(ViewManager.VIEW_DEBUG_VARIABLES);
+   }
+
+   toggleWatchExpressionsView(){
+     this.viewManager.toggleView(ViewManager.VIEW_DEBUG_WATCH_EXPRESSIONS);
+   }
+
    onProjectChanged(projectPath:String){
      Logger.getInstance().debug("DEWorkbench onProjectChanged: ", projectPath);
    }
@@ -155,10 +177,7 @@ import { ViewManager } from './ViewManager'
 
 
    openDebugArea(){
-     if (!this.debugAreaView){
-       this.debugAreaView = new DebugAreaView();
-     }
-     this.debugAreaView.open();
+     this.viewManager.openView(ViewManager.VIEW_DEBUG_BREAKPOINTS);
    }
 
 
@@ -175,7 +194,7 @@ import { ViewManager } from './ViewManager'
 
    toggleDebugArea(){
      this.events.emit('didToggleDebugArea');
-     this.openDebugArea();
+     this.viewManager.toggleView(ViewManager.VIEW_DEBUG_BREAKPOINTS);
    }
 
    toggleLogger(){
