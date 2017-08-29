@@ -21,12 +21,14 @@
 import { UIDebugBlock } from './UIDebugBlock'
 import { UIExtComponent } from '../../ui-components/UIComponent'
 import { CallStackFrame, CallStackFrames } from '../../DEWorkbench/debugger/DebuggerCommons'
+import { parse } from 'path'
 
 const { CompositeDisposable } = require('atom')
 
 export class DebugCallStackView extends UIDebugBlock {
 
-  toolbar:DebugToolbar
+  private toolbar:DebugToolbar
+  private callStackContentElement: HTMLElement
 
   constructor (params:any) {
     super(params)
@@ -42,14 +44,61 @@ export class DebugCallStackView extends UIDebugBlock {
        //alert("didPause")
      })
 
+     this.callStackContentElement = createElement('de-workbench-debug-group-content', {
+       className: 'callstack'
+     })
 
      let el = createElement('div', {
-       elements: [ this.toolbar.element(), createText("Call Stack")]
+       elements: [ this.toolbar.element(),  this.callStackContentElement ]
      })
      return el;
    }
 
+   insertCallStackFromFrames (frames: CallStackFrames) {
+     this.clearCallStack()
+     frames.forEach((frame, index) => {
+       return insertElement(this.callStackContentElement,
+         this.createFrameLine(frame, index === 0))
+     })
+   }
 
+   clearCallStack () {
+     this.callStackContentElement.innerHTML = ''
+   }
+
+   createFrameLine (frame: CallStackFrame, indicate: boolean) {
+     let file = parse(frame.filePath)
+     let indicator = createIcon(indicate ? 'arrow-right-solid' : '')
+     if (indicate) {
+       indicator.classList.add('active')
+     }
+     return createElement('xatom-debug-group-item', {
+       options: {
+         click: () => {
+           this.fireEvent('didOpenFrame', frame)
+           this.fireEvent('didOpenFile',
+             frame.filePath,
+             frame.lineNumber,
+             frame.columnNumber)
+         }
+       },
+       elements: [
+         createElement('span', {
+           elements: [indicator, createText(frame.name || '(anonymous)')]
+         }),
+         createElement('span', {
+           className: 'file-reference',
+           elements: [
+             createText(file.base),
+             createElement('span', {
+               className: 'file-position',
+               elements: [ createText(`${frame.lineNumber + 1}${ frame.columnNumber > 0 ? ':' + frame.columnNumber : '' }`) ]
+             })
+           ]
+         })
+       ]
+     })
+   }
 
 
 }
