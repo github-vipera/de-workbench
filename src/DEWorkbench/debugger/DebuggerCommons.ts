@@ -14,3 +14,12 @@
 }
 
 export type CallStackFrames = Array<CallStackFrame>
+
+export interface Breakpoint {
+  lineNumber: number,
+  filePath: string,
+  condition: string,
+  marker: any
+}
+
+export type Breakpoints = Array<Breakpoint>
