@@ -45,7 +45,7 @@ export class BookmarksView extends UIPane {
   protected createUI():HTMLElement {
 
     this.model = new BookmarksModel();
-    this.listView = new UIExtendedListView(this.model);
+    this.listView = new UIExtendedListView(this.model).setCellSelectable(false);
 
     let el = createElement('div', {
         elements: [
@@ -127,9 +127,11 @@ class BookmarksModel implements UIExtendedListViewModel {
 
   getElementAt(row:number, col:number):HTMLElement {
     let bookmark:Bookmark = this.bookmarks[row];
+    //let filePathValue = cliTruncate(bookmark.filePath, 50, {position: 'start'});
+    let filePathValue  = bookmark.filePath;
     if (col===BookmarksModel.COL_RESOURCE){
       let el = createElement('a',{
-        elements: [ createText(cliTruncate(bookmark.filePath, 50, {position: 'start'}))]
+        elements: [ createText(filePathValue)]
       })
       el.setAttribute('href','#')
       el.setAttribute('bookmark_id',bookmark.id)

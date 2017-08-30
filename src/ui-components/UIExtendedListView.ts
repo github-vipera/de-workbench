@@ -43,6 +43,7 @@ export class UIExtendedListView extends UIListView {
   private extendedModel:UIExtendedListViewModel;
   private editorEl:HTMLElement;
   private editing:boolean;
+  private cellSelectable:boolean=true;
 
   private validationErrorOverlay:HTMLElement;
 
@@ -212,13 +213,15 @@ export class UIExtendedListView extends UIListView {
   }
 
   protected selectCell(cell:HTMLElement){
-    this.removeCurrentSelection();
-    cell.classList.add("selected")
-    this.selectedCell = cell;
+    if (this.cellSelectable){
+      this.removeCurrentSelection();
+      cell.classList.add("selected")
+      this.selectedCell = cell;
 
-    let row = this.getSelectedRow();
-    if (row>-1){
-      this.selectRow(row)
+      let row = this.getSelectedRow();
+      if (row>-1){
+        this.selectRow(row)
+      }
     }
   }
 
@@ -345,4 +348,14 @@ export class UIExtendedListView extends UIListView {
     this.validationErrorOverlay.style.visibility = "hidden"
     this.selectedCell.classList.remove("validation-error")
   }
+
+  public isCellSelectable():boolean {
+    return this.cellSelectable;
+  }
+
+  public setCellSelectable(value:boolean):UIExtendedListView{
+    this.cellSelectable = value;
+    return this;
+  }
+
 }

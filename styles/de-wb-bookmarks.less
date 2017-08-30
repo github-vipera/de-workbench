@@ -18,15 +18,32 @@
 
 .de-workbench-bookmarks-view {
   .de-workbench-listview-tb {
+
     td {
       border-style: dotted;
       border-top: none;
       border-right: none;
       border-left: none;
+
+      a {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: inline-block;
+        white-space:nowrap;
+      }
+
     }
+
     tr:hover {
       background-color: fade(@background-color-info, 10%);
       color:@text-color-highlight;
     }
+
+    tr {
+          line-height: 0.9em;
+    }
+
+    font-size: 8.6pt;
   }
+
 }
