@@ -1,0 +1,22 @@
+.de-workbench-treeview {
+
+  &.tree-view {
+    contain: content;
+  }
+
+  .de-woekbench-treeview-treeitem{
+    position: relative; // fix selection
+
+    .header.list-item {
+    }
+    .header.list-item::before {
+    }
+
+
+  }
+
+}
+
+.header.list-item {
+  -webkit-user-select: none;
+}

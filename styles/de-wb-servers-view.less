@@ -1,0 +1,35 @@
+/*!
+ * DE Workbench
+ * Copyright(c) 2017 Williams Medina <williams.medinaa@gmail.com>
+ * MIT Licensed
+ */
+
+@import "variables";
+
+.de-workbench-servers-treeview-provider-item {
+  color:@text-color-highlight;
+}
+
+.de-workbench-servers-treeview-root-item {
+  color:@text-color-info;
+}
+
+
+.de-workbench-servers-treeview-instance-item {
+  &.instance-running {
+    color:@text-color-success;
+  }
+  &.instance-starting {
+    color:@text-color-info;
+  }
+  &.instance-stopping {
+    color:@text-color-error;
+  }
+  &.instance-stopped {
+    color:@text-color;
+  }
+}
+
+.de-workbench-servers-toolbar-container {
+  height: 24px;
+}

@@ -1,0 +1,8 @@
+{
+  "featuredPlugins": [
+    {
+      'name': 'cordova-plugin-touch-id',
+      'repoUrl' : 'https://github.com/EddyVerbruggen/cordova-plugin-touch-id'
+    }
+  ]
+}

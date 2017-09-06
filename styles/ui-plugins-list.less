@@ -1,0 +1,93 @@
+/*!
+ * DE Workbench
+ * Copyright(c) 2017 Williams Medina <williams.medinaa@gmail.com>
+ * MIT Licensed
+ */
+
+@import "variables";
+
+.de-workbench-plugins-list td{
+  border: none;
+  border-style:hidden;
+}
+
+.de-workbench-plugins-list-item {
+  border-radius: 6px;
+  border: 1px solid @tool-panel-border-color;
+  background-color: @inset-panel-background-color;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.de-workbench-plugins-list-item:hover {
+  background-color: @button-background-color-hover !important;
+}
+
+.de-workbench-plugins-list-meta-cont {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.de-workbench-plugins-list-meta-user {
+  flex: 1 0 auto;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.de-workbench-plugins-list-meta-btn {
+  float: right !important;
+}
+
+.de-workbench-plugins-list-item-plugname {
+  /*font-weight: bolder;*/
+  font-size: 1.1em;
+  line-height:1.4;
+}
+
+.de-workbench-plugins-list-item-plugversion {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.de-workbench-plugins-list-item-lastupdate {
+  float: right;
+  font-size: 12px;
+  color: @text-color-success;
+}
+
+.de-workbench-plugins-list-item-plugdesc {
+    font-size: 14px;
+}
+
+.de-workbench-plugins-list-item-owner {
+  font-size: 12px;
+  color: @text-color-info;
+}
+
+.de-workbench-plugins-list-item-rating {
+  margin-right: 10px;
+}
+
+.de-workbench-plugins-list-item-platforms {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.de-workbench-community-plugins-query-results {
+  margin-left: 10px;
+  margin-right: 10px;
+  &[queryres="0"] {
+    color: @text-color-error;
+  }
+  &[queryres="1"] {
+    color: @text-color-info;
+  }
+}
+
+.plugin-install-spinner {
+  float: right;
+}

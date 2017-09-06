@@ -21,23 +21,36 @@ import {
   createIconFromPath,
   attachEventFromObject
 } from '../element/index';
+import { UIRunSelectorComponent } from '../ui-components/UIRunSelectorComponent'
+import { UIStatusIndicatorComponent, UIIndicatorStatus } from '../ui-components/UIStatusIndicatorComponent'
+
 
 export interface ToolbarOptions {
   didNewProject?: Function,
   didRun?: Function,
   didStop?: Function,
   didBuild?: Function,
+  didReload?:Function,
+  didOpenJSConsole?:Function,
+  didProjectSettings?: Function,
   didToggleToolbar?: Function,
-  didTogglePrjInspector?: Function,
   didToggleDebugArea?: Function
-  /**
-  didOpenScheme?: Function,
-  didRun?: Function,
-  didChangePath?: Function,
-  didStop?: Function,
+  didSelectProjectForRun?: Function,
   didToggleConsole?: Function,
-  didToggleDebugArea?: Function
-  **/
+  didSelectTaskClick?:Function,
+  didTaskSelected?:Function
+}
+
+
+export interface ToolbarStatus {
+  btnRunEnable?:boolean
+  btnStopEnable?:boolean
+  btnReloadEnable?:boolean
+  btnOpenJSConsoleEnable?:boolean
+  prjSelectorEnable?:boolean
+  progressStatus?: UIIndicatorStatus
+  progressMsg?: string
+  progressIcon?: string
 }
 
 export class ToolbarView {
@@ -51,13 +64,31 @@ export class ToolbarView {
   private stopButton: HTMLElement;
   private logoElement: HTMLElement;
   private buildButton: HTMLElement;
+  private runSelector:UIRunSelectorComponent;
+  private statusIndicator: UIStatusIndicatorComponent;
+  private reloadButton: HTMLElement;
+  private openJSConsoleButton: HTMLElement;
+
+  private toolbarElement: HTMLElement;
+  private toolbarAnchor: HTMLElement;
+
+  private isVisible: boolean;
 
   constructor (options: ToolbarOptions) {
     this.events = new EventEmitter();
-    this.element = createElement('de-workbench-toolbar');
+
+    this.toolbarElement = createElement('de-workbench-toolbar');
 
     this.logoElement = createIcon('logo')
-    insertElement(this.element, this.logoElement)
+    insertElement(this.toolbarElement, this.logoElement)
+
+    //<Label class="fa" text="\uf293"></Label>
+    /*let testFA = createElement('a',{
+      elements: [ createText('pippo')],
+      className : "fa"
+    })
+    testFA.setAttribute("text","\uf293")
+    insertElement(this.element, testFA)*/
 
     this.newProjectButton = createButton({
       click: () => {
@@ -66,8 +97,75 @@ export class ToolbarView {
     },[
       createIcon('newproj')
     ]);
-    insertElement(this.element, this.newProjectButton)
+    atom["tooltips"].add(this.newProjectButton, {title:'Create a New Project'})
+    insertElement(this.toolbarElement, this.newProjectButton)
 
+    this.buildButton = createButton({
+      disabled: false,
+      click: () => {
+        this.events.emit('didProjectSettings');
+      }
+    },[
+      createIcon('build')
+    ]);
+    atom["tooltips"].add(this.buildButton, {title:'Open Project Settings'})
+    insertElement(this.toolbarElement, this.buildButton)
+
+    this.createRunComponents();
+    this.createStatusIndicator();
+
+    // toggle panes
+    let toggleButtons = this.createToogleButtons();
+    toggleButtons.classList.add('bugs-toggle-buttons')
+    insertElement(this.toolbarElement, toggleButtons)
+
+
+    attachEventFromObject(this.events, [
+      'didRun',
+      'didStop',
+      'didReload',
+      'didOpenJSConsole',
+      'didNewProject',
+      'didBuild',
+      'didToggleToolbar',
+      'didToggleDebugArea',
+      'didProjectSettings',
+      'didSelectProjectForRun',
+      'didSelectTaskClick',
+      'didTaskSelected',
+      'didToggleConsole'
+    ], options);
+
+    this.toolbarAnchor = createElement('de-workbench-toolbar-anchor',{
+      elements: [
+        createElement('span', {
+          elements: [ createText(' ')]
+        })
+      ]
+    });
+    this.toolbarAnchor.addEventListener('click',()=>{
+      this.toggle();
+    })
+
+    this.element = createElement('de-workbench-toolbar-container',{
+      elements: [ this.toolbarElement, this.toolbarAnchor ]
+    })
+
+    this.isVisible = true;
+  }
+
+  private toggleAtomTitleBar (value: boolean) {
+    let titleBar = document.querySelector('atom-panel .title-bar') as HTMLElement
+    if (get(titleBar, 'nodeType', false) && titleBar.parentNode) {
+      (<HTMLElement> titleBar.parentNode).style.display = value ? null : 'none'
+    }
+  }
+
+  private createRunComponents(){
+
+    let runContainer:HTMLElement = createElement('div',{
+      className:"de-workbench-uiruncomponent"
+    });
 
     this.runButton = createButton({
       click: () => {
@@ -76,7 +174,7 @@ export class ToolbarView {
     },[
       createIcon('run')
     ]);
-    insertElement(this.element, this.runButton)
+    insertElement(runContainer, this.runButton)
 
 
     this.stopButton = createButton({
@@ -87,22 +185,54 @@ export class ToolbarView {
     },[
       createIcon('stop')
     ]);
-    insertElement(this.element, this.stopButton)
+    insertElement(runContainer, this.stopButton)
 
+    this.runSelector = new UIRunSelectorComponent(this.events);
+    insertElement(runContainer,this.runSelector.element());
 
-    this.buildButton = createButton({
+    this.reloadButton = createButton({
       disabled: true,
       click: () => {
-        this.events.emit('didBuild');
+        this.events.emit('didReload');
       }
     },[
-      createIcon('build')
+      createIcon('refresh')
     ]);
-    insertElement(this.element, this.buildButton)
+    insertElement(runContainer, this.reloadButton)
 
 
-    // toggle panes
-    let toggleButtons = createGroupButtons([
+    this.openJSConsoleButton = createButton({
+      disabled: true,
+      click: () => {
+        this.events.emit('didOpenJSConsole');
+      }
+    },[
+      createIcon('zap')
+    ]);
+    insertElement(runContainer, this.openJSConsoleButton)
+
+    insertElement(this.toolbarElement,runContainer);
+  }
+
+  private createStatusIndicator(){
+    this.statusIndicator = new UIStatusIndicatorComponent("No task in progress");
+    insertElement(this.toolbarElement,this.statusIndicator.element());
+  }
+
+  public toggle(){
+    if (this.isVisible){
+      this.isVisible = false;
+      this.toolbarElement.style.display = "none";
+      this.toolbarAnchor.style.display = "block";
+    } else {
+      this.isVisible = true;
+      this.toolbarElement.style.display = "block";
+      this.toolbarAnchor.style.display = "none";
+    }
+  }
+
+  private createToogleButtons():HTMLElement{
+    return createGroupButtons([
       createButton({
         tooltip: {
           subscriptions: this.subscriptions,
@@ -110,13 +240,6 @@ export class ToolbarView {
         },
         click: () => this.events.emit('didToggleToolbar')
       }, [createIcon('up-arrow')]),
-      createButton({
-        tooltip: {
-          subscriptions: this.subscriptions,
-          title: 'Toggle Project Inspector'
-        },
-        click: () => this.events.emit('didTogglePrjInspector')
-      }, [createIcon('sort')]),
       createButton({
         tooltip: {
           subscriptions: this.subscriptions,
@@ -131,48 +254,94 @@ export class ToolbarView {
         },
         click: () => this.events.emit('didToggleDebugArea')
       }, [createIcon('panel-right')])
-    ])
-    toggleButtons.classList.add('bugs-toggle-buttons')
-    insertElement(this.element, toggleButtons)
-
-
-    attachEventFromObject(this.events, [
-      'didRun',
-      'didStop',
-      'didNewProject',
-      'didBuild',
-      'didToggleToolbar',
-      'didTogglePrjInspector',
-      'didToggleDebugArea'
-    ], options);
-
-  }
-
-  private toggleAtomTitleBar (value: boolean) {
-    let titleBar = document.querySelector('atom-panel .title-bar') as HTMLElement
-    if (get(titleBar, 'nodeType', false) && titleBar.parentNode) {
-      (<HTMLElement> titleBar.parentNode).style.display = value ? null : 'none'
-    }
+    ]);
   }
 
   public displayAsTitleBar () {
     this.toggleAtomTitleBar(false)
-    this.element.classList.add('bugs-title-bar')
+    this.toolbarElement.classList.add('bugs-title-bar')
   }
 
   public displayDefault () {
     this.toggleAtomTitleBar(true)
-    this.element.classList.remove('bugs-title-bar')
+    this.toolbarElement.classList.remove('bugs-title-bar')
   }
 
+  public setTaskConfiguration(configuration){
+    this.runSelector.setTaskConfiguration(configuration);
+  }
 
   public destroy () {
+    this.toolbarElement.remove();
+    this.toolbarAnchor.remove();
     this.element.remove();
     this.subscriptions.dispose();
   }
 
   public getElement (): HTMLElement {
     return this.element;
+  }
+
+  // Utilities:
+  public setInProgressStatus(msg:string,iconName?:string){
+    this.statusIndicator.setStatus(UIIndicatorStatus.Busy,msg,iconName || 'status-warning');
+    this.runButton.setAttribute('disabled','true');
+    this.stopButton.removeAttribute('disabled');
+  }
+  public setSuccessStatus(msg:string,iconName?:string){
+    this.statusIndicator.setStatus(UIIndicatorStatus.Success,msg,iconName || 'status-success');
+    this.stopButton.setAttribute('disabled','true');
+    this.runButton.removeAttribute('disabled');
+  }
+  public setIdleStatus(msg:string,iconName?:string){
+    this.statusIndicator.setStatus(UIIndicatorStatus.Idle,msg,iconName);
+    this.stopButton.setAttribute('disabled','true');
+    this.runButton.removeAttribute('disabled');
+  }
+  public setErrorStatus(msg:string,iconName?:string){
+    this.statusIndicator.setStatus(UIIndicatorStatus.Error,msg,iconName || 'status-error');
+    this.stopButton.setAttribute('disabled','true');
+    this.runButton.removeAttribute('disabled');
+  }
+
+  /**
+   * Update the progress indicator
+   * @param  {ToolbarStatus} status [description]
+   * @return {[type]}               [description]
+   */
+  public updateStatus(status:ToolbarStatus){
+    if(status.btnReloadEnable != null){
+      this.updateButtonStatus(this.reloadButton,status.btnReloadEnable);
+    }
+    if(status.btnOpenJSConsoleEnable != null){
+      this.updateButtonStatus(this.openJSConsoleButton,status.btnOpenJSConsoleEnable);
+    }
+    if(status.btnStopEnable != null){
+      this.updateButtonStatus(this.stopButton,status.btnStopEnable);
+    }
+    if(status.btnRunEnable != null){
+      this.updateButtonStatus(this.runButton,status.btnRunEnable);
+    }
+    if(status.prjSelectorEnable != null){
+      this.runSelector.setEnable(false);
+    }
+    if(status.progressStatus != null){
+      this.statusIndicator.setStatus(status.progressStatus);
+    }
+    if(status.progressMsg != null ){
+      this.statusIndicator.setText(status.progressMsg,status.progressIcon);
+    }
+  }
+
+  private updateButtonStatus(element:HTMLElement,enabled:boolean){
+    if(!element){
+      throw new Error("updateButtonStatus fail: element is null");
+    }
+    if(enabled){
+      element.removeAttribute('disabled');
+    }else{
+      element.setAttribute('disabled','true');
+    }
   }
 
 }

@@ -15,7 +15,7 @@
   display: inline-block;
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: top center;
+  background-position: center center;
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: top center;
@@ -91,6 +91,10 @@
     -webkit-mask-image: url('atom://de-workbench/icons/refresh.svg');
     background-color: darken(@text-color, 5%);
   }
+  &.dewb-icon-zap {
+    -webkit-mask-image: url('atom://de-workbench/icons/if_zap.svg');
+    background-color: darken(@text-color, 5%);
+  }
   &.dewb-icon-check {
     -webkit-mask-image: url('atom://de-workbench/icons/check.svg');
     background-color: darken(@text-color, 5%);
@@ -133,5 +137,35 @@
   &.dewb-icon-sort {
     -webkit-mask-image: url('atom://de-workbench/icons/sort.svg');
     background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-apache-cordova {
+    -webkit-mask-image: url('atom://de-workbench/icons/apache-cordova.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-apache-cordova-big {
+    -webkit-mask-image: url('atom://de-workbench/icons/apache-cordova.svg');
+    background-color: darken(@text-color, 5%);
+    width: 60px;
+    height: 60px;
+  }
+  &.dewb-icon-apple-logo {
+    -webkit-mask-image: url('atom://de-workbench/icons/apple-logo.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-ios {
+    -webkit-mask-image: url('atom://de-workbench/icons/apple-logo.svg');
+    background-color: darken(@text-color, 5%);
+  }
+  &.dewb-icon-android-logo {
+    background-image: url('atom://de-workbench/icons/android-logo.svg');
+  }
+  &.dewb-icon-android {
+    background-image: url('atom://de-workbench/icons/android-logo.svg');
+  }
+  &.dewb-icon-chrome-logo {
+    background-image: url('atom://de-workbench/icons/chrome-logo.svg');
+  }
+  &.dewb-icon-browser {
+    background-image: url('atom://de-workbench/icons/chrome-logo.svg')
   }
 }

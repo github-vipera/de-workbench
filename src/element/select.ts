@@ -10,7 +10,8 @@ import { insertElement, createElement, createText } from './element'
 export function createSelect (options, elements?) {
   return createElement('select', {
     elements: elements || options,
-    options: elements ? options : null
+    options: elements ? options : null,
+    className: "input-select"
   });
 }
 

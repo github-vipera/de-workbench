@@ -1,0 +1,69 @@
+@import "variables";
+// TASK PANEL
+.de-workbench-taskpanel-container {
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  min-height: 370px;
+  max-height: 370px;
+  .de-workbench-taskpanel-tree-area{
+    flex-grow: 1;
+    //border-width: 0 1px 0 0;
+    //border-right: 1px solid #001a20;
+    min-width: 140px;
+    max-width: 210px;
+    margin-right: 10px;
+    padding-bottom: 20px;
+
+    .de-workbench-treeview{
+      height: 100%;
+      overflow: scroll;
+    }
+
+    .btn-toolbar{
+      position: absolute;
+      right: 0px;
+      bottom: 0px;
+    }
+  };
+  .de-workbench-taskpanel-content{
+    flex-grow: 3;
+    overflow-y: scroll;
+    .de-workbench-tabbedview{
+      background-color: transparent;
+      a{
+        color: #d7dae0;
+        text-decoration: none !important;
+      };
+      ol.de-workbench-tabbedview-tablist-ol{
+        padding-left: 20px;
+        padding-bottom: 10px;
+      };
+      li.de-workbench-tabbedview-tab-item{
+        background-color: transparent
+      };
+      .de-workbench-variants-ctrl-prop-renderer{
+        margin-bottom: 20px;
+      };
+    }
+    .de-workbench-taskpanel-content-container{
+        width: 100%;
+    }
+  };
+
+  #row-isRelease{
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .form-container{
+      .control-group{
+        &.block {
+          padding-bottom: 0px;
+          margin-bottom: 0px;
+        }
+      }
+  }
+
+}

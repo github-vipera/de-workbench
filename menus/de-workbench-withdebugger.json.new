@@ -1,0 +1,54 @@
+{
+  "menu": [{
+    "label": "Packages",
+    "submenu": [{
+      "label": "DE Workbench",
+      "submenu": [
+      {
+        "label" : "Debug",
+        "submenu": [
+          {
+            "label": "Breakpoints",
+            "command": "dewb-menu-view-:debug-breakpoint-toggle"
+          },
+          {
+            "label": "Variables",
+            "command": "dewb-menu-view-:debug-variables-toggle"
+          },
+          {
+            "label": "Watch Expressions",
+            "command": "dewb-menu-view-:debug-watch-expressions-toggle"
+          },
+          {
+            "label": "Call Stack",
+            "command": "dewb-menu-view-:debug-call-stack-toggle"
+          }
+        ]
+      },
+      {
+        "label": "View",
+        "submenu": [{
+          "label": "Toggle Toolbar",
+          "command": "dewb-menu-view-:toolbar-toggle"
+        },{
+          "label": "Project Inspector",
+          "command": "dewb-menu-view-:prjinspector-toggle"
+        },{
+          "label": "Push Tool",
+          "command": "dewb-menu-view-:pushtool-show"
+          },{
+            "label": "Servers",
+            "command" : "dewb-menu-view-:servers-show"
+          },{
+            "label": "Bookmarks",
+            "command" : "dewb-menu-view-:bookmarks-toggle"
+          },{
+          "label": "Log Inspector",
+          "command": "dewb-menu-view-:loggerview-toggle"
+          }
+        ]
+      }]
+    }]
+  }]
+
+}

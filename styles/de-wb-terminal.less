@@ -1,0 +1,42 @@
+// The ui-variables file is provided by base themes provided by Atom.
+//
+// See https://github.com/atom/atom-dark-ui/blob/master/stylesheets/ui-variables.less
+// for a full listing of what's available.
+@import "ui-variables";
+
+@import (inline) "../node_modules/xterm/dist/xterm.css";
+
+
+de-workbench-terminal-view {
+	position: absolute;
+
+	padding: 1px;
+	line-height: normal;
+
+	overflow: hidden;
+
+	.terminal-cursor {
+		visibility: hidden;
+	}
+
+}
+
+de-workbench-terminal-view[data-theme='light'] {
+	background: #fff;
+
+	background-color: #f0f0f0;
+	border-color: #cccbba;
+
+	.stdout { color: black; }
+	.stderr { color: red; }
+}
+
+de-workbench-terminal-view[data-theme='dark'] {
+	background: #000;
+
+	background-color: #000;
+	border-color: #444566;
+
+	.stdout { color: white; }
+	.stderr { color: red; }
+}

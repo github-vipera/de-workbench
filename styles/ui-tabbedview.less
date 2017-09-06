@@ -1,0 +1,132 @@
+/*!
+ * DE Workbench
+ * Copyright(c) 2017 Williams Medina <williams.medinaa@gmail.com>
+ * MIT Licensed
+ */
+
+@import "variables";
+
+/** COMMON TYPES */
+.de-workbench-tabbedview-tab-item:hover {
+  background-color: @background-color-highlight;
+}
+
+.de-workbench-tabbedview-tab-item.selected {
+  background-color: @background-color-selected;
+  color:@text-color-selected;
+}
+
+.de-workbench-tabbedview-tab-item.selected a {
+  color:@text-color-selected;
+}
+
+.de-workbench-tabbedview-tab-item .icon::before {
+  color: @text-color-subtle;
+}
+
+.de-workbench-tabbedview-stacked-container {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* VERTICAL TYPE **/
+
+.de-workbench-tabbedview.tab-type-vertical {
+  display: flex;
+  height: 100%;
+  background-color: @pane-item-background-color;
+}
+
+.tab-type-vertical.de-workbench-tabbedview-tablist-container {
+  flex: 1;
+  position: relative;
+  min-width: 15em;
+  max-width: 20em;
+  border-width: 0 1px 0 0;
+  border-image: linear-gradient(@pane-item-background-color 10px, @base-border-color 200px) 0 1 0 0 stretch;
+  border-right: 1px solid #001a20;
+  overflow: auto;
+}
+
+.tab-type-vertical.de-workbench-tabbedview-tablist-ol {
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style: none;
+  padding-top: 10px;
+}
+
+.tab-type-vertical.de-workbench-tabbedview-stackview {
+  height: 100%;
+  overflow-y: scroll;
+  flex:4;
+}
+
+.tab-type-vertical.de-workbench-tabbedview-tab-item {
+  padding: 0.75em 1.5em;
+  line-height: 2em;
+  -webkit-user-select: none;
+  cursor: default;
+}
+.tab-type-vertical {
+  .de-workbench-tabbedview-tablist-bottomtoolbar-container {
+    width: 100%;
+    bottom: 0px;
+    left: 0px;
+    position: absolute;
+    border-top: solid 1px @base-border-color;
+    padding: 2px;
+  }
+}
+
+/* HORIZONTAL TYPE **/
+.de-workbench-tabbedview.tab-type-horizontal {
+  width: 100%;
+  background-color: @pane-item-background-color;
+}
+
+.tab-type-horizontal.de-workbench-tabbedview-tablist-container {
+  width: 100%;
+  border-width: 0 1px 0 0;
+  overflow: auto;
+}
+
+.tab-type-horizontal.de-workbench-tabbedview-tab-item {
+  display: inline;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 7px;
+  margin: 10px;
+  margin-left: 0px;
+}
+
+.tab-type-horizontal.de-workbench-tabbedview-tablist-ol {
+  list-style: none;
+  list-style: none;
+  padding-right: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 0;
+}
+
+.tab-type-horizontal.de-workbench-tabbedview-tab-item.selected {
+  border-bottom: solid 1px white;
+  background-color: @pane-item-background-color;
+  color:@text-color-selected;
+}
+
+.tab-type-horizontal.de-workbench-tabbedview-tab-item:hover {
+  background-color: @pane-item-background-color;
+  border-bottom: solid 1px #808080;
+}
+
+.tab-type-horizontal{
+  .de-workbench-tabbedview-tablist-bottomtoolbar-container {
+    visibility: none; //not supported in Horizontal mode
+  }
+}
+
+.stack-view-container {
+  overflow: scroll;
+  padding: 10px;
+}

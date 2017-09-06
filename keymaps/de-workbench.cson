@@ -1,0 +1,13 @@
+
+# Copy/paste from script runner view:
+'.platform-darwin de-workbench-terminal-view':
+  'cmd-c': 'de-workbench-terminal:copy'
+  'cmd-v': 'de-workbench-terminal:paste'
+
+'.platform-linux de-workbench-terminal-view':
+  'ctrl-shift-c': 'de-workbench-terminal:copy'
+  'ctrl-shift-v': 'de-workbench-terminal:paste'
+
+'.platform-win32 de-workbench-terminal-view':
+  'ctrl-c': 'de-workbench-terminal:copy'
+  'ctrl-v': 'de-workbench-terminal:paste'

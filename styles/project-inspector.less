@@ -1,0 +1,235 @@
+/*!
+ * XAtom Debug
+ * Copyright(c) 2017 Williams Medina <williams.medinaa@gmail.com>
+ * MIT Licensed
+ */
+
+@import "variables";
+
+de-workbench-project-inspector {
+  overflow: scroll;
+}
+
+de-workbench-console,
+de-workbench-project-inspector,
+de-workbench-group {
+  display: block;
+}
+de-workbench-console,
+de-workbench-controls,
+de-workbench-project-inspector,
+de-workbench-group,
+de-workbench-group-header {
+  box-shadow: 0 0 0 1px @base-border-color;
+}
+
+
+
+// de-workbench-control-group,
+de-workbench-console {
+  font-size: 90%;
+  margin-top: -1px;
+  de-workbench-controls {
+    padding: 0px;
+  }
+  de-workbench-inspector {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 5px;
+  }
+  de-workbench-console-output {
+    overflow: auto;
+    max-height: 200px;
+    min-height: 100px;
+    -webkit-user-select: all;
+  }
+}
+de-workbench-console {
+  background-color: lighten(@base-background-color, 3%);
+  de-workbench-console-line {
+    padding: 2px 10px ;
+    display: block;
+    white-space: pre-wrap;
+    border-bottom: 1px solid @input-background-color;
+    &.line-info {
+      color: @text-color-info;
+    }
+    &.line-error,
+    &.line-error .syntax--string {
+      color: lighten(@text-color-error, 8%);
+    }
+    &.line-error .syntax--class {
+      color: @text-color-error;
+    }
+  }
+}
+de-workbench-project-inspector {
+  width: 100%;
+  .file-reference {
+    white-space: nowrap;
+  }
+  .file-position {
+    display: inline-block;
+    background-color: @text-color-subtle;
+    text-align: right;
+    padding: 0 3px;
+    border-radius: 2px;
+    margin-left: 5px;
+    font-size: 80%;
+    font-weight: bold;
+  }
+
+  .de-workbench-project-info-container {
+    padding: 10px;
+    font-size:15px;
+  }
+
+  .de-workbench-project-info-container li {
+    font-size:12px;
+    color: #7b7be0;
+  }
+
+  .de-workbench-project-info-container ul {
+    list-style-type: none;
+    padding: 4px;
+  }
+
+
+  de-workbench-control-group,
+  de-workbench-controls,
+  de-workbench-group-content {
+    width: 100%;
+    display: block;
+  }
+  de-workbench-group-header {
+    padding: 2px 5px;
+    display: block;
+  }
+  de-workbench-group-header {
+    margin-top: 1px;
+    .btn {
+      float: right;
+      margin-right: 2px;
+      background: transparent!important;
+      padding: 2px 6px;
+      line-height: 0!important;
+      box-shadow: none!important;
+      border: none;
+      .dewb-icon {
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+  de-workbench-group-content {
+    background-color: lighten(@base-background-color, 3%);
+    min-height: 50px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    // font-size: 90%;
+    overflow: auto;
+    .file-reference {
+      float: right;
+      color: @text-color-subtle;
+    }
+    .file-position {
+      color: @text-color-selected;
+    }
+    &:empty:after {
+      display: block;
+      text-align: center;
+      padding: 15px 5px;
+      color: fadeOut(@text-color-subtle, 30%);
+      font-size: 14px;
+    }
+    &.callstack:empty,
+    &.scope:empty {
+      &:after {
+        content: 'Not Paused';
+      }
+    }
+    &.breakpoint {
+      .file-position {
+        margin-right: 5px;
+      }
+      &:empty:after {
+        content: 'No Breakpoints';
+      }
+    }
+    de-workbench-inspector {
+      margin: 5px 0;
+    }
+    &.watch {
+      atom-text-editor {
+        border-radius: 0!important;
+      }
+      position: relative;
+    }
+  }
+  de-workbench-group-item {
+    padding: 2px 5px;
+    border-bottom: 1px solid @input-background-color;
+    display: block;
+    .dewb-icon {
+      width: 18px;
+      height: 11px;
+    }
+    &:hover {
+      background-color: lighten(@input-background-color, 10%);
+    }
+    &:before,
+    &:after {
+      display: table;
+      content: " ";
+    }
+    &:after {
+      clear: both;
+    }
+  }
+}
+
+de-workbench-console-output {
+  display: block;
+}
+
+de-workbench-controls {
+  background-color: @base-background-color;
+  margin-bottom: 1px;
+  padding: 4px;
+  display: block;
+  .btn {
+    padding: 4px 5px;
+    margin-right: 5px;
+    line-height: 1;
+  }
+  .dewb-icon {
+    width: 20px!important;
+    height: 13px;
+    vertical-align: top;
+  }
+}
+
+de-workbench-resize {
+  &.resize-left {
+    position: absolute;
+    top: 0;
+    height: 0;
+    bottom: 0;
+    height: 100%;
+    width: 3px;
+    z-index: 1000;
+    cursor: col-resize;
+  }
+}
+
+.installed-platforms-list {
+  padding-left: 15px;
+}
+
+.installed-platforms-list tr {
+  height: 30px;
+}
+
+.installed-platforms-list td {
+  padding : 10px 5px;
+}
