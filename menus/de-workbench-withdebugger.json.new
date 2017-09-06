@@ -5,6 +5,27 @@
       "label": "DE Workbench",
       "submenu": [
       {
+        "label" : "Debug",
+        "submenu": [
+          {
+            "label": "Breakpoints",
+            "command": "dewb-menu-view-:debug-breakpoint-toggle"
+          },
+          {
+            "label": "Variables",
+            "command": "dewb-menu-view-:debug-variables-toggle"
+          },
+          {
+            "label": "Watch Expressions",
+            "command": "dewb-menu-view-:debug-watch-expressions-toggle"
+          },
+          {
+            "label": "Call Stack",
+            "command": "dewb-menu-view-:debug-call-stack-toggle"
+          }
+        ]
+      },
+      {
         "label": "View",
         "submenu": [{
           "label": "Toggle Toolbar",
