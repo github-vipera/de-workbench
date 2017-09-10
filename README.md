@@ -6,7 +6,25 @@
 
 Current version: Developer Preview (Rel. 0.1.0)
 
+### Installation
+![New Project](./images/de_workbench_installation.png)
 
+#### 1 - Atom
+- [Download](https://atom.io) and install official GitHub’s Atom text editor. The Dynamic Engine Workbench IDE is built on top of it
+
+- **Open** Atom Package Manager
+
+    + *Mac OS X*, ``Menu: Atom > Preferences > Install``
+    + *Windows*, ``Menu: File > Settings > Install``
+    + *Linux*, ``Menu: Edit > Preferences > Install``
+
+
+- **Search** for official ``de-workbench`` `package <https://atom.io/packages/de-workbench>`_
+
+- **Install** Dynamic Engine Workbench.
+
+
+---
 
 ### New Project Panel
 ![New Project](./images/new_project.png)
