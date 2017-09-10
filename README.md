@@ -52,9 +52,6 @@ Current version: Developer Preview (Rel. 0.1.0)
 ### Manage installed Plugins
 ![Search and Install Plugins](./images/manage_installed_plugins.png)
 
-### Manage installed Plugins
-![Search and Install Plugins](./images/manage_installed_plugins.png)
-
 ### Build Variants
 ![Build Variants](./images/build_variants.png)
 
