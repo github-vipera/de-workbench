@@ -251,23 +251,23 @@ import { ViewManager } from './ViewManager'
      let platform = taskConfiguration.selectedPlatform ? taskConfiguration.selectedPlatform.name : "";
      this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
      this.getTaskManager().executeTask(taskConfiguration,project).then(() => {
-       this.cancelUpdateTimer();
+       //this.cancelUpdateTimer();
        Logger.getInstance().info(`${taskConfiguration.displayName} Done`);
        this.updateToolbarStatus(taskConfiguration,true);
      },(reason) => {
-        this.cancelUpdateTimer();
+        //this.cancelUpdateTimer();
         Logger.getInstance().error(reason);
         this.updateToolbarStatus(taskConfiguration,false);
      }).catch((err:Error) => {
-       this.cancelUpdateTimer();
+       //this.cancelUpdateTimer();
        Logger.getInstance().error(err.message, err.stack);
        this.updateToolbarStatus(taskConfiguration,false);
      });
      // schedule update for task start
-     this.setUpdateTimer(taskConfiguration);
+     //this.setUpdateTimer(taskConfiguration);
    }
 
-   private setUpdateTimer(taskConfiguration:CordovaTaskConfiguration){
+   /*private setUpdateTimer(taskConfiguration:CordovaTaskConfiguration){
      this.updateToolbarTimeout=setTimeout(() => {
        console.warn("updateToolbarStatus");
        this.updateToolbarStatus(taskConfiguration,false);
@@ -278,7 +278,7 @@ import { ViewManager } from './ViewManager'
    private cancelUpdateTimer(){
      clearTimeout(this.updateToolbarTimeout);
      this.updateToolbarTimeout = null;
-   }
+   }*/
 
 
    onStopTask(){
@@ -348,6 +348,10 @@ import { ViewManager } from './ViewManager'
    getTaskManager():TaskManager{
      if(!this.taskManager){
        this.taskManager = new TaskManager();
+       this.taskManager.didRuntimeSessionAvailable(() => {
+         console.log("didRuntimeSessionAvailable exec");
+         this.updateToolbarStatus(this.taskConfiguration,false);
+       });
      }
      return this.taskManager;
    }
