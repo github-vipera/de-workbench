@@ -16,8 +16,10 @@ export interface JSSession {
 export class RuntimeSessionHandler {
   private platformServer:PlatformServer
   private consoleHandler:ConsoleHandler;
+  private events:EventEmitter;
 
   constructor(srvConf:PlatformServerConfig){
+    this.events = new EventEmitter();
     this.consoleHandler = new ConsoleHandler();
     this.createAndStartServer(srvConf);
   }

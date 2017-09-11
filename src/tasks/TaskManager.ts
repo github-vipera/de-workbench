@@ -8,6 +8,9 @@ import { Logger }  from '../logger/Logger'
 import { ScriptExecutor } from './ScriptExecutor'
 import { CordovaDevice } from '../cordova/CordovaDeviceManager'
 import { RuntimeSessionHandler } from '../services/remote/RuntimeSessionHandler'
+import { EventEmitter } from 'events'
+
+const RUNTIME_SESSION_AVAILABLE_EVT_NAME = "";
 
 export interface LiveReloadContext {
   runTask?:CordovaTaskConfiguration;
@@ -23,10 +26,12 @@ export class TaskManager{
   private runtimeSessionHandler:RuntimeSessionHandler
   private scriptExecutor:ScriptExecutor = null;
   private cordova:Cordova
+  private events:EventEmitter
 
   private reloadContext:LiveReloadContext = {}
   constructor(){
       this.cordova=ProjectManager.getInstance().cordova;
+      this.events = new EventEmitter();
   }
   public async executeTask(taskConfig:CordovaTaskConfiguration,project:CordovaProjectInfo):Promise<any>{
     if(this.isBusy()){
@@ -78,7 +83,7 @@ export class TaskManager{
 
   async executeRun(project:CordovaProjectInfo,cliOptions: CordovaCliOptions){
     await this.startPlatformServer(project);
-
+    this.fireRuntimeSessionAvailable();
     this.reloadContext.cliOptions = cliOptions;
     this.reloadContext.project = project;
     this.reloadContext.runTask = this.currentTask;
@@ -182,6 +187,14 @@ export class TaskManager{
 
   public getRuntimeSessionHandler():RuntimeSessionHandler{
     return this.runtimeSessionHandler;
+  }
+
+  private fireRuntimeSessionAvailable():void{
+    this.events.emit(RUNTIME_SESSION_AVAILABLE_EVT_NAME);
+  }
+
+  public didRuntimeSessionAvailable(callback: (...args:any[]) => void):void{
+    this.events.addListener(RUNTIME_SESSION_AVAILABLE_EVT_NAME,callback);
   }
 
 }
