@@ -58,10 +58,12 @@ export class LoggerView extends UIPane {
    * close this view
    */
   close () {
+    //console.log("Logger view close....")
   }
 
   destroy(){
-    this.logModel.destroy();
+    //console.log("Logger view destroy....")
+    //this.logModel.destroy();
   }
 
 }

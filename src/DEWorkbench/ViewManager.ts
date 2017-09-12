@@ -27,10 +27,10 @@ const $ = require("jquery")
 
 export class ViewManager {
 
-  private _registeredItems:any={};
+  private _toggleRegisteredItems:any={};
 
   constructor(){
-    this._registeredItems = {}
+    this._toggleRegisteredItems = {}
     this.registerOpeners()
   }
 
@@ -103,9 +103,10 @@ export class ViewManager {
 
 
   public toggleView(viewInfo:ViewInfo){
-    let item = this._registeredItems[viewInfo.id];
-    if (item){
-      atom.workspace["toggle"](item.getURI());
+    //console.log("toggleView called for ", viewInfo);
+    let viewItem = this._toggleRegisteredItems[viewInfo.id];
+    if (viewItem){
+      atom.workspace["toggle"](viewItem.view)
     } else {
       this.openView(viewInfo)
     }
@@ -124,11 +125,14 @@ export class ViewManager {
       if (extUserData){
         $.extend(item.userData, extUserData)
       }
-      if (viewInfo.toggleEnable){
-        this.registerItem(item)
-      }
       atom.workspace.open(viewInfo.uri,item).then((view)=>{
         if (view["didOpen"]){
+          if (viewInfo.toggleEnable){
+            let toggleView = new ToggleView();
+            toggleView.item = item;
+            toggleView.view = view;
+            this.registerToggleView(toggleView);
+          }
           view["didOpen"]()
         }
         console.log("View created: " , view)
@@ -143,10 +147,15 @@ export class ViewManager {
     return ret;
   }
 
-  private registerItem(item){
-      this._registeredItems[item.id] = item;
+  private registerToggleView(toggleView:ToggleView){
+    this._toggleRegisteredItems[toggleView.item.id] = toggleView;
   }
 
+}
+
+class ToggleView {
+  item:any;
+  view:any;
 }
 
 export interface ViewInfo {
