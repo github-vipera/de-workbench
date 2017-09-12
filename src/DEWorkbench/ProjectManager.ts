@@ -51,7 +51,7 @@ export class ProjectManager {
 
     private firePathChanged(){
       this.events.emit('didPathChanged');
-      console.log("PathChanges");
+      console.log("firePathChanged");
       let ok = this.fireEditorChanged();
       if (!ok){
           this.currentProjectPath = this.getFirstAvailableProjectRootFolder();
@@ -82,6 +82,7 @@ export class ProjectManager {
      * Return true if an editore opened and selected is available
      */
     private fireEditorChanged():boolean{
+      console.log("fireEditorChanged")
       var editor = atom.workspace.getActiveTextEditor()
       if (editor){
         var yourPath = editor["getPath"]()
@@ -122,6 +123,9 @@ export class ProjectManager {
     }
 
     public getCurrentProjectPath(): string {
+      if (!this.currentProjectPath){
+        this.currentProjectPath = this.getFirstAvailableProjectRootFolder();
+      }
       return this.currentProjectPath;
     }
 
