@@ -271,21 +271,37 @@ export class FileTailLogModel extends BaseLogModel {
 
   private createAndAddLogLine(data){
     //console.log('createAndAddLogLine');
-    let originalMessage = data["0"];
+    let originalMessage = this.createLongMessage(data);// data["0"];
     //now we split this message with /n separator and we create n log lines
     let parts = _.split(originalMessage, '\n');
 
     for (var i=0;i<parts.length;i++){
       let msg = parts[i];
-      let logLevelStr = data["level"];
-      let timestamp = data["timestamp"];
-      this.appendLogLine({
-        logLevel: this.convertToLogLevel(logLevelStr),
-        message: msg,
-        timestamp: timestamp
-      });
+      msg = _.trim(msg);
+      if (msg.length>0){
+        let logLevelStr = data["level"];
+        let timestamp = data["timestamp"];
+        this.appendLogLine({
+          logLevel: this.convertToLogLevel(logLevelStr),
+          message: msg,
+          timestamp: timestamp
+        });
+      }
     }
 
+  }
+
+  private createLongMessage(data):string {
+    let returnStr = "";
+    for (var i=0;i<50;i++){
+      let indexStr = "" + i;
+      if (data[indexStr]){
+        returnStr += " " + data[indexStr];
+      } else {
+        break;
+      }
+    }
+    return returnStr;
   }
 
   private createLogLine(data):LogLine{
