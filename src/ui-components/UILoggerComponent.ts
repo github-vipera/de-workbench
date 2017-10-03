@@ -66,7 +66,6 @@ export class BaseLogModel implements LogModel{
     }
   }
   appendLogLine(logLine:LogLine):void {
-    logLine.message = logLine.message.replace(/\n$/, "");
     this.logLines.push(logLine);
     if(this.logLines.length > this.maxLineCount){
       let logLine = this.logLines[0];
@@ -249,9 +248,11 @@ export class FileTailLogModel extends BaseLogModel {
       var count=0;
       var lastLines:Array<LogLine>=[];
       lineReader.eachLine(this.filePath, (line, last) => {
-        console.log(line);
         try{
-          lastLines.unshift(this.createLogLine(JSON.parse(line)));
+          let logLines = this.createLogLine(JSON.parse(line));
+          for (var i=0;i<logLines.length;i++){
+            lastLines.unshift(logLines[i]);
+          }
         }catch(err){
         }
         count++;
@@ -270,26 +271,11 @@ export class FileTailLogModel extends BaseLogModel {
   }
 
   private createAndAddLogLine(data){
-    //console.log('createAndAddLogLine');
-    let originalMessage = this.createLongMessage(data);// data["0"];
-    //now we split this message with /n separator and we create n log lines
-    let parts = _.split(originalMessage, '\n');
-
-    for (var i=0;i<parts.length;i++){
-      let msg = parts[i];
-      msg = _.trim(msg);
-      if (msg.length>0){
-        let logLevelStr = data["level"];
-        let timestamp = data["timestamp"];
-        this.appendLogLine({
-          logLevel: this.convertToLogLevel(logLevelStr),
-          message: msg,
-          timestamp: timestamp
-        });
-      }
+    let logLines = this.createLogLine(data);
+    for (var i=0;i<logLines.length;i++){
+      this.appendLogLine(logLines[i]);
     }
-
-  }
+}
 
   private createLongMessage(data):string {
     let returnStr = "";
@@ -297,22 +283,36 @@ export class FileTailLogModel extends BaseLogModel {
       let indexStr = "" + i;
       if (data[indexStr]){
         returnStr += " " + data[indexStr];
+        returnStr = returnStr.replace(/\n$/, "");
       } else {
         break;
       }
     }
-    return returnStr;
+    return returnStr ;
   }
 
-  private createLogLine(data):LogLine{
-    let msg= data["0"];
-    let logLevelStr = data["level"];
-    let timestamp = data["timestamp"];
-    return {
-      logLevel: this.convertToLogLevel(logLevelStr),
-      message: msg,
-      timestamp: timestamp
+  private createLogLine(data):Array<LogLine> {
+    let ret = [];
+    let originalMessage = this.createLongMessage(data);// data["0"];
+    //now we split this message with /n separator and we create n log lines
+    let parts = _.split(originalMessage, '\n');
+    for (var i=0;i<parts.length;i++){
+      let msg = parts[i];
+      msg = _.trim(msg);
+      if (i>0){
+        msg = "\t-> " + msg;
+      }
+      if (msg.length>0){
+        let logLevelStr = data["level"];
+        let timestamp = data["timestamp"];
+        ret.push({
+          logLevel: this.convertToLogLevel(logLevelStr),
+          message: msg,
+          timestamp: timestamp
+        });
+      }
     }
+    return ret;
   }
 
   private convertToLogLevel(logLevelStr:string):LogLevel{
