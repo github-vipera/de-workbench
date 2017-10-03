@@ -40,7 +40,7 @@ export class LoggerView extends UIPane {
    * Initialize the UI
    */
   protected createUI() {
-    this.logModel = new FileTailLogModel(Logger.getLoggerBufferFilePath(),10);
+    this.logModel = new FileTailLogModel(Logger.getLoggerBufferFilePath(),50);
 
     this.loggerComponent = new UILoggerComponent(true,this.logModel);
 
