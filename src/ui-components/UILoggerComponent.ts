@@ -66,6 +66,7 @@ export class BaseLogModel implements LogModel{
     }
   }
   appendLogLine(logLine:LogLine):void {
+    logLine.message = logLine.message.replace(/\n$/, "");
     this.logLines.push(logLine);
     if(this.logLines.length > this.maxLineCount){
       let logLine = this.logLines[0];
@@ -269,15 +270,22 @@ export class FileTailLogModel extends BaseLogModel {
   }
 
   private createAndAddLogLine(data){
-    console.log('createAndAddLogLine');
-    let msg= data["0"];
-    let logLevelStr = data["level"];
-    let timestamp = data["timestamp"];
-    this.appendLogLine({
-      logLevel: this.convertToLogLevel(logLevelStr),
-      message: msg,
-      timestamp: timestamp
-    });
+    //console.log('createAndAddLogLine');
+    let originalMessage = data["0"];
+    //now we split this message with /n separator and we create n log lines
+    let parts = _.split(originalMessage, '\n');
+
+    for (var i=0;i<parts.length;i++){
+      let msg = parts[i];
+      let logLevelStr = data["level"];
+      let timestamp = data["timestamp"];
+      this.appendLogLine({
+        logLevel: this.convertToLogLevel(logLevelStr),
+        message: msg,
+        timestamp: timestamp
+      });
+    }
+
   }
 
   private createLogLine(data):LogLine{
@@ -356,7 +364,7 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
     console.log("copy!!!!!!!!");
     return atom.clipboard.write(this.terminal.getSelection());
   }
-  
+
   protected outputResized(){
     return this.terminal.fit();
   }
