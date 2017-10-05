@@ -248,11 +248,9 @@ export class FileTailLogModel extends BaseLogModel {
       var count=0;
       var lastLines:Array<LogLine>=[];
       lineReader.eachLine(this.filePath, (line, last) => {
+        console.log(line);
         try{
-          let logLines = this.createLogLine(JSON.parse(line));
-          for (var i=0;i<logLines.length;i++){
-            lastLines.unshift(logLines[i]);
-          }
+          lastLines.unshift(this.createLogLine(JSON.parse(line)));
         }catch(err){
         }
         count++;
@@ -271,48 +269,31 @@ export class FileTailLogModel extends BaseLogModel {
   }
 
   private createAndAddLogLine(data){
-    let logLines = this.createLogLine(data);
-    for (var i=0;i<logLines.length;i++){
-      this.appendLogLine(logLines[i]);
-    }
-}
-
-  private createLongMessage(data):string {
-    let returnStr = "";
-    for (var i=0;i<50;i++){
-      let indexStr = "" + i;
-      if (data[indexStr]){
-        returnStr += " " + data[indexStr];
-        returnStr = returnStr.replace(/\n$/, "");
-      } else {
-        break;
-      }
-    }
-    return returnStr ;
+    //console.log('createAndAddLogLine');
+    let msg = this.cleanMessage(data.message);
+    let logLevelStr = data["level"];
+    let timestamp = data["timestamp"];
+    this.appendLogLine({
+      logLevel: this.convertToLogLevel(logLevelStr),
+      message: msg,
+      timestamp: timestamp
+    });
   }
 
-  private createLogLine(data):Array<LogLine> {
-    let ret = [];
-    let originalMessage = this.createLongMessage(data);// data["0"];
-    //now we split this message with /n separator and we create n log lines
-    let parts = _.split(originalMessage, '\n');
-    for (var i=0;i<parts.length;i++){
-      let msg = parts[i];
-      msg = _.trim(msg);
-      if (i>0){
-        msg = "\t-> " + msg;
-      }
-      if (msg.length>0){
-        let logLevelStr = data["level"];
-        let timestamp = data["timestamp"];
-        ret.push({
-          logLevel: this.convertToLogLevel(logLevelStr),
-          message: msg,
-          timestamp: timestamp
-        });
-      }
+  private createLogLine(data):LogLine{
+    let msg = this.cleanMessage(data.message);
+    let logLevelStr = data["level"];
+    let timestamp = data["timestamp"];
+    return {
+      logLevel: this.convertToLogLevel(logLevelStr),
+      message: msg,
+      timestamp: timestamp
     }
-    return ret;
+  }
+
+  private cleanMessage(msg:string):string {
+    //return msg.replace(/\n$/, "");
+    return msg.replace(/(\r\n|\n|\r)/gm,"");
   }
 
   private convertToLogLevel(logLevelStr:string):LogLevel{
@@ -380,7 +361,7 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
     console.log("copy!!!!!!!!");
     return atom.clipboard.write(this.terminal.getSelection());
   }
-
+  
   protected outputResized(){
     return this.terminal.fit();
   }
