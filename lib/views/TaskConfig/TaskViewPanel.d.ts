@@ -1,7 +1,7 @@
-import { UIBaseComponent } from '../../ui-components/UIComponent';
+import { UIExtComponent } from '../../ui-components/UIComponent';
 import { CordovaProjectInfo } from '../../cordova/Cordova';
 import { CordovaTaskConfiguration } from '../../cordova/CordovaTasks';
-export declare class TaskViewPanel extends UIBaseComponent {
+export declare class TaskViewPanel extends UIExtComponent {
     private threeViewPanel;
     private taskContentPanel;
     private project;

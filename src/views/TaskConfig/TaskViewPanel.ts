@@ -10,7 +10,7 @@ import {
   createInput
 } from '../../element/index';
 
-import { UIBaseComponent } from '../../ui-components/UIComponent'
+import { UIBaseComponent, UIExtComponent } from '../../ui-components/UIComponent'
 import { CordovaProjectInfo } from '../../cordova/Cordova'
 import { CordovaTaskConfiguration, CordovaTask } from '../../cordova/CordovaTasks'
 import { TaskProvider } from '../../tasks/TaskProvider'
@@ -22,7 +22,7 @@ import { TaskViewContentPanel } from './TaskViewContentPanel'
 import { TaskViewSelectorPanel } from './TaskViewSelectorPanel'
 const RELOAD_DELAY:number = 500;
 
-export class TaskViewPanel extends UIBaseComponent{
+export class TaskViewPanel extends UIExtComponent {
   private threeViewPanel: TaskViewSelectorPanel;
   private taskContentPanel : TaskViewContentPanel;
   private project:CordovaProjectInfo;
@@ -47,6 +47,7 @@ export class TaskViewPanel extends UIBaseComponent{
         this.lastSelected = config;
       }
       this.taskContentPanel.contextualize(config,this.project);
+      this.fireEvent('didTaskSelected', config);
     });
 
     this.evtEmitter.addListener('didAddTask',() => {

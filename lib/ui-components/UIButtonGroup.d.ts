@@ -11,12 +11,14 @@ export declare class UIButtonConfig {
     buttonType: string;
     clickListener: Function;
     className: string;
+    enabled: boolean;
     setId(id: string): UIButtonConfig;
     setCaption(caption: string): UIButtonConfig;
     setSelected(selected: boolean): UIButtonConfig;
     setButtonType(buttonType: string): UIButtonConfig;
     setClassName(className: string): UIButtonConfig;
     setClickListener(clickListener: Function): UIButtonConfig;
+    setEnabled(enabled: boolean): UIButtonConfig;
 }
 export declare class UIButtonGroup extends UIBaseComponent {
     private buttonGroup;
@@ -29,6 +31,7 @@ export declare class UIButtonGroup extends UIBaseComponent {
     addButton(buttonConfig: UIButtonConfig): UIButtonGroup;
     toggleButton(id: string): void;
     selectButton(id: string, select: boolean): void;
+    setButtonEnabled(id: string, enabled: boolean): void;
     private createButton(buttonConfig);
     addChangeListener(listener: Function): UIButtonGroup;
     getSelectedButtons(): Array<string>;

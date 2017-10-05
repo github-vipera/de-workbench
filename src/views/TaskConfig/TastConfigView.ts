@@ -22,6 +22,7 @@ import { CordovaProjectInfo } from '../../cordova/Cordova';
 export class TaskConfigView extends UIModalView {
   taskPanel: TaskViewPanel;
   events: EventEmitter;
+  actionButtons: UIButtonGroup;
 
   constructor(title: string, events: EventEmitter) {
     super(title);
@@ -29,7 +30,7 @@ export class TaskConfigView extends UIModalView {
   }
 
   addFooter() {
-    let actionButtons = new UIButtonGroup(UIButtonGroupMode.Standard)
+    this.actionButtons = new UIButtonGroup(UIButtonGroupMode.Standard)
       .addButton(new UIButtonConfig()
         .setId('cancel')
         .setCaption('Cancel')
@@ -38,18 +39,20 @@ export class TaskConfigView extends UIModalView {
         }))
       .addButton(new UIButtonConfig()
         .setId('apply')
+        .setEnabled(false)
         .setCaption('Apply')
         .setClickListener(() => {
           this.handleApply();
         }))
       .addButton(new UIButtonConfig()
         .setId('run')
+        .setEnabled(false)
         .setButtonType('success')
         .setCaption('Run')
         .setClickListener(() => {
           this.handleRun();
         }))
-    let modalActionButtons = createModalActionButtons(actionButtons.element());
+    let modalActionButtons = createModalActionButtons(this.actionButtons.element());
     insertElement(this.modalContainer, modalActionButtons);
   }
 
@@ -76,11 +79,21 @@ export class TaskConfigView extends UIModalView {
 
   addContent(): void {
     this.taskPanel = new TaskViewPanel();
+    this.taskPanel.addEventListener('didTaskSelected', (cfg)=>{
+      this.onTaskSelected(cfg);
+    })
     insertElement(this.modalContainer, this.taskPanel.element());
   }
 
   setProject(project: CordovaProjectInfo) {
     this.taskPanel.setProject(project);
   }
+
+  onTaskSelected(cfg:any){
+    this.actionButtons.setButtonEnabled('run', true);
+    this.actionButtons.setButtonEnabled('apply', true);
+  }
+
+  
 
 }
