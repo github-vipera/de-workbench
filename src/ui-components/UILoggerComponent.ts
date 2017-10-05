@@ -66,6 +66,9 @@ export class BaseLogModel implements LogModel{
     }
   }
   appendLogLine(logLine:LogLine):void {
+    if (!logLine){
+      return;
+    }
     this.logLines.push(logLine);
     if(this.logLines.length > this.maxLineCount){
       let logLine = this.logLines[0];
@@ -250,10 +253,13 @@ export class FileTailLogModel extends BaseLogModel {
       lineReader.eachLine(this.filePath, (line, last) => {
         console.log(line);
         try{
-          lastLines.unshift(this.createLogLine(JSON.parse(line)));
+          let logLine = this.createLogLine(JSON.parse(line));
+          if (logLine){
+            lastLines.unshift(logLine);
+            count++;
+          }
         }catch(err){
         }
-        count++;
         if (count >= lastLine) {
           _.forEach(lastLines,(line:LogLine) => {
             this.appendLogLine(line);
@@ -269,7 +275,9 @@ export class FileTailLogModel extends BaseLogModel {
   }
 
   private createAndAddLogLine(data){
-    //console.log('createAndAddLogLine');
+    let logLine = this.createLogLine(data);
+    this.appendLogLine(logLine);
+    /**
     let msg = this.cleanMessage(data.message);
     let logLevelStr = data["level"];
     let timestamp = data["timestamp"];
@@ -278,9 +286,13 @@ export class FileTailLogModel extends BaseLogModel {
       message: msg,
       timestamp: timestamp
     });
+    **/
   }
 
   private createLogLine(data):LogLine{
+    if (!data.message || data.message.length==0){
+      return null;
+    }
     let msg = this.cleanMessage(data.message);
     let logLevelStr = data["level"];
     let timestamp = data["timestamp"];
