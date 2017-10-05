@@ -43,14 +43,7 @@ export class Logger {
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false
-        })
-        /**,
-        new winston.transports.Console({
-            level: 'verbose',
-            handleExceptions: true,
-            json: false,
-            colorize: true
-        })**/
+        }) 
       ]
     });
     this.evtSupport = new EventSupport();
@@ -58,7 +51,7 @@ export class Logger {
 
   static getInstance() {
       if (!Logger.instance) {
-          Logger.instance = new Logger();
+          Logger.instance = new Logger(); 
       }
       return Logger.instance;
   }
@@ -67,27 +60,27 @@ export class Logger {
     return path.join(GlobalPreferences.preferencesFolder, 'de_workbench_json.log');
   }
 
-  info(...msg){
+  info(...msg:any[]){
     this.fireLogEvent(LogLevel.INFO,msg);
-    this.logger.info(msg);
+    this.logger.info.apply(this, msg);
     console.info(msg);
   }
 
-  debug(...msg){
+  debug(...msg:any[]){
     this.fireLogEvent(LogLevel.DEBUG,msg);
-    this.logger.debug(msg);
+    this.logger.debug.apply(this, msg);
     console.debug(msg);
   }
 
-  warn(...msg){
+  warn(...msg:any[]){
     this.fireLogEvent(LogLevel.WARN,msg);
-    this.logger.warn(msg);
+    this.logger.warn.apply(this, msg);
     console.warn(msg);
   }
 
-  error(...msg){
+  error(...msg:any[]){
     this.fireLogEvent(LogLevel.ERROR,msg);
-    this.logger.error(msg);
+    this.logger.error.apply(this, msg);
     console.error(msg);
   }
 
@@ -98,8 +91,6 @@ export class Logger {
   }
 
   addLoggingListener(listener:LoggerListener):void{
-    //this.logger.on('logging',listener.onLogging.bind(listener));
-    //this.logger.on('logging',listener.onLogging.bind(listener));
     this.evtSupport.addEventListener((event:string,data:any[]) => {
       listener.onLogging(data[0],data[1]);
     });
