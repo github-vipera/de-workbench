@@ -36,10 +36,10 @@ const _ = require('lodash')
 
 export class ServersView extends UIPane {
 
-  protected treeModel:ServersTreeModel;
-  protected treeView:UITreeView;
-  protected toolbar:ServersToolbar;
-  protected subscriptions:any;
+  private treeModel:ServersTreeModel;
+  private treeView:UITreeView;
+  private toolbar:ServersToolbar;
+  private subscriptions:any;
 
   constructor(params:any){
     super(params);
@@ -184,7 +184,7 @@ export class ServersView extends UIPane {
     super.destroy();
   }
 
-  protected createNewServerInstanceForNode(nodeItem:ServerProviderItem){
+  private createNewServerInstanceForNode(nodeItem:ServerProviderItem){
     if (nodeItem && nodeItem.serverProvider){
       this.createNewServerProviderFor(nodeItem.serverProvider);
     }
@@ -483,7 +483,7 @@ class ServerProviderItem implements UITreeItem {
 
 }
 
-class ServerInstanceItem implements UITreeItem {
+export class ServerInstanceItem implements UITreeItem {
 
   serverInstance:ServerInstanceWrapper;
   id:string;

@@ -37,7 +37,7 @@ const _ = require('lodash')
 export class ServerInstanceConfigurationView extends UIPane {
 
   _serverInstance:ServerInstanceWrapper;
-  _configCtrl : ServerInstanceConfigurationCtrl;
+  private _configCtrl : ServerInstanceConfigurationCtrl;
   _overlayEl:HTMLElement;
   _removed:boolean=false;
 
