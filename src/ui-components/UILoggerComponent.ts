@@ -373,7 +373,7 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
     console.log("copy!!!!!!!!");
     return atom.clipboard.write(this.terminal.getSelection());
   }
-  
+
   protected outputResized(){
     return this.terminal.fit();
   }
@@ -554,7 +554,7 @@ class TextFilter implements Filter<LogLine>{
   setText(value:string){
     this.value=value;
     if(value){
-      this.regexp=new RegExp(_.escapeRegExp(value));
+      this.regexp=new RegExp(_.escapeRegExp(value), 'i');
     }else{
       this.regexp = null;
     }
