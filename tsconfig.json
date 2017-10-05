@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "allowJs": true,
-    "declaration": false,
+    "declaration": true,
     "noImplicitAny": false,
     "removeComments": true,
     "outDir": "lib",
