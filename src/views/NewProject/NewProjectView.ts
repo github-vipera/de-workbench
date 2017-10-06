@@ -171,7 +171,7 @@ export class NewProjectView {
         this.newProjectProgressPanel.stopLog()
         this.close()
         UINotifications.showInfo("Project created successfully.")
-        atom.open({'pathsToOpen': [newPrjInfo.path], 'newWindow': true});
+        atom.open({'pathsToOpen': [newPrjInfo.path], 'newWindow': true, 'devMode': false, 'safeMode': false});
       },(err)=>{
         console.log("Failure! " , err)
         this.newProjectProgressPanel.hide()
