@@ -9,6 +9,7 @@
 const path = require("path");
 const fs = require("fs-extra");
 const _ = require("lodash")
+import { Logger } from '../logger/Logger'
 
 export class CordovaUtils {
 
@@ -54,7 +55,7 @@ export class CordovaUtils {
       }
       var parts=stringValue.split('\n');
       var deviceList=this.scanDeviceParts(parts);
-      console.log(deviceList.toString());
+      Logger.consoleLog(deviceList.toString());
       return deviceList;
     }
 
@@ -75,13 +76,13 @@ export class CordovaUtils {
     }
 
     parsePluginList(stringValue){
-      console.log("parsePluginList");
+      Logger.consoleLog("parsePluginList");
       var listParts=stringValue.split("\n");
       var result=new Array();
       _.forEach(listParts,(item)=>{
         result.push(this.parsePluginRecord(item));
       });
-      console.log(result);
+      Logger.consoleLog("parsePluginsList results:", result);
       return result;
     }
 

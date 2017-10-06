@@ -42,7 +42,7 @@ export class TaskViewPanel extends UIExtComponent {
     this.threeViewPanel.setOnTaskChangeListener((itemId:string) => {
       this.applyConfigToModel(this.lastSelected);
       let config= this.getTaskConfigurationByName(itemId);
-      console.log("getTaskConfigurationByName return",config,"For name",itemId);
+      Logger.consoleLog("getTaskConfigurationByName return",config,"For name",itemId);
       if(config){
         this.lastSelected = config;
       }
@@ -51,11 +51,11 @@ export class TaskViewPanel extends UIExtComponent {
     });
 
     this.evtEmitter.addListener('didAddTask',() => {
-      console.log("Add task");
+      Logger.consoleLog("Add task");
     });
 
     this.evtEmitter.addListener('didRemoveTask',() => {
-      console.log("Remove task");
+      Logger.consoleLog("Remove task");
       let target= this.lastSelected;
       if(target.constraints.isCustom){
         this.removeTask(target);
@@ -79,7 +79,7 @@ export class TaskViewPanel extends UIExtComponent {
     })
 
     this.evtEmitter.addListener('didCloneTask',() => {
-      console.log("Duplicate task");
+      Logger.consoleLog("Duplicate task");
       if(this.lastSelected){
         this.cloneAndAddNewTasks(this.lastSelected);
         setTimeout(() => {

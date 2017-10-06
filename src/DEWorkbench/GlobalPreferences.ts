@@ -9,6 +9,7 @@
 'use babel'
 
 import { EventEmitter }  from 'events'
+import { Logger } from '../logger/Logger'
 
 const {
     allowUnsafeEval,
@@ -32,7 +33,7 @@ export class GlobalPreferences {
     this.ensureFolder(GlobalPreferences.preferencesFolder)
     let prefsFile = path.join(GlobalPreferences.preferencesFolder,'de_workbench_preferences.json');
     this._db = new JsonDB(prefsFile, true, true);
-    console.log("Global Preferences:" , prefsFile)
+    Logger.consoleLog("Global Preferences:" , prefsFile)
   }
 
   private ensureFolder(folder){

@@ -131,13 +131,13 @@ export class ServerManager {
       let instanceName = pendingInstance["instanceName"];
       let serverProvider = this.getProviderById(providerId);
       if (serverProvider){
-        console.log("Server provider " + providerName +" available. Creating instance...")
+        Logger.consoleLog("Server provider " + providerName +" available. Creating instance...")
         let serverInstance = await this.restoreServerInstance(providerId, instanceName, serverInstanceId, pendingInstance["configuration"])
         let newInstanceId = serverInstance.instanceId;
         //TODO!! change id on config
         this.pendingConfigInstances[i]["toRemove"] = true;
       } else {
-        console.log("Server provider: " + providerName +" not yet available.")
+        Logger.consoleLog("Server provider: " + providerName +" not yet available.")
       }
     }
     //then remove all marked "toRemove"
@@ -152,7 +152,7 @@ export class ServerManager {
   public registerProvider(provider:ServerProvider):ServerProviderWrapper{
     try {
       Logger.getInstance().debug("Registering Server Provider: ",provider)
-      console.log("Registering Server Provider: ", provider)
+      Logger.consoleLog("Registering Server Provider: ", provider)
       let wrapper = new ServerProviderWrapper(provider);
       this.providers.push(wrapper)
       this.checkForPendingInstances();

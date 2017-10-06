@@ -60,7 +60,7 @@ export class VariantsManager {
           if (err){
             reject(err)
           } else {
-            console.log("Variants file loaded:" , result)
+            Logger.consoleLog("Variants file loaded:" , result)
             resolve(that.fromXMLtoModel(result));
           }
         });
@@ -148,7 +148,7 @@ export class VariantsManager {
       xmlContent.variants.variant.push(xmlVariant)
     }
 
-    console.log("xmlContent:",xmlContent)
+    Logger.consoleLog("xmlContent:",xmlContent)
     return xmlContent;
   }
 
@@ -159,7 +159,7 @@ export class VariantsManager {
       fs.mkdirSync(this.variantsFolder);
     }
     fs.writeFileSync(this.variantsFilePath,xml);
-    console.log("Variants file stored")
+    Logger.consoleLog("Variants file stored")
   }
 
   public fileExists():boolean {

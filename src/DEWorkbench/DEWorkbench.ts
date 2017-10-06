@@ -88,11 +88,11 @@ import { ViewManager } from './ViewManager'
         this.toggleLogger();
       },
       didSelectProjectForRun: (projectInfo:CordovaProjectInfo) => {
-        console.log("didSelectProjectForRun",projectInfo);
+        Logger.consoleLog("didSelectProjectForRun",projectInfo);
         this.selectedProjectForTask = projectInfo;
       },
       didSelectTaskClick: () => {
-        console.log("didSelectTaskClick");
+        Logger.consoleLog("didSelectTaskClick");
         this.showCordovaTaskModal();
       },
       didTaskSelected:(task:CordovaTaskConfiguration) => {
@@ -105,13 +105,13 @@ import { ViewManager } from './ViewManager'
         this.onTaskRunRequired(this.taskConfiguration);
       },
       didReload : () => {
-        console.log('Reload');
+        Logger.consoleLog('Reload');
         this.getTaskManager().sendAction({
           type: 'doLiveReload'
         });
       },
       didOpenJSConsole: () => {
-        console.log('didOpenJSConsole');
+        Logger.consoleLog('didOpenJSConsole');
         let runtimeHandler=this.getTaskManager().getRuntimeSessionHandler();
         if(runtimeHandler && runtimeHandler.canOpenJSSession()){
           let consoleHandler = runtimeHandler.openConsole();
@@ -225,7 +225,7 @@ import { ViewManager } from './ViewManager'
    }
 
    onTaskSelected(taskConfiguration:CordovaTaskConfiguration,forceUpdate?:boolean){
-     console.log("onTaskSelected",taskConfiguration);
+     Logger.consoleLog("onTaskSelected",taskConfiguration);
      this.taskConfiguration = taskConfiguration;
      if(!taskConfiguration){
        Logger.getInstance().warn("Null task selected");
@@ -238,7 +238,7 @@ import { ViewManager } from './ViewManager'
    }
 
    onTaskRunRequired(taskConfiguration:CordovaTaskConfiguration){
-     console.log("onTaskRunRequired",taskConfiguration);
+     Logger.consoleLog("onTaskRunRequired",taskConfiguration);
      this.taskConfiguration = taskConfiguration;
      if(!taskConfiguration){
        Logger.getInstance().warn("Null task selected");
@@ -282,7 +282,7 @@ import { ViewManager } from './ViewManager'
 
 
    onStopTask(){
-     console.log("onStopTask");
+     Logger.consoleLog("onStopTask");
      if(this.taskManager){
        this.taskManager.stop();
        this.updateToolbarStatus(this.taskConfiguration,false);
@@ -295,7 +295,7 @@ import { ViewManager } from './ViewManager'
      if(this.taskManager){
        let busy = this.taskManager.isBusy();
        let serverRunning = this.taskManager.isPlatformServerRunning();
-       console.log(`updateToolbarStatus busy ${busy} -  serverRunning ${serverRunning}`);
+       Logger.consoleLog(`updateToolbarStatus busy ${busy} -  serverRunning ${serverRunning}`);
        if(busy){
          this.toolbarView.setInProgressStatus(`${taskConfiguration.displayName} - ${platform}  in progress...`);
          if(serverRunning){
@@ -349,7 +349,7 @@ import { ViewManager } from './ViewManager'
      if(!this.taskManager){
        this.taskManager = new TaskManager();
        this.taskManager.didRuntimeSessionAvailable(() => {
-         console.log("didRuntimeSessionAvailable exec");
+         Logger.consoleLog("didRuntimeSessionAvailable exec");
          this.updateToolbarStatus(this.taskConfiguration,false);
        });
      }

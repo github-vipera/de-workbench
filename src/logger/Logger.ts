@@ -14,7 +14,7 @@ const path = require("path")
 
 export class Logger {
 
-  public static CONSOLE_LOG_ENABLED: boolean = true;
+  public static CONSOLE_LOG_ENABLED: boolean = false; //enable for debug purpose
 
   private static instance: Logger;
 
@@ -65,25 +65,25 @@ export class Logger {
   info(...msg:any[]){
     this.fireLogEvent(LogLevel.INFO,msg);
     this.logger.info.apply(this, msg);
-    console.info(msg);
+    Logger.consoleLog("", msg);
   }
 
   debug(...msg:any[]){
     this.fireLogEvent(LogLevel.DEBUG,msg);
     this.logger.debug.apply(this, msg);
-    console.debug(msg);
+    Logger.consoleLog("", msg);
   }
 
   warn(...msg:any[]){
     this.fireLogEvent(LogLevel.WARN,msg);
     this.logger.warn.apply(this, msg);
-    console.warn(msg);
+    Logger.consoleLog("",msg);
   }
 
   error(...msg:any[]){
     this.fireLogEvent(LogLevel.ERROR,msg);
     this.logger.error.apply(this, msg);
-    console.error(msg);
+    Logger.consoleLog("", msg);
   }
 
 
@@ -97,6 +97,7 @@ export class Logger {
       listener.onLogging(data[0],data[1]);
     });
   }
+
 
   public static consoleLog(msg:string,...params){
     if (!Logger.CONSOLE_LOG_ENABLED){

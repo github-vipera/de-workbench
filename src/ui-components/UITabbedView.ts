@@ -385,7 +385,7 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
     this.selectedElement.classList.toggle('selected');
 
     // generate event
-    //console.log("Clicked element li:",this.selectedElement);
+    //Logger.consoleLog("Clicked element li:",this.selectedElement);
     this.eventEmitter.emit(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, this.tabItemsMap[item.id], this.itemsElementsMap[item.id]);
   }
 

@@ -107,7 +107,7 @@ export class VariantsEditorCtrl extends UIBaseComponent {
         this.variantsModel = results;
         this.updateUI()
       },(error)=>{
-        console.log("Failure:", error)
+        Logger.consoleLog("Failure:", error)
       });
     }
 

@@ -86,7 +86,7 @@ export class CommandExecutor {
           operationResult = data.toString();
         }
         Logger.getInstance().debug(`[${operationLogTag} progress]: ${data}`)
-        console.log(`[${operationLogTag} progress]: ${data}`);
+        Logger.consoleLog(`[${operationLogTag} progress]: ${data}`);
       });
 
       this.spawnRef.stderr.on('data', (data) => {
@@ -95,7 +95,7 @@ export class CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-        console.log(`[${operationLogTag}] child process exited with code ${code}`);
+        Logger.consoleLog(`[${operationLogTag}] child process exited with code ${code}`);
         Logger.getInstance().info(`[${operationLogTag}] child process exited with code ${code}`)
         this.spawnRef = undefined;
         if (code === 0) {

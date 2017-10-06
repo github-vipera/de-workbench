@@ -30,7 +30,7 @@ export default {
   cordovaPluginsProvidersManager:null,
 
   activate (state: any) {
-      console.log("DEWB activated.");
+      Logger.consoleLog("DEWB activated.");
 
       ServerManager.getInstance();
 
@@ -40,10 +40,10 @@ export default {
   },
 
   deferredActivation(){
-    console.log("DEWB deferredActivation.");
+    Logger.consoleLog("DEWB deferredActivation.");
 
     require('atom-package-deps').install('de-workbench', false).then(function(res){
-      console.log("Dep packages installed.");
+      Logger.consoleLog("Dep packages installed.");
     })
 
     let DEWorkbenchClass = require('./DEWorkbench/DEWorkbench').DEWorkbench;
@@ -72,7 +72,7 @@ export default {
   },
 
   deactivate () {
-      console.log('DEWB deactivated.');
+      Logger.consoleLog('DEWB deactivated.');
       if(this.deWorkbench){
         this.deWorkbench.destroy();
       }
@@ -90,12 +90,12 @@ export default {
   },
 
   toggleToolbar() {
-    console.log("Toggle toolbar");
+    Logger.consoleLog("Toggle toolbar");
     this.deWorkbench.toggleToolbar()
   },
 
   toggleLogger(){
-    console.log("Toggle Logger");
+    Logger.consoleLog("Toggle Logger");
     this.deWorkbench.toggleLogger();
   },
 
@@ -105,27 +105,27 @@ export default {
   },
 
   provideCordovaPluginsProvider () {
-    console.log("consumeDEWBCordovaPluginsProvider called")
+    Logger.consoleLog("consumeDEWBCordovaPluginsProvider called")
     return CordovaPluginsProvidersManager.getInstance();
   },
 
   provideLogger () {
-    console.log("consumeLogger called")
+    Logger.consoleLog("consumeLogger called")
     return Logger.getInstance();
   },
 
   provideProjectManager() {
-    console.log("provideProjectManager called")
+    Logger.consoleLog("provideProjectManager called")
     return ProjectManager.getInstance();
   },
 
   provideEventBus() {
-    console.log("provideEventBus called")
+    Logger.consoleLog("provideEventBus called")
     return EventBus.getInstance();
   },
 
   provideServerManager(){
-    console.log("provideServerManager called")
+    Logger.consoleLog("provideServerManager called")
     return ServerManager.getInstance();
   }
 

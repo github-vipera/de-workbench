@@ -51,12 +51,12 @@ export class ServersView extends UIPane {
     this.treeView = new UITreeView(this.treeModel);
     this.treeView.addEventListener('didItemSelected',(nodeId, nodeItem)=>{
       let nodeType = _.find(nodeItem.attributes, { 'name':'srvNodeType' })
-      console.log("Node clicked: ", nodeType)
+      Logger.consoleLog("Node clicked: ", nodeType)
       this.updateToolbar(nodeType.value)
     })
     this.treeView.addEventListener('didItemDblClick',(nodeId, nodeItem)=>{
       let nodeType = _.find(nodeItem.attributes, { 'name':'srvNodeType' })
-      console.log("Node dbl clicked: ", nodeType)
+      Logger.consoleLog("Node dbl clicked: ", nodeType)
       if (nodeType.value==="serverInstance"){
         let nodeId = this.treeView.getCurrentSelectedItemId();
         let nodeItem = <ServerInstanceItem>this.treeModel.getItemById(nodeId);
@@ -474,7 +474,7 @@ class ServerProviderItem implements UITreeItem {
       for (var i=0;i<instances.length;i++){
         this.children.push( new ServerInstanceItem(instances[i], this) )
       }
-      console.log(this.children.length)
+      Logger.consoleLog("children length:", this.children.length)
   }
 
   protected toIdFromName(name:string):string{

@@ -238,7 +238,7 @@ export class CommunityPluginsView extends UIBaseComponent {
         let processedResults:Array<CordovaPlugin> = ProjectManager.getInstance().cordova.markInstalledPlugins(results, installedPlugins);
         this.pluginList.setPlugins(processedResults);
         Logger.getInstance().debug("Plugins found:", processedResults)
-        console.log("Plugins found:", processedResults)
+        Logger.consoleLog("Plugins found:", processedResults)
       });
 
 

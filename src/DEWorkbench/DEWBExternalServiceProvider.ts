@@ -54,7 +54,7 @@ export class InkProvider {
       editor = arg.editor;
       cons.logInput();
       cons.done();
-      //console.log(editor.getText())
+      //Logger.consoleLog(editor.getText())
       //Logger.getInstance().info("Typed ", editor.getText() )
       try {
         let evaluated = null;//eval(editor.getText())

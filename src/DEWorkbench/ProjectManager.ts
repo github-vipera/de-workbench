@@ -51,7 +51,7 @@ export class ProjectManager {
 
     private firePathChanged(){
       this.events.emit('didPathChanged');
-      console.log("firePathChanged");
+      Logger.consoleLog("firePathChanged");
       let ok = this.fireEditorChanged();
       if (!ok){
           this.currentProjectPath = this.getFirstAvailableProjectRootFolder();
@@ -82,7 +82,7 @@ export class ProjectManager {
      * Return true if an editore opened and selected is available
      */
     private fireEditorChanged():boolean{
-      console.log("fireEditorChanged")
+      Logger.consoleLog("fireEditorChanged")
       var editor = atom.workspace.getActiveTextEditor()
       if (editor){
         var yourPath = editor["getPath"]()
@@ -108,7 +108,7 @@ export class ProjectManager {
 
     private fireProjectChanged(projectPath:string) {
       this.currentProjectPath = projectPath;
-      //console.log("Project changed: ", projectPath);
+      //Logger.consoleLog("Project changed: ", projectPath);
       this.events.emit('didProjectChanged', projectPath);
     }
 
@@ -135,7 +135,7 @@ export class ProjectManager {
         if (!ret){
           ret = new ProjectSettings(projectPath)
           ret.load().then((settings)=>{
-            console.log("getProjectSettings load done!")
+            Logger.consoleLog("getProjectSettings load done!")
             this.projectSettings[projectPath] = ret;
             resolve(settings);
           },(err) => {

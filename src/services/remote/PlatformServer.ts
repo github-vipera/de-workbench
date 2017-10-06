@@ -77,11 +77,11 @@ export class PlatformServerImpl implements PlatformServer {
       // Add a newly connected socket
       var socketId = PlatformServerImpl.nextSocketId++;
       this.sockets[socketId] = socket;
-      console.log('socket', socketId, 'opened');
+      Logger.consoleLog('socket', socketId, 'opened');
 
       // Remove the socket when it closes
       socket.on('close', () => {
-        console.log('socket', socketId, 'closed');
+        Logger.consoleLog('socket', socketId, 'closed');
         delete this.sockets[socketId];
       });
 
@@ -89,7 +89,7 @@ export class PlatformServerImpl implements PlatformServer {
     });
 
     this.http.listen(config.port, () => {
-      console.log(("App is running at http://localhost:%d "), config.port)
+      Logger.consoleLog(("App is running at http://localhost:%d "), config.port)
     });
   }
 
@@ -124,7 +124,7 @@ export class PlatformServerImpl implements PlatformServer {
     return new Promise((resolve,reject) => {
       if (this.http) {
         this.http.close(() => {
-          console.log("http closed");
+          Logger.consoleLog("http closed");
           this.http = null;
           resolve();
         })

@@ -10,6 +10,7 @@ const path = require("path");
 const fs = require("fs-extra");
 const _ = require("lodash")
 const xml2js = require('xml2js');
+import { Logger } from '../logger/Logger'
 
 export class CordovaPluginScanner {
 
@@ -24,7 +25,7 @@ export class CordovaPluginScanner {
   }
 
   scan(projectRootPath: string, callbackFunc) {
-    console.log("Scanning folder '" + path + "' for plugins...");
+    Logger.consoleLog("Scanning folder '" + path + "' for plugins...");
     try {
       this.pluginIds = new Array();
       this.path = projectRootPath;
@@ -33,7 +34,7 @@ export class CordovaPluginScanner {
       this.completionCallback = callbackFunc;
       this.scanningPlugins = 0;
 
-      console.log("Plugins loaded: " + JSON.stringify(this.fetchJson));
+      Logger.consoleLog("Plugins loaded: " + JSON.stringify(this.fetchJson));
 
       //mark total plugins to notify when completed
       this.scanningPlugins = Object.keys(this.fetchJson).length;
@@ -55,7 +56,7 @@ export class CordovaPluginScanner {
         try {
           this.scanPlugin(pluginId, path);
         } catch (ex) {
-          console.log("Error in plugin scan: " + ex);
+          Logger.consoleLog("Error in plugin scan: " + ex);
         }
       }
 
@@ -63,14 +64,14 @@ export class CordovaPluginScanner {
     } catch (err) {
       this.fetchJson = {};
       //atom.notifications.addError("Uhm...this project does not seem to be a Cordova project.");
-      console.log("Error: " + err);
+      Logger.consoleLog("Error: " + err);
     }
   }
 
 
   scanPlugin(pluginId, path) {
     var that = this;
-    console.log("scanPlugin for " + pluginId + " in path " + path);
+    Logger.consoleLog("scanPlugin for " + pluginId + " in path " + path);
     this.pluginIds.push(pluginId);
     var parser = new xml2js.Parser();
     fs.readFile(path + "/plugin.xml", function(err, data) {
@@ -88,7 +89,7 @@ export class CordovaPluginScanner {
             let packageJson = JSON.parse(fs.readFileSync(path + "/package.json", 'utf8'));
             that.fetchJson[pluginId].packageJson = packageJson;
           } catch (ex){
-              console.log("Error reading package.json: ", ex);
+              Logger.consoleLog("Error reading package.json: ", ex);
           }
         }
 

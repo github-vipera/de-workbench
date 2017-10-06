@@ -20,6 +20,8 @@ import { UIStatusIndicatorComponent , UIIndicatorStatus } from './UIStatusIndica
 import { ProjectManager } from '../DEWorkbench/ProjectManager'
 import { CordovaProjectInfo } from '../cordova/Cordova'
 import { CordovaTaskConfiguration } from '../cordova/CordovaTasks'
+import { Logger } from '../logger/Logger'
+
 import * as _ from 'lodash'
 import * as path from 'path'
 
@@ -64,7 +66,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
           let task:CordovaTaskConfiguration = _.find(this.taskHistory,(item) => {
             return item.name == selection;
           });
-          console.log('emit event for',task);
+          Logger.consoleLog('emit event for',task);
           this.events.emit("didTaskSelected", task);
         }
       }
@@ -103,7 +105,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   }
 
   reloadProjectList(){
-    console.log("reloadProjectList");
+    Logger.consoleLog("reloadProjectList");
     let projects:Array<string> = this.getAllAvailableProjects();
     let items:Array<UISelectItem> = this.createProjectSelectOptions(projects);
     let selected:string = this.projectSelector.getSelectedItem();
@@ -121,7 +123,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
 
   createProjectSelector(projects:Array<string>):UISelect{
     let options:Array<UISelectItem> = this.createProjectSelectOptions(projects);
-    console.log("OPTIONS:",options);
+    Logger.consoleLog("OPTIONS:",options);
     return new UISelect(options);
   }
 
@@ -165,15 +167,15 @@ export class UIRunSelectorComponent extends UIBaseComponent {
   }
 
   onCustomTaskSelectClick(){
-    console.log("onCustomTaskSelectClick");
+    Logger.consoleLog("onCustomTaskSelectClick");
     this.events.emit('didSelectTaskClick');
   }
 
   onSelectProject(path:string){
-    console.log("onSelectProject",path);
+    Logger.consoleLog("onSelectProject",path);
     setTimeout(() => {
       ProjectManager.getInstance().cordova.getProjectInfo(path).then((info:CordovaProjectInfo) => {
-          console.log(info);
+          Logger.consoleLog("onSelectProject info:", info);
           this.events.emit('didSelectProjectForRun',info);
       },(reason) => {
         console.error(reason);

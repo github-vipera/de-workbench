@@ -21,6 +21,8 @@ import { UILineLoader } from '../../ui-components/UILineLoader'
 import { map, forEach } from 'lodash'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
 import { TaskViewEnvironmentTab } from './TaskViewEnvironmentTab'
+import { Logger,LoggerListener ,LogLevel} from '../../logger/Logger'
+
 const NONE_PLACEHOLDER:string = '-- None --';
 
 export class TaskViewContentPanel extends UIBaseComponent{
@@ -377,12 +379,12 @@ export class TaskViewContentPanel extends UIBaseComponent{
 
   private getSelectedNpmScript():string {
     let value = this.npmScriptsSelect.getSelectedItem();
-    console.log('selectedItem:',value);
+    Logger.consoleLog('selectedItem:',value);
     return value || null;
   }
 
   getCurrentConfiguration():CordovaTaskConfiguration{
-    console.log("getCurrentConfiguration");
+    Logger.consoleLog("getCurrentConfiguration");
     let platformValue = this.platformSelect.getSelectedItem();
     if(platformValue){
       this.taskConfig.selectedPlatform = {name:platformValue};

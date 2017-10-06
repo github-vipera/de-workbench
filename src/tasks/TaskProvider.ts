@@ -3,13 +3,15 @@ import {CordovaTaskConfiguration} from '../cordova/CordovaTasks';
 import {cloneDeep,forEach} from 'lodash'
 import {ProjectManager} from '../DEWorkbench/ProjectManager'
 import {ProjectSettings} from '../DEWorkbench/ProjectSettings'
+import { Logger } from '../logger/Logger'
+
 const CORDOVA_TASK_LIST_KEY:string = 'cdvTaskList';
 
 export class TaskProvider{
   private static instance:TaskProvider;
   private defaultTasks:Array<CordovaTaskConfiguration>= null;
   private constructor(){
-    console.log("Create TaskProvider");
+    Logger.consoleLog("Create TaskProvider");
   }
 
   public static getInstance():TaskProvider{
@@ -68,7 +70,7 @@ export class TaskProvider{
   }
 
   public async loadTasksForProject(projectPath:string):Promise<Array<CordovaTaskConfiguration>>{
-    console.log('loadTasksForProject');
+    Logger.consoleLog('loadTasksForProject');
     let defaultTasks = this.getDefaultTask();
     if(!projectPath){
       return defaultTasks;
@@ -83,7 +85,7 @@ export class TaskProvider{
       return defaultTasks;
     }
     let savedTasks = setting.get('cdvTaskList');
-    console.log("savedTasks",savedTasks);
+    Logger.consoleLog("savedTasks",savedTasks);
     if(!savedTasks){
       return defaultTasks;
     }
@@ -91,7 +93,7 @@ export class TaskProvider{
     forEach(savedTasks,(item) => {
       parsedResult.push(CordovaTaskConfiguration.fromJSON(item));
     });
-    console.log("parsedResult:",savedTasks);
+    Logger.consoleLog("parsedResult:",savedTasks);
     return parsedResult;
   }
 
@@ -106,7 +108,7 @@ export class TaskProvider{
       let defaultTasks = this.getDefaultTask();
       ProjectManager.getInstance().getProjectSettings(projectPath).then((setting) => {
         let savedTasks = setting.get('cdvTaskList');
-        console.log("savedTasks",savedTasks);
+        Logger.consoleLog("savedTasks",savedTasks);
         if(!savedTasks){
           return defaultTasks;
         }
@@ -114,7 +116,7 @@ export class TaskProvider{
         forEach(savedTasks,(item) => {
           parsedResult.push(CordovaTaskConfiguration.fromJSON(item));
         });
-        console.log("parsedResult:",savedTasks);
+        Logger.consoleLog("parsedResult:",savedTasks);
         return parsedResult;
       },(err) => {
         resolve(defaultTasks);

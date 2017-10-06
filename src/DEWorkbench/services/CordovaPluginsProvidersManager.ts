@@ -40,7 +40,7 @@ export class CordovaPluginsProvidersManager {
   public registerProviderFactory(providerFactory:CordovaPluginsProviderFactory){
     try {
       Logger.getInstance().debug("Registering Cordova Plugins Provider Factory: ",providerFactory)
-      console.log("Registering Cordova Plugins Provider: ", providerFactory)
+      Logger.consoleLog("Registering Cordova Plugins Provider: ", providerFactory)
       this.providerFactories.push(providerFactory)
     } catch (ex){
       Logger.getInstance().error("Error registering Cordova Plugins Provider: ", ex)

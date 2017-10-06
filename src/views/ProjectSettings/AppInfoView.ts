@@ -134,7 +134,7 @@ export class AppInfoView extends UIBaseComponent {
   }
 
   private onTextValueChanged(sourceCtrl:UIInputFormElement){
-    console.log("Changed value: ", sourceCtrl.getValue())
+    Logger.consoleLog("Changed value: ", sourceCtrl.getValue())
   }
 
 }

@@ -145,7 +145,7 @@ export class ConsoleHandler {
   public setSession(session:JSSession){
     this.session = session;
     this.session.didJSResultReceived((message) => {
-      this.console.logInput();
+      this.console.log();
       this.console.done();
       if(this.console){
         if(message.status == "OK"){
@@ -170,7 +170,7 @@ export class ConsoleHandler {
 
   private createConsoleBridge(){
     this.console = ConsumedServices.ink.Console.fromId('dewb-jssession-cmd-client')
-    console.log("console",this.console)
+    Logger.consoleLog("console",this.console)
     this.console.setModes([
       {name: 'DE Workbench JS Console', default: true, grammar: 'source.javascript'}
     ]);
@@ -193,7 +193,7 @@ export class ConsoleHandler {
   }
   public close(){
     if(this.console){
-      console.log('clear emitter');
+      Logger.consoleLog('clear emitter');
       this.console.emitter.off('eval',this.onCmdEval);
       delete this.console.emitter.handlersByEventName.eval;
       this.console.close();
