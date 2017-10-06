@@ -94,6 +94,6 @@ export class TaskConfigView extends UIModalView {
     this.actionButtons.setButtonEnabled('apply', true);
   }
 
-  
+
 
 }
