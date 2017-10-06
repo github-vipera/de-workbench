@@ -171,7 +171,7 @@ export class VariantsEditorCtrl extends UIBaseComponent {
           detailedMessage: 'Do you want to confirm the ' + selectedTab.getTitle() +' variant deletion ?',
           buttons: ['Yes, Delete it', 'Cancel']
         });
-        if (selected==0){
+        if ((selected as any)==0){
           this.removeVariant(selectedTab.getTitle());
         }
     }

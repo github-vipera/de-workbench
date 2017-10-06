@@ -69,7 +69,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
                                             detailedMessage: 'Do you want to confirm the ' + menuItem.displayName +' platform installation ?',
                                             buttons: ['Yes, Install it', 'Cancel']
                                           });
-                                          if (selected==0){
+                                          if ((selected as any)==0){
                                             this.doInstallPlatform(menuItem.value);
                                           }
                                       })
@@ -103,7 +103,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
           detailedMessage: "Are you sure you want to uninstall the " + PlatformUtils.toPlatformDisplayName(platformInfo.name) +" platform ?",
           buttons: ['Yes, Remove It', 'Cancel']
         });
-        if (selected==0){
+        if ((selected as any)==0){
           this.doUninstallPlatform(platformInfo.name)
         }
     }

@@ -197,7 +197,7 @@ export class ServersView extends UIPane {
           detailedMessage: 'Do you want to confirm the ' + nodeItem.serverInstance.name +' server instance deletion ?',
           buttons: ['Yes, Delete it', 'Cancel']
         });
-        if (selected==0){
+        if ((selected as any)==0){
           this.removeServerInstance(nodeItem.serverInstance);
         }
     }

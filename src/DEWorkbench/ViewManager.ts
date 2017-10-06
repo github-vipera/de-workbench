@@ -117,7 +117,7 @@ export class ViewManager {
         id:viewInfo.id,
         getTitle: () => viewInfo.title,
         getURI: () => viewInfo.uri,
-        location : viewInfo.location,
+        location: viewInfo.location as any,
         activatePane:true,
         searchAllPanes:true,
         userData:viewInfo.userData
@@ -137,6 +137,14 @@ export class ViewManager {
         }
         console.log("View created: " , view)
       })
+  }
+
+  public static locationFromString(location:string):any{
+    if(location==="center"){
+      return "center"
+    } else {
+      return "center"
+    }
   }
 
   public static buildURI(viewPath:string, extraParam?:string):string {
