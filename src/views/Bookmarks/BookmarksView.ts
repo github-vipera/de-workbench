@@ -37,12 +37,12 @@ export class BookmarksView extends UIPane {
   listView:UIExtendedListView;
   model:UIExtendedListViewModel;
 
-  constructor(params:any){
-    super(params)
-    console.log("BookmarksView creating for ",this.paneId);
+  constructor(uri:string){
+    super(uri, "Bookmarks")
   }
 
   protected createUI():HTMLElement {
+    Logger.consoleLog("BookmarksView creating for ",this.paneId);
 
     this.model = new BookmarksModel();
     this.listView = new UIExtendedListView(this.model).setCellSelectable(false);
@@ -53,7 +53,6 @@ export class BookmarksView extends UIPane {
         ],
         className: 'de-workbench-bookmarks-view'
     });
-
 
     return el;
   }

@@ -33,13 +33,12 @@ export class PushToolView extends UIPane {
   private sendPushView:SendPushView;
   private pushSettingsView:PushSettingsView;
 
-  constructor(params:any){
-    super(params)
-    Logger.getInstance().debug("PushToolsView creating for ",this.paneId);
-
+  constructor(uri:string){
+    super(uri, "Push Tool")
   }
 
   protected createUI():HTMLElement {
+    Logger.getInstance().debug("PushToolsView creating for ",this.paneId);
     this.sendPushView = new SendPushView(this.options.userData.projectRoot)
     this.pushSettingsView = new PushSettingsView(this.options.userData.projectRoot)
 

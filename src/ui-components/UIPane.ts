@@ -22,6 +22,7 @@ import { EventEmitter }  from 'events'
 import { Logger } from '../logger/Logger'
 
 const md5 = require('md5');
+const $ = require('jquery')
 
 export interface PaneViewOptions {
   id:string;
@@ -44,32 +45,41 @@ export class UIPane {
   protected atomTextEditor: any;
   private _options:PaneViewOptions;
   private _events:EventEmitter;
+  private _uri:string;
+  private _el:HTMLElement;
   private _title:string;
 
-  constructor(options:PaneViewOptions){
-    this._options = options;
+  constructor(uri:string, title?:string){
+    Logger.consoleLog("UIPane for URI:", uri);
+    this._uri = uri;
     this._events = new EventEmitter()
-    this._title = this._options.getTitle();
-    console.log("UIPane creating for ", this._options.id);
-    // Initialize the UI
-    this.initUI();
-  }
-
-  private initUI(){
-
-    // Create the main UI
-    this.mainElement = this.createUI();
-
-    let el = createElement('div', {
+    // create the default container to retrun to the factory
+    this._el = createElement('div', {
         elements: [
-          this.mainElement
         ],
         className: 'de-workbench-pane-view'
     });
-
-    this.domEl = el;
+    this.domEl = this._el;
+    if (title){
+      this.setTitle(title);
+    }
   }
 
+  /**
+   * called by the ViewManager after instatiation
+   */
+  public init(options:PaneViewOptions){
+    this._options = options;
+    // Tell to the subclass to create the main UI and attach it to this container
+    this.mainElement = this.createUI();
+    insertElement(this._el, this.mainElement);
+    Logger.consoleLog("UIPane initialized for ", this._options.id, {});
+    //Logger.consoleLog("UIPane parent is", this.getAtomPane());
+  }
+
+  /**
+   * Implementation required into the subclass
+   **/
   protected createUI():HTMLElement {
       // you need to subclass and override this method
       throw ("Invalid implementation")
@@ -86,6 +96,7 @@ export class UIPane {
 
   public setTitle(title:string){
     this._title = title;
+    this.updateTitleUI(title);
     this.fireEvent('did-change-title', title)
   }
 
@@ -110,11 +121,25 @@ export class UIPane {
   }
 
   public getURI(){
-    return  this._options.getURI();
+    return  this._uri;
   }
 
   protected fireEvent(event, ...params){
     this._events.emit(event, params)
+  }
+
+  protected getAtomPane():any {
+    return $(this._el).parent().parent();
+  }
+
+  protected updateTitleUI(title:string){
+    try {
+      let tabTitleEl = this.getAtomPane().find('.tab-bar').find('.tab').find('.title');
+      tabTitleEl.html(title);
+    } catch (ex){
+      Logger.consoleLog("updateTitleUI error: ", ex);
+    }
+
   }
 
 }

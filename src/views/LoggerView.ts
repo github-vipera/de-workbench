@@ -32,8 +32,8 @@ export class LoggerView extends UIPane {
   private logModel:FileTailLogModel;
   private loggerComponent:UILoggerComponent;
 
-  constructor (params:any) {
-    super(params)
+  constructor (uri:string) {
+    super(uri, "Log View")
   }
 
   /**

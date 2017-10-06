@@ -41,9 +41,8 @@ export class ServersView extends UIPane {
   private toolbar:ServersToolbar;
   private subscriptions:any;
 
-  constructor(params:any){
-    super(params);
-    console.log("ServersView creating for ",this.paneId);
+  constructor(uri:string){
+    super(uri, "Servers");
   }
 
   protected createUI():HTMLElement {
@@ -233,6 +232,12 @@ export class ServersView extends UIPane {
   protected removeServerInstance(serverInstance:ServerInstanceWrapper){
       ServerManager.getInstance().removeServerInstance(serverInstance)
   }
+
+  /*
+  getTitle():string {
+    return "Servers";
+  }
+  */
 
 }
 

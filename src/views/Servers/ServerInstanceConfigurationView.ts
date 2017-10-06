@@ -41,13 +41,13 @@ export class ServerInstanceConfigurationView extends UIPane {
   _overlayEl:HTMLElement;
   _removed:boolean=false;
 
-  constructor(params:any){
-    super(params)
-    console.log("this.paneId " + this.paneId)
-    Logger.getInstance().debug("ServerInstanceConfigurationView creating for ",this.paneId);
+  constructor(uri:string){
+    super(uri)
   }
 
   protected createUI():HTMLElement {
+    Logger.consoleLog("ServerInstanceConfigurationView creating for ",this.paneId, this.options);
+
     this._serverInstance = this.options.userData.serverInstance;
 
     this._configCtrl = new  ServerInstanceConfigurationCtrl(this._serverInstance)
@@ -79,6 +79,9 @@ export class ServerInstanceConfigurationView extends UIPane {
       }
     })
 
+    //change the title
+    this.updateTitle(this.options.userData.serverInstance.name);
+
     return mainContainer;
   }
 
@@ -102,12 +105,11 @@ export class ServerInstanceConfigurationView extends UIPane {
   }
 
   protected onInstanceRenamed(){
-    super.setTitle(this._serverInstance.name)
-    //this.setPaneTitle("Pippo")
+    this.updateTitle(this._serverInstance.name)
   }
 
-  getTitle():string {
-    return "Server [" + super.getTitle() +"]"
+  updateTitle(instanceName:string){
+    this.setTitle("Server [" + instanceName +"]");
   }
 
 }

@@ -14,6 +14,8 @@ const path = require("path")
 
 export class Logger {
 
+  public static CONSOLE_LOG_ENABLED: boolean = true;
+
   private static instance: Logger;
 
   private logger: any;
@@ -43,7 +45,7 @@ export class Logger {
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false
-        }) 
+        })
       ]
     });
     this.evtSupport = new EventSupport();
@@ -51,7 +53,7 @@ export class Logger {
 
   static getInstance() {
       if (!Logger.instance) {
-          Logger.instance = new Logger(); 
+          Logger.instance = new Logger();
       }
       return Logger.instance;
   }
@@ -95,6 +97,18 @@ export class Logger {
       listener.onLogging(data[0],data[1]);
     });
   }
+
+  public static consoleLog(msg:string,...params){
+    if (!Logger.CONSOLE_LOG_ENABLED){
+      return;
+    }
+    if (params && params.length>0){
+      console.log(msg, params);
+    } else {
+      console.log(msg);
+    }
+  }
+
 }
 
 export interface LoggerListener{

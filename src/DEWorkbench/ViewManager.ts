@@ -21,6 +21,7 @@ import { DebugBreakpointsView } from '../views/DebugArea/DebugBreakpointsView'
 import { DebugCallStackView } from '../views/DebugArea/DebugCallStackView'
 import { DebugVariablesView } from '../views/DebugArea/DebugVariablesView'
 import { DebugWatchExpressionsView } from '../views/DebugArea/DebugWatchExpressionsView'
+import { Logger } from '../logger/Logger'
 
 const md5 = require("md5")
 const $ = require("jquery")
@@ -36,13 +37,20 @@ export class ViewManager {
 
   protected registerOpeners(){
 
-    atom.views["addViewProvider"](UIPane, function(uiPane) {
+    atom.views.addViewProvider(UIPane, function(uiPane) {
       return uiPane.element;
     });
 
+    /**
     atom.workspace.addOpener((uri, params)=>{
       if (uri.startsWith(UIPane.PANE_URI_PREFIX)){
         return this.manageURI(uri, params);
+      }
+    })
+    **/
+    atom.workspace.addOpener((uri)=>{
+      if (uri.startsWith(UIPane.PANE_URI_PREFIX)){
+        return this.manageURI(uri, null);
       }
     })
 
@@ -63,7 +71,7 @@ export class ViewManager {
       return new ServerInstanceConfigurationView(params)
     }
     else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"projectSettings")){
-      return new ProjectSettingsView(params)
+      return new ProjectSettingsView(uri)
     }
     else if (uri.startsWith(UIPane.PANE_URI_PREFIX+"logInspector")){
       return new LoggerView(params)
@@ -103,7 +111,7 @@ export class ViewManager {
 
 
   public toggleView(viewInfo:ViewInfo){
-    //console.log("toggleView called for ", viewInfo);
+    Logger.consoleLog("toggleView called for ", viewInfo);
     let viewItem = this._toggleRegisteredItems[viewInfo.id];
     if (viewItem){
       atom.workspace["toggle"](viewItem.view)
@@ -126,6 +134,7 @@ export class ViewManager {
         $.extend(item.userData, extUserData)
       }
       atom.workspace.open(viewInfo.uri,item).then((view)=>{
+        (<UIPane>view).init(viewInfo as any);
         if (view["didOpen"]){
           if (viewInfo.toggleEnable){
             let toggleView = new ToggleView();
@@ -135,7 +144,7 @@ export class ViewManager {
           }
           view["didOpen"]()
         }
-        console.log("View created: " , view)
+        Logger.consoleLog("View created: " , view)
       })
   }
 
