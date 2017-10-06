@@ -7,13 +7,19 @@
  */
 
 
+
 export class UINotifications {
 
-  public static showInfo(message:string, options?:any){
-    atom.notifications.addInfo(message, options)
+  public static showInfo(message:string, options?:any):any{
+    return atom.notifications.addInfo(message, options)
   }
 
-  public static showError(message:string, options?:any){
-    atom.notifications.addError(message, options)
+  public static showError(message:string, options?:any):any{
+    return atom.notifications.addError(message, options)
   }
+
+  public static showSuccess(message:string, options?:any):any{
+    return atom.notifications.addSuccess(message, options)
+  }
+
 }

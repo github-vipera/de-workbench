@@ -22,10 +22,13 @@
             "label": "Bookmarks",
             "command" : "dewb-menu-view-:bookmarks-toggle"
           },{
-          "label": "Log Inspector",
-          "command": "dewb-menu-view-:loggerview-toggle"
+            "label": "Log Inspector",
+            "command": "dewb-menu-view-:loggerview-toggle"
+          },{
+            "label": "Install DE CLI",
+            "command": "dewb-menu-view-:install-de-cli"
           }
-        ]
+       ]
       }]
     }]
   }]

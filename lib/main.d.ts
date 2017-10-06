@@ -23,5 +23,8 @@ declare const _default: {
     provideProjectManager(): ProjectManager;
     provideEventBus(): EventBus;
     provideServerManager(): ServerManager;
+    testCommand(): Promise<void>;
+    checkForDECli(): Promise<void>;
+    installDECli(): Promise<void>;
 };
 export default _default;
