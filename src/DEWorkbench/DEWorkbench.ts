@@ -25,6 +25,8 @@ import { ServersView }from '../views/Servers/ServersView'
 import { BookmarkManager } from './BookmarkManager'
 import { BookmarksView } from '../views/Bookmarks/BookmarksView'
 import { ViewManager } from './ViewManager'
+import { DEWBResourceManager } from './DEWBResourceManager'
+
 
  import {
    createText,
@@ -136,7 +138,6 @@ import { ViewManager } from './ViewManager'
          'dewb-menu-view-:debug-variables-toggle': () => this.toggleVariablesView(),
          'dewb-menu-view-:debug-watch-expressions-toggle': () => this.toggleWatchExpressionsView()
        });
-
 
      Logger.getInstance().info("DEWorkbench initialized successfully.");
    }

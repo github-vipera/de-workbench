@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "allowJs" :true,
-    "declaration": false,
+    "allowJs" :false,
+    "declaration": true,
     "noImplicitAny": false,
     "removeComments": true,
     "outDir": "lib",
@@ -15,6 +15,7 @@
   "compileOnSave": false,
   "include": [
     "node_modules/@types",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.js"
   ]
 }

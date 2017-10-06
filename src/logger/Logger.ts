@@ -14,7 +14,7 @@ const path = require("path")
 
 export class Logger {
 
-  public static CONSOLE_LOG_ENABLED: boolean = false; //enable for debug purpose
+  public static CONSOLE_LOG_ENABLED: boolean = true; //enable for debug purpose
 
   private static instance: Logger;
 

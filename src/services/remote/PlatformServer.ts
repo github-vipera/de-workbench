@@ -2,6 +2,8 @@
 //import * as express from "express";
 import { Logger } from '../../logger/Logger'
 import { EventEmitter } from 'events'
+import { DEWBResourceManager } from '../../DEWorkbench/DEWBResourceManager'
+
 const {
     allowUnsafeEval,
     allowUnsafeNewFunction
@@ -65,8 +67,10 @@ export class PlatformServerImpl implements PlatformServer {
   protected initInjectedFileServe(config: PlatformServerConfig):void{
     this.app.get('/__dedebugger/**', (req, res) => {
         var urlRelative = req.url;
-        urlRelative = urlRelative.replace('/__dedebugger/', '/injectedfiles/');
-        res.sendFile(__dirname + urlRelative);
+        //urlRelative = urlRelative.replace('/__dedebugger/', '/injectedfiles/');
+        //res.sendFile(__dirname + urlRelative);
+        let resPath = DEWBResourceManager.getResourcePath('injectedfiles/');
+        res.sendFile(resPath);
     });
   }
 

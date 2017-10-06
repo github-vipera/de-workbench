@@ -15,6 +15,7 @@ const path = require("path");
 import { CommandExecutor } from '../utils/CommandExecutor';
 import { Logger } from '../logger/Logger'
 import { CordovaUtils } from './CordovaUtils'
+import { DEWBResourceManager } from '../DEWorkbench/DEWBResourceManager'
 
 export const DEVICE_AUTO_DEF ="[AUTO]"
 
@@ -430,8 +431,12 @@ export class CordovaExecutor extends CommandExecutor {
   private patchExtraBrowserFile(projectRoot:string){
     fse.emptyDirSync(path.join(projectRoot,"/platforms/browser/www/__dedebugger"));
     fse.emptyDirSync(path.join(projectRoot,"/platforms/browser/www/socket.io"));
-    fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/DEDebuggerClient.js"),projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
-    fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/socket.io.js"),projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
+    let resDEDebuggerJS = DEWBResourceManager.getResourcePath('injectedfiles/DEDebuggerClient.js');
+    let resSocketIO = DEWBResourceManager.getResourcePath('injectedfiles/socket.io.js');
+    fse.copySync(path.resolve(resDEDebuggerJS),projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
+    fse.copySync(path.resolve(resSocketIO),projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
+    //fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/DEDebuggerClient.js"),projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
+    //fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/socket.io.js"),projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
   }
 
   private applyGlobalCliOptions(cliOptions){

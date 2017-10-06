@@ -1,0 +1,32 @@
+import { UIBaseComponent } from '../../ui-components/UIComponent';
+import { PushPlatform } from '../../services/push/PushService';
+import { PushMessage } from '../../services/push/PushSender';
+export declare class SendPushView extends UIBaseComponent {
+    projectRoot: string;
+    private stackedPage;
+    private targetrPlatformSelector;
+    private pushService;
+    private recipentsCrtl;
+    private alertCrtl;
+    private topicCrtl;
+    private titleCrtl;
+    private bodyCrtl;
+    private soundCrtl;
+    private badgeCrtl;
+    private categoryCrtl;
+    private jsonPayloadCrtl;
+    private iconCrtl;
+    constructor(projectRoot: string);
+    protected initUI(): void;
+    protected createForm(): any;
+    protected createFormElements(): Array<HTMLElement>;
+    protected clearData(): void;
+    protected sendPush(): Promise<void>;
+    protected createPushMessage(): PushMessage;
+    protected getSelectedPlatform(): PushPlatform;
+    protected createTargetPlatformSelector(): HTMLElement;
+    protected storeLastMessageSent(message: PushMessage): Promise<void>;
+    protected getLastMessageSent(): Promise<PushMessage>;
+    protected loadLastMessageSent(): Promise<any>;
+    protected updateUI(message: PushMessage): void;
+}

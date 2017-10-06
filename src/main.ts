@@ -19,7 +19,6 @@ import { ConsumedServices } from './DEWorkbench/ConsumedServices'
 import { GlobalPreferences } from './DEWorkbench/GlobalPreferences'
 import { ViewManager } from './DEWorkbench/ViewManager'
 
-
 export default {
 
   deWorkbench: null,
@@ -35,8 +34,8 @@ export default {
       ServerManager.getInstance();
 
       this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();
-      this.deferredActivation();
-      //setTimeout(this.deferredActivation.bind(this),1000);
+      //this.deferredActivation();
+      setTimeout(this.deferredActivation.bind(this),1000);
   },
 
   deferredActivation(){
