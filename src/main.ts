@@ -31,7 +31,7 @@ export default {
 
   activate (state: any) {
       console.log("DEWB activated.");
-      
+
       ServerManager.getInstance();
 
       this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();
@@ -60,7 +60,7 @@ export default {
     // add commands
     let commands = atom.commands.add('atom-workspace', {
         'dewb-menu-view-:toolbar-toggle': () => this.toggleToolbar(),
-        'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector(),
+        'dewb-menu-view-:prjinspector-toggle': () => this.showProjectSettings(),
         'dewb-menu-view-:pushtool-show': () => this.showPushTool(),
         'dewb-menu-view-:servers-show':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_SERVERS),
         'dewb-menu-view-:bookmarks-toggle':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_BOOKMARKS),
@@ -85,8 +85,8 @@ export default {
     }
   },
 
-  toggleProjectInspector(){
-    this.deWorkbench.openProjectInspector();
+  showProjectSettings(){
+    this.deWorkbench.showProjectSettings();
   },
 
   toggleToolbar() {

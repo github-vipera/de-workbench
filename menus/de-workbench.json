@@ -10,7 +10,7 @@
           "label": "Toggle Toolbar",
           "command": "dewb-menu-view-:toolbar-toggle"
         },{
-          "label": "Project Inspector",
+          "label": "Project Settings",
           "command": "dewb-menu-view-:prjinspector-toggle"
         },{
           "label": "Push Tool",
