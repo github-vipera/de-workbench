@@ -10,7 +10,7 @@
           "label": "Toggle Toolbar",
           "command": "dewb-menu-view-:toolbar-toggle"
         },{
-          "label": "Project Inspector",
+          "label": "Project Settings",
           "command": "dewb-menu-view-:prjinspector-toggle"
         },{
           "label": "Push Tool",
@@ -22,10 +22,10 @@
             "label": "Bookmarks",
             "command" : "dewb-menu-view-:bookmarks-toggle"
           },{
-          "label": "Log Inspector",
-          "command": "dewb-menu-view-:loggerview-toggle"
+            "label": "Log Inspector",
+            "command": "dewb-menu-view-:loggerview-toggle"
           }
-        ]
+       ]
       }]
     }]
   }]

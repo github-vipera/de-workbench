@@ -14,6 +14,8 @@ const path = require("path")
 
 export class Logger {
 
+  public static CONSOLE_LOG_ENABLED: boolean = false; //enable for debug purpose
+
   private static instance: Logger;
 
   private logger: any;
@@ -43,7 +45,7 @@ export class Logger {
             maxsize: 5242880, //5MB
             maxFiles: 5,
             colorize: false
-        }) 
+        })
       ]
     });
     this.evtSupport = new EventSupport();
@@ -51,7 +53,7 @@ export class Logger {
 
   static getInstance() {
       if (!Logger.instance) {
-          Logger.instance = new Logger(); 
+          Logger.instance = new Logger();
       }
       return Logger.instance;
   }
@@ -63,25 +65,25 @@ export class Logger {
   info(...msg:any[]){
     this.fireLogEvent(LogLevel.INFO,msg);
     this.logger.info.apply(this, msg);
-    console.info(msg);
+    Logger.consoleLog("", msg);
   }
 
   debug(...msg:any[]){
     this.fireLogEvent(LogLevel.DEBUG,msg);
     this.logger.debug.apply(this, msg);
-    console.debug(msg);
+    Logger.consoleLog("", msg);
   }
 
   warn(...msg:any[]){
     this.fireLogEvent(LogLevel.WARN,msg);
     this.logger.warn.apply(this, msg);
-    console.warn(msg);
+    Logger.consoleLog("",msg);
   }
 
   error(...msg:any[]){
     this.fireLogEvent(LogLevel.ERROR,msg);
     this.logger.error.apply(this, msg);
-    console.error(msg);
+    Logger.consoleLog("", msg);
   }
 
 
@@ -95,6 +97,19 @@ export class Logger {
       listener.onLogging(data[0],data[1]);
     });
   }
+
+
+  public static consoleLog(msg:string,...params){
+    if (!Logger.CONSOLE_LOG_ENABLED){
+      return;
+    }
+    if (params && params.length>0){
+      console.log(msg, params);
+    } else {
+      console.log(msg);
+    }
+  }
+
 }
 
 export interface LoggerListener{

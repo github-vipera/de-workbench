@@ -47,14 +47,21 @@ export class UITabbedViewItem {
     this.fireTitleChanged();
     return this;
   }
+  public didTabSelected():void{
+    this.fireTabSelected();
+  }
   public getTitle():string{
     return this.title;
+  }
+  protected fireTabSelected(){
+    this.events.emit('didTabSelected', this)
   }
   protected fireTitleChanged(){
     this.events.emit('didTitleChanged', this)
   }
-  public addEventListener(event:string,listener){
+  public addEventListener(event:string,listener):UITabbedViewItem{
     this.events.addListener(event, listener)
+    return this;
   }
   public removeEventListener(event:string,listener){
     this.events.removeListener(event, listener)
@@ -120,6 +127,7 @@ export class UITabbedView extends UIBaseComponent {
     this.tabList.addEventListener(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, (tabItem:UITabbedViewItem, htmlElement:HTMLElement)=>{
       this.selectedTab = tabItem;
       this.stacked.selectView(tabItem);
+      this.selectedTab.didTabSelected();
     });
 
   }
@@ -184,6 +192,7 @@ export class UITabbedView extends UIBaseComponent {
     // if is the first tab then select it
     if (this.views.length===1){
       this.selectedTab = tabItem;
+      this.selectedTab.didTabSelected();
     }
   }
 
@@ -385,7 +394,7 @@ class UITabbedViewTabListComponent extends UIBaseComponent {
     this.selectedElement.classList.toggle('selected');
 
     // generate event
-    //console.log("Clicked element li:",this.selectedElement);
+    //Logger.consoleLog("Clicked element li:",this.selectedElement);
     this.eventEmitter.emit(UITabbedViewTabListComponent.EVT_TABITEM_SELECTED, this.tabItemsMap[item.id], this.itemsElementsMap[item.id]);
   }
 

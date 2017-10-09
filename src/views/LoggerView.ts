@@ -32,8 +32,8 @@ export class LoggerView extends UIPane {
   private logModel:FileTailLogModel;
   private loggerComponent:UILoggerComponent;
 
-  constructor (params:any) {
-    super(params)
+  constructor (uri:string) {
+    super(uri, "Log View")
   }
 
   /**
@@ -58,11 +58,11 @@ export class LoggerView extends UIPane {
    * close this view
    */
   close () {
-    //console.log("Logger view close....")
+    //Logger.consoleLog("Logger view close....")
   }
 
   destroy(){
-    //console.log("Logger view destroy....")
+    //Logger.consoleLog("Logger view destroy....")
     //this.logModel.destroy();
   }
 

@@ -64,12 +64,12 @@ export class InstalledPlatformsView extends UIBaseComponent {
                                       .setInfoMessage('Select a new Platform to install')
                                       .setEmptyMessage('  NOTE: No other platforms are available to install')
                                       .setOnSelectionListener((menuItem)=>{
-                                        const selected = atom.confirm({
+                                        let selected = atom.confirm({
                                             message: 'Install New Platform',
                                             detailedMessage: 'Do you want to confirm the ' + menuItem.displayName +' platform installation ?',
                                             buttons: ['Yes, Install it', 'Cancel']
                                           });
-                                          if (selected==0){
+                                          if ((selected as any)==0){
                                             this.doInstallPlatform(menuItem.value);
                                           }
                                       })
@@ -93,8 +93,8 @@ export class InstalledPlatformsView extends UIBaseComponent {
     this.mainFormElement.setAttribute("tabindex", "-1")
     this.mainElement = this.mainFormElement;
 
-    this.reload();
   }
+
 
   doAction(platformInfo:CordovaPlatform, action:number){
     if (action===0){
@@ -103,7 +103,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
           detailedMessage: "Are you sure you want to uninstall the " + PlatformUtils.toPlatformDisplayName(platformInfo.name) +" platform ?",
           buttons: ['Yes, Remove It', 'Cancel']
         });
-        if (selected==0){
+        if ((selected as any)==0){
           this.doUninstallPlatform(platformInfo.name)
         }
     }
@@ -116,7 +116,8 @@ export class InstalledPlatformsView extends UIBaseComponent {
       this.reload()
       this.lineLoader.setOnLoading(false)
     }).catch((err)=>{
-      UINotifications.showError("Error unistalling Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +". See the logs for more details.")
+      Logger.getInstance().error("Error uninstalling Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +": " + err, err);
+      UINotifications.showError("Error uninstalling Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +". See the logs for more details.")
       this.lineLoader.setOnLoading(false)
     })
   }
@@ -128,6 +129,7 @@ export class InstalledPlatformsView extends UIBaseComponent {
       this.reload()
       this.lineLoader.setOnLoading(false)
     }).catch((err)=>{
+      Logger.getInstance().error("Error istalling Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +": " + err, err);
       UINotifications.showError("Error adding Platform "+ PlatformUtils.toPlatformDisplayName(platformName) +". See the logs for more details.")
       this.lineLoader.setOnLoading(false)
     })
@@ -251,8 +253,12 @@ class InstalledPlatformListModel implements UIListViewModel {
   }
 
   public reload(didDone:Function){
+    this.platforms = [];
     ProjectManager.getInstance().cordova.getInstalledPlatforms(this.projectPath).then((ret)=>{
       this.platforms = ret;
+      if (!this.platforms){
+        this.platforms = [];
+      }
       this.platformElements = {};
       this.fireModelChanged()
       didDone();

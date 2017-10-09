@@ -32,6 +32,7 @@ export class UIButtonConfig {
   public buttonType: string = '';
   public clickListener: Function;
   public className: string = '';
+  public enabled:boolean = true;
   public setId(id:string):UIButtonConfig{
     this.id = id;
     return this;
@@ -54,6 +55,10 @@ export class UIButtonConfig {
   }
   public setClickListener(clickListener:Function):UIButtonConfig{
     this.clickListener = clickListener;
+    return this;
+  }
+  public setEnabled(enabled:boolean):UIButtonConfig{
+    this.enabled = enabled;
     return this;
   }
 }
@@ -122,6 +127,15 @@ export class UIButtonGroup extends UIBaseComponent {
     }
   }
 
+  public setButtonEnabled(id:string, enabled:boolean){
+    let el:HTMLElement = this.buttons[id].element;
+    if (enabled){
+      el.removeAttribute('disabled');
+    } else {
+      el.setAttribute('disabled','');
+    }
+  }
+
   /**
    * Create a button component
    */
@@ -139,6 +153,9 @@ export class UIButtonGroup extends UIBaseComponent {
       ],
       className: className
     })
+    if (!buttonConfig.enabled){
+      btn.setAttribute('disabled','');
+    }
 
     btn.setAttribute('btngroup-id',buttonConfig.id)
 

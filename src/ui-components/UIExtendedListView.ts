@@ -20,6 +20,7 @@
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UIListView, UIListViewModel } from './UIListView'
+import { Logger } from '../logger/Logger'
 
 const remote = require('remote');
 const $ = require("jquery")
@@ -126,7 +127,7 @@ export class UIExtendedListView extends UIListView {
     });
 
     $(table).keydown((evt)=>{
-      //console.log("Navigation required")
+      //Logger.consoleLog("Navigation required")
       this.navigateTableWithKeyboard(evt.which)
     })
 
@@ -137,7 +138,7 @@ export class UIExtendedListView extends UIListView {
   }
 
   protected navigateTableWithKeyboard(key:number){
-    console.log("navigateTableWithKeyboard " , key)
+    Logger.consoleLog("navigateTableWithKeyboard " , key)
     if (key == 39) {
         // Right Arrow
         this.navigateRight();
@@ -162,7 +163,7 @@ export class UIExtendedListView extends UIListView {
   }
 
   protected navigateRight(){
-    console.log("Navigate right")
+    Logger.consoleLog("Navigate right")
     if (!this.selectedCell){
       return;
     }
@@ -173,7 +174,7 @@ export class UIExtendedListView extends UIListView {
   }
 
   protected navigateLeft(){
-    console.log("Navigate left")
+    Logger.consoleLog("Navigate left")
     if (!this.selectedCell){
       return;
     }
@@ -184,7 +185,7 @@ export class UIExtendedListView extends UIListView {
   }
 
   protected navigateDown(){
-    console.log("Navigate down")
+    Logger.consoleLog("Navigate down")
     if (!this.selectedCell){
       return;
     }
@@ -195,7 +196,7 @@ export class UIExtendedListView extends UIListView {
   }
 
   protected navigateUp(){
-    console.log("Navigate up")
+    Logger.consoleLog("Navigate up")
     if (!this.selectedCell){
       return;
     }
@@ -232,7 +233,7 @@ export class UIExtendedListView extends UIListView {
     let elements = $(this.tableElement).find("[trow="+row+"]")
     if (elements && elements.length==1){
       let rowEl:HTMLElement = elements[0]
-      console.log("Row element: ", rowEl)
+      Logger.consoleLog("Row element: ", rowEl)
       rowEl.classList.add("selected")
       this.selectedRow = rowEl;
     }
@@ -301,7 +302,7 @@ export class UIExtendedListView extends UIListView {
   }
 
   protected commitEditing():boolean{
-    console.log('commit!')
+    Logger.consoleLog('commit!')
 
     let value = this.editorEl["getModel"]().getText();
     let row = this.getSelectedRow()
@@ -326,7 +327,7 @@ export class UIExtendedListView extends UIListView {
   }
 
   protected cancelEditing(){
-    console.log('cancel!')
+    Logger.consoleLog('cancel!')
     this.hideValidationError();
     this.editorEl.style.visibility = "hidden"
     $(this.editorEl).off('focusout')

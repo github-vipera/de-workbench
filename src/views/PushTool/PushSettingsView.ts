@@ -124,7 +124,7 @@ export class PushSettingsView extends UIBaseComponent {
 
   protected async reloadConfig(){
     let projectSettings = await ProjectManager.getInstance().getProjectSettings(this.projectRoot);
-    console.log("reloadConfig ", projectSettings)
+    Logger.consoleLog("reloadConfig ", projectSettings)
     let pushConfig = projectSettings.get('push_tool')
     if (!pushConfig){
       return;

@@ -55,7 +55,7 @@ export class InstallNewPluginsView extends UIBaseComponent {
     this.tabbedView.addView(new UITabbedViewItem('community_plugins',   'Community Plugins',  this.communityPluginsView .element()).setTitleClass('icon icon-settings'));
 
     let externalPluginsProvidersFactories = CordovaPluginsProvidersManager.getInstance().getProviderFactories();
-    console.log("externalPluginsProvidersFactrories ", externalPluginsProvidersFactories)
+    Logger.consoleLog("externalPluginsProvidersFactrories ", externalPluginsProvidersFactories)
     for (var i=0;i<externalPluginsProvidersFactories.length;i++){
       let provider = externalPluginsProvidersFactories[i].createProvider();
       let providedPluginsView = new ProvidedPluginsView().setPluginsProvider(provider).reloadPluginList();

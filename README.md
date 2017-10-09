@@ -2,9 +2,13 @@
 #### Apache Cordova Development Environment for ATOM
 
 
-
-
 Current version: Developer Preview (Rel. 0.1.0)
+
+Develop Build
+[![Develop Build Status](https://travis-ci.org/github-vipera/de-workbench.svg?branch=develop)](https://travis-ci.org/github-vipera/de-workbench)
+
+Master Build
+[![Develop Build Status](https://travis-ci.org/github-vipera/de-workbench.svg?branch=master)](https://travis-ci.org/github-vipera/de-workbench)
 
 ### Installation
 ![New Project](./images/de_workbench_installation.png)
@@ -63,10 +67,3 @@ Current version: Developer Preview (Rel. 0.1.0)
 
 ### Bookmarks
 ![Bookmarks](./images/bookmarks.png)
-
-
-Develop Build
-[![Develop Build Status](https://travis-ci.org/github-vipera/de-workbench.svg?branch=develop)](https://travis-ci.org/github-vipera/de-workbench)
-
-Master Build
-[![Develop Build Status](https://travis-ci.org/github-vipera/de-workbench.svg?branch=master)](https://travis-ci.org/github-vipera/de-workbench)

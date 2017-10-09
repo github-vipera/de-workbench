@@ -18,6 +18,7 @@
  } from '../element/index';
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
+import { Logger } from '../logger/Logger'
 
 const SelectListView = require('atom-select-list')
 
@@ -72,7 +73,7 @@ export class UIButtonMenu extends UIBaseComponent {
       elementForItem: this.createMenuElement,
       filterKeyForItem: (item) => item.displayName,
       didConfirmSelection: (item) => {
-        console.log("Selected menu item ", item)
+        Logger.consoleLog("Selected menu item ", item)
         this.dismissMenu()
         setTimeout(()=>{
             this.onItemSelected(item)

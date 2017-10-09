@@ -46,17 +46,15 @@ export class ProjectSettingsView extends UIPane {
   private appSignatureView: AppSignatureView;
   private generalSettingsView: GeneralSettingsView;
 
-  constructor(params:any){
-    super(params)
-    Logger.getInstance().debug("PushToolsView creating for ",this.paneId);
-
+  constructor(uri:string){
+    super(uri, "Project Settings");
   }
 
   private reloadProjectSettings(){
   }
 
   protected  createUI():HTMLElement{
-    Logger.getInstance().debug("ProjectSettingsView initUI called.");
+    Logger.consoleLog("ProjectSettingsView initUI called.");
 
     // create the single views
     this.installedPluginsView = new InstalledPluginsView();

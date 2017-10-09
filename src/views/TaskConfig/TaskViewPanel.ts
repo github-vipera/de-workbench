@@ -10,7 +10,7 @@ import {
   createInput
 } from '../../element/index';
 
-import { UIBaseComponent } from '../../ui-components/UIComponent'
+import { UIBaseComponent, UIExtComponent } from '../../ui-components/UIComponent'
 import { CordovaProjectInfo } from '../../cordova/Cordova'
 import { CordovaTaskConfiguration, CordovaTask } from '../../cordova/CordovaTasks'
 import { TaskProvider } from '../../tasks/TaskProvider'
@@ -22,7 +22,7 @@ import { TaskViewContentPanel } from './TaskViewContentPanel'
 import { TaskViewSelectorPanel } from './TaskViewSelectorPanel'
 const RELOAD_DELAY:number = 500;
 
-export class TaskViewPanel extends UIBaseComponent{
+export class TaskViewPanel extends UIExtComponent {
   private threeViewPanel: TaskViewSelectorPanel;
   private taskContentPanel : TaskViewContentPanel;
   private project:CordovaProjectInfo;
@@ -42,19 +42,20 @@ export class TaskViewPanel extends UIBaseComponent{
     this.threeViewPanel.setOnTaskChangeListener((itemId:string) => {
       this.applyConfigToModel(this.lastSelected);
       let config= this.getTaskConfigurationByName(itemId);
-      console.log("getTaskConfigurationByName return",config,"For name",itemId);
+      Logger.consoleLog("getTaskConfigurationByName return",config,"For name",itemId);
       if(config){
         this.lastSelected = config;
       }
       this.taskContentPanel.contextualize(config,this.project);
+      this.fireEvent('didTaskSelected', config);
     });
 
     this.evtEmitter.addListener('didAddTask',() => {
-      console.log("Add task");
+      Logger.consoleLog("Add task");
     });
 
     this.evtEmitter.addListener('didRemoveTask',() => {
-      console.log("Remove task");
+      Logger.consoleLog("Remove task");
       let target= this.lastSelected;
       if(target.constraints.isCustom){
         this.removeTask(target);
@@ -78,7 +79,7 @@ export class TaskViewPanel extends UIBaseComponent{
     })
 
     this.evtEmitter.addListener('didCloneTask',() => {
-      console.log("Duplicate task");
+      Logger.consoleLog("Duplicate task");
       if(this.lastSelected){
         this.cloneAndAddNewTasks(this.lastSelected);
         setTimeout(() => {

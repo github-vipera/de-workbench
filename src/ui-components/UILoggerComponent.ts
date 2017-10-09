@@ -21,9 +21,10 @@ import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UIToolbar, UIToolbarButton } from './UIToolbar'
 import { UIListViewModel } from 'UIListView'
 import * as _ from 'lodash'
-import {LogLevel} from '../logger/Logger'
+import {Logger, LogLevel} from '../logger/Logger'
 import {UISelect, UISelectItem, UISelectListener} from './UISelect';
 import {EventEmitter} from 'events'
+
 const moment = require('moment')
 const Tail = require('tail').Tail;
 const {
@@ -251,7 +252,7 @@ export class FileTailLogModel extends BaseLogModel {
       var count=0;
       var lastLines:Array<LogLine>=[];
       lineReader.eachLine(this.filePath, (line, last) => {
-        console.log(line);
+        Logger.consoleLog(line);
         try{
           let logLine = this.createLogLine(JSON.parse(line));
           if (logLine){
@@ -319,7 +320,7 @@ export class FileTailLogModel extends BaseLogModel {
     });
 
     this.tail.on("error", (error) => {
-      console.log("LOG_TAIL_ERROR:",error);
+      Logger.consoleLog("LOG_TAIL_ERROR:",error);
       this.events.emit('didLogTailError',error);
     });
   }
@@ -370,10 +371,10 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
   }
 
   copyToClipboard(){
-    console.log("copy!!!!!!!!");
+    Logger.consoleLog("copy!!!!!!!!");
     return atom.clipboard.write(this.terminal.getSelection());
   }
-  
+
   protected outputResized(){
     return this.terminal.fit();
   }
@@ -426,7 +427,7 @@ export class UILogView extends UIBaseComponent implements LogModelListener {
   }
 
   rowsChanged(){
-    console.log("rowsChanged","repeat rendering");
+    Logger.consoleLog("rowsChanged","repeat rendering");
     this.render();
   }
 
@@ -554,7 +555,7 @@ class TextFilter implements Filter<LogLine>{
   setText(value:string){
     this.value=value;
     if(value){
-      this.regexp=new RegExp(_.escapeRegExp(value));
+      this.regexp=new RegExp(_.escapeRegExp(value), 'i');
     }else{
       this.regexp = null;
     }
@@ -616,7 +617,7 @@ class UILoggerToolbarComponent extends UIToolbar implements UISelectListener {
         type:'search',
         placeholder: 'Filter log',
         change: (value) => {
-          console.log("Value changed: ", value);
+          Logger.consoleLog("Value changed: ", value);
           this.regexpfilter.setText(value);
           setTimeout(() => {
             this.target.evaluateAllFilters();

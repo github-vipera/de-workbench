@@ -36,14 +36,13 @@ const _ = require('lodash')
 
 export class ServersView extends UIPane {
 
-  protected treeModel:ServersTreeModel;
-  protected treeView:UITreeView;
-  protected toolbar:ServersToolbar;
-  protected subscriptions:any;
+  private treeModel:ServersTreeModel;
+  private treeView:UITreeView;
+  private toolbar:ServersToolbar;
+  private subscriptions:any;
 
-  constructor(params:any){
-    super(params);
-    console.log("ServersView creating for ",this.paneId);
+  constructor(uri:string){
+    super(uri, "Servers");
   }
 
   protected createUI():HTMLElement {
@@ -52,12 +51,12 @@ export class ServersView extends UIPane {
     this.treeView = new UITreeView(this.treeModel);
     this.treeView.addEventListener('didItemSelected',(nodeId, nodeItem)=>{
       let nodeType = _.find(nodeItem.attributes, { 'name':'srvNodeType' })
-      console.log("Node clicked: ", nodeType)
+      Logger.consoleLog("Node clicked: ", nodeType)
       this.updateToolbar(nodeType.value)
     })
     this.treeView.addEventListener('didItemDblClick',(nodeId, nodeItem)=>{
       let nodeType = _.find(nodeItem.attributes, { 'name':'srvNodeType' })
-      console.log("Node dbl clicked: ", nodeType)
+      Logger.consoleLog("Node dbl clicked: ", nodeType)
       if (nodeType.value==="serverInstance"){
         let nodeId = this.treeView.getCurrentSelectedItemId();
         let nodeItem = <ServerInstanceItem>this.treeModel.getItemById(nodeId);
@@ -184,7 +183,7 @@ export class ServersView extends UIPane {
     super.destroy();
   }
 
-  protected createNewServerInstanceForNode(nodeItem:ServerProviderItem){
+  private createNewServerInstanceForNode(nodeItem:ServerProviderItem){
     if (nodeItem && nodeItem.serverProvider){
       this.createNewServerProviderFor(nodeItem.serverProvider);
     }
@@ -197,7 +196,7 @@ export class ServersView extends UIPane {
           detailedMessage: 'Do you want to confirm the ' + nodeItem.serverInstance.name +' server instance deletion ?',
           buttons: ['Yes, Delete it', 'Cancel']
         });
-        if (selected==0){
+        if ((selected as any)==0){
           this.removeServerInstance(nodeItem.serverInstance);
         }
     }
@@ -233,6 +232,12 @@ export class ServersView extends UIPane {
   protected removeServerInstance(serverInstance:ServerInstanceWrapper){
       ServerManager.getInstance().removeServerInstance(serverInstance)
   }
+
+  /*
+  getTitle():string {
+    return "Servers";
+  }
+  */
 
 }
 
@@ -469,7 +474,7 @@ class ServerProviderItem implements UITreeItem {
       for (var i=0;i<instances.length;i++){
         this.children.push( new ServerInstanceItem(instances[i], this) )
       }
-      console.log(this.children.length)
+      Logger.consoleLog("children length:", this.children.length)
   }
 
   protected toIdFromName(name:string):string{
@@ -483,7 +488,7 @@ class ServerProviderItem implements UITreeItem {
 
 }
 
-class ServerInstanceItem implements UITreeItem {
+export class ServerInstanceItem implements UITreeItem {
 
   serverInstance:ServerInstanceWrapper;
   id:string;

@@ -5,4 +5,10 @@ sudo: false
 before_install:
 - npm install -g typescript
 script:
-- tsc
+- tsc -p tsconfig.json
+notifications:
+  email:
+    recipients:
+      - marco.bonati@vipera.com
+    on_success: always # default: change
+    on_failure: always # default: always

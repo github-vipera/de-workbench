@@ -14,6 +14,7 @@ import {
 } from '../element/index';
 
 import { UIComponent, UIBaseComponent, UIExtComponent } from '../ui-components/UIComponent'
+import { Logger } from '../logger/Logger'
 
 const $ = require('jquery')
 
@@ -111,7 +112,7 @@ export class UIEditableLabel extends UIExtComponent {
   }
 
   protected commitEditing():boolean{
-    console.log('commit!')
+    Logger.consoleLog('commit!')
     let value = this._editorEl["value"];
     this.setCaption(value)
     this._labelEl.style.visibility = "visible"
@@ -124,7 +125,7 @@ export class UIEditableLabel extends UIExtComponent {
   }
 
   protected cancelEditing(){
-    console.log('cancel!')
+    Logger.consoleLog('cancel!')
     this._labelEl.style.visibility = "visible"
     this._editorEl.style.visibility = "hidden"
     $(this._editorEl).off('focusout')

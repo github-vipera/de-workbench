@@ -30,6 +30,7 @@ import { ProjectManager } from '../../DEWorkbench/ProjectManager'
 import { NewProjectProgressPanel } from './NewProjectProgressPanel'
 import { UINotifications } from '../../ui-components/UINotifications'
 const { CompositeDisposable } = require('atom');
+import { Logger,LoggerListener ,LogLevel} from '../../logger/Logger'
 
 const remote = require('remote');
 const dialog = remote.require('electron').dialog;
@@ -166,21 +167,21 @@ export class NewProjectView {
       this.newProjectProgressPanel.show()
       this.newProjectProgressPanel.startLog()
       ProjectManager.getInstance().cordova.createNewProject(newPrjInfo).then((result)=>{
-        console.log("Created! " , result)
+        Logger.consoleLog("Created! " , result)
         this.newProjectProgressPanel.hide()
         this.newProjectProgressPanel.stopLog()
         this.close()
         UINotifications.showInfo("Project created successfully.")
-        atom.open({'pathsToOpen': [newPrjInfo.path], '.newWindow': true});
+        atom.open({'pathsToOpen': [newPrjInfo.path], 'newWindow': true, 'devMode': false, 'safeMode': false});
       },(err)=>{
-        console.log("Failure! " , err)
+        Logger.consoleLog("Failure! " , err)
         this.newProjectProgressPanel.hide()
         this.newProjectProgressPanel.stopLog()
         this.close()
         UINotifications.showInfo("Project creation error.")
       });
     }
-    console.log("Creation launched!")
+    Logger.consoleLog("Creation launched!")
   }
 
   private validateNewProjectInfo(newPrjInfo:NewProjectInfo):boolean {
@@ -240,7 +241,7 @@ export class NewProjectView {
   }
 
   private getNextControlFocus(currentID, evt){
-      console.log("getNextControlFocus ", currentID);
+      Logger.consoleLog("getNextControlFocus ", currentID);
       if (currentID==this.TXT_PROJECT_NAME){
         document.getElementById(this.TXT_PROJECT_PACKAGE_ID).focus()
       } else   if (currentID==this.TXT_PROJECT_PACKAGE_ID){

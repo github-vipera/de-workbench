@@ -16,6 +16,8 @@ import { UIComponent, UIBaseComponent } from '../../ui-components/UIComponent'
 import { UIButtonGroup, UIButtonGroupMode, UIButtonConfig } from '../../ui-components/UIButtonGroup'
 import { CordovaTaskConfiguration } from '../../cordova/CordovaTasks'
 import { CordovaProjectInfo } from '../../cordova/Cordova'
+import { Logger,LoggerListener ,LogLevel} from '../../logger/Logger'
+
 import { EventEmitter }  from 'events'
 
 export class TaskViewEnvironmentTab extends UIBaseComponent {
@@ -106,7 +108,7 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
   }
 
   updateUI(values:Array<EnvironmentVariable>){
-    console.log('update ui');
+    Logger.consoleLog('update ui');
     this.model.forceProperties(values);
   }
   private buildModel(values:Array<EnvironmentVariable>):EnvironmentVarListViewModel{
@@ -114,7 +116,7 @@ class TaskViewEnvironmentRenderer extends UIBaseComponent {
   }
 
   private fireDataChanged(){
-    console.log('fireDataChanged');
+    Logger.consoleLog('fireDataChanged');
     this.events.emit('didEnvironmenVarDataChanged');
   }
 
@@ -294,7 +296,7 @@ class TaskViewCliParamsRenderer extends UIBaseComponent {
   }
 
   updateUI(values:Array<string>){
-    console.log('update ui');
+    Logger.consoleLog('update ui');
     this.model.forceValues(values);
   }
   private buildModel(values:Array<string>):CliParamsListViewModel{
@@ -302,7 +304,7 @@ class TaskViewCliParamsRenderer extends UIBaseComponent {
   }
 
   private fireDataChanged(){
-    console.log('fireDataChanged');
+    Logger.consoleLog('fireDataChanged');
     this.events.emit('didCliParamsDataChanged');
   }
 }

@@ -22,8 +22,8 @@ import { UIPane } from '../../ui-components/UIPane'
 
 export class DebugAreaView extends UIPane {
 
-  constructor (params:any) {
-    super(params)
+  constructor (uri:string) {
+    super(uri, "Debug Area")
   }
 
   /**

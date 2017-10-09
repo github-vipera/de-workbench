@@ -37,17 +37,17 @@ const _ = require('lodash')
 export class ServerInstanceConfigurationView extends UIPane {
 
   _serverInstance:ServerInstanceWrapper;
-  _configCtrl : ServerInstanceConfigurationCtrl;
+  private _configCtrl : ServerInstanceConfigurationCtrl;
   _overlayEl:HTMLElement;
   _removed:boolean=false;
 
-  constructor(params:any){
-    super(params)
-    console.log("this.paneId " + this.paneId)
-    Logger.getInstance().debug("ServerInstanceConfigurationView creating for ",this.paneId);
+  constructor(uri:string){
+    super(uri)
   }
 
   protected createUI():HTMLElement {
+    Logger.consoleLog("ServerInstanceConfigurationView creating for ",this.paneId, this.options);
+
     this._serverInstance = this.options.userData.serverInstance;
 
     this._configCtrl = new  ServerInstanceConfigurationCtrl(this._serverInstance)
@@ -79,6 +79,9 @@ export class ServerInstanceConfigurationView extends UIPane {
       }
     })
 
+    //change the title
+    this.updateTitle(this.options.userData.serverInstance.name);
+
     return mainContainer;
   }
 
@@ -102,12 +105,11 @@ export class ServerInstanceConfigurationView extends UIPane {
   }
 
   protected onInstanceRenamed(){
-    super.setTitle(this._serverInstance.name)
-    //this.setPaneTitle("Pippo")
+    this.updateTitle(this._serverInstance.name)
   }
 
-  getTitle():string {
-    return "Server [" + super.getTitle() +"]"
+  updateTitle(instanceName:string){
+    this.setTitle("Server [" + instanceName +"]");
   }
 
 }
@@ -135,13 +137,13 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
     //this._logCtrl = new ServerLogView(this._serverInstance);
     this._confCtrl = new ConfigContainerControl(this._serverInstance);
     this._confCtrl.addEventListener('didConfigurationChange',(evt)=>{
-      console.log("TODO enable Save button and Revert Changes!")
+      Logger.consoleLog("TODO enable Save button and Revert Changes!")
     })
     this._confCtrl.addEventListener('didSaveChange',(evt)=>{
-      console.log("TODO Save Changes!")
+      Logger.consoleLog("TODO Save Changes!")
     })
     this._confCtrl.addEventListener('didRevertChange',(evt)=>{
-      console.log("TODO Revert Changes!")
+      Logger.consoleLog("TODO Revert Changes!")
     })
 
     this._tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);

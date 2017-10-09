@@ -18,7 +18,8 @@ import { EventBus } from './DEWorkbench/EventBus'
 import { ConsumedServices } from './DEWorkbench/ConsumedServices'
 import { GlobalPreferences } from './DEWorkbench/GlobalPreferences'
 import { ViewManager } from './DEWorkbench/ViewManager'
-
+import { UINotifications } from './ui-components/UINotifications'
+import { ExecutorService } from './DEWorkbench/services/ExecutorService'
 
 export default {
 
@@ -30,22 +31,20 @@ export default {
   cordovaPluginsProvidersManager:null,
 
   activate (state: any) {
-      console.log("DEWB activated.");
+      Logger.consoleLog("DEWB activated.");
 
-      //require('devtron').install()
-      //GlobalPreferences.getInstance();
       ServerManager.getInstance();
 
       this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();
-      this.deferredActivation();
-      //setTimeout(this.deferredActivation.bind(this),1000);
+      //this.deferredActivation();
+      setTimeout(this.deferredActivation.bind(this),1000);
   },
 
   deferredActivation(){
-    console.log("DEWB deferredActivation.");
+    Logger.consoleLog("DEWB deferredActivation.");
 
     require('atom-package-deps').install('de-workbench', false).then(function(res){
-      console.log("Dep packages installed.");
+      Logger.consoleLog("Dep packages installed.");
     })
 
     let DEWorkbenchClass = require('./DEWorkbench/DEWorkbench').DEWorkbench;
@@ -62,7 +61,7 @@ export default {
     // add commands
     let commands = atom.commands.add('atom-workspace', {
         'dewb-menu-view-:toolbar-toggle': () => this.toggleToolbar(),
-        'dewb-menu-view-:prjinspector-toggle': () => this.toggleProjectInspector(),
+        'dewb-menu-view-:prjinspector-toggle': () => this.showProjectSettings(),
         'dewb-menu-view-:pushtool-show': () => this.showPushTool(),
         'dewb-menu-view-:servers-show':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_SERVERS),
         'dewb-menu-view-:bookmarks-toggle':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_BOOKMARKS),
@@ -71,10 +70,12 @@ export default {
     this.subscriptions = new CompositeDisposable();
     // add commands subs
     this.subscriptions.add(commands);
+
+    //this.checkForDECli(); move this on extension plugin!
   },
 
   deactivate () {
-      console.log('DEWB deactivated.');
+      Logger.consoleLog('DEWB deactivated.');
       if(this.deWorkbench){
         this.deWorkbench.destroy();
       }
@@ -87,17 +88,17 @@ export default {
     }
   },
 
-  toggleProjectInspector(){
-    this.deWorkbench.openProjectInspector();
+  showProjectSettings(){
+    this.deWorkbench.showProjectSettings();
   },
 
   toggleToolbar() {
-    console.log("Toggle toolbar");
+    Logger.consoleLog("Toggle toolbar");
     this.deWorkbench.toggleToolbar()
   },
 
   toggleLogger(){
-    console.log("Toggle Logger");
+    Logger.consoleLog("Toggle Logger");
     this.deWorkbench.toggleLogger();
   },
 
@@ -107,28 +108,34 @@ export default {
   },
 
   provideCordovaPluginsProvider () {
-    console.log("consumeDEWBCordovaPluginsProvider called")
+    Logger.consoleLog("consumeDEWBCordovaPluginsProvider called")
     return CordovaPluginsProvidersManager.getInstance();
   },
 
   provideLogger () {
-    console.log("consumeLogger called")
+    Logger.consoleLog("consumeLogger called")
     return Logger.getInstance();
   },
 
   provideProjectManager() {
-    console.log("provideProjectManager called")
+    Logger.consoleLog("provideProjectManager called")
     return ProjectManager.getInstance();
   },
 
   provideEventBus() {
-    console.log("provideEventBus called")
+    Logger.consoleLog("provideEventBus called")
     return EventBus.getInstance();
   },
 
   provideServerManager(){
-    console.log("provideServerManager called")
+    Logger.consoleLog("provideServerManager called")
     return ServerManager.getInstance();
-  }
+  },
+
+  provideExecutorService(){
+    Logger.consoleLog("provideExecutorService called")
+    return ExecutorService.getInstance();
+  },
+
 
 }

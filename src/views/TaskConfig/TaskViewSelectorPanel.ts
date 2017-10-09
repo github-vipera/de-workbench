@@ -130,7 +130,7 @@ export class TaskViewSelectorPanel extends UIBaseComponent implements UITreeView
   }
 
   onItemSelected(itemId:string,item:UITreeItem){
-    console.log("selected: ",itemId,item);
+    Logger.consoleLog("selected: ",itemId,item);
     if(this.taskSelectionListener){
       this.taskSelectionListener(this.translateItemIdToTaskId(itemId));
     }

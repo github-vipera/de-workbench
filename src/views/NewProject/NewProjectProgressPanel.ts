@@ -79,7 +79,7 @@ export class NewProjectProgressPanel extends UIBaseComponent implements LoggerLi
   }
 
   private bindWithLogger(){
-    console.log("bindWithLogger");
+    Logger.consoleLog("bindWithLogger");
     Logger.getInstance().addLoggingListener(this);
     Logger.getInstance().debug("LoggerView -> bind with log done");
   }

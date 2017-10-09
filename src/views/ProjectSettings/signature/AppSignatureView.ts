@@ -156,7 +156,7 @@ export class AppSignatureView extends UIBaseComponent {
     var string = JSON.stringify(buildJson,null,'\t');
     fs.writeFile(this.getBuildJsonPath(),string,function(err) {
       if(err) return console.error(err);
-        console.log('done');
+        Logger.consoleLog('done');
     })
 }
 
@@ -250,7 +250,7 @@ class SignaturePlatformEditorCtrl extends UIBaseComponent {
   public saveChanges(){
     this.debugEditCtrl.saveChanges();
     this.releaseEditCtrl.saveChanges();
-    //console.log("Build JSON:", this.buildJson)
+    //Logger.consoleLog("Build JSON:", this.buildJson)
     this.events.emit('didChanged', this);
   }
 

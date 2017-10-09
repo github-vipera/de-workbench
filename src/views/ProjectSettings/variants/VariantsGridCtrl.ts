@@ -47,7 +47,7 @@ export class VariantsGridCtrl extends UIBaseComponent {
 
     this.treeModel.addEventListener('didModelChanged',()=>{
       this.events.emit('didDataChanged', this)
-      //console.log("Variant data changed! ", this.variant)
+      //Logger.consoleLog("Variant data changed! ", this.variant)
     })
   }
 

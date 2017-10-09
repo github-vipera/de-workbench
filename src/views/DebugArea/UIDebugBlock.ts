@@ -23,8 +23,8 @@ import { UIPane } from '../../ui-components/UIPane'
 
 export class UIDebugBlock extends UIPane {
 
-  constructor (params:any) {
-    super(params)
+  constructor (uri:string) {
+    super(uri, "Debug Block")
   }
 
   /**

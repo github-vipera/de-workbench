@@ -15,6 +15,7 @@ const path = require("path");
 import { CommandExecutor } from '../utils/CommandExecutor';
 import { Logger } from '../logger/Logger'
 import { CordovaUtils } from './CordovaUtils'
+import { DEWBResourceManager } from '../DEWorkbench/DEWBResourceManager'
 
 export const DEVICE_AUTO_DEF ="[AUTO]"
 
@@ -58,7 +59,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve, reject) => {
       this.spawnRef.stdout.on('data', (data) => {
         Logger.getInstance().debug(`[Creating Project  ${projectInfo.name}]: ${data}`)
-        console.log(`[Build  ${projectInfo.name}]: ${data}`);
+        Logger.consoleLog(`[Build  ${projectInfo.name}]: ${data}`);
       });
       this.spawnRef.stderr.on('data', (data) => {
         Logger.getInstance().error("[scriptTools] " + data.toString())
@@ -66,7 +67,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-        console.log(`[Creating Project  ${projectInfo.name}] child process exited with code ${code}`);
+        Logger.consoleLog(`[Creating Project  ${projectInfo.name}] child process exited with code ${code}`);
         Logger.getInstance().info(`[Creating Project  ${projectInfo.name}] child process exited with code ${code}`)
         this.spawnRef = undefined;
         if (code === 0) {
@@ -118,7 +119,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[Adding platform  [${platformsStr}] to  ${projectInfo.name}]: ${data}`)
-          console.log(`[Adding platforms  [${platformsStr}] to  ${projectInfo.name}]: ${data}`);
+          Logger.consoleLog(`[Adding platforms  [${platformsStr}] to  ${projectInfo.name}]: ${data}`);
       });
       this.spawnRef.stderr.on('data', (data) => {
           Logger.getInstance().error("[scriptTools] " + data.toString())
@@ -126,7 +127,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[Adding Platform [${platformsStr}] to ${projectInfo.name}] child process exited with code ${code}`);
+          Logger.consoleLog(`[Adding Platform [${platformsStr}] to ${projectInfo.name}] child process exited with code ${code}`);
           Logger.getInstance().info(`[Adding Platform [${platformsStr}] to ${projectInfo.name}] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -156,7 +157,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[Adding platform  [${platformsStr}] to  ${projectInfo.name}]: ${data}`)
-          console.log(`[Adding platforms  [${platformsStr}] to  ${projectInfo.name}]: ${data}`);
+          Logger.consoleLog(`[Adding platforms  [${platformsStr}] to  ${projectInfo.name}]: ${data}`);
       });
       this.spawnRef.stderr.on('data', (data) => {
           Logger.getInstance().error("[scriptTools] " + data.toString())
@@ -164,7 +165,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[Adding Platform [${platformsStr}] to ${projectInfo.name}] child process exited with code ${code}`);
+          Logger.consoleLog(`[Adding Platform [${platformsStr}] to ${projectInfo.name}] child process exited with code ${code}`);
           Logger.getInstance().info(`[Adding Platform [${platformsStr}] to ${projectInfo.name}] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -186,7 +187,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[npm install]: ${data}`)
-          console.log(`[npm install]: ${data}`);
+          Logger.consoleLog(`[npm install]: ${data}`);
       });
       this.spawnRef.stderr.on('data', (data) => {
           Logger.getInstance().error("[npm install] " + data.toString())
@@ -194,7 +195,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[npm install] child process exited with code ${code}`);
+          Logger.consoleLog(`[npm install] child process exited with code ${code}`);
           Logger.getInstance().info(`[npm install] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -224,7 +225,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[Adding Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`)
-          console.log(`[Adding Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
+          Logger.consoleLog(`[Adding Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
       });
       this.spawnRef.stderr.on('data', (data) => {
           Logger.getInstance().error("[scriptTools] " + data.toString())
@@ -232,7 +233,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[Adding Platform [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`);
+          Logger.consoleLog(`[Adding Platform [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`);
           Logger.getInstance().info(`[Adding Plugin [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -257,7 +258,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[Removing Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`)
-          console.log(`[Removing Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
+          Logger.consoleLog(`[Removing Plugin  [${pluginSpec}] to  ${projectInfo.name}]: ${data}`);
       });
       this.spawnRef.stderr.on('data', (data) => {
           Logger.getInstance().error("[scriptTools] " + data.toString())
@@ -265,7 +266,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[Removing Platform [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`);
+          Logger.consoleLog(`[Removing Platform [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`);
           Logger.getInstance().info(`[Removing Plugin [${pluginSpec}] to ${projectInfo.name}] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -287,7 +288,7 @@ export class CordovaExecutor extends CommandExecutor {
         platformList[index]=item.name;
       }
     })
-    console.log("Executing remove-platform for ",platformList);
+    Logger.consoleLog("Executing remove-platform for ",platformList);
     var cmd="cordova"
     var args = ["platform","remove","--save"].concat(platformList);
     var options=this.getCmdOptions(projectRoot);
@@ -296,7 +297,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[Remove-platform  ${platformList}]: ${data}`)
-          console.log(`[Remove-platform  ${platformList}]: ${data}`);
+          Logger.consoleLog(`[Remove-platform  ${platformList}]: ${data}`);
       });
 
       this.spawnRef.stderr.on('data', (data) => {
@@ -305,7 +306,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[Remove-platform  ${platformList}] child process exited with code ${code}`);
+          Logger.consoleLog(`[Remove-platform  ${platformList}] child process exited with code ${code}`);
           Logger.getInstance().info(`[Remove-platform  ${platformList}] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -336,7 +337,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[Build  ${platform}]: ${data}`)
-          console.log(`[Build  ${platform}]: ${data}`);
+          Logger.consoleLog(`[Build  ${platform}]: ${data}`);
       });
 
       this.spawnRef.stderr.on('data', (data) => {
@@ -345,7 +346,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[Build  ${platform}] child process exited with code ${code}`);
+          Logger.consoleLog(`[Build  ${platform}] child process exited with code ${code}`);
           Logger.getInstance().info(`[Build  ${platform}] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -375,7 +376,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[Clean  ${platform}]: ${data}`)
-          console.log(`[Clean  ${platform}]: ${data}`);
+          Logger.consoleLog(`[Clean  ${platform}]: ${data}`);
       });
 
       this.spawnRef.stderr.on('data', (data) => {
@@ -384,7 +385,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[Clean  ${platform}] child process exited with code ${code}`);
+          Logger.consoleLog(`[Clean  ${platform}] child process exited with code ${code}`);
           Logger.getInstance().info(`[Clean  ${platform}] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -410,7 +411,7 @@ export class CordovaExecutor extends CommandExecutor {
           return;
         }
         Logger.getInstance().info("Prepare done for ",projectRoot,platform);
-        console.log("exec prepare done");
+        Logger.consoleLog("exec prepare done");
         resolve();
       });
     });
@@ -430,8 +431,12 @@ export class CordovaExecutor extends CommandExecutor {
   private patchExtraBrowserFile(projectRoot:string){
     fse.emptyDirSync(path.join(projectRoot,"/platforms/browser/www/__dedebugger"));
     fse.emptyDirSync(path.join(projectRoot,"/platforms/browser/www/socket.io"));
-    fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/DEDebuggerClient.js"),projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
-    fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/socket.io.js"),projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
+    let resDEDebuggerJS = DEWBResourceManager.getResourcePath('injectedfiles/DEDebuggerClient.js');
+    let resSocketIO = DEWBResourceManager.getResourcePath('injectedfiles/socket.io.js');
+    fse.copySync(path.resolve(resDEDebuggerJS),projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
+    fse.copySync(path.resolve(resSocketIO),projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
+    //fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/DEDebuggerClient.js"),projectRoot + "/platforms/browser/www/__dedebugger/DEDebuggerClient.js");
+    //fse.copySync(path.resolve(__dirname , "../services/remote/injectedfiles/socket.io.js"),projectRoot + "/platforms/browser/www/socket.io/socket.io.js");
   }
 
   private applyGlobalCliOptions(cliOptions){
@@ -464,7 +469,7 @@ export class CordovaExecutor extends CommandExecutor {
 
   runProject(projectRoot:string,platform:string,target:string,cliOptions:any){
     Logger.getInstance().info("Running project for ", projectRoot, platform,target);
-    console.log("Execute run with spawn for " + platform,"and cliOptions",cliOptions);
+    Logger.consoleLog("Execute run with spawn for " + platform,"and cliOptions",cliOptions);
     //this.applyGlobalCliOptions(cliOptions);
     var env = this.getGlobalEnvCloneWithOptions(cliOptions);
     var cmd="cordova"
@@ -485,7 +490,7 @@ export class CordovaExecutor extends CommandExecutor {
     return new Promise((resolve,reject) => {
       this.spawnRef.stdout.on('data', (data) => {
           Logger.getInstance().debug(`[Run  ${platform}]: ${data}`)
-          console.log(`[Run  ${platform}]: ${data}`);
+          Logger.consoleLog(`[Run  ${platform}]: ${data}`);
       });
 
       this.spawnRef.stderr.on('data', (data) => {
@@ -494,7 +499,7 @@ export class CordovaExecutor extends CommandExecutor {
       });
 
       this.spawnRef.on('close', (code) => {
-          console.log(`[Run  ${platform}] child process exited with code ${code}`);
+          Logger.consoleLog(`[Run  ${platform}] child process exited with code ${code}`);
           Logger.getInstance().info(`[Run  ${platform}] child process exited with code ${code}`)
           this.spawnRef = undefined;
           if(code === 0){
@@ -520,7 +525,7 @@ export class CordovaExecutor extends CommandExecutor {
           reject(error);
           return;
         }
-        console.log("exec getAllDeviceByPlatform done " + stdout);
+        Logger.consoleLog("exec getAllDeviceByPlatform done " + stdout);
         var detectedDevice= new CordovaUtils().parseDeviceList(stdout);
         detectedDevice.unshift(DEVICE_AUTO_DEF);
         resolve(detectedDevice);
@@ -536,7 +541,7 @@ export class CordovaExecutor extends CommandExecutor {
     kill(this.spawnRef.pid);
   }
   isBusy():boolean{
-    console.log("isBusy called");
+    Logger.consoleLog("isBusy called");
     return (super.isBusy() || this.spawnRef != null);
   }
 
