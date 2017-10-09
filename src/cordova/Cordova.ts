@@ -164,7 +164,7 @@ export class Cordova {
    * Returns a list of installed plugins for a Cordova Project
    */
   public getInstalledPlugins(projectRoot: string): Promise<Array<CordovaPlugin>> {
-    Logger.getInstance().debug("getInstalledPlugins called...");
+    Logger.consoleLog("getInstalledPlugins called...");
     return new Promise((resolve, reject) => {
       let that = this;
       let cordovaPluginScanner = new CordovaPluginScanner();
