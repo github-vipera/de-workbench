@@ -82,14 +82,6 @@ export class ToolbarView {
     this.logoElement = createIcon('logo')
     insertElement(this.toolbarElement, this.logoElement)
 
-    //<Label class="fa" text="\uf293"></Label>
-    /*let testFA = createElement('a',{
-      elements: [ createText('pippo')],
-      className : "fa"
-    })
-    testFA.setAttribute("text","\uf293")
-    insertElement(this.element, testFA)*/
-
     this.newProjectButton = createButton({
       click: () => {
         this.events.emit('didNewProject');
@@ -119,6 +111,16 @@ export class ToolbarView {
     toggleButtons.classList.add('bugs-toggle-buttons')
     insertElement(this.toolbarElement, toggleButtons)
 
+    /**
+    //test Font Awsesome
+    let testFA = createElement('i',{
+      elements: [
+      ],
+      className:'fa fa-american-sign-language-interpreting'
+    })
+    testFA.setAttribute('aria-hidden', true);
+    insertElement(this.toolbarElement, testFA)
+    **/
 
     attachEventFromObject(this.events, [
       'didRun',
