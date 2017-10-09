@@ -24,9 +24,6 @@
           },{
             "label": "Log Inspector",
             "command": "dewb-menu-view-:loggerview-toggle"
-          },{
-            "label": "Install DE CLI",
-            "command": "dewb-menu-view-:install-de-cli"
           }
        ]
       }]

@@ -63,6 +63,11 @@
       "versions": {
         "0.0.1": "provideServerManager"
       }
+    },
+    "de-wb-executor-service": {
+      "versions": {
+        "0.0.1": "provideExecutorService"
+      }
     }
   },
   "configSchema": {

@@ -3,6 +3,7 @@ import { CordovaPluginsProvidersManager } from './DEWorkbench/services/CordovaPl
 import { ServerManager } from '././DEWorkbench/services/ServerManager';
 import { ProjectManager } from './DEWorkbench/ProjectManager';
 import { EventBus } from './DEWorkbench/EventBus';
+import { ExecutorService } from './DEWorkbench/services/ExecutorService';
 declare const _default: {
     deWorkbench: any;
     toolbarPanel: any;
@@ -23,8 +24,6 @@ declare const _default: {
     provideProjectManager(): ProjectManager;
     provideEventBus(): EventBus;
     provideServerManager(): ServerManager;
-    testCommand(): Promise<void>;
-    checkForDECli(): Promise<void>;
-    installDECli(): Promise<void>;
+    provideExecutorService(): ExecutorService;
 };
 export default _default;

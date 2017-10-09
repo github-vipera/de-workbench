@@ -18,8 +18,8 @@ import { EventBus } from './DEWorkbench/EventBus'
 import { ConsumedServices } from './DEWorkbench/ConsumedServices'
 import { GlobalPreferences } from './DEWorkbench/GlobalPreferences'
 import { ViewManager } from './DEWorkbench/ViewManager'
-import { DEUtils } from './utils/DEUtils'
 import { UINotifications } from './ui-components/UINotifications'
+import { ExecutorService } from './DEWorkbench/services/ExecutorService'
 
 export default {
 
@@ -65,15 +65,13 @@ export default {
         'dewb-menu-view-:pushtool-show': () => this.showPushTool(),
         'dewb-menu-view-:servers-show':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_SERVERS),
         'dewb-menu-view-:bookmarks-toggle':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_BOOKMARKS),
-        'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger(),
-        'dewb-menu-view-:test-command': ()=> this.testCommand(),
-        'dewb-menu-view-:install-de-cli': ()=> this.installDECli()
+        'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger()
       });
     this.subscriptions = new CompositeDisposable();
     // add commands subs
     this.subscriptions.add(commands);
 
-    this.checkForDECli();
+    //this.checkForDECli(); move this on extension plugin!
   },
 
   deactivate () {
@@ -134,47 +132,10 @@ export default {
     return ServerManager.getInstance();
   },
 
-  async testCommand(){
-    Logger.consoleLog("DE CLI checking...");
-    let x = await DEUtils.checkForDECli();
-    Logger.consoleLog("DE CLI available: " + x);
-  }
+  provideExecutorService(){
+    Logger.consoleLog("provideExecutorService called")
+    return ExecutorService.getInstance();
+  },
 
-  async checkForDECli(){
-    let deCliOK = await DEUtils.checkForDECli();
-    if (!deCliOK){
-      let notification = UINotifications.showInfo("DE CLI Not Installed.", {
-        dismissable: true,
-        buttons: [
-          {
-            text: 'Do Install',
-            onDidClick: ()=>{
-              notification.dismiss();
-              this.installDECli();
-            }
-          },
-          {
-            text: 'Cancel',
-            onDidClick: ()=>{
-              notification.dismiss();
-            }
-          }
-        ],
-        detail: "La DE CLI non sembra essere installata. Vuoi procedere ora con l'installazione?"
-      })
-    }
-  }
-
-  async installDECli(){
-    let installRunningNotification = UINotifications.showInfo("Installing DE CLI...", { dismissable: true })
-    let ok = await DEUtils.installDECli();
-    if (ok){
-      installRunningNotification.dismiss()
-      UINotifications.showSuccess("DE CLI installed successfully.")
-    } else {
-      installRunningNotification.dismiss()
-      UINotifications.showError("Error installing the DE CLI. See the log for more details.")
-    }
-  }
 
 }
