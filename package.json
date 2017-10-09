@@ -66,7 +66,7 @@
     },
     "de-wb-executor-service": {
       "versions": {
-        "0.0.1": "provideExecutorService"
+        "0.1.12": "provideExecutorService"
       }
     }
   },
