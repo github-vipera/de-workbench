@@ -11,8 +11,9 @@ export interface Bookmark {
 import { get } from 'lodash'
 import { EventEmitter }  from 'events'
 import { EventBus } from './EventBus'
-const GUID = require('guid');
+//const GUID = require('guid');
 const _ = require('lodash');
+const uuidv4 = require('uuid/v4');
 
 export type Bookmarks = Array<Bookmark>
 
@@ -104,8 +105,9 @@ export class BookmarkManager {
       return bookmark;
   }
 
-  protected createBookmarkId(lineNumber: number, filePath: string){
-    return GUID.raw();
+  protected createBookmarkId(lineNumber: number, filePath: string):string {
+    //return GUID.raw();
+    return uuidv4();
   }
 
   private createBookmarkMarkerForEditor (editor: any, lineNumber: any) {
