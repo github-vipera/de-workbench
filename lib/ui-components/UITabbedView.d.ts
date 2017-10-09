@@ -9,9 +9,11 @@ export declare class UITabbedViewItem {
     constructor(id: string, title: string, view: HTMLElement);
     setTitleClass(className: string): UITabbedViewItem;
     setTitle(title: string): UITabbedViewItem;
+    didTabSelected(): void;
     getTitle(): string;
+    protected fireTabSelected(): void;
     protected fireTitleChanged(): void;
-    addEventListener(event: string, listener: any): void;
+    addEventListener(event: string, listener: any): UITabbedViewItem;
     removeEventListener(event: string, listener: any): void;
     destroy(): void;
 }

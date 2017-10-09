@@ -362,20 +362,22 @@ export class Cordova {
 
   public async getProjectInfo(projectRoot:string,loadPlugins?:boolean):Promise<CordovaProjectInfo>{
     let json = this.getPackageJson(projectRoot);
-    if(!json || !json.cordova){
-      return null; // is not a cordova project
-    }
-    let cdv= json.cordova;
-    if(!cdv.platforms){
-      cdv.platforms = [];
+    if(!json){
+      return null;
     }
     let cordovaPlatforms:Array<CordovaPlatform> = [];
-    cdv.platforms.forEach((single) => {
-        cordovaPlatforms.push({name: single});
-    });
-    let cordovaPlugins:Array<CordovaPlugin> = null;
-    if(loadPlugins){
-      cordovaPlugins = await this.getInstalledPlugins(projectRoot);
+    let cordovaPlugins:Array<CordovaPlugin> = [];
+    if (json.cordova){
+      let cdv= json.cordova;
+      if(!cdv.platforms){
+        cdv.platforms = [];
+      }
+      cdv.platforms.forEach((single) => {
+          cordovaPlatforms.push({name: single});
+      });
+      if(loadPlugins){
+        cordovaPlugins = await this.getInstalledPlugins(projectRoot);
+      }
     }
     return {
       name:json.name,
