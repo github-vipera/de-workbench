@@ -9,7 +9,7 @@
  import { Logger } from '../logger/Logger'
 
 const path = require("path");
-const fs = require("fs-extra");
+const fs = require("fs");
 const _ = require("lodash")
 const xml2js = require('xml2js');
 const provisioning = require('provisioning');
@@ -25,11 +25,13 @@ export class IOSUtilities {
       let provisioningProfileFolder = IOSUtilities.getProvisionigProfilesFolder();// path.join(homeFolder, "Library", "MobileDevice" , "Provisioning Profiles");
       Logger.getInstance().debug("iOS Provisioning Profiles folder: " + provisioningProfileFolder)
 
-      var provisioningFileNames = fs.readdirSync(provisioningProfileFolder);
+        var provisioningFileNames = fs.readdirSync(provisioningProfileFolder);
         let totalFilesToProcess = provisioningFileNames.length;
+        Logger.getInstance().debug("Found "+ totalFilesToProcess +" profiles found.");
         for (var i=0;i<provisioningFileNames.length;i++){
           var filename = path.join(provisioningProfileFolder,provisioningFileNames[i]);
           //Logger.getInstance().debug('Loading provisioning profile '+ filename +'...');
+          //Logger.getInstance().debug("Loading profile for "+ filename +"...");
           provisioning(filename, function(error, data){
             if (error){
               //Logger.getInstance().debug('Error loading provisioning profile: '+ error);
@@ -47,11 +49,13 @@ export class IOSUtilities {
                 "teamName" : teamName,
                 "data" : data
               };
+              //Logger.getInstance().debug("Loaded profile for " + appIdentifier)
             } else {
 
             }
             totalFilesToProcess--;
             if (totalFilesToProcess==0){
+              Logger.getInstance().debug("Profiles loaded.")
               resolve(provisioningProfiles);
             }
           });
