@@ -9,6 +9,7 @@
  import { Logger } from '../logger/Logger'
 
 const path = require("path");
+
 const fs = require("fs");
 const _ = require("lodash")
 const xml2js = require('xml2js');
