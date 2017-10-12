@@ -36,12 +36,20 @@ export class CordovaTaskConfiguration {
     this.taskType = taskType;
   }
 
+  get id():string {
+    return this._name +"_"+this._selectedPlatform.name;
+  }
+
   get name():string{
     return this._name;
   }
 
   set name(value:string){
     this._name=value;
+  }
+
+  get longDisplayName():string {
+      return this.displayName + " (" + this._selectedPlatform.name +")";
   }
 
   get displayName():string{
