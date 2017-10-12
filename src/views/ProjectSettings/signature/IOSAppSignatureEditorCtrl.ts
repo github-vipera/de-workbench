@@ -27,7 +27,7 @@ import { IOSUtilities } from '../../../cordova/IOSUtilities'
 
 const _  = require('lodash')
 
-export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
+export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl  {
 
   private provisioningProfileSelect:UISelectFormElement;
   private packageTypeSelect:UISelectFormElement;
@@ -45,10 +45,28 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
     this.codeSignIdentityInput = new UIInputFormElement().setCaption('Code Sign Identity').setPlaceholder('Code Sign Identity').addEventListener('change',(evtCtrl:UIInputFormElement)=>{
     })
     this.provisioningProfileSelect = new UISelectFormElement().setCaption('Provisioning Profile');
+    this.provisioningProfileSelect.getSelectCtrl().addSelectListener(this);
     this.packageTypeSelect = new UISelectFormElement().setCaption('Package Type');
     this.packageTypeSelect.setItems(this.getPackageTypeItems());
 
     return [this.provisioningProfileSelect.element(), this.devTeamInput.element(), this.codeSignIdentityInput.element(), this.packageTypeSelect.element()];
+  }
+
+  onItemSelected(value) {
+    let provisioningProfile = this.getProvisioningProfileByAppId(value);
+    //alert(provisioningProfile.teamName);
+    this.devTeamInput.setValue(provisioningProfile.teamName);
+  }
+
+  private getProvisioningProfileByAppId(appId:string):any {
+    return this.provisioningProfiles[appId];
+    /**
+    "appId" : appId,
+    "appIdentifier" : appIdentifier,
+    "teamIdentifier" : teamIdentifier,
+    "teamName" : teamName,
+    "data" : data
+    **/
   }
 
   protected getPackageTypeItems():Array<UISelectItem>{
@@ -104,7 +122,8 @@ export class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
     return _.map(provisioningProfiles, (item)=>{
         return {
           name: item.appId,
-          value: item.appIdentifier
+          value: item.appIdentifier,
+          userData: item
         }
     })
   }
