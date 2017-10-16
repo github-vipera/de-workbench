@@ -145,7 +145,7 @@ export class ConsoleHandler {
   public setSession(session:JSSession){
     this.session = session;
     this.session.didJSResultReceived((message) => {
-      this.console.log();
+      //this.console.log();
       this.console.done();
       if(this.console){
         if(message.status == "OK"){
