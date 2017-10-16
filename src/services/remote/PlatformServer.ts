@@ -10,6 +10,7 @@ const {
 } = require('loophole');
 
 const express = allowUnsafeEval(() => require('express'));
+const path = require('path');
 
 export interface LiveActions{
   type:string
@@ -67,9 +68,14 @@ export class PlatformServerImpl implements PlatformServer {
   protected initInjectedFileServe(config: PlatformServerConfig):void{
     this.app.get('/__dedebugger/**', (req, res) => {
         var urlRelative = req.url;
+        Logger.getInstance().info("require debugger resource: " + urlRelative);
+
         //urlRelative = urlRelative.replace('/__dedebugger/', '/injectedfiles/');
         //res.sendFile(__dirname + urlRelative);
+        urlRelative = urlRelative.replace('/__dedebugger/',"");
         let resPath = DEWBResourceManager.getResourcePath('injectedfiles/');
+        resPath = path.join(resPath,urlRelative);
+        Logger.getInstance().info("completePath ",resPath);
         res.sendFile(resPath);
     });
   }
