@@ -477,6 +477,7 @@ export class ServerInstanceWrapper implements ServerInstance {
     try {
       this._serverInstance.start();
     } catch(err){
+      console.error("Start instance error: ", err);
       UINotifications.showError("Start '" + this._name + "' Server Error:\n" + err)
     }
   }
@@ -485,6 +486,7 @@ export class ServerInstanceWrapper implements ServerInstance {
     try {
       this._serverInstance.stop();
     } catch(err){
+      console.error("Stop instance error: ", err);
       UINotifications.showError("Stop '" + this._name + "' Server Error: " + err)
     }
   }
