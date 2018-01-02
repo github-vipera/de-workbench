@@ -82,6 +82,8 @@
 /* HORIZONTAL TYPE **/
 .de-workbench-tabbedview.tab-type-horizontal {
   width: 100%;
+  display: flex;
+  flex-direction: column;
   background-color: @pane-item-background-color;
 }
 
@@ -89,6 +91,11 @@
   width: 100%;
   border-width: 0 1px 0 0;
   overflow: auto;
+  flex: 0 1 auto;
+}
+
+.tab-type-horizontal.stack-view-container {
+  flex: 1 1 auto;
 }
 
 .tab-type-horizontal.de-workbench-tabbedview-tab-item {

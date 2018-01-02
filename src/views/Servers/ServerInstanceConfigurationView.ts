@@ -22,10 +22,10 @@ import { EventEmitter }  from 'events'
 import { UIPane } from '../../ui-components/UIPane'
 import { ServerManager, ServerProvider, ServerInstanceWrapper, ServerInstance,ServerInstanceConfigurator, ServerStatus } from  '../../DEWorkbench/services/ServerManager'
 import { UIComponent, UIBaseComponent, UIExtComponent } from '../../ui-components/UIComponent'
-import { Logger } from '../../logger/Logger'
+import { Logger, LogLevel } from '../../logger/Logger'
 import { UITreeItem, UITreeViewModel, UITreeViewSelectListener, UITreeView, findItemInTreeModel } from '../../ui-components/UITreeView'
 import { UITabbedView, UITabbedViewItem, UITabbedViewTabType } from '../../ui-components/UITabbedView'
-import { UILoggerComponent,LogLine,IFilterableModel } from '../../ui-components/UILoggerComponent'
+import { UILoggerComponent,LogLine,IFilterableModel, LogModel, BaseLogModel } from '../../ui-components/UILoggerComponent'
 import { UICommonsFactory, FormActionsOptions, FormActionType } from '../../ui-components/UICommonsFactory'
 import { UINotifications } from '../../ui-components/UINotifications'
 import { UIEditableLabel } from '../../ui-components/UIEditableLabel'
@@ -82,6 +82,10 @@ export class ServerInstanceConfigurationView extends UIPane {
     //change the title
     this.updateTitle(this.options.userData.serverInstance.name);
 
+    this._serverInstance.addEventListener('onDidLogEvent', (evt)=>{
+        this.onServerInstanceLogEvent(evt)
+    })
+
     return mainContainer;
   }
 
@@ -112,6 +116,16 @@ export class ServerInstanceConfigurationView extends UIPane {
     this.setTitle("Server [" + instanceName +"]");
   }
 
+  private onServerInstanceLogEvent(logEvent:any){
+    try {
+      let serverInstance:ServerInstance = logEvent.instance;
+      let message:string = logEvent.message;
+      //TODO!! display log
+    } catch (ex){
+
+    }
+  }
+
 }
 
 class ServerInstanceConfigurationCtrl extends UIExtComponent {
@@ -121,6 +135,7 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
   _tabbedView: UITabbedView;
   _confCtrl : ConfigContainerControl;
   _removed:boolean=false;
+  _logCtrl:ServerLogView;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super();
@@ -134,7 +149,7 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
       alert("action:" + action)
     })
 
-    //this._logCtrl = new ServerLogView(this._serverInstance);
+    this._logCtrl = new ServerLogView(this._serverInstance);
     this._confCtrl = new ConfigContainerControl(this._serverInstance);
     this._confCtrl.addEventListener('didConfigurationChange',(evt)=>{
       Logger.consoleLog("TODO enable Save button and Revert Changes!")
@@ -148,8 +163,8 @@ class ServerInstanceConfigurationCtrl extends UIExtComponent {
 
     this._tabbedView = new UITabbedView().setTabType(UITabbedViewTabType.Horizontal);
     this._tabbedView.element().classList.add('de-workbench-server-config-tabbedview')
-    //this._tabbedView.addView(new UITabbedViewItem('log',       'Log',  this._logCtrl.element() ));
     this._tabbedView.addView(new UITabbedViewItem('configuration',   'Configuration',  this._confCtrl.element()));
+    this._tabbedView.addView(new UITabbedViewItem('log', 'Log',  this._logCtrl.element() ));
 
     this.mainElement = createElement('div',{
       elements : [ this._headerCtrl.element(), this._tabbedView.element() ],
@@ -422,6 +437,7 @@ class ServerLogView extends UIExtComponent {
 
   _serverInstance:ServerInstanceWrapper;
   _loggerComponent:UILoggerComponent;
+  _logModel:LogModel;
 
   constructor(serverInstance:ServerInstanceWrapper){
     super();
@@ -430,11 +446,18 @@ class ServerLogView extends UIExtComponent {
   }
 
   protected initUI(){
-    this._loggerComponent = new UILoggerComponent(true);
+    this._logModel = new BaseLogModel(200);
+    this._loggerComponent = new UILoggerComponent(true, this._logModel);
+    this._loggerComponent.setAutoscroll(true);
     this.mainElement = createElement('div',{
       elements: [ this._loggerComponent.element() ],
       className: 'de-workbench-server-config-logger-cont'
     })
+
+    for (var i=0;i<50;i++){
+      this._loggerComponent.addLog("Hello World! " + i, LogLevel.INFO);
+    }
+
   }
 
 }

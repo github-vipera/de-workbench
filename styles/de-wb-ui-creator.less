@@ -1,0 +1,67 @@
+@import "variables";
+
+/*!
+ * DE Workbench
+ * Copyright(c) 2017 Williams Medina <williams.medinaa@gmail.com>
+ * MIT Licensed
+ */
+
+/**
+.uic-draggable {
+
+}
+
+.uic-box {
+  border: solid 1px red;
+}
+**/
+
+.de-wb-ui-creator {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+}
+
+.de-wb-uic-toolbox {
+  order: 0;
+  background-color: @tool-panel-background-color;
+  width: 300px;
+  height: 100%;
+}
+
+
+.de-wb-uic-device-viewport {
+  order: 1;
+  background-color: @input-background-color;
+  height: 100%;
+  flex-grow: 1;
+}
+
+.de-wb-uic-device-canvas {
+  background-image: url('atom://de-workbench/images/ui-creator/iphone6-plus-flat.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+   width: 1920px;
+   height: 1080px;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%, -50%);
+}
+
+.de-wb-uic-component-placeholder {
+    width:100px;
+    height:100px;
+    border: solid 1px red;
+}
+
+.drop-active {
+    border-color: #aaaaaa;
+}
+
+.drop-target {
+  background-color: #2a3b47;
+  border-color: #fff;
+  border-style: solid;
+}

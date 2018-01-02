@@ -274,6 +274,10 @@ export class ServerManager {
       wrapper.addEventListener('onDidStatusChange', (evt)=>{
           this.onServerInstanceStatusChanged(evt)
       })
+      wrapper.addEventListener('onDidLogEvent', (evt)=>{
+          this.onServerInstanceLogEvent(evt)
+      })
+
       return wrapper;
   }
 
@@ -341,6 +345,17 @@ export class ServerManager {
       UINotifications.showInfo("Server '" + wrapper.name +"' is now " + wrapper.statusStr)
     } else {
       //nop, probably alredy removed
+    }
+  }
+
+  private onServerInstanceLogEvent(logEvent:any){
+    try {
+      let serverInstance:ServerInstance = logEvent.instance;
+      let wrapped = this.getInstanceWrapper(serverInstance);
+      let message:string = logEvent.message;
+      Logger.getInstance().info("[SRV:'"+wrapped.name+"']: " + message);
+    } catch (ex){
+
     }
   }
 
@@ -443,6 +458,7 @@ export class ServerInstanceWrapper implements ServerInstance {
     this._configuration = configuration;
     this._serverInstance = serverInstance;
     this._serverInstance.addEventListener('onDidStatusChange',this.onDidStatusChange)
+    this._serverInstance.addEventListener('onDidLogEvent',this.onDidLogEvent)
   }
 
   public get name():string{
@@ -454,6 +470,10 @@ export class ServerInstanceWrapper implements ServerInstance {
   }
 
   protected onDidStatusChange(evt){
+    //TODO!!
+  }
+
+  protected onDidLogEvent(evt){
     //TODO!!
   }
 
@@ -471,6 +491,7 @@ export class ServerInstanceWrapper implements ServerInstance {
 
   public destroy(){
     this._serverInstance.removeEventListener('onDidStatusChange', this.onDidStatusChange)
+    this._serverInstance.removeEventListener('onDidLogEvent', this.onDidLogEvent)
   }
 
   public start(){

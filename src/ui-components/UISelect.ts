@@ -18,7 +18,8 @@ import * as _ from 'lodash'
 
 export interface UISelectItem {
   name:string,
-  value:string
+  value:string,
+  userData?:any;
 }
 
 export interface UISelectListener {
