@@ -169,7 +169,7 @@ export class CordovaUtils {
         let version = this.parseVersion(versionStr);
         let versionParts = version.split("\.");
         if(versionParts && versionParts[0] && parseInt(versionParts[0])>= 7){
-          return path.join('platforms', 'android','app','src','main');
+          return path.join(projectRoot,'platforms', 'android','app','src','main');
         }
       }
       return path.resolve(projectRoot,"platforms","android");
