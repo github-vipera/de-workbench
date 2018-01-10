@@ -17,7 +17,7 @@ export class TaskUtils {
       return null;
     }
     let cordova:Cordova = ProjectManager.getInstance().cordova;
-    let platformPath = cordova.getPlatformPath(project.path,selectedPlatform.name);
+    let platformPath = new CordovaUtils().getPlatformAssetsPath(project.path,selectedPlatform.name);
     let serveStaticAssets:boolean = true;
     if(!platformPath){
       Logger.getInstance().warn('PlatformPath is not defined: force disable publish of static assets');

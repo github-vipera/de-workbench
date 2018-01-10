@@ -8,6 +8,8 @@ export declare class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEdito
     private provisioningProfiles;
     constructor(appType: AppType);
     protected createControls(): Array<HTMLElement>;
+    onItemSelected(value: any): void;
+    private getProvisioningProfileByAppId(appId);
     protected getPackageTypeItems(): Array<UISelectItem>;
     destroy(): void;
     reloadProvisioningProfiles(provisioningProfiles: any): void;

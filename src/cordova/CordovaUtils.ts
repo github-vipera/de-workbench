@@ -99,55 +99,89 @@ export class CordovaUtils {
       if (!rootProjectPath){
         return [];
       }
-      var completePath = path.join(rootProjectPath, 'platforms/platforms.json');
+      let completePath = path.join(rootProjectPath, 'package.json');
       if(!fs.existsSync(completePath)){
         return [];
       }
-      var platforms = JSON.parse(fs.readFileSync(completePath, 'utf8'));
-      var platformsList = new Array();
-      for(var key in platforms){
-          var platform = {
-              "name": key,
-              "version" : platforms[key],
-              "virtualRun" : false
-          }
-          if(platform.name === "browser"){
-            platform.virtualRun = true;
-          }else{
-            platform.virtualRun = false;
-          }
-          platformsList.push(platform);
+      var packageJSON = JSON.parse(fs.readFileSync(completePath, 'utf8'));
+      if(!packageJSON || !packageJSON.cordova || !packageJSON.cordova.platforms){
+        return [];
       }
-
+      let platforms = packageJSON.cordova.platforms;
+      let dependencies = packageJSON.dependencies || {};
+      let platformsList = new Array();
+      console.log("PLATFORMS:",platforms);
+      _.forEach(platforms,(key) => {
+        var platform = {
+            "name": key,
+            "version" : "0.0.0",
+            "virtualRun" : false
+        }
+        let pKey = "cordova-" + key;
+        let versionStr = dependencies[pKey];
+        if(versionStr){
+          platform.version = this.parseVersion(versionStr);
+        }
+        if(platform.name === "browser"){
+          platform.virtualRun = true;
+        }else{
+          platform.virtualRun = false;
+        }
+        platformsList.push(platform);
+      });
       return {
         "installed": platformsList
       }
     }
 
-    public getPlatformPath(platform:string,basePath:string):String{
-      var result=basePath != undefined ? basePath : this.atomProject.getPaths()[0];
-      if(platform === "android"){
-        return result + "/platforms/android/assets/www";
-      }else if(platform === "ios"){
-        return result + "/platforms/ios/www";
-      }else{
+    /**
+     * Returns the assets path for the given platform
+     */
+    public getPlatformPath(projectRoot: string, platform: string): string {
+      Logger.getInstance().debug("getPlatformPath ", projectRoot, platform)
+      if (platform === "android") {
+        return path.resolve(this.getAndroidPlatformPath(projectRoot),"assets");
+      } else if (platform === "ios") {
+        return path.resolve(projectRoot,"platforms","ios");
+      } else if(platform === 'browser'){
+        return path.resolve(projectRoot,"platforms","browser");
+      }else {
         console.error("getPlatformPath with unknown platform:" + platform);
         return undefined;
       }
-      //return result;
     }
 
-    public getAndroidAssetsPath(basePath:string){
-      return this.getPlatformPath("android",basePath);
+    public getPlatformAssetsPath(projectRoot:string,platform: string):string{
+      return path.resolve(this.getPlatformPath(projectRoot,platform),"www");
     }
 
-    public getiOSAssetsPath(basePath:string){
-      return this.getPlatformPath("ios",basePath);
+
+    public getAndroidPlatformPath(projectRoot:string):string{
+      let completePath = path.join(projectRoot, 'package.json');
+      if(!fs.existsSync(completePath)){
+        throw new Error("package.json not found");
+      }
+      let packageJSON = JSON.parse(fs.readFileSync(completePath, 'utf8'));
+      let dependencies = packageJSON.dependencies || {};
+      let pKey = "cordova-android";
+      let versionStr = dependencies[pKey];
+      if(versionStr){
+        let version = this.parseVersion(versionStr);
+        let versionParts = version.split("\.");
+        if(versionParts && versionParts[0] && parseInt(versionParts[0])>= 7){
+          return path.join('platforms', 'android','app','src','main');
+        }
+      }
+      return path.resolve(projectRoot,"platforms","android");
     }
+
+
 
     isCordovaProject(rootProjectPath):boolean {
       return false; //TODO!!
     }
 
-
+    public parseVersion(versionStr:string):string{
+      return versionStr.replace(/^[^0-9]+/, '');
+    }
 }

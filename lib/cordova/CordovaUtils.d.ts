@@ -21,8 +21,9 @@ export declare class CordovaUtils {
     getInstalledPlatforms(rootProjectPath: string): any[] | {
         "installed": any[];
     };
-    getPlatformPath(platform: string, basePath: string): String;
-    getAndroidAssetsPath(basePath: string): String;
-    getiOSAssetsPath(basePath: string): String;
+    getPlatformPath(projectRoot: string, platform: string): string;
+    getPlatformAssetsPath(projectRoot: string, platform: string): string;
+    getAndroidPlatformPath(projectRoot: string): string;
     isCordovaProject(rootProjectPath: any): boolean;
+    parseVersion(versionStr: string): string;
 }
