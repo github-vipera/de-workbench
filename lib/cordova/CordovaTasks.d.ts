@@ -29,7 +29,9 @@ export declare class CordovaTaskConfiguration {
     private _cliParams;
     private _constraints;
     constructor(name?: string, taskType?: CordovaTaskType);
+    readonly id: string;
     name: string;
+    readonly longDisplayName: string;
     displayName: string;
     taskType: CordovaTaskType;
     selectedPlatform: CordovaPlatform;
