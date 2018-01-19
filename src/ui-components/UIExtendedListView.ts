@@ -22,7 +22,6 @@ import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UIListView, UIListViewModel } from './UIListView'
 import { Logger } from '../logger/Logger'
 
-const remote = require('remote');
 const $ = require("jquery")
 
 export interface UIExtendedListViewValidationResult {

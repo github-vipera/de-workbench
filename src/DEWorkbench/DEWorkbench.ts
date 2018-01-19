@@ -65,61 +65,14 @@ import { DEWBResourceManager } from './DEWBResourceManager'
      Logger.getInstance().info("Initializing DEWorkbench...");
 
      this._viewManager = new ViewManager()
-
+    
      this.projectManager = ProjectManager.getInstance();
 
      BookmarkManager.getInstance();
 
      this.events = new EventEmitter();
 
-     // Create the main toolbar
-     this.toolbarView = new ToolbarView({
-       didNewProject: () => {
-         this.showNewProjectModal();
-      },
-      didToggleToolbar: () => {
-          this.toggleToolbar();
-      },
-      didToggleDebugArea: () => {
-        this.toggleDebugArea();
-      },
-      didProjectSettings: () => {
-          this.showProjectSettings();
-      },
-      didToggleConsole:() => {
-        this.toggleLogger();
-      },
-      didSelectProjectForRun: (projectInfo:CordovaProjectInfo) => {
-        Logger.consoleLog("didSelectProjectForRun",projectInfo);
-        this.selectedProjectForTask = projectInfo;
-      },
-      didSelectTaskClick: () => {
-        Logger.consoleLog("didSelectTaskClick");
-        this.showCordovaTaskModal();
-      },
-      didTaskSelected:(task:CordovaTaskConfiguration) => {
-        this.onTaskSelected(task);
-      },
-      didStop:() => {
-        this.onStopTask();
-      },
-      didRun : () => {
-        this.onTaskRunRequired(this.taskConfiguration);
-      },
-      didReload : () => {
-        Logger.consoleLog('Reload');
-        this.getTaskManager().sendAction({
-          type: 'doLiveReload'
-        });
-      },
-      didOpenJSConsole: () => {
-        Logger.consoleLog('didOpenJSConsole');
-        let runtimeHandler=this.getTaskManager().getRuntimeSessionHandler();
-        if(runtimeHandler && runtimeHandler.canOpenJSSession()){
-          let consoleHandler = runtimeHandler.openConsole();
-        }
-      }
-     });
+     this.createToolbar();
 
      attachEventFromObject(this.events, [
        'didToggleToolbar'
@@ -138,9 +91,60 @@ import { DEWBResourceManager } from './DEWBResourceManager'
          'dewb-menu-view-:debug-variables-toggle': () => this.toggleVariablesView(),
          'dewb-menu-view-:debug-watch-expressions-toggle': () => this.toggleWatchExpressionsView()
        });
-
+       
      Logger.getInstance().info("DEWorkbench initialized successfully.");
    }
+
+   private createToolbar(){
+     // Create the main toolbar
+     this.toolbarView = new ToolbarView({
+      didNewProject: () => {
+        this.showNewProjectModal();
+     },
+     didToggleToolbar: () => {
+         this.toggleToolbar();
+     },
+     didToggleDebugArea: () => {
+       this.toggleDebugArea();
+     },
+     didProjectSettings: () => {
+         this.showProjectSettings();
+     },
+     didToggleConsole:() => {
+       this.toggleLogger();
+     },
+     didSelectProjectForRun: (projectInfo:CordovaProjectInfo) => {
+       Logger.consoleLog("didSelectProjectForRun",projectInfo);
+       this.selectedProjectForTask = projectInfo;
+     },
+     didSelectTaskClick: () => {
+       Logger.consoleLog("didSelectTaskClick");
+       this.showCordovaTaskModal();
+     },
+     didTaskSelected:(task:CordovaTaskConfiguration) => {
+       this.onTaskSelected(task);
+     },
+     didStop:() => {
+       this.onStopTask();
+     },
+     didRun : () => {
+       this.onTaskRunRequired(this.taskConfiguration);
+     },
+     didReload : () => {
+       Logger.consoleLog('Reload');
+       this.getTaskManager().sendAction({
+         type: 'doLiveReload'
+       });
+     },
+     didOpenJSConsole: () => {
+       Logger.consoleLog('didOpenJSConsole');
+       let runtimeHandler=this.getTaskManager().getRuntimeSessionHandler();
+       if(runtimeHandler && runtimeHandler.canOpenJSSession()){
+         let consoleHandler = runtimeHandler.openConsole();
+       }
+     }
+    });
+  }
 
    public static get default():DEWorkbench {
      return this._instance;

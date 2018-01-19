@@ -14,6 +14,7 @@ import {
 } from '../element/index';
 
 import { UIComponent, UIBaseComponent } from '../ui-components/UIComponent'
+import { Panel } from 'atom'
 
 export interface UIModalWindow{
   hide():void
@@ -23,7 +24,7 @@ export interface UIModalWindow{
 
 export class UIModalView implements UIModalWindow {
   protected modalContainer:HTMLElement = null;
-  protected panel: AtomCore.Panel;
+  protected panel: Panel;
   protected title:string
   protected element:HTMLElement;
   constructor(title:string){

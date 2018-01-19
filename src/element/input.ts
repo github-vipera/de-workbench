@@ -8,7 +8,7 @@
 import { get } from 'lodash'
 import { insertElement, createElement, createText } from './element'
 
-export function createTextEditor (options) {
+export function createTextEditor (options:any):any {
   let input = document.createElement('atom-text-editor')
   input.setAttribute('mini', 'true')
   let editor = input['getModel']()
