@@ -25,6 +25,7 @@ export declare class DEWorkbench {
     private _viewManager;
     private static _instance;
     constructor(options: WorkbenchOptions);
+    private createToolbar();
     static readonly default: DEWorkbench;
     showNewProjectModal(): void;
     toggleBreakpointsView(): void;
