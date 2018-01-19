@@ -1,4 +1,3 @@
-'use babel'
 
 /*!
  * Dynamic Engine Workbench
@@ -6,22 +5,12 @@
  * MIT Licensed
  */
 
+const { Logger } = require( './logger/Logger')
+const { ConsumedServices } = require ('./DEWorkbench/ConsumedServices')
+const { InkProvider } = require('./DEWorkbench/DEWBExternalServiceProvider')
 const { CompositeDisposable } = require('atom')
-declare function require(moduleName: string): any;
-//import { DEWorkbench } from './DEWorkbench/DEWorkbench'
-import { Logger } from './logger/Logger'
-import { InkProvider } from './DEWorkbench/DEWBExternalServiceProvider'
-import { CordovaPluginsProvidersManager } from './DEWorkbench/services/CordovaPluginsProvidersManager'
-import { ServerManager } from '././DEWorkbench/services/ServerManager'
-import { ProjectManager } from './DEWorkbench/ProjectManager'
-import { EventBus } from './DEWorkbench/EventBus'
-import { ConsumedServices } from './DEWorkbench/ConsumedServices'
-import { GlobalPreferences } from './DEWorkbench/GlobalPreferences'
-import { ViewManager } from './DEWorkbench/ViewManager'
-import { UINotifications } from './ui-components/UINotifications'
-import { ExecutorService } from './DEWorkbench/services/ExecutorService'
 
-export default {
+module.exports = {
 
   deWorkbench: null,
   toolbarPanel: null,
@@ -31,27 +20,21 @@ export default {
   cordovaPluginsProvidersManager:null,
 
   activate (state: any) {
-      Logger.consoleLog("DEWB activated.");
-
-      ServerManager.getInstance();
-
-      this.cordovaPluginsProvidersManager = CordovaPluginsProvidersManager.getInstance();
+      setTimeout(this.deferredActivation.bind(this),100);
       //this.deferredActivation();
-      setTimeout(this.deferredActivation.bind(this),1000);
   },
 
-  deferredActivation(){
+  async deferredActivation(){
     Logger.consoleLog("DEWB deferredActivation.");
 
-    require('atom-package-deps').install('de-workbench', false).then(function(res){
+    await require('atom-package-deps').install('de-workbench', false).then(function(res){
       Logger.consoleLog("Dep packages installed.");
     })
+
 
     let DEWorkbenchClass = require('./DEWorkbench/DEWorkbench').DEWorkbench;
     this.deWorkbench = new DEWorkbenchClass({
     });
-    window["deWorkbench"] = this.deWorkbench; //make it public only for debugging purpose
-    window["DEWBGlobalPreferences"] =  GlobalPreferences.getInstance()//make it public only for debugging purpose
 
     let value = 'HeaderPanel';
     this.toolbarPanel = atom.workspace[`add${value}`]({
@@ -63,30 +46,35 @@ export default {
         'dewb-menu-view-:toolbar-toggle': () => this.toggleToolbar(),
         'dewb-menu-view-:prjinspector-toggle': () => this.showProjectSettings(),
         'dewb-menu-view-:pushtool-show': () => this.showPushTool(),
-        'dewb-menu-view-:servers-show':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_SERVERS),
-        'dewb-menu-view-:bookmarks-toggle':()=> this.deWorkbench.viewManager.openView(ViewManager.VIEW_BOOKMARKS),
+        'dewb-menu-view-:servers-show':()=> this.deWorkbench.viewManager.openView(this.viewManagerClass().VIEW_SERVERS),
+        'dewb-menu-view-:bookmarks-toggle':()=> this.deWorkbench.viewManager.openView(this.viewManagerClass().VIEW_BOOKMARKS),
         'dewb-menu-view-:loggerview-toggle': () => this.toggleLogger()
       });
     this.subscriptions = new CompositeDisposable();
     // add commands subs
     this.subscriptions.add(commands);
 
+    this.serverManagerInstance()
+    this.cordovaPluginsProvidersManager = this.cordovaPluginsProvidersManagerInstance();// CordovaPluginsProvidersManager.getInstance();
+
     //this.checkForDECli(); move this on extension plugin!
   },
 
   deactivate () {
-      Logger.consoleLog('DEWB deactivated.');
-      if(this.deWorkbench){
-        this.deWorkbench.destroy();
-      }
-  },
-
-  showPushTool(){
-    let currentprojectPath:string = ProjectManager.getInstance().getCurrentProjectPath();
-    if (currentprojectPath){
-      this.deWorkbench.viewManager.openView(ViewManager.VIEW_PUSHTOOLS(currentprojectPath));
+    Logger.consoleLog('DEWB deactivated.');
+    if(this.deWorkbench){
+      this.deWorkbench.destroy();
     }
   },
+
+  
+  showPushTool(){
+    let currentprojectPath:string = this.projectManagerInstance().getCurrentProjectPath();
+    if (currentprojectPath){
+      this.deWorkbench["viewManager"].openView(this.viewManagerClass.VIEW_PUSHTOOLS(currentprojectPath));
+    }
+  },
+  
 
   showProjectSettings(){
     this.deWorkbench.showProjectSettings();
@@ -109,7 +97,7 @@ export default {
 
   provideCordovaPluginsProvider () {
     Logger.consoleLog("consumeDEWBCordovaPluginsProvider called")
-    return CordovaPluginsProvidersManager.getInstance();
+    return this.cordovaPluginsProvidersManagerInstance();
   },
 
   provideLogger () {
@@ -119,23 +107,47 @@ export default {
 
   provideProjectManager() {
     Logger.consoleLog("provideProjectManager called")
-    return ProjectManager.getInstance();
+    return this.projectManagerInstance();
   },
 
   provideEventBus() {
     Logger.consoleLog("provideEventBus called")
-    return EventBus.getInstance();
+    return this.eventBusInstance();
   },
 
   provideServerManager(){
     Logger.consoleLog("provideServerManager called")
-    return ServerManager.getInstance();
+    return this.serverManagerInstance();
   },
 
   provideExecutorService(){
     Logger.consoleLog("provideExecutorService called")
-    return ExecutorService.getInstance();
+    return this.executorServiceInstance();
   },
 
+  executorServiceInstance():any{
+    return require('./DEWorkbench/services/ExecutorService').ExecutorService.getInstance();
+  },
+
+  projectManagerInstance():any{
+    return require('./DEWorkbench/ProjectManager').ProjectManager.getInstance();
+  },
+
+  serverManagerInstance():any{
+    return require('././DEWorkbench/services/ServerManager').ServerManager.getInstance();
+  },
+
+  eventBusInstance():any{
+    return require('./DEWorkbench/EventBus').EventBus.getInstance();
+  },
+
+  viewManagerClass():any{
+    return require('./DEWorkbench/ViewManager').ViewManager;
+  },
+
+  cordovaPluginsProvidersManagerInstance():any {
+    return require('./DEWorkbench/services/CordovaPluginsProvidersManager').CordovaPluginsProvidersManager.getInstance();
+  }
 
 }
+
