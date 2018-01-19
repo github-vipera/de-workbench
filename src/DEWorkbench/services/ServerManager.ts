@@ -13,8 +13,9 @@ import { GlobalPreferences } from '../GlobalPreferences'
 import { UINotifications } from '../../ui-components/UINotifications'
 
 const _ = require('lodash');
-const GUID = require('guid');
+//const GUID = require('guid');
 var md5 = require('md5');
+const uuidv4 = require('uuid/v4');
 
 export enum ServerStatus {
   Stopped = 0,
@@ -436,7 +437,7 @@ export class ServerInstanceWrapper implements ServerInstance {
   _name:string;
 
   constructor(providerName:string, instanceName:string, serverInstance: ServerInstance, configuration:any){
-    this._instanceId = GUID.raw();
+    this._instanceId = uuidv4();
     this._providerName = providerName;
     this._name = instanceName;
     this._configuration = configuration;
@@ -476,6 +477,7 @@ export class ServerInstanceWrapper implements ServerInstance {
     try {
       this._serverInstance.start();
     } catch(err){
+      console.error("Start instance error: ", err);
       UINotifications.showError("Start '" + this._name + "' Server Error:\n" + err)
     }
   }
@@ -484,6 +486,7 @@ export class ServerInstanceWrapper implements ServerInstance {
     try {
       this._serverInstance.stop();
     } catch(err){
+      console.error("Stop instance error: ", err);
       UINotifications.showError("Stop '" + this._name + "' Server Error: " + err)
     }
   }

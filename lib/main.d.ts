@@ -1,29 +1,9 @@
-import { Logger } from './logger/Logger';
-import { CordovaPluginsProvidersManager } from './DEWorkbench/services/CordovaPluginsProvidersManager';
-import { ServerManager } from '././DEWorkbench/services/ServerManager';
-import { ProjectManager } from './DEWorkbench/ProjectManager';
-import { EventBus } from './DEWorkbench/EventBus';
-import { ExecutorService } from './DEWorkbench/services/ExecutorService';
-declare const _default: {
-    deWorkbench: any;
-    toolbarPanel: any;
-    subscriptions: any;
-    loggerView: any;
-    ink: any;
-    cordovaPluginsProvidersManager: any;
-    activate(state: any): void;
-    deferredActivation(): void;
-    deactivate(): void;
-    showPushTool(): void;
-    showProjectSettings(): void;
-    toggleToolbar(): void;
-    toggleLogger(): void;
-    consumeInk: (ink: any) => void;
-    provideCordovaPluginsProvider(): CordovaPluginsProvidersManager;
-    provideLogger(): Logger;
-    provideProjectManager(): ProjectManager;
-    provideEventBus(): EventBus;
-    provideServerManager(): ServerManager;
-    provideExecutorService(): ExecutorService;
-};
-export default _default;
+/*!
+ * Dynamic Engine Workbench
+ * Copyright(c) 2017 Dynamic Engine Team @ Vipera Plc
+ * MIT Licensed
+ */
+declare const Logger: any;
+declare const ConsumedServices: any;
+declare const InkProvider: any;
+declare const CompositeDisposable: any;

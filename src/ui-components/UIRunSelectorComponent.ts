@@ -64,7 +64,7 @@ export class UIRunSelectorComponent extends UIBaseComponent {
           },20);
         }else{
           let task:CordovaTaskConfiguration = _.find(this.taskHistory,(item) => {
-            return item.name == selection;
+            return item.id == selection;
           });
           Logger.consoleLog('emit event for',task);
           this.events.emit("didTaskSelected", task);
@@ -158,8 +158,8 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     let options:Array<UISelectItem> = [];
     _.forEach(tasks,(item) => {
       options.push({
-        name: item.constraints.isCustom ? item.name : item.displayName,
-        value: item.name
+        name: item.constraints.isCustom ? item.id : item.longDisplayName,
+        value: item.id
       })
     })
     options.push(OPEN_TASK_CONF);
@@ -190,7 +190,8 @@ export class UIRunSelectorComponent extends UIBaseComponent {
     if(!taskInfo){
       this.taskSelectButton.resetSelection();
     }else{
-      this.taskSelectButton.setSelectedItem(taskInfo.name);
+      let textVal = taskInfo.name;// + " (" + taskInfo.selectedPlatform.name +")";
+      this.taskSelectButton.setSelectedItem(taskInfo.id);
     }
   }
 

@@ -78,17 +78,9 @@ export class ToolbarView {
     this.events = new EventEmitter();
 
     this.toolbarElement = createElement('de-workbench-toolbar');
-
+ 
     this.logoElement = createIcon('logo')
     insertElement(this.toolbarElement, this.logoElement)
-
-    //<Label class="fa" text="\uf293"></Label>
-    /*let testFA = createElement('a',{
-      elements: [ createText('pippo')],
-      className : "fa"
-    })
-    testFA.setAttribute("text","\uf293")
-    insertElement(this.element, testFA)*/
 
     this.newProjectButton = createButton({
       click: () => {
@@ -119,7 +111,6 @@ export class ToolbarView {
     toggleButtons.classList.add('bugs-toggle-buttons')
     insertElement(this.toolbarElement, toggleButtons)
 
-
     attachEventFromObject(this.events, [
       'didRun',
       'didStop',
@@ -135,7 +126,7 @@ export class ToolbarView {
       'didTaskSelected',
       'didToggleConsole'
     ], options);
-
+    
     this.toolbarAnchor = createElement('de-workbench-toolbar-anchor',{
       elements: [
         createElement('span', {

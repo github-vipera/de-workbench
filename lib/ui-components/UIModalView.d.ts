@@ -1,4 +1,4 @@
-/// <reference types="atom" />
+import { Panel } from 'atom';
 export interface UIModalWindow {
     hide(): void;
     show(): void;
@@ -6,7 +6,7 @@ export interface UIModalWindow {
 }
 export declare class UIModalView implements UIModalWindow {
     protected modalContainer: HTMLElement;
-    protected panel: AtomCore.Panel;
+    protected panel: Panel;
     protected title: string;
     protected element: HTMLElement;
     constructor(title: string);

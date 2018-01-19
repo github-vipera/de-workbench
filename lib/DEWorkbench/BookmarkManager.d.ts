@@ -22,7 +22,7 @@ export declare class BookmarkManager {
     storeBookmarks(): Promise<any>;
     addFeatures(editor: any): Promise<void>;
     addBookmark(marker: any, lineNumber: number, filePath: string): Promise<Bookmark>;
-    protected createBookmarkId(lineNumber: number, filePath: string): any;
+    protected createBookmarkId(lineNumber: number, filePath: string): string;
     private createBookmarkMarkerForEditor(editor, lineNumber);
     getBookmarksFromFile(filePath: String): Bookmarks;
     private addBookmarkFromEvent(e, editor);

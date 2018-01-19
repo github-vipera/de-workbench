@@ -20,7 +20,6 @@ const fs = require('fs')
 const path = require('path')
 
 const _ = require('lodash');
-const GUID = require('guid');
 
 var JsonDB = require('node-json-db');
 

@@ -19,7 +19,7 @@
 
 import { UIComponent, UIBaseComponent } from './UIComponent'
 import { UIToolbar, UIToolbarButton } from './UIToolbar'
-import { UIListViewModel } from 'UIListView'
+import { UIListViewModel } from './UIListView'
 import * as _ from 'lodash'
 import {Logger, LogLevel} from '../logger/Logger'
 import {UISelect, UISelectItem, UISelectListener} from './UISelect';
