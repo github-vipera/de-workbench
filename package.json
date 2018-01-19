@@ -25,8 +25,11 @@
   "main": "./lib/main",
   "showWelcome": true,
   "scripts": {
+    "clean": "rm -rf lib",
     "start": "tsc -w",
-    "compile": "tsc"
+    "compile": "tsc",
+    "clean-compile": "rm -rf lib && tsc",
+    "build": "npm run clean-compile"
   },
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
@@ -153,7 +156,13 @@
     "@types/lodash": "^4.14.92",
     "@types/node": "^8.5.9",
     "@types/node-persist": "0.0.33",
-    "typescript": "^2.3.0"
+    "atom": "^1.1.0",
+    "javascript-obfuscator": "^0.13.0",
+    "remote": "^0.2.6",
+    "typescript": "^2.3.0",
+    "uglifyjs-webpack-plugin": "^1.1.6",
+    "webpack": "^3.10.0",
+    "webpack-node-externals": "^1.6.0"
   },
   "de-workbench": [
     {

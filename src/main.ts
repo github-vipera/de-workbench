@@ -21,12 +21,10 @@ module.exports = {
 
   activate (state: any) {
       setTimeout(this.deferredActivation.bind(this),100);
-      //this.deferredActivation();
   },
 
   async deferredActivation(){
     Logger.consoleLog("DEWB deferredActivation.");
-
     await require('atom-package-deps').install('de-workbench', false).then(function(res){
       Logger.consoleLog("Dep packages installed.");
     })

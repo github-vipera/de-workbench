@@ -78,7 +78,7 @@ export class ToolbarView {
     this.events = new EventEmitter();
 
     this.toolbarElement = createElement('de-workbench-toolbar');
-
+ 
     this.logoElement = createIcon('logo')
     insertElement(this.toolbarElement, this.logoElement)
 
@@ -111,17 +111,6 @@ export class ToolbarView {
     toggleButtons.classList.add('bugs-toggle-buttons')
     insertElement(this.toolbarElement, toggleButtons)
 
-    /**
-    //test Font Awsesome
-    let testFA = createElement('i',{
-      elements: [
-      ],
-      className:'fa fa-american-sign-language-interpreting'
-    })
-    testFA.setAttribute('aria-hidden', true);
-    insertElement(this.toolbarElement, testFA)
-    **/
-
     attachEventFromObject(this.events, [
       'didRun',
       'didStop',
@@ -137,7 +126,7 @@ export class ToolbarView {
       'didTaskSelected',
       'didToggleConsole'
     ], options);
-
+    
     this.toolbarAnchor = createElement('de-workbench-toolbar-anchor',{
       elements: [
         createElement('span', {
