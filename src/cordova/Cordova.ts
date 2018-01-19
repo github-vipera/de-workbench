@@ -217,23 +217,6 @@ export class Cordova {
     });
   }
 
-  /**
-   * Returns the assets path for the given platform
-   */
-  public getPlatformPath(projectRoot: string, platform: string): string {
-    Logger.getInstance().debug("getPlatformPath ", projectRoot, platform)
-    var result = projectRoot;// != undefined ? projectRoot : atom.project["getPaths"]()[0];
-    if (platform === "android") {
-      return result + "/platforms/android/assets/www";
-    } else if (platform === "ios") {
-      return result + "/platforms/ios/www";
-    } else if(platform === 'browser'){
-      return result + "/platforms/browser/www";
-    }else {
-      console.error("getPlatformPath with unknown platform:" + platform);
-      return undefined;
-    }
-  }
 
   /**
    * Creates a new Cordova project with the given parameters

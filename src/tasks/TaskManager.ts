@@ -122,6 +122,7 @@ export class TaskManager{
       Logger.getInstance().error("Server configuration build fail");
       return Promise.resolve();
     }
+    Logger.getInstance().info("Platform Server Config: " + JSON.stringify(srvConf));
     await this.cordova.prepareProjectWithBrowserPatch(project.path,platform.name);
     this.runtimeSessionHandler = RuntimeSessionHandler.createRuntimeSession(srvConf);
   }

@@ -58,7 +58,6 @@ export declare class Cordova {
     addPlugin(projectRoot: string, pluginInfo: CordovaPlugin): Promise<void>;
     removePlugin(projectRoot: string, pluginInfo: CordovaPlugin): Promise<void>;
     getInstalledPlugins(projectRoot: string): Promise<Array<CordovaPlugin>>;
-    getPlatformPath(projectRoot: string, platform: string): string;
     createNewProject(projectInfo: NewProjectInfo): Promise<any>;
     removeAllPlatforms(projectInfo: any): Promise<any>;
     addPlatforms(projectInfo: any): Promise<any>;
