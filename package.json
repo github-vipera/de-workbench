@@ -153,7 +153,7 @@
   "devDependencies": {
     "@types/atom": "^1.23.2",
     "@types/express": "^4.11.0",
-    "@types/lodash": "^4.14.93",
+    "@types/lodash": "^4.14.92",
     "@types/node": "^8.5.9",
     "@types/node-persist": "0.0.33",
     "javascript-obfuscator": "^0.13.0",
