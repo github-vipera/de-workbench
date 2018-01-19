@@ -151,25 +151,18 @@
     "xterm": "^2.9.2"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@types/atom": "1.21.3",
     "@types/lodash": "^4.14.62",
     "@types/node": "^8.0.19",
-    "typescript": "^2.3.0"
-=======
+    "typescript": "^2.3.0",
     "@types/atom": "^1.23.2",
     "@types/express": "^4.11.0",
     "@types/lodash": "^4.14.92",
     "@types/node": "^8.5.9",
     "@types/node-persist": "0.0.33",
     "atom": "^1.1.0",
-    "javascript-obfuscator": "^0.13.0",
     "remote": "^0.2.6",
-    "typescript": "^2.3.0",
-    "uglifyjs-webpack-plugin": "^1.1.6",
-    "webpack": "^3.10.0",
-    "webpack-node-externals": "^1.6.0"
->>>>>>> master
+    "typescript": "^2.3.0"
   },
   "de-workbench": [
     {
