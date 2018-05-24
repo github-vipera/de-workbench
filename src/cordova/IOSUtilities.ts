@@ -14,6 +14,8 @@ const fs = require("fs");
 const _ = require("lodash")
 const xml2js = require('xml2js');
 const provisioning = require('provisioning');
+const plist = require('simple-plist');
+var parseString = require('xml2js').parseString;
 
 export class IOSUtilities {
 
@@ -26,18 +28,21 @@ export class IOSUtilities {
       let provisioningProfileFolder = IOSUtilities.getProvisionigProfilesFolder();// path.join(homeFolder, "Library", "MobileDevice" , "Provisioning Profiles");
       Logger.getInstance().debug("iOS Provisioning Profiles folder: " + provisioningProfileFolder)
 
-        var provisioningFileNames = fs.readdirSync(provisioningProfileFolder);
+        let provisioningFileNames = fs.readdirSync(provisioningProfileFolder);
         let totalFilesToProcess = provisioningFileNames.length;
-        Logger.getInstance().debug("Found "+ totalFilesToProcess +" profiles found.");
+        let profilesAdded = 0;
+        Logger.getInstance().debug("Found "+ totalFilesToProcess +" files found.");
         for (var i=0;i<provisioningFileNames.length;i++){
-          var filename = path.join(provisioningProfileFolder,provisioningFileNames[i]);
-          //Logger.getInstance().debug('Loading provisioning profile '+ filename +'...');
-          //Logger.getInstance().debug("Loading profile for "+ filename +"...");
-          provisioning(filename, function(error, data){
-            if (error){
-              //Logger.getInstance().debug('Error loading provisioning profile: '+ error);
-            }
-            else if (data){
+          let filename = path.join(provisioningProfileFolder,provisioningFileNames[i]);
+          
+          var fileContent = fs.readFileSync(filename, "utf8");
+          // Convert a plist xml string or a binary plist buffer to a Javascript object
+          try {
+            let plistContentStart = fileContent.indexOf("<plist");
+            let plistContentEnd = fileContent.indexOf("</plist>");
+            let plistContent = fileContent.substring(plistContentStart, plistContentEnd + "</plist>".length);
+            var data = plist.parse(plistContent);
+            if (data){
               var appIdentifier = data.Entitlements['application-identifier'];
               var teamIdentifier = data.TeamIdentifier;
               var teamName = data.TeamName;
@@ -50,16 +55,17 @@ export class IOSUtilities {
                 "teamName" : teamName,
                 "data" : data
               };
-              //Logger.getInstance().debug("Loaded profile for " + appIdentifier)
-            } else {
+              profilesAdded++;
+            }
+          } catch (ex){
+            Logger.getInstance().debug("The file "+ filename + " does not seem to be a provisioning profile.");
+          }
+          totalFilesToProcess--;
+          if (totalFilesToProcess==0){
+            Logger.getInstance().debug("Profiles loaded " + profilesAdded);
+            resolve(provisioningProfiles);
+          }
 
-            }
-            totalFilesToProcess--;
-            if (totalFilesToProcess==0){
-              Logger.getInstance().debug("Profiles loaded.")
-              resolve(provisioningProfiles);
-            }
-          });
         }
     })
   }

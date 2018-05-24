@@ -21,6 +21,8 @@ export declare class UIInputFormElement extends UIBaseComponent {
     private lastValue;
     private options;
     private chainToEl;
+    private extClassName;
+    private tagName;
     constructor(options?: UIInputFormElementOptions);
     protected defaultOptions(): UIInputFormElementOptions;
     protected buildUI(): void;
@@ -31,6 +33,8 @@ export declare class UIInputFormElement extends UIBaseComponent {
     protected createInputEditor(): HTMLElement;
     chainTo(nextElement: HTMLElement): UIInputFormElement;
     toChain(): HTMLElement;
+    setExtClassName(extClassName: string): UIInputFormElement;
+    setTagName(tagName: string): UIInputFormElement;
     setCaption(caption: string): UIInputFormElement;
     setValue(value: string): UIInputFormElement;
     getValue(): string;

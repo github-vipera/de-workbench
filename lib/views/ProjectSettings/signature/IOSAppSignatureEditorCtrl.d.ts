@@ -1,14 +1,16 @@
 import { UISelectItem } from '../../../ui-components/UISelect';
 import { AbstractAppSignatureEditorCtrl, AppType } from './AbstractAppSignatureEditorCtrl';
 export declare class IOSAppSignatureEditorCtrl extends AbstractAppSignatureEditorCtrl {
-    private provisioningProfileSelect;
     private packageTypeSelect;
     private devTeamInput;
+    private provisioningProfileInput;
+    private btnProvisioningProfilesSelector;
     private codeSignIdentityInput;
     private provisioningProfiles;
     constructor(appType: AppType);
     protected createControls(): Array<HTMLElement>;
     onItemSelected(value: any): void;
+    private getprovisionigProfileByUUID(uuid);
     private getProvisioningProfileByAppId(appId);
     protected getPackageTypeItems(): Array<UISelectItem>;
     destroy(): void;

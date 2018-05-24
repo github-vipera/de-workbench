@@ -125,6 +125,11 @@ export class UIButtonMenu extends UIBaseComponent {
 
   public setEmptyMessage(message:string):UIButtonMenu{
     this.emptyMessage = message;
+    if (this.listView){
+      //TODO!!
+    let x = 1;
+    x++;      
+    }
     return this;
   }
 

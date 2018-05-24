@@ -1,0 +1,10 @@
+{
+	"ios": {
+		"debug": {},
+		"release": {}
+	},
+	"android": {
+		"debug": {},
+		"release": {}
+	}
+}

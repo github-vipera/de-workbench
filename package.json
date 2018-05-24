@@ -139,6 +139,7 @@
     "request": "^2.81.0",
     "resize-observer-polyfill": "^1.4.2",
     "reverse-line-reader": "^0.2.6",
+    "simple-plist": "^0.3.0",
     "socket.io": "^1.7.3",
     "string-hash": "^1.1.3",
     "tail": "^1.2.2",

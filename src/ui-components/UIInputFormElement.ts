@@ -48,6 +48,8 @@ export class UIInputFormElement extends UIBaseComponent {
   private lastValue:string='';
   private options:UIInputFormElementOptions;
   private chainToEl:HTMLElement;
+  private extClassName:string;
+  private tagName:string;
 
   constructor(options?:UIInputFormElementOptions){
     super();
@@ -160,6 +162,17 @@ export class UIInputFormElement extends UIBaseComponent {
 
   public toChain():HTMLElement {
     return this.inputEditor;
+  }
+
+  public setExtClassName(extClassName:string):UIInputFormElement {
+    this.extClassName = extClassName;
+    this.mainElement.classList.add(extClassName);
+    return this;
+  }
+
+  public setTagName(tagName:string):UIInputFormElement {
+    this.tagName = tagName;
+    return this;
   }
 
   public setCaption(caption:string):UIInputFormElement{
