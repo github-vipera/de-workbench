@@ -86,7 +86,9 @@ export class Logger {
     Logger.consoleLog("", msg);
   }
 
-
+  public static perfLog(msg:string){
+    console.log(msg + " ["+ performance.now() + "]");
+  }
 
   private fireLogEvent(level:LogLevel,...msg){
     this.evtSupport.fireEvent('logging',level,msg.join(' , '));

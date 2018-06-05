@@ -10,6 +10,7 @@ export declare class Logger {
     debug(...msg: any[]): void;
     warn(...msg: any[]): void;
     error(...msg: any[]): void;
+    static perfLog(msg: string): void;
     private fireLogEvent(level, ...msg);
     addLoggingListener(listener: LoggerListener): void;
     static consoleLog(msg: string, ...params: any[]): void;

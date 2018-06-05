@@ -13,7 +13,7 @@ export declare class ViewManager {
     private _toggleRegisteredItems;
     constructor();
     protected registerOpeners(): void;
-    protected manageURI(uri: string, params: any): ProjectSettingsView | PushToolView | LoggerView | ServerInstanceConfigurationView | BookmarksView | DebugAreaView | DebugBreakpointsView | DebugCallStackView | DebugVariablesView | DebugWatchExpressionsView | ServersView;
+    protected manageURI(uri: string, params: any): LoggerView | ServersView | BookmarksView | PushToolView | ServerInstanceConfigurationView | ProjectSettingsView | DebugAreaView | DebugBreakpointsView | DebugCallStackView | DebugVariablesView | DebugWatchExpressionsView;
     static readonly VIEW_SERVERS: ViewInfo;
     static readonly VIEW_BOOKMARKS: ViewInfo;
     static VIEW_PUSHTOOLS(projectRoot: string): ViewInfo;

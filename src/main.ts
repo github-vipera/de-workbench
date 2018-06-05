@@ -20,14 +20,18 @@ module.exports = {
   cordovaPluginsProvidersManager:null,
 
   activate (state: any) {
-      setTimeout(this.deferredActivation.bind(this),100);
+      setTimeout(this.deferredActivation.bind(this),1);
   },
 
   async deferredActivation(){
+    //Logger.perfLog("DEWB deferredActivation. ");
     Logger.consoleLog("DEWB deferredActivation.");
-    await require('atom-package-deps').install('de-workbench', false).then(function(res){
-      Logger.consoleLog("Dep packages installed.");
-    })
+
+    setTimeout(()=>{
+      require('atom-package-deps').install('de-workbench', false).then(function(res){
+        Logger.consoleLog("Dep packages installed.");
+      })
+    }, 1000);
 
 
     let DEWorkbenchClass = require('./DEWorkbench/DEWorkbench').DEWorkbench;
@@ -53,9 +57,9 @@ module.exports = {
     this.subscriptions.add(commands);
 
     this.serverManagerInstance()
-    this.cordovaPluginsProvidersManager = this.cordovaPluginsProvidersManagerInstance();// CordovaPluginsProvidersManager.getInstance();
+    this.cordovaPluginsProvidersManager = this.cordovaPluginsProvidersManagerInstance();
 
-    //this.checkForDECli(); move this on extension plugin!
+    //Logger.perfLog("DEWB deferredActivation.END ");
   },
 
   deactivate () {
